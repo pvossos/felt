@@ -1,0 +1,28 @@
+start-node    = 1        /* unnecessary as this is the default */
+start-element = 1
+
+triangular mesh
+element-type = CSTPlaneStress
+angtol = 20    dmin = 0.5     min = 100		/* except for min and max */
+angspc = 30    kappa = 0.25   max = 300		/* these are defaults     */
+
+boundary = [
+   (0,50)
+   (20,10)
+   (40,0)
+   (40,50)
+   (55,70)
+   (95,70)
+   (115,50)
+   (115,0)
+   (135,10)
+   (155,50)
+   (155,90)
+   (115,160)
+   (170,404)
+   (122,404)
+   (67,160)
+   (0,90)
+]
+
+end

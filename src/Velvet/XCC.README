@@ -1,0 +1,75 @@
+/* $Id$ */
+
+	This is the Beta version of the XCC.
+
+What is the XCC?
+
+Have you ever written an X program and wished:
+
+	1) You could get the closest color available in the colormap
+	2) Use a different visual other than the default
+	3) Use standard colormaps
+	4) Have quick access to pixel values
+	5) Not have to think so hard about color
+
+This is the inspiration behind the XCC.  The XCC is initialized
+by a call to:
+
+XCC XCCCreate(Display *_dpy, Visual *_visual, int _usePrivateColormap, int _useStdCmaps,
+                            Atom _stdCmapAtom, Colormap *_colormap);
+
+where:
+
+_dpy: Display
+_visual: Visual to use
+_usePrivateColormap: Force use of a private colormap
+_useStdCmaps: Look for standard colormaps
+_stdCmapAtom: First standard colormap to look for
+*_colomap: returned colormap
+
+Other than that just call:
+
+unsigned long XCCGetPixel(XCC _xcc, unsigned int _red, unsigned int _green, unsigned int _blue);
+
+	to get a pixel value (max value for _red/_green/_blue is 65535).
+
+
+	If _useStdCmaps is true, the XCC first goes off and searches
+for a standard colormap that matches _stdCmapAtom if it exists,
+or runs through a list of predefined atoms.  If it finds one,
+and the visualid matches the _visual's visualid, it uses that
+standard colormap.
+
+	If not, the XCC goes off and allocates colors (if necessary
+to the visual) and creates fake standard colormap structures to
+be used for pixel lookup.  The big thing here is that the entries
+do not have to be contiguous as there is a CLUT internal to the
+XCC that does indirection automatically for you.  Note a standard
+colormap is not actually created, just the structure is used internally.
+(TrueColor visuals just use the bit masks so no CLUT or standard
+colormap is necessary in this case.) In any case, once this is
+done, you can give the XCC ANY color specification and it will
+find an appropriate matche in the cube (or ramp in the grayscale/
+staticcolor case).
+
+	If allocation fails, the XCC defaults to B/W.
+
+	The XCC supports all visual types and depths. It works very
+well in conjunction with the AppPlusShell that is part of the
+same package, but either can be used without the other.
+
+
+
+	Problems:
+		
+	1) The code max's out allocation usually -- so color allocation
+from the Motif lib may fail, since there is currently no way to
+override the default color allocation mechanism.
+
+	2) I'm pretty sure the DirectColor code is correct, but am not
+willing to 100% guarantee at this point.
+
+
+	Comments and suggestions welcome.
+
+

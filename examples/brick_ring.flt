@@ -1,0 +1,389 @@
+problem description
+title="ring of bricks"
+nodes=240 elements=60
+
+nodes
+1  x=12 y=0 z=3 constraint=fixed force=if000120
+2  x=14.136 y=0 z=0.052 constraint=free
+3  x=14 y=0 z=3 constraint=fixed
+4  x=12.156 y=0 z=-0.052 constraint=free force=if000120
+5  x=11.934 y=-1.26 z=3 constraint=fixed force=if000238
+6  x=14.059 y=-1.486 z=0.052 constraint=free
+7  x=13.923 y=-1.47 z=3 constraint=fixed
+8  x=12.09 y=-1.276 z=-0.052 constraint=free force=if000238
+9  x=11.934 y=1.254 z=3 constraint=fixed force=if000122
+10 x=14.059 y=1.479 z=0.052 constraint=free
+11 x=13.923 y=1.463 z=3 constraint=fixed
+12 x=12.09 y=1.27 z=-0.052 constraint=free force=if000122
+13 x=11.738 y=2.495 z=3 constraint=fixed force=if000124
+14 x=13.826 y=2.939 z=0.052 constraint=free
+15 x=13.694 y=2.911 z=3 constraint=fixed
+16 x=11.894 y=2.527 z=-0.052 constraint=free force=if000124
+17 x=11.737 y=-2.5 z=3 constraint=fixed force=if000236
+18 x=13.825 y=-2.945 z=0.052 constraint=free
+19 x=13.693 y=-2.917 z=3 constraint=fixed
+20 x=11.893 y=-2.532 z=-0.052 constraint=free force=if000236
+21 x=11.411 y=-3.713 z=3 constraint=fixed force=if000234
+22 x=13.441 y=-4.372 z=0.052 constraint=free
+23 x=13.313 y=-4.332 z=3 constraint=fixed
+24 x=11.559 y=-3.761 z=-0.052 constraint=free force=if000234
+25 x=11.413 y=3.708 z=3 constraint=fixed force=if000126
+26 x=13.443 y=4.366 z=0.052 constraint=free
+27 x=13.315 y=4.326 z=3 constraint=fixed
+28 x=11.561 y=3.756 z=-0.052 constraint=free force=if000126
+29 x=10.963 y=4.881 z=3 constraint=fixed force=if000128
+30 x=12.914 y=5.75 z=0.052 constraint=free
+31 x=12.79 y=5.694 z=3 constraint=fixed
+32 x=11.107 y=4.945 z=-0.052 constraint=free force=if000128
+33 x=10.96 y=-4.886 z=3 constraint=fixed force=if000232
+34 x=12.911 y=-5.756 z=0.052 constraint=free
+35 x=12.787 y=-5.7 z=3 constraint=fixed
+36 x=11.104 y=-4.95 z=-0.052 constraint=free force=if000232
+37 x=10.39 y=-6.004 z=3 constraint=fixed force=if000230
+38 x=12.237 y=-7.073 z=0.052 constraint=free
+39 x=12.121 y=-7.005 z=3 constraint=fixed
+40 x=10.526 y=-6.084 z=-0.052 constraint=free force=if000230
+41 x=10.393 y=6 z=3 constraint=fixed force=if000130
+42 x=12.241 y=7.068 z=0.052 constraint=free
+43 x=12.125 y=7 z=3 constraint=fixed
+44 x=10.529 y=6.08 z=-0.052 constraint=free force=if000130
+45 x=9.709 y=7.053 z=3 constraint=fixed force=if000132
+46 x=11.435 y=8.308 z=0.052 constraint=free
+47 x=11.327 y=8.228 z=3 constraint=fixed
+48 x=9.837 y=7.145 z=-0.052 constraint=free force=if000132
+49 x=9.705 y=-7.057 z=3 constraint=fixed force=if000228
+50 x=11.431 y=-8.314 z=0.052 constraint=free
+51 x=11.323 y=-8.234 z=3 constraint=fixed
+52 x=9.833 y=-7.149 z=-0.052 constraint=free force=if000228
+53 x=8.914 y=-8.033 z=3 constraint=fixed force=if000226
+54 x=10.5 y=-9.464 z=0.052 constraint=free
+55 x=10.4 y=-9.372 z=3 constraint=fixed
+56 x=9.03 y=-8.137 z=-0.052 constraint=free force=if000226
+57 x=8.918 y=8.029 z=3 constraint=fixed force=if000134
+58 x=10.505 y=9.459 z=0.052 constraint=free
+59 x=10.405 y=9.367 z=3 constraint=fixed
+60 x=9.034 y=8.133 z=-0.052 constraint=free force=if000134
+61 x=8.03 y=8.917 z=3 constraint=fixed force=if000136
+62 x=9.46 y=10.503 z=0.052 constraint=free
+63 x=9.368 y=10.403 z=3 constraint=fixed
+64 x=8.134 y=9.033 z=-0.052 constraint=free force=if000136
+65 x=8.026 y=-8.921 z=3 constraint=fixed force=if000224
+66 x=9.456 y=-10.508 z=0.052 constraint=free
+67 x=9.364 y=-10.408 z=3 constraint=fixed
+68 x=8.13 y=-9.037 z=-0.052 constraint=free force=if000224
+69 x=7.05 y=-9.711 z=3 constraint=fixed force=if000222
+70 x=8.305 y=-11.437 z=0.052 constraint=free
+71 x=8.225 y=-11.329 z=3 constraint=fixed
+72 x=7.142 y=-9.839 z=-0.052 constraint=free force=if000222
+73 x=7.054 y=9.708 z=3 constraint=fixed force=if000138
+74 x=8.31 y=11.434 z=0.052 constraint=free
+75 x=8.23 y=11.326 z=3 constraint=fixed
+76 x=7.146 y=9.836 z=-0.052 constraint=free force=if000138
+77 x=6.001 y=10.392 z=3 constraint=fixed force=if000140
+78 x=7.069 y=12.24 z=0.052 constraint=free
+79 x=7.001 y=12.124 z=3 constraint=fixed
+80 x=6.081 y=10.528 z=-0.052 constraint=free force=if000140
+81 x=5.996 y=-10.395 z=3 constraint=fixed force=if000220
+82 x=7.063 y=-12.243 z=0.052 constraint=free
+83 x=6.995 y=-12.127 z=3 constraint=fixed
+84 x=6.076 y=-10.531 z=-0.052 constraint=free force=if000220
+85 x=4.877 y=-10.964 z=3 constraint=fixed force=if000218
+86 x=5.745 y=-12.916 z=0.052 constraint=free
+87 x=5.689 y=-12.792 z=3 constraint=fixed
+88 x=4.941 y=-11.108 z=-0.052 constraint=free force=if000218
+89 x=4.882 y=10.962 z=3 constraint=fixed force=if000142
+90 x=5.751 y=12.913 z=0.052 constraint=free
+91 x=5.695 y=12.789 z=3 constraint=fixed
+92 x=4.946 y=11.106 z=-0.052 constraint=free force=if000142
+93 x=3.709 y=11.412 z=3 constraint=fixed force=if000144
+94 x=4.367 y=13.442 z=0.052 constraint=free
+95 x=4.327 y=13.314 z=3 constraint=fixed
+96 x=3.757 y=11.56 z=-0.052 constraint=free force=if000144
+97 x=3.704 y=-11.414 z=3 constraint=fixed force=if000216
+98 x=4.361 y=-13.444 z=0.052 constraint=free
+99 x=4.321 y=-13.316 z=3 constraint=fixed
+100 x=3.752 y=-11.562 z=-0.052 constraint=free force=if000216
+101 x=2.491 y=-11.739 z=3 constraint=fixed force=if000214
+102 x=2.934 y=-13.827 z=0.052 constraint=free
+103 x=2.906 y=-13.695 z=3 constraint=fixed
+104 x=2.523 y=-11.895 z=-0.052 constraint=free force=if000214
+105 x=2.496 y=11.738 z=3 constraint=fixed force=if000146
+106 x=2.94 y=13.826 z=0.052 constraint=free
+107 x=2.912 y=13.694 z=3 constraint=fixed
+108 x=2.528 y=11.894 z=-0.052 constraint=free force=if000146
+109 x=1.256 y=11.934 z=3 constraint=fixed force=if000148
+110 x=1.481 y=14.059 z=0.052 constraint=free
+111 x=1.465 y=13.923 z=3 constraint=fixed
+112 x=1.272 y=12.09 z=-0.052 constraint=free force=if000148
+113 x=1.25 y=-11.935 z=3 constraint=fixed force=if000212
+114 x=1.474 y=-14.06 z=0.052 constraint=free
+115 x=1.458 y=-13.924 z=3 constraint=fixed
+116 x=1.266 y=-12.091 z=-0.052 constraint=free force=if000212
+117 x=-0.004 y=-12 z=3 constraint=fixed force=if000210
+118 x=-0.005 y=-14.136 z=0.052 constraint=free
+119 x=-0.005 y=-14 z=3 constraint=fixed
+120 x=-0.004 y=-12.156 z=-0.052 constraint=free force=if000210
+121 x=0.001 y=12 z=3 constraint=fixed force=if000150
+122 x=0.002 y=14.136 z=0.052 constraint=free
+123 x=0.002 y=14 z=3 constraint=fixed
+124 x=0.001 y=12.156 z=-0.052 constraint=free force=if000150
+125 x=-1.253 y=11.934 z=3 constraint=fixed force=if000152
+126 x=-1.478 y=14.059 z=0.052 constraint=free
+127 x=-1.462 y=13.923 z=3 constraint=fixed
+128 x=-1.269 y=12.09 z=-0.052 constraint=free force=if000152
+129 x=-1.258 y=-11.934 z=3 constraint=fixed force=if000208
+130 x=-1.484 y=-14.059 z=0.052 constraint=free
+131 x=-1.468 y=-13.923 z=3 constraint=fixed
+132 x=-1.274 y=-12.09 z=-0.052 constraint=free force=if000208
+133 x=-2.499 y=-11.737 z=3 constraint=fixed force=if000206
+134 x=-2.943 y=-13.825 z=0.052 constraint=free
+135 x=-2.915 y=-13.693 z=3 constraint=fixed
+136 x=-2.531 y=-11.893 z=-0.052 constraint=free force=if000206
+137 x=-2.493 y=11.738 z=3 constraint=fixed force=if000154
+138 x=-2.937 y=13.826 z=0.052 constraint=free
+139 x=-2.909 y=13.694 z=3 constraint=fixed
+140 x=-2.525 y=11.894 z=-0.052 constraint=free force=if000154
+141 x=-3.707 y=11.413 z=3 constraint=fixed force=if000156
+142 x=-4.364 y=13.443 z=0.052 constraint=free
+143 x=-4.324 y=13.315 z=3 constraint=fixed
+144 x=-3.755 y=11.561 z=-0.052 constraint=free force=if000156
+145 x=-3.712 y=-11.411 z=3 constraint=fixed force=if000204
+146 x=-4.371 y=-13.441 z=0.052 constraint=free
+147 x=-4.331 y=-13.313 z=3 constraint=fixed
+148 x=-3.76 y=-11.559 z=-0.052 constraint=free force=if000204
+149 x=-4.884 y=-10.961 z=3 constraint=fixed force=if000202
+150 x=-5.754 y=-12.912 z=0.052 constraint=free
+151 x=-5.698 y=-12.788 z=3 constraint=fixed
+152 x=-4.948 y=-11.105 z=-0.052 constraint=free force=if000202
+153 x=-4.879 y=10.963 z=3 constraint=fixed force=if000158
+154 x=-5.748 y=12.914 z=0.052 constraint=free
+155 x=-5.692 y=12.79 z=3 constraint=fixed
+156 x=-4.943 y=11.107 z=-0.052 constraint=free force=if000158
+157 x=-5.998 y=10.393 z=3 constraint=fixed force=if000160
+158 x=-7.066 y=12.241 z=0.052 constraint=free
+159 x=-6.998 y=12.125 z=3 constraint=fixed
+160 x=-6.078 y=10.529 z=-0.052 constraint=free force=if000160
+161 x=-6.003 y=-10.39 z=3 constraint=fixed force=if000200
+162 x=-7.072 y=-12.238 z=0.052 constraint=free
+163 x=-7.004 y=-12.122 z=3 constraint=fixed
+164 x=-6.083 y=-10.526 z=-0.052 constraint=free force=if000200
+165 x=-7.056 y=-9.706 z=3 constraint=fixed force=if000198
+166 x=-8.312 y=-11.432 z=0.052 constraint=free
+167 x=-8.232 y=-11.324 z=3 constraint=fixed
+168 x=-7.148 y=-9.834 z=-0.052 constraint=free force=if000198
+169 x=-7.052 y=9.709 z=3 constraint=fixed force=if000162
+170 x=-8.307 y=11.436 z=0.052 constraint=free
+171 x=-8.227 y=11.328 z=3 constraint=fixed
+172 x=-7.144 y=9.837 z=-0.052 constraint=free force=if000162
+173 x=-8.028 y=8.919 z=3 constraint=fixed force=if000164
+174 x=-9.458 y=10.506 z=0.052 constraint=free
+175 x=-9.366 y=10.406 z=3 constraint=fixed
+176 x=-8.132 y=9.035 z=-0.052 constraint=free force=if000164
+177 x=-8.032 y=-8.915 z=3 constraint=fixed force=if000196
+178 x=-9.463 y=-10.501 z=0.052 constraint=free
+179 x=-9.371 y=-10.401 z=3 constraint=fixed
+180 x=-8.136 y=-9.031 z=-0.052 constraint=free force=if000196
+181 x=-8.92 y=-8.027 z=3 constraint=fixed force=if000194
+182 x=-10.507 y=-9.457 z=0.052 constraint=free
+183 x=-10.407 y=-9.365 z=3 constraint=fixed
+184 x=-9.036 y=-8.131 z=-0.052 constraint=free force=if000194
+185 x=-8.916 y=8.031 z=3 constraint=fixed force=if000166
+186 x=-10.502 y=9.462 z=0.052 constraint=free
+187 x=-10.402 y=9.37 z=3 constraint=fixed
+188 x=-9.032 y=8.135 z=-0.052 constraint=free force=if000166
+189 x=-9.707 y=7.055 z=3 constraint=fixed force=if000168
+190 x=-11.433 y=8.311 z=0.052 constraint=free
+191 x=-11.325 y=8.231 z=3 constraint=fixed
+192 x=-9.835 y=7.147 z=-0.052 constraint=free force=if000168
+193 x=-9.71 y=-7.051 z=3 constraint=fixed force=if000192
+194 x=-11.437 y=-8.306 z=0.052 constraint=free
+195 x=-11.329 y=-8.226 z=3 constraint=fixed
+196 x=-9.838 y=-7.143 z=-0.052 constraint=free force=if000192
+197 x=-10.394 y=-5.997 z=3 constraint=fixed force=if000190
+198 x=-12.242 y=-7.065 z=0.052 constraint=free
+199 x=-12.126 y=-6.997 z=3 constraint=fixed
+200 x=-10.53 y=-6.077 z=-0.052 constraint=free force=if000190
+201 x=-10.391 y=6.002 z=3 constraint=fixed force=if000170
+202 x=-12.239 y=7.07 z=0.052 constraint=free
+203 x=-12.123 y=7.002 z=3 constraint=fixed
+204 x=-10.527 y=6.082 z=-0.052 constraint=free force=if000170
+205 x=-10.962 y=4.883 z=3 constraint=fixed force=if000172
+206 x=-12.912 y=5.753 z=0.052 constraint=free
+207 x=-12.788 y=5.697 z=3 constraint=fixed
+208 x=-11.106 y=4.947 z=-0.052 constraint=free force=if000172
+209 x=-10.964 y=-4.878 z=3 constraint=fixed force=if000188
+210 x=-12.915 y=-5.747 z=0.052 constraint=free
+211 x=-12.791 y=-5.691 z=3 constraint=fixed
+212 x=-11.108 y=-4.942 z=-0.052 constraint=free force=if000188
+213 x=-11.414 y=-3.705 z=3 constraint=fixed force=if000186
+214 x=-13.444 y=-4.363 z=0.052 constraint=free
+215 x=-13.316 y=-4.323 z=3 constraint=fixed
+216 x=-11.562 y=-3.753 z=-0.052 constraint=free force=if000186
+217 x=-11.412 y=3.711 z=3 constraint=fixed force=if000174
+218 x=-13.442 y=4.369 z=0.052 constraint=free
+219 x=-13.314 y=4.329 z=3 constraint=fixed
+220 x=-11.56 y=3.759 z=-0.052 constraint=free force=if000174
+221 x=-11.737 y=2.497 z=3 constraint=fixed force=if000176
+222 x=-13.825 y=2.942 z=0.052 constraint=free
+223 x=-13.693 y=2.914 z=3 constraint=fixed
+224 x=-11.893 y=2.529 z=-0.052 constraint=free force=if000176
+225 x=-11.738 y=-2.492 z=3 constraint=fixed force=if000184
+226 x=-13.827 y=-2.935 z=0.052 constraint=free
+227 x=-13.695 y=-2.907 z=3 constraint=fixed
+228 x=-11.894 y=-2.524 z=-0.052 constraint=free force=if000184
+229 x=-11.935 y=-1.251 z=3 constraint=fixed force=if000182
+230 x=-14.059 y=1.483 z=0.052 constraint=free
+231 x=-13.923 y=1.467 z=3 constraint=fixed
+232 x=-12.09 y=1.273 z=-0.052 constraint=free force=if000178
+233 x=-11.934 y=1.257 z=3 constraint=fixed force=if000178
+234 x=-14.06 y=-1.476 z=0.052 constraint=free
+235 x=-13.924 y=-1.46 z=3 constraint=fixed
+236 x=-12.091 y=-1.267 z=-0.052 constraint=free force=if000182
+237 x=-14.136 y=0.003 z=0.052
+238 x=-14 y=0.003 z=3 constraint=fixed
+239 x=-12.156 y=0.003 z=-0.052 constraint=free force=if000180
+240 x=-12 y=0.003 z=3 constraint=fixed force=if000180
+
+brick elements
+1  nodes=[2,3,11,10,4,1,9,12] material=steel
+2  nodes=[10,11,15,14,12,9,13,16]
+3  nodes=[14,15,27,26,16,13,25,28]
+4  nodes=[26,27,31,30,28,25,29,32]
+5  nodes=[30,31,43,42,32,29,41,44]
+6  nodes=[42,43,47,46,44,41,45,48]
+7  nodes=[46,47,59,58,48,45,57,60]
+8  nodes=[58,59,63,62,60,57,61,64]
+9  nodes=[62,63,75,74,64,61,73,76]
+10 nodes=[74,75,79,78,76,73,77,80]
+11 nodes=[78,79,91,90,80,77,89,92]
+12 nodes=[90,91,95,94,92,89,93,96]
+13 nodes=[94,95,107,106,96,93,105,108]
+14 nodes=[106,107,111,110,108,105,109,112]
+15 nodes=[110,111,123,122,112,109,121,124]
+16 nodes=[122,123,127,126,124,121,125,128]
+17 nodes=[126,127,139,138,128,125,137,140]
+18 nodes=[138,139,143,142,140,137,141,144]
+19 nodes=[142,143,155,154,144,141,153,156]
+20 nodes=[154,155,159,158,156,153,157,160]
+21 nodes=[158,159,171,170,160,157,169,172]
+22 nodes=[170,171,175,174,172,169,173,176]
+23 nodes=[174,175,187,186,176,173,185,188]
+24 nodes=[186,187,191,190,188,185,189,192]
+25 nodes=[190,191,203,202,192,189,201,204]
+26 nodes=[202,203,207,206,204,201,205,208]
+27 nodes=[206,207,219,218,208,205,217,220]
+28 nodes=[218,219,223,222,220,217,221,224]
+29 nodes=[222,223,231,230,224,221,233,232]
+30 nodes=[230,231,238,237,232,233,240,239]
+31 nodes=[237,238,235,234,239,240,229,236]
+32 nodes=[234,235,227,226,236,229,225,228]
+33 nodes=[226,227,215,214,228,225,213,216]
+34 nodes=[214,215,211,210,216,213,209,212]
+35 nodes=[210,211,199,198,212,209,197,200]
+36 nodes=[198,199,195,194,200,197,193,196]
+37 nodes=[194,195,183,182,196,193,181,184]
+38 nodes=[182,183,179,178,184,181,177,180]
+39 nodes=[178,179,167,166,180,177,165,168]
+40 nodes=[166,167,163,162,168,165,161,164]
+41 nodes=[162,163,151,150,164,161,149,152]
+42 nodes=[150,151,147,146,152,149,145,148]
+43 nodes=[146,147,135,134,148,145,133,136]
+44 nodes=[134,135,131,130,136,133,129,132]
+45 nodes=[130,131,119,118,132,129,117,120]
+46 nodes=[118,119,115,114,120,117,113,116]
+47 nodes=[114,115,103,102,116,113,101,104]
+48 nodes=[102,103,99,98,104,101,97,100]
+49 nodes=[98,99,87,86,100,97,85,88]
+50 nodes=[86,87,83,82,88,85,81,84]
+51 nodes=[82,83,71,70,84,81,69,72]
+52 nodes=[70,71,67,66,72,69,65,68]
+53 nodes=[66,67,55,54,68,65,53,56]
+54 nodes=[54,55,51,50,56,53,49,52]
+55 nodes=[50,51,39,38,52,49,37,40]
+56 nodes=[38,39,35,34,40,37,33,36]
+57 nodes=[34,35,23,22,36,33,21,24]
+58 nodes=[22,23,19,18,24,21,17,20]
+59 nodes=[18,19,7,6,20,17,5,8]
+60 nodes=[6,7,3,2,8,5,1,4]
+
+material properties
+steel E=2.96e+07 nu=0.3
+
+constraints
+fixed Tx=c Ty=c Tz=c Rx=u Ry=u Rz=u
+free Tx=u Ty=u Tz=u Rx=u Ry=u Rz=u
+
+forces
+if000120 Fx=188.55
+if000122 Fx=187.125 Fy=19.65
+if000124 Fx=184.05 Fy=39.075
+if000126 Fx=178.95 Fy=58.125
+if000128 Fx=171.9 Fy=76.5
+if000130 Fx=162.9 Fy=94.05
+if000132 Fx=152.175 Fy=110.625
+if000134 Fx=139.8 Fy=125.925
+if000136 Fx=125.925 Fy=139.8
+if000138 Fx=110.625 Fy=152.175
+if000140 Fx=94.05 Fy=162.9
+if000142 Fx=76.5 Fy=171.9
+if000144 Fx=58.2 Fy=178.95
+if000146 Fx=39.15 Fy=183.975
+if000148 Fx=19.65 Fy=187.125
+if000150 Fy=188.175
+if000152 Fx=-19.65 Fy=187.05
+if000154 Fx=-39.075 Fy=184.05
+if000156 Fx=-58.125 Fy=178.95
+if000158 Fx=-76.5 Fy=171.825
+if000160 Fx=-94.05 Fy=162.975
+if000162 Fx=-110.55 Fy=152.25
+if000164 Fx=-125.85 Fy=139.8
+if000166 Fx=-139.8 Fy=125.925
+if000168 Fx=-152.175 Fy=110.625
+if000170 Fx=-162.9 Fy=94.125
+if000172 Fx=-171.825 Fy=76.575
+if000174 Fx=-178.95 Fy=58.125
+if000176 Fx=-184.05 Fy=39.15
+if000178 Fx=-187.05 Fy=19.725
+if000180 Fx=-188.1 Fy=0.0749998
+if000182 Fx=-187.125 Fy=-19.65
+if000184 Fx=-184.05 Fy=-39.075
+if000186 Fx=-178.95 Fy=-58.05
+if000188 Fx=-171.9 Fy=-76.5
+if000190 Fx=-162.975 Fy=-94.05
+if000192 Fx=-152.25 Fy=-110.55
+if000194 Fx=-139.8 Fy=-125.85
+if000196 Fx=-125.925 Fy=-139.8
+if000198 Fx=-110.625 Fy=-152.175
+if000200 Fx=-94.125 Fy=-162.9
+if000202 Fx=-76.575 Fy=-171.825
+if000204 Fx=-58.2 Fy=-178.875
+if000206 Fx=-39.225 Fy=-184.05
+if000208 Fx=-19.725 Fy=-187.125
+if000210 Fx=-0.0749998 Fy=-188.1
+if000212 Fx=19.575 Fy=-187.125
+if000214 Fx=39.075 Fy=-184.05
+if000216 Fx=58.125 Fy=-178.95
+if000218 Fx=76.425 Fy=-171.9
+if000220 Fx=93.975 Fy=-162.975
+if000222 Fx=110.55 Fy=-152.25
+if000224 Fx=125.85 Fy=-139.8
+if000226 Fx=139.8 Fy=-125.925
+if000228 Fx=152.175 Fy=-110.7
+if000230 Fx=162.825 Fy=-94.125
+if000232 Fx=171.825 Fy=-76.575
+if000234 Fx=178.95 Fy=-58.275
+if000236 Fx=183.975 Fy=-39.225
+if000238 Fx=187.5 Fy=-19.725
+
+canvas configuration
+
+node-numbers=true element-numbers=true snap=false grid=false
+snap-size=-0.24 grid-size=-0.24
+
+node-color=Blue element-color=Black label-font="5x8"
+tool-color=Red tool-font="fg-22"
+
+x-min=1.32 x-max=-1.32 y-min=1.32 y-max=-1.32
+x-pos=0 y-pos=0 width=502 height=502 scale=50.2
+
+end

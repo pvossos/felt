@@ -1,0 +1,337 @@
+This is the README file for the alpha release of Felt  - a package for
+introductory finite element analysis.
+
+FElt (Finite ELemenT) is a mathematical package intended for introductory 
+finite element work.  It is not intended as a replacement for cutting
+edge or real-world research code.  At this stage FElt consists of
+of three components.  The first is the basic mathematical engine (the actual
+felt command-line application) which includes an intelligent parser and 
+straightforward inputfile syntax.  Because FElt is intended to be fairly simple 
+(at this stage of development at least) and because the authors' backgrounds 
+are largely in structural engineering, the element library is fairly small at
+this point.  Truss (bar), two- and three-dimensional beam, CST (plane stress 
+and plane strain) and iso-parametric (four to nine node) two-dimensional 
+elements are all currently supported.  Adding additional elements to the 
+library is intended to be a straightforward exercise, if for example, such
+a project were to be given as an exercise in an introductory finite element
+course.  As of this release, only linear static analysis is supported 
+(sorry ... linear dynamic analysis is in the works but we wanted to get a
+version out the door and stabile before the fall term started).  
+
+In addition to the command line application version, there is xfelt,  
+an X11 based encapsulator for felt which provides a graphical text-editor 
+and two- and three-dimensional viewing of the structure.  You can edit 
+the actual text file, solve the problem (xfelt actually execs the felt
+application), graphically view the structure and save and print results
+from within the xfelt gui.
+
+Velvet is a full-featured X11 interface to the two-dimensional functionality 
+of felt and corduroy.   Unlike xfelt, velvet is fully self-contained - it is 
+intended as the primary graphical user interface and along with the 
+mathematical engine is where most future development will occur.  Within 
+velvet a user can interactively set-up, model, and solve a FElt problem 
+through a menu driven, CAD-like interface with no reliance on traditional 
+text based input files (as in felt, corduroy and even xfelt).  Velvet does 
+not currently provide any real access to the three-dimensional aspects of 
+FElt. 
+
+Features:
+
+	o Easy to use.  Intelligent parsers mean that there are no files
+          of comma delimited lists of numbers like you see in a lot of 
+          other FE codes used in introductory courses.  Velvet provides
+	  a full-featured, interactive problem editor.
+
+	o Portable. Felt and corduroy should compile on any reasonable
+	  Un*x system.  There is also a DOS version of the felt program
+          only (including a simple utility for structural visualization,
+	  drop one of us a note if you're interested).  Velvet is built 
+	  around the public domain Athena widget set using 
+          X11R5 ... R4 should work as well.  Either regular or 3d Athena 
+	  widgets work (we prefer the 3d).  The package was 
+	  developed on 386's running Linux; it has also been tested on 386's 
+	  running SysV R3.2, HP 700's, and Suns.  We can provide binaries 
+	  for any of the above systems if there is an interest.
+
+Caveats:
+	
+	o Remember, this is meant largely as a teaching tool.  In most
+	  cases in the code we have sacrificed efficiency in favor of
+ 	  readability.  It is not our intention to be solving anyone's
+ 	  cutting edge research problems ... the project was born out of
+	  a fit of "we can do better than that" based on some antiquated
+	  Fortran code we had been using.  
+
+	o On that same note (and this is only a caveat to devoted
+	  believers in the Fortran way of life) the entire package
+	  is coded in C (with the exception of the Barry Joe's Geompk
+	  routines ... they are in Fortran and we have not modified
+  	  them except where the interface is concerned).  This really
+	  shouldn't be a problem; we think the code is very readable and C's
+	  data structures lend themselves quite readily to keeping
+	  track of nodes and elements and forces and constraints and such.
+	  Also, we can do dynamic memory allocation without a lot of 
+	  hocus pocus and have long variable names, so the code is 
+	  usually pretty easy to follow
+	  
+The file felt.ps included in this distribution is a postscript document
+providing a user's manual for the entire package, including mathematical
+and algorithmic details and programming notes.  Man pages are available
+which briefly describe each individual application.
+
+For installation instructions see the file INSTALL.  The best way to get
+a feel for the package is to use it.  Several examples are provided 
+in the etc/Tests/ directory. 
+
+The FElt package is free software. This means that you can redistribute it 
+and/or modify it under the terms of the GNU General Public License, a copy of 
+which is provided in the file COPYING.  (Excluding the Geompk routines which 
+are covered under their own terms, see the README file in lib/Generate/Geompk
+for details.)  Given the way in which it was developed, we wouldn't 
+want it any other way ... Linux is a Unix-like OS, based on a free kernel, 
+free development tools (gcc) and hundreds of free utilities (GNU, etc.).
+(And not only is it free, but it runs circles around most commercial Un*ces
+available for the 386).  The entire graphical environment (X11 and the 
+Athena widget set) is also free.  What a concept ... 
+
+Lastly, we would like to stress that feedback would be greatly appreciated ... 
+this is an alpha release and we welcome all comments as to usability and 
+functionality.  Mail bug reports, comments, hints, suggestion, complaints,
+etc. to one of us at the email addresses below.  Our one wish in life is 
+that people find the package useful (well, maybe not, but you get 
+the point ...)
+
+Jason Gobat					Darren Atkinson
+jgobat@ucsd.edu					atkinson@ucsd.edu
+
+-------------------------------------------------------------------------------
+
+This is the README file for version 1.3 of FElt  - a package for
+introductory level finite element analysis.
+
+See the file README.alpha for a basic description of the package.  See
+the file CHANGELOG for a detailed description of what the changes are
+from the public release of 1.0a and this release of 1.3.  This file will
+simply bring you up to speed on a few things.
+
+The most visible changes are to the velvet GUI.  Things should be a lot
+easier to use now.  Most of the dialogs have keyboard interfaces (tab,
+space, return keys etc.) which is nice and you can keep them up while
+you work, which is very nice.  There is also a real file selection
+mechanism.  For a nice gee whiz, from FElt/bin/Velvet execute "velvet
++numbers ../../etc/Tests/wrench.flt", solve it and then select plot
+stresses from the problem menu ... wait a while and see the new color
+stress output (assuming you have an 8-bit screen of course).  The other
+post-processing addition is basic displaced structure plotting but this
+still needs some work.  Other important, but not so visible, changes
+mostly relate to distributed loads on beams and beam3ds and several bug
+fixes to beam3d elements (they might even produce the right answers
+now!) and constraints (displacement boundary conditions and hinges).
+Some of the changes to distributed loads are not backward compatible.
+If you have an input file from 1.0a that used direction=x y or z, you'll
+have to change it to work with the new version.  Sorry.  The only new
+element is a beam element that uses Timoshenko beam theory, but it is
+pretty much just for instructional purposes at this stage, see Chapter 9
+of the User's Guide and Reference manual on how to add elements to see
+what we mean.
+
+The file felt.ps ("FElt User's Guide and Reference Manual") in this
+distribution bears little resemblance to the document in the alpha
+release.  The manual has tripled in size and includes much better
+discussions of elements, algorithms, adding elements and using velvet ... 
+lots of cool new figures even.  Most importantly, we did this one in 
+LaTeX and produced postscript with dvips so everyone should be able to 
+print it :-).  Updated man pages are also available which briefly describe 
+each individual application.
+
+For installation instructions see the file INSTALL.  The best way to get
+a feel for the package is to use it.  Several examples are provided 
+in the etc/Tests/ directory. 
+
+Finally, as you are probably aware, FElt has found a permanent home via
+anonymous ftp at cs.ucsd.edu in /pub/felt.  Given this, we are going to
+go to a system of smaller releases (e.g., 1.31, 1.32).  In all
+probability we will not announce each such revision very broadly.  If
+you want to be made aware of such updates, please let us know and we
+will put your name on a mailing list whereby we will notify you every
+time a new release becomes available.  The latest version (including bug
+fix "patchlevel" changes) will always be available on cs.ucsd.edu.  We
+will only be uploading major new versions (this one, the one that
+finally has dynamic analysis in it, etc.) to sunsite.unc.edu.
+
+As usual, we would like to stress that feedback is always appreciated ... 
+we welcome all comments as to usability and functionality.  If you're using
+the package please drop us a note and let us know what you think, even if
+you've got no complaints whatsoever.  Mail bug reports, comments, hints,
+suggestion, complaints, etc. to one of us at the email addresses below.  
+
+Jason Gobat					Darren Atkinson
+jgobat@ucsd.edu					atkinson@ucsd.edu
+
+-------------------------------------------------------------------------------
+
+This is the README file for version 2.0 of FElt  - a package for
+introductory level finite element analysis.
+
+See the file README.alpha for a basic description of the package.  See the
+file CHANGELOG for a detailed description of what the changes are from the
+public release of 1.3 to this release.  This file will simply bring you up to
+speed on a few things.
+
+Major changes include the incorporation of transient analysis.  In general
+this means you can solve a structural dynamics problem using the Hilbert-
+Hughes-Taylor alpha method of numerical integration (a variant of
+Newmark integration).  You can specify dynamic nodal forces with a continuous
+function in time and they will be dynamically evaluated throughout the
+course of the simulation.  Velvet includes an animation capability to model
+the dynamic behavior of the complete structure given this new analysis
+capability.  Old fashioned tabular and ascii based time-displacement plots
+are also available in both felt and velvet.  Gibbs-Poole-Stockmeyer/Gibbs-King
+automatic node renumbering is also now available for badnwidth/profile
+reduction.  The matrix assembling routines now assemble directly into
+a compact column representation.  This is in itself can save major amounts
+of memory.  Coupled with renumbering, savings in both speed and memory can
+be dramatic.
+
+To keep people better informed a mailing list has been setup.  We'll try to 
+make bug reports and fixes, announcements, etc. available through this 
+channel.  Hopefully, it will also turn into a forum for FElt discussions in 
+general - including usage questions, how do I do xyz questions and discussions 
+of what capabilities people would like to see in the package.  If you
+are using FElt we urge you to subscribe if for no other reason than to keep
+track of bug fixes.
+
+To subscribe send a message to listserv@mecheng.fullfeed.com with the line
+
+subscribe felt-l
+
+as the only line in the _body_ of the message (the server ignores subject 
+headings). To send a question or comment to the list just set it up as a 
+regular email and send it to felt-l@mecheng.fullfeed.com.  Thanks to 
+Greg Jackson at the ASME BBS for setting this up for us.
+
+felt.ps ("FElt User's Guide and Reference Manual") has been updated to
+reflect the new changes - as always look there for the real details. Updated
+man pages are also available which briefly describe each individual
+application.
+
+For installation instructions see the file INSTALL.  The best way to get a
+feel for the package is to use it.  Several examples are provided in the
+etc/Tests/ directory.  A simple dynamic example can be found in
+etc/Tests/dynframe.flt.
+
+As usual, we would like to stress that feedback is always appreciated ... we
+welcome all comments as to usability and functionality.  If you're using the
+package please drop us a note and let us know what you think, even if you've
+got no complaints whatsoever.  Mail bug reports, comments, hints, suggestion,
+complaints, etc. to one of us at the email addresses below or even better.
+
+Jason Gobat					Darren Atkinson
+jgobat@mit.edu					atkinson@ucsd.edu
+
+-------------------------------------------------------------------------------
+
+This is the README file for version 2.30 of FElt  - a package for
+introductory level finite element analysis.
+
+See the file README.old for a basic descriptions of previous versions of FElt
+and what it's all about.  See the file CHANGELOG for a detailed list of
+what's new/fixed in this release.  The list of frequently asked questions
+(and their answers) is in FAQ.
+
+Major changes include the incorporation of modal analysis and the addition
+of a brick element (8 node solid).  In general modal analysis means that
+FElt can figure out the natural frequencies and mode shapes for an arbitrary
+structure.  Velvet can actually give you a graphical rendering of mode shapes. 
+Support for the brick is still pretty weak, but at least we've officially
+crossed the line into solid elements now.
+
+For those of you who don't know there is a mailing list for FElt.  We try to 
+make bug reports and fixes, announcements, etc. available through this 
+channel.  We'd also like for it to turn into a forum for FElt discussions in 
+general - including usage questions, how do I do xyz questions and discussions 
+of what capabilities people would like to see in the package.  If you
+are using FElt we urge you to subscribe if for no other reason than to keep
+track of bug fixes.
+
+To subscribe send a message to listserv@mecheng.asme.org with the line
+
+subscribe felt-l
+
+as the only line in the _body_ of the message (the server ignores subject 
+headings). To send a question or comment to the list just set it up as a 
+regular email and send it to felt-l@mecheng.asme.org.  Thanks to 
+Greg Jackson at the ASME BBS for setting this up for us.
+
+felt-2.30.ps.gz ("FElt User's Guide and Reference Manual") is the updated
+documentation for FElt.  It's up to 151 pages or so. As always look 
+there for the real details. Updated man pages are also available which briefly 
+describe each individual application.
+
+For installation instructions see the file INSTALL.  The best way to get a
+feel for the package is to use it.  Several examples are provided in the
+etc/Tests/ directory.  A simple modal example can be found in 
+etc/Tests/modal.flt and simple example using a brick element is in 
+etc/Tests/brick.flt.
+
+As usual, we would like to stress that feedback is always appreciated ... we
+welcome all comments as to usability and functionality.  If you're using the
+package please drop us a note and let us know what you think, even if you've
+got no complaints whatsoever.  Mail bug reports, comments, hints, suggestion,
+complaints, etc. to one of us at the email addresses below or even better.
+
+Jason Gobat					Darren Atkinson
+jgobat@mit.edu					atkinson@ucsd.edu
+
+-----------------------------------------------------------------------------
+
+This is the README file for version 3.00 of FElt  - a package for
+introductory level finite element analysis.
+
+See the file README.old for a basic descriptions of previous versions of FElt
+and what it's all about.  See the file CHANGELOG for a detailed list of
+what's new/fixed in this release - there are a fairly large number of 
+substantial changes with this release.  The list of frequently asked 
+questions (and their answers) is in FAQ.
+
+The big jump from 2.30 to 3.00 is based on the incorporation of burlap in
+this release.  burlap is an entirely new appliation designed to combine
+the ease of use of FElt with the power and flexibility of command-line
+driven, scripting environments like Matlab.  burlap allows the easy
+incorporation and testing of new element types, new analysis types, and
+new ways to use the existing analysis types.  There are two brand new chapters
+in the manual that describe it and we'd really like people to give it a try
+and let us know what they think.  
+
+Based largely on the two new burlap chapters, the manual has grown to 220
+something pages; part of the growth is also due to a new chapter near the
+front that tries to give some of the mathematical basis for each of the
+analysis types.  We've also done some extensive proofreading for the first
+time in several releases.  The xfelt chapter is gone because xfelt is gone
+from the source and binary distributions.  You can still get it from old
+ones if you really want it (and don't for some reason already have it).
+
+Three new analysis types have been added: static and transient thermal
+analysis and spectral analysis (transfer functions, spectral response).
+Modal analysis has some new capabilities (like the ability to do actual
+modal analysis as opposed to just calculating eigenvalues and vectors).
+The only new element is a one-dimensional spring.  
+
+The configure process and Makefile scheme is all new.  We're still sort
+of fine tuning it so if you have any problems or complaints we'd really
+like to hear about them.
+
+For installation instructions see the file INSTALL.  The best way to get a
+feel for the package is to use it.  Several examples are provided in the
+etc/Tests/ directory.  A simple modal example can be found in 
+etc/Tests/modal.flt and simple example using a brick element is in 
+etc/Tests/brick.flt.
+
+As usual, we would like to stress that feedback is always appreciated ... we
+welcome all comments as to usability and functionality.  If you're using the
+package please drop us a note and let us know what you think, even if you've
+got no complaints whatsoever.  Mail bug reports, comments, hints, suggestion,
+complaints, etc. to one of us at the email addresses below.
+
+Jason Gobat					Darren Atkinson
+jgobat@mit.edu					atkinson@ucsd.edu

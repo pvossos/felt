@@ -42,6 +42,9 @@ extern void 	ResolveHingeConditions PROTO ((Element));
 extern void	SetupStressMemory PROTO ((Element));
 extern void	AllocationError PROTO ((Element, char *));
 extern void	SetEquivalentForceMemory PROTO ((Element));
+extern void     AllocateNodalStress PROTO ((Node));
 extern Matrix   ZeroRowCol PROTO ((Matrix, unsigned));
+extern void	PrincipalStresses3D PROTO ((double *));
+extern void	PrincipalStresses2D PROTO ((double *));
 
 # endif /* _MISC_H */

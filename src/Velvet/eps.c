@@ -18,17 +18,15 @@
 # include <stdio.h>
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
-# include "colormap.h"
+# include <X11/Intrinsic.h>
 # include "proto.h"
 # include "error.h"
 # include "version.h"
 
 #define MARGIN 0.95
-#define MAXCOLORS 130
 
 typedef unsigned char xelval;
-
-static int GetPixel PROTO(( int x, int y ));
+extern XImage *WidgetToXImage PROTO((Widget, XColor **, int *));
 static int colorstobpp PROTO((int colors));
 static void putinit PROTO(( char* name, int cols, int rows, int padright, int bps, float scale, int dpi, int pagewid, int pagehgt, int turnflag, int turnokflag, int rleflag ));
 static void putitem PROTO(( void ));
@@ -41,41 +39,30 @@ static void rleflush PROTO(( void ));
 static void rleputrest PROTO(( void ));
 
 static FILE 	*output;
-static XImage   *img;
-static int      black;
-static int      white;
 
-void XImageToEPS (filename, ximage, ncells, bl, wh)
+void WidgetToEPS (filename, w)
     char	*filename;
-    XImage	*ximage;
-    unsigned	ncells;
-    int		bl;
-    int		wh;
+    Widget	 w;
 {
-    int turnflag, turnokflag, rleflag;
-    int rows, cols, bps, padright, row, col;
-    float scale;
-    int dpi, pagewid, pagehgt;
-    unsigned i;
-    int Red[MAXCOLORS], Green[MAXCOLORS], Blue[MAXCOLORS];
+    XImage   *img;
+    int       turnflag, turnokflag, rleflag;
+    int       rows, cols, bps, padright, row, col;
+    float     scale;
+    int       dpi, pagewid, pagehgt;
+    unsigned  i;
+    int       ncells;
+    XColor   *colors;
+    int	      idx;
 
-    for (i = 0 ; i < ncells ; i++) {
-       Red[i] = color_values[i].r / 256;
-       Green[i] = color_values[i].g / 256;
-       Blue[i] = color_values[i].b / 256;
+    output = fopen (filename, "w");
+    if (output == NULL) {
+       error ("could not open %s for writing.", filename);
+       return;
     }
 
-    Red[128] = 0;
-    Green[128] = 0;
-    Blue[128] = 0;
-
-    Red[129] = 255;
-    Green[129] = 255;
-    Blue[129] = 255;
-
-    img = ximage;
-    black = bl;
-    white = wh;
+    img = WidgetToXImage(w, &colors, &ncells);
+    for (i = 0 ; i < ncells ; i++)
+       fprintf (stderr,"%d -> %u : %d %d %d\n", i, colors [i].pixel, colors [i].red, colors [i].green, colors [i].blue);
 
     scale = 1.0;
     turnflag = 0;
@@ -86,14 +73,8 @@ void XImageToEPS (filename, ximage, ncells, bl, wh)
     pagewid = 612;
     pagehgt = 762;
 
-    cols = ximage -> width;
-    rows = ximage -> height;
-
-    output = fopen (filename, "w");
-    if (output == NULL) {
-       error ("could not open %s for writing.", filename);
-       return;
-    }
+    cols = img -> width;
+    rows = img -> height;
 
     /* Figure out bps. */
     bps = colorstobpp (ncells);
@@ -112,10 +93,12 @@ void XImageToEPS (filename, ximage, ncells, bl, wh)
 	{
 	    /* First red. */
 	for ( col = 0; col < cols; ++col ) 
+            idx = XImageCellXY(img, col, row, colors, ncells);
+                     
 	    if ( rleflag )
-	        rleputxelval( Red [GetPixel(col,row)] );
+	        rleputxelval( colors [idx].red/256 );
 	    else
-	        putxelval( Red [GetPixel(col,row)] );
+	        putxelval( colors [idx].red/256 );
 	for ( col = 0; col < padright; ++col ) 
 	    if ( rleflag )
 	        rleputxelval( 0 );
@@ -125,10 +108,12 @@ void XImageToEPS (filename, ximage, ncells, bl, wh)
 	    rleflush();
 	    /* Then green. */
 	for ( col = 0; col < cols; ++col ) 
+            idx = XImageCellXY(img, col, row, colors, ncells);
+
 	    if ( rleflag )
-		rleputxelval( Green [GetPixel(col,row)] );
+		rleputxelval( colors [idx].green/256 );
             else
-		putxelval( Green [GetPixel(col,row)] );
+		putxelval( colors [idx].green/256 );
 	for ( col = 0; col < padright; ++col )
 	    if ( rleflag )
 	       rleputxelval( 0 );
@@ -138,10 +123,12 @@ void XImageToEPS (filename, ximage, ncells, bl, wh)
 	    rleflush();
 	    /* And blue. */
 	for ( col = 0; col < cols; ++col )
+            idx = XImageCellXY(img, col, row, colors, ncells);
+
 	    if ( rleflag )
-		rleputxelval( Blue [GetPixel(col,row)] );
+		rleputxelval( colors [idx].blue/256 );
 	    else
-	        putxelval( Blue [GetPixel(col,row)] );
+	        putxelval( colors [idx].blue/256 );
 	for ( col = 0; col < padright; ++col )
 	    if ( rleflag )
 	       rleputxelval( 0 );
@@ -158,6 +145,8 @@ void XImageToEPS (filename, ximage, ncells, bl, wh)
 	putrest();
 
     fclose (output);
+
+    free(colors);
 
     return;
 }
@@ -187,24 +176,6 @@ static int colorstobpp( colors )
         bpp = 8;
 
    return bpp;
-}
-
-static int GetPixel( x, y )
-   int x, y;
-{
-   long         point;
-   int          color;
-
-   point = XGetPixel (img, x, y);
-
-   if (point == white)
-      color = 129;
-   else if (point == black)
-      color = 128;
-   else
-      color = PixelToCell(point);
-
-   return color;
 }
 
 static int bitspersample, item, bitsperitem, bitshift, itemsperline, items;

@@ -608,7 +608,7 @@ int SolveProblem ( )
        if (old_numbers != NULL)
           RestoreNodeNumbers (node, old_numbers, numnodes);
 
-       WriteTemperatureResults (stdout, problem.title);
+       WriteTemperatureResults (output, problem.title);
 
        break;
     }
@@ -896,6 +896,7 @@ void SetupAnimate ( )
 void SetupStresses (build_elt)
     Boolean	build_elt;
 {
+    Element    *e;
     unsigned	numelts;
     unsigned	nd,i,j;
     int		depth;
@@ -922,27 +923,23 @@ void SetupStresses (build_elt)
     if (numelts == 0) 
        return;
 
+    e = problem.elements;
+
     nd = 0;
     flag = 1;
     for (i = 1; i <= numelts ; i++) {
-         if (problem.elements[i] -> definition -> shape != Planar) {
-            error ("cannot plot stresses for non-planar elements");
+         if (e [i] -> node [1] -> stress == NULL) {
+            error ("could not get nodally averaged stresses for all elements");
             return;
          }
-         if (problem.elements[i] -> stress == NULL) {
-            error ("could not get stresses for all elements");
-            return;
-         }
-         if (solution -> s_component > 
-             problem.elements[i] -> definition -> numstresses) {
-
+         if (solution -> s_component > e [i] -> definition -> numstresses) { 
             error ("invalid stress component for element %d",i);
             return;
          }
 
          if (flag) {
-            for (j = 1 ; j <= problem.elements [i] -> ninteg ; j++) {
-               if (problem.elements [i] -> stress [j] -> 
+            for (j = 1 ; j <= e [i] -> ninteg ; j++) {
+               if (e [i] -> stress [j] -> 
                    values [solution -> s_component] != 0)
             
                   flag = 0;
@@ -958,7 +955,8 @@ void SetupStresses (build_elt)
     }
 
     SetWaitCursor (drawing);
-    PlotStressField (problem.elements, numelts, nd);
+    CreateOpenGLShell("stressShell", "Stress Plot", True,
+                      solution -> s_component, e, numelts, True);
     SetNormalCursor (drawing);
 
     return;
@@ -967,7 +965,7 @@ void SetupStresses (build_elt)
 void SetupDisplacements (build_arrays)
     Boolean	build_arrays;
 {
-    unsigned	numnodes;
+    unsigned    numnodes;
     unsigned	numelts;
     unsigned	i;
     unsigned	flag;
@@ -984,24 +982,18 @@ void SetupDisplacements (build_arrays)
     if (build_arrays) {
         numelts = CompactElementNumbers ( );
         numnodes = CompactNodeNumbers ( );
-    } 
+    }
     else {
         numelts = problem.num_elements;
         numnodes = problem.num_nodes;
-    }  
-
-    if (numelts == 0 || numnodes == 0) 
-       return;
-
-    for (i = 1; i <= numelts ; i++) {
-       if (problem.elements[i] -> definition -> shape != Planar) {
-           error ("cannot plot stresses for non-planar elements");
-           return;
-       }
     }
+
+    if (numelts == 0 || numnodes == 0)
+       return;
 
     flag = 1;
     for (i = 1 ; i <= numnodes ; i++) {
+
        if (problem.nodes [i] -> dx [solution -> d_component] != 0) {
           flag = 0;
           break;
@@ -1014,7 +1006,8 @@ void SetupDisplacements (build_arrays)
     }
 
     SetWaitCursor (drawing);
-    PlotDisplacementField (problem.nodes, numnodes, problem.elements, numelts);
+    CreateOpenGLShell("displShell", "Displacement Plot", False,
+                      solution -> d_component, problem.elements, numelts, True);
     SetNormalCursor (drawing);
 
     return;
@@ -1061,7 +1054,6 @@ void SetupStructure (build_elt)
 {
     unsigned	i,j;
     double	z_plane;
-    Boolean	draw3d;
     unsigned	numelts;
 
     if (build_elt) 
@@ -1072,25 +1064,8 @@ void SetupStructure (build_elt)
     if (numelts == 0)
        return;
 
-    draw3d = False;
-    z_plane = problem.elements[1] -> node[1] -> z;
-
-    for (i = 1; i <= numelts ; i++) {
-       for (j = 1 ; j <= problem.elements[i] -> definition -> shapenodes ; j++) {
-       
-          if (problem.elements[i] -> node[j] -> z != z_plane) {
-             draw3d = True;
-             break;
-          }
-       }
-       if (draw3d)
-          break;
-    }
- 
-    if (draw3d)
-       VisualizeStructure3D (problem.elements, numelts);
-    else
-       VisualizeStructure (problem.elements, numelts);
+    CreateOpenGLShell("structShell", "Structure Plot", False, 0,
+                      problem.elements, numelts, False);
 }
 
 void OptimizeNumbering ( )

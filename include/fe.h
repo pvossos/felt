@@ -229,6 +229,8 @@ typedef struct node {
     double     x;			/* x coordinate                   */
     double     y;			/* y coordinate                   */
     double     z;			/* z coordinate                   */
+    double    *stress;                  /* nodally averaged stress vector */
+    int        numelts;			/* num of elts that use this node */
 } *Node;
 
 

@@ -1136,16 +1136,31 @@ int ElementSetup (element, mass_mode)
 int ElementStresses ( )
 {
     Element	*e;
+    Node	*n;
     unsigned	 ne;
-    int		 i, status;
+    unsigned	 nn;
+    int		 i, j, status;
  
     e = problem.elements;
     ne = problem.num_elements;
+    n = problem.nodes;
+    nn = problem.num_nodes;
  
     status = 0;
 
     for (i = 1 ; i <= ne ; i++)
 	status += e [i] -> definition -> stress (e [i]);
+
+	/*
+	 * compute the nodally averaged stresses
+	 */
+
+    for (i = 1 ; i <= nn ; i++) {
+       if (n [i] -> stress && n [i] -> numelts) {
+          for (j = 1 ; j <= 10 ; j++)
+             n [i] -> stress [j] /= n [i] -> numelts;
+       }
+    }
 
     return status;
 }

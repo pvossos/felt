@@ -18,8 +18,8 @@
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
 DIRS	= $(CONTRIBDIR)
 LIB	= libelt.a
-OBJS	= axisymm.o beam.o beam3d.o brick.o cst.o ctg.o htk.o \
-          iso_2d.o iso_quad.o misc.o rod.o spring.o timoshenko.o truss.o
+OBJS	= axisymm.o beam.o beam3d.o brick.o cst.o ctg.o htk.o iso_2d.o \
+	  iso_quad.o misc.o rod.o spring.o stress.o timoshenko.o truss.o
 
 CURDIR	= ./lib/Elements
 TOPDIR	= ../..

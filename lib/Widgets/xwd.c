@@ -198,6 +198,116 @@ int DumpWidget(widget, out)
     return 0;
 }
 
+XImage *WidgetToXImage(widget, colors, ncolors)
+     Widget	 widget;
+     XColor    **colors;
+     int	*ncolors;
+{
+    unsigned long swaptest = 1;
+    unsigned buffer_size;
+    int i;
+    XWindowAttributes win_info;
+    XImage *image;
+    int absx, absy, x, y;
+    unsigned width, height;
+    int dwidth, dheight;
+    int bw;
+    Window dummywin;
+    Window window;
+
+    window = XtWindow (widget);
+    dpy    = XtDisplay (widget);
+    screen = DefaultScreen (dpy);
+    
+    /*
+     * Get the parameters of the window being dumped.
+     */
+
+    if(!XGetWindowAttributes(dpy, window, &win_info))  {
+       error("could not get window attributes");
+       return NULL;
+    }
+
+    /* handle any frame window */
+    if (!XTranslateCoordinates (dpy, window, RootWindow (dpy, screen), 0, 0,
+				&absx, &absy, &dummywin)) {
+        error ("unable to perform translation");
+	return NULL;
+    }
+    win_info.x = absx;
+    win_info.y = absy;
+    width = win_info.width;
+    height = win_info.height;
+    bw = 0;
+
+    absx -= win_info.border_width;
+    absy -= win_info.border_width;
+    bw = win_info.border_width;
+    width += (2 * bw);
+    height += (2 * bw);
+
+    dwidth = DisplayWidth (dpy, screen);
+    dheight = DisplayHeight (dpy, screen);
+
+
+    /* clip to window */
+    if (absx < 0) width += absx, absx = 0;
+    if (absy < 0) height += absy, absy = 0;
+    if (absx + width > dwidth) width = dwidth - absx;
+    if (absy + height > dheight) height = dheight - absy;
+
+
+    /*
+     * Snarf the pixmap with XGetImage.
+     */
+
+    x = absx - win_info.x;
+    y = absy - win_info.y;
+    image = XGetImage (dpy, window, x, y, width, height, AllPlanes, ZPixmap);
+    if (!image) {
+        error ("unable to capture image");
+        return NULL;
+    }
+
+    /*
+     * Determine the pixmap size.
+     */
+    buffer_size = Image_Size(image);
+
+
+    if (ncolors)
+       *ncolors = Get_XColors(&win_info, colors);
+
+    if (*(char *) &swaptest) {
+	for (i = 0; i < *ncolors; i++) {
+	    _swaplong((char *) &((*colors)[i].pixel), sizeof(long));
+	    _swapshort((char *) &((*colors)[i].red), 3 * sizeof(short));
+	}
+    }
+
+    return image;
+}
+
+int XImageCellXY(img, x, y, colors, ncolors)
+   XImage	*img;
+   int		 x, y;
+   XColor	*colors;
+   int		 ncolors; 
+{
+   int		 i;
+   unsigned long point;
+   int		 idx;
+
+   point = XGetPixel(img, x, y);
+   _swaplong((char *) &point, sizeof(long));
+   fprintf (stderr,"%u\n", point);
+   for (i = 0 ; i < ncolors ; i++)
+      if (point == colors [i].pixel)
+         return i; 
+
+   return 0;
+}
+
 /*
  * Determine the pixmap size.
  */

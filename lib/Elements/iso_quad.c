@@ -54,13 +54,13 @@ int quad_PlaneStressEltSetup ( ), quad_PlaneStressEltStress ( );
 struct definition quad_PlaneStrainDefinition = {
    "quad_PlaneStrain", 
    quad_PlaneStrainEltSetup, quad_PlaneStrainEltStress, 
-   Planar, 4, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
+   Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
 struct definition quad_PlaneStressDefinition = {
    "quad_PlaneStress", 
    quad_PlaneStressEltSetup, quad_PlaneStressEltStress, 
-   Planar, 4, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
+   Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
 int quad_PlaneStrainEltSetup (element, mass_mode, tangent)
@@ -249,10 +249,7 @@ int QuadElementStress (element, type)
    int			ninteg;
    Matrix		D,
 			B;
-   double		diameter;
-   double		sigma1,sigma2,
-			theta,
-			sigma_x,
+   double		sigma_x,
 			sigma_y,
 			tau_xy;
    Vector		jac;
@@ -329,32 +326,28 @@ int QuadElementStress (element, type)
       sigma_y = VectorData (stress) [2];
       tau_xy = VectorData (stress) [3];
 
-      diameter = sqrt((sigma_x-sigma_y)*(sigma_x-sigma_y)/4 + tau_xy*tau_xy); 
-
-      if (sigma_x - sigma_y != 0) {
-         theta = 0.5*atan2(2*tau_xy,(sigma_x - sigma_y));
-         if (sigma_x - sigma_y < 0) {
-            if (tau_xy < 0)
-               theta += M_PI_2;
-            else
-               theta -= M_PI_2;
-         }
-      }
-      else
-         theta = 0;
-
-      sigma1 = (sigma_x + sigma_y)/2 + diameter;
-      sigma2 = (sigma_x + sigma_y)/2 - diameter;
-
       element -> stress [i] -> x = x;
       element -> stress [i] -> y = y; 
       element -> stress [i] -> values [1] = sigma_x;
       element -> stress [i] -> values [2] = sigma_y;
-      element -> stress [i] -> values [3] = tau_xy;
-      element -> stress [i] -> values [4] = sigma1;
-      element -> stress [i] -> values [5] = sigma2;
-      element -> stress [i] -> values [6] = theta*180/M_PI;
+      element -> stress [i] -> values [3] = 0.0;	/* sigma_z */
+      element -> stress [i] -> values [4] = tau_xy;
+      element -> stress [i] -> values [5] = 0.0;
+      element -> stress [i] -> values [6] = 0.0;
+
+      PrincipalStresses2D(element -> stress [i] -> values);
    }
+
+   for (i = 1 ; i <= numnodes ; i++) {
+      if (element -> node [i] -> stress == NULL)
+         AllocateNodalStress(element -> node [i]);
+
+      element -> node [i] -> numelts ++;
+
+      for (j = 1 ; j <= 10 ; j++)
+         element -> node [i] -> stress [j] += element -> stress [i] -> values [j];
+   }
+
 
    return 0;
 } 

@@ -361,50 +361,6 @@ void ResolveHingeConditions (element)
    return;
 }
 
-/*****************************************************************************
- *
- * Function:	 SetupStressMemory 
- *
- * Return value: none
- *
- *****************************************************************************/
-
-void SetupStressMemory (element)
-    Element	element;
-{
-    unsigned	i;
-
-    element -> stress = Allocate (Stress, element -> ninteg);
-    if (element -> stress == NULL)
-        Fatal ("allocation error setting up stress memory\n");
-
-    UnitOffset (element -> stress);
-
-    for (i = 1 ; i <= element -> ninteg  ; i++) {
-
-	/*
-	 * now allocate space for each actual stress structure
-	 */
-
-        element -> stress[i] = Allocate (struct stress, 1);
-        if (element -> stress [i] == NULL)
-           Fatal ("allocation error setting up stress memory\n");
-        
-	/*
-	 * followed by space for each actual stress value (fy and mz)
-	 */
-
-        element -> stress[i] -> values = 
-                 Allocate (double, element -> definition -> numstresses);
-  
-        if (element -> stress[i] -> values == NULL)
-           Fatal ("allocation error setting up stress memory\n");
-
-        UnitOffset (element -> stress[i] -> values);
-    }
-    
-    return;
-}
 
 /*****************************************************************************
  *

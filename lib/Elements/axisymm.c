@@ -38,7 +38,7 @@ int axisymmetricEltStress ( );
 
 struct definition axisymmetricDefinition = {
     "axisymmetric", axisymmetricEltSetup, axisymmetricEltStress, 
-    Planar, 3, 3, 4, 2, {0, 1, 2, 0, 0, 0, 0}, 0
+    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
 Matrix  AxisymmetricLocalB 	     ( );
@@ -76,12 +76,12 @@ int axisymmetricEltSetup (element, mass_mode, tangent)
    if (D == NullMatrix)
       return 1;
 
-
+/*
    fprintf (stdout,"element %d D = \n", element -> number);
    PrintMatrix (D, stdout);
    fprintf (stdout,"element %d B = \n", element -> number);
    PrintMatrix (B, stdout);
-
+*/
 
    if (element -> K == NullMatrix)
       element -> K = CreateMatrix (6,6);
@@ -128,11 +128,12 @@ int axisymmetricEltStress (element)
 {
    static Vector	stress = NullMatrix,
 			d;
-   unsigned		i;
+   unsigned		i, j;
    static Matrix	temp;
    Matrix		D, B;
    double		r_avg;
    double		z_avg;
+   double		sigma_r, sigma_z, sigma_th, tau_rz;
    
    if (stress == NullMatrix) {
       stress = CreateVector (4);
@@ -160,14 +161,35 @@ int axisymmetricEltStress (element)
    element -> ninteg = 1;
    SetupStressMemory (element);
 
+   sigma_r = mdata(stress,1,1);
+   sigma_z = mdata(stress,2,1);
+   sigma_th = mdata(stress,3,1);
+   tau_rz = mdata(stress,4,1);
+
    element -> stress [1] -> x = r_avg;
    element -> stress [1] -> y = z_avg;
    element -> stress [1] -> z = 0.0;
 
-   element -> stress [1] -> values [1] = mdata(stress,1,1);
-   element -> stress [1] -> values [2] = mdata(stress,2,1);
-   element -> stress [1] -> values [3] = mdata(stress,3,1);
-   element -> stress [1] -> values [4] = mdata(stress,4,1);
+   element -> stress [1] -> values [1] = sigma_r;
+   element -> stress [1] -> values [2] = sigma_z;
+   element -> stress [1] -> values [3] = sigma_th;
+   element -> stress [1] -> values [4] = tau_rz;
+   element -> stress [1] -> values [5] = 0.0;
+   element -> stress [1] -> values [6] = 0.0;
+
+   PrincipalStresses3D(element -> stress [1] -> values);
+
+   for (i = 1 ; i <= 3 ; i++) {
+      if (element -> node [i] -> stress == NULL) {
+         fprintf (stderr,"allocating stress array for node %d\n", element -> node [i] -> number);
+         AllocateNodalStress(element -> node [i]);
+     }
+
+      element -> node [i] -> numelts ++;
+
+      for (j = 1 ; j <= 10 ; j++)
+         element -> node [i] -> stress [j] += element -> stress [1] -> values [j];
+   }
 
    return 0;
 } 

@@ -42,7 +42,7 @@ struct definition brickDefinition = {
    Solid, 			/* shape				     */
    8, 				/* shape nodes				     */
    8, 				/* number of nodes			     */
-   6, 				/* # of stress components at each int. point */
+   10, 				/* # of stress components at each int. point */
    3,				/* number of DOFs per node		     */
   {0, 1, 2, 3, 0, 0, 0}, 	/* DOF map				     */
    0				/* retain K flag			     */
@@ -160,7 +160,7 @@ int brickEltStress (element)
    if (D == NullMatrix)
       return 1;
 
-   LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1, 0);
+   LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1, 1);
    jac = GlobalShapeFunctions (element, dNdxi, dNde, dNdzt, dNdx, dNdy, dNdz);
 
    for (i = 1 ; i <= 8 ; i++) {
@@ -197,6 +197,18 @@ int brickEltStress (element)
       element -> stress [i] -> values [4] = VectorData (stress) [4];
       element -> stress [i] -> values [5] = VectorData (stress) [5];
       element -> stress [i] -> values [6] = VectorData (stress) [6];
+
+      PrincipalStresses3D(element -> stress [i] -> values);
+   }
+
+   for (i = 1 ; i <= 8 ; i++) {
+      if (element -> node [i] -> stress == NULL) 
+         AllocateNodalStress(element -> node [i]);
+      
+      element -> node [i] -> numelts ++;
+
+      for (j = 1 ; j <= 10 ; j++)
+         element -> node [i] -> stress [j] += element -> stress [i] -> values [j]; 
    }
 
    return 0;

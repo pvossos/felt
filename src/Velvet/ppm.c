@@ -31,34 +31,12 @@
 # include <stdio.h>
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
-# include "colormap.h"
+# include <X11/Intrinsic.h>
 # include "proto.h"
 # include "error.h"
 
-#define MAXCOLORS 130
 #define RAWBITS	1
 
-static XImage	*img;
-static int	black;
-static int	white;
-
-static int GetPixel( x, y )
-   int x, y;
-{
-   long		point;
-   int 		color;
-
-   point = XGetPixel (img, x, y);
-
-   if (point == white)
-      color = 129;
-   else if (point == black)
-      color = 128;
-   else
-      color = PixelToCell(point);
-
-   return color;
-}
 
 static int 	pixel_count;
 
@@ -125,20 +103,17 @@ static void ClosePPM (fp, rawbits)
    return;
 }
 
-void XImageToPPM (filename, ximage, ncells, bl, wh)
+void WidgetToPPM (filename, w)
    char		*filename;
-   XImage	*ximage;
-   unsigned	ncells;
-   int		bl;
-   int		wh;
+   Widget	 w;
 {
-   int		color;
-   int		height, width;
-   unsigned	i,j;
+   XImage	*img;
+   XColor	*colors;
+   int		 ncells;
+   int		 color;
+   int		 height, width;
+   unsigned	 i,j;
    FILE		*fp;
-   int	 	Red [MAXCOLORS], 
-		Green [MAXCOLORS], 
-		Blue [MAXCOLORS];
 
    fp = fopen (filename, "w");
    if (fp == NULL) {
@@ -146,23 +121,7 @@ void XImageToPPM (filename, ximage, ncells, bl, wh)
       return;
    }
 
-   for (i = 0 ; i < ncells ; i++) {
-      Red [i] = color_values[i].r / 256;
-      Green [i] = color_values[i].g / 256;
-      Blue [i] = color_values[i].b / 256;
-   }
-
-   Red [128]   = 0;
-   Green [128] = 0;
-   Blue [128]  = 0;
-
-   Red [129]   = 255;
-   Green [129] = 255;
-   Blue[129]   = 255;
-
-   img = ximage;
-   black = bl;
-   white = wh;
+   img = WidgetToXImage(w, &colors, &ncells);
 
    width = img -> width;
    height = img -> height;
@@ -172,16 +131,20 @@ void XImageToPPM (filename, ximage, ncells, bl, wh)
    if (RAWBITS) {
       for (i = 0 ; i < height ; i++) {
          for (j = 0 ; j < width ; j++) {
-            color = GetPixel (j, i);
-            WriteRawPPMPixel (fp, Red [color], Green [color], Blue [color]);
+            color = XImageCellXY(img, j, i, colors, ncells);
+            WriteRawPPMPixel (fp, colors [color].red/256, 
+                                  colors [color].green/256, 
+                                  colors [color].blue/256);
          }
       }
    }
    else {
       for (i = 0 ; i < height ; i++) {
          for (j = 0 ; j < width ; j++) {
-            color = GetPixel (j, i);
-            WritePPMPixel (fp, Red [color], Green [color], Blue [color]);
+            color = XImageCellXY(img, j, i, colors, ncells);
+            WriteRawPPMPixel (fp, colors [color].red/256, 
+                                  colors [color].green/256, 
+                                  colors [color].blue/256);
          }
       }
    }

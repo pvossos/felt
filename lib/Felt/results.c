@@ -70,7 +70,8 @@ void WriteStructuralResults (output, title, R, numreactions)
     numelts  = problem.num_elements;
 
     fd = GetDetailStream( );
-    SetDetailStream (output);
+    if (fd)
+       SetDetailStream (output);
  
     fprintf (output,"\n** %s **\n\n",title);
     fprintf (output,"Nodal Displacements\n");
@@ -127,7 +128,8 @@ void WriteStructuralResults (output, title, R, numreactions)
                    dof_names [R[i] -> dof], R[i] -> force);
     }
 
-    SetDetailStream(fd);
+    if (fd)
+       SetDetailStream(fd);
 
     return;
 }

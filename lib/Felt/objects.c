@@ -59,6 +59,8 @@ Node CreateNode (number)
     node -> eq_force   = NULL;
     node -> constraint = NULL;
     node -> aux        = NULL;
+    node -> stress     = NULL;
+    node -> numelts    = 0;
 
     for (i = 1; i <= 6; i ++)
 	node -> dx [i] = 0;

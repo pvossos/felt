@@ -15,7 +15,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-ROOT	= FElt-3.05
+ROOT	= FElt-3.06
 TAR	= tar
 
 CURDIR	= ./etc

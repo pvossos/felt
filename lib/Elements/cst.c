@@ -40,12 +40,12 @@ int CSTPlaneStressEltSetup ( ), CSTPlaneStressEltStress ( );
 
 struct definition CSTPlaneStrainDefinition = {
     "CSTPlaneStrain", CSTPlaneStrainEltSetup, CSTPlaneStrainEltStress, 
-    Planar, 3, 3, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
+    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
 struct definition CSTPlaneStressDefinition = {
     "CSTPlaneStress", CSTPlaneStressEltSetup, CSTPlaneStressEltStress, 
-    Planar, 3, 3, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
+    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
 void    CSTLumpedMassMatrix ( );
@@ -167,16 +167,12 @@ int CSTElementStress (element, type)
 {
    static Vector	stress = NullMatrix,
 			d;
-   unsigned		i;
+   unsigned		i, j;
    static Matrix	temp;
    Matrix		D,
 			B;
-   double		diameter;
    double		x,y;
-   double		sigma1,
-			sigma2,
-			theta,
-			sigma_x,
+   double		sigma_x,
 			sigma_y,
 			tau_xy;
    
@@ -217,23 +213,6 @@ int CSTElementStress (element, type)
    sigma_y = VectorData (stress) [2];
    tau_xy = VectorData (stress) [3];
 
-   diameter = sqrt((sigma_x - sigma_y)*(sigma_x - sigma_y)/4 + tau_xy*tau_xy); 
-
-   sigma1 = (sigma_x + sigma_y)/2 + diameter;
-   sigma2 = (sigma_x + sigma_y)/2 - diameter;
-
-   if (sigma_x - sigma_y != 0) {
-      theta = 0.5*atan2(2*tau_xy,(sigma_x - sigma_y));
-      if (sigma_x - sigma_y < 0) {
-         if (tau_xy < 0)
-            theta += M_PI_2;
-         else
-            theta -= M_PI_2;
-      }
-   }
-   else
-      theta = 0;
-
    element -> ninteg = 1;
    SetupStressMemory (element);
 
@@ -242,10 +221,22 @@ int CSTElementStress (element, type)
 
    element -> stress [1] -> values [1] = sigma_x;
    element -> stress [1] -> values [2] = sigma_y;
-   element -> stress [1] -> values [3] = tau_xy;
-   element -> stress [1] -> values [4] = sigma1;
-   element -> stress [1] -> values [5] = sigma2;
-   element -> stress [1] -> values [6] = theta*180/M_PI;
+   element -> stress [1] -> values [3] = 0.0;		/* sigma_z */
+   element -> stress [1] -> values [4] = tau_xy;
+   element -> stress [1] -> values [5] = 0.0;		/* tau_xz  */
+   element -> stress [1] -> values [6] = 0.0;		/* tau_yz  */
+
+   PrincipalStresses2D(element -> stress [1] -> values);
+
+   for (i = 1 ; i <= 3 ; i++) {
+      if (element -> node [i] -> stress == NULL)
+         AllocateNodalStress(element -> node [i]);
+
+      element -> node [i] -> numelts ++;
+
+      for (j = 1 ; j <= 10 ; j++)
+         element -> node [i] -> stress [j] += element -> stress [1] -> values [j];
+   }
 
    return 0;
 } 

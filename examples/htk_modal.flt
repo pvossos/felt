@@ -1,0 +1,32 @@
+problem description
+title="htk sample"
+nodes=9 elements=4 analysis=modal
+
+analysis parameters
+mass-mode=lumped
+
+nodes
+1  x=0 y=0 z=0 constraint=clamp
+2  x=0.5 y=0 z=0
+3  x=0.5 y=0.5 z=0
+4  x=0 y=0.5 z=0
+5  x=0.25 y=0 z=0
+6  x=0 y=0.25 z=0	
+7  x=0.25 y=0.25 z=0	constraint=free
+8  x=0.5 y=0.25 z=0	constraint=clamp
+9  x=0.25 y=0.5 z=0
+
+htk elements
+1  nodes=[1,5,7,6] material=steel
+2  nodes=[5,2,8,7]
+3  nodes=[6,7,9,4]
+4  nodes=[7,8,3,9]
+
+material properties
+steel E=1.173e+07 nu=0.15 t=0.01 rho=5
+
+constraints
+clamp Tx=u Ty=u Tz=c Rx=c Ry=c Rz=u
+free  Rx=c Ry=c
+
+end

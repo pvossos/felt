@@ -1,0 +1,52 @@
+/*
+
+O+++++++++++++++++++++++++O+++++++++++++++++++++++++O                         
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          +                                                   
+                          O                                                   
+
+*/
+
+problem description
+title="Mixed Element Sample w/Distributed Load (Logan #5.20, p.191)" 
+nodes=4 elements=3
+
+nodes
+1  x=0  y=10 z=0 constraint=pin
+2  x=6  y=10 z=0 constraint=free
+3  x=12 y=10 z=0 constraint=roller
+4  x=6  y=0  z=0 constraint=fixed
+
+beam elements
+1  nodes=[1,2]   material=steel    load=side1   
+2  nodes=[2,3]   		   load=side2   
+
+truss elements
+3  nodes=[2,4]   material=springy    
+
+material properties
+steel  E=210e9   A=1  Ix=0.0004 
+springy  E=210e9 A=4.76e-07 
+
+distributed loads
+side1   direction=LocalY   values=(1,-10000) (2,0) 
+side2   direction=LocalY   values=(1,0) (2,-10000) 
+
+constraints
+pin    tx=c ty=c tz=c rx=u ry=u rz=u
+free   tx=u ty=u tz=c rx=u ry=u rz=u
+roller tx=u ty=c tz=c rx=u ry=u rz=u
+fixed  tx=c ty=c tz=c rx=u ry=u rz=c
+
+end

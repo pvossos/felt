@@ -1,0 +1,15 @@
+start-node    = 1
+start-element = 1
+
+brick grid
+element-type =	brick
+start    = (0,0,0)
+end      = (8,12,6)
+x-number = 4
+y-number = 6
+z-number = 3
+x-rule   = linear
+y-rule   = linear
+z-rule   = linear
+
+end

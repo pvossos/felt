@@ -1,0 +1,71 @@
+problem description
+title="Modal Analysis Example"
+nodes=18 elements=24 analysis=modal
+
+analysis parameters
+duration=0 dt=0 beta=0 gamma=0 alpha=0 mass-mode=lumped
+nodes
+1  x=4 y=0 z=0 constraint=fixed
+2  x=5 y=0 z=0
+3  x=4 y=1 z=0 constraint=free
+4  x=4 y=2 z=0
+5  x=5 y=1 z=0
+6  x=5 y=2 z=0
+7  x=4 y=3 z=0
+8  x=4 y=4 z=0
+9  x=5 y=3 z=0
+10 x=5 y=4 z=0
+11 x=4 y=5 z=0
+12 x=4 y=6 z=0
+13 x=5 y=5 z=0
+14 x=5 y=6 z=0
+15 x=4 y=7 z=0
+16 x=4 y=8 z=0
+17 x=5 y=7 z=0
+18 x=5 y=8 z=0
+
+beam elements
+1  nodes=[1,3] material=column
+2  nodes=[3,4]
+3  nodes=[4,7]
+4  nodes=[7,8]
+5  nodes=[8,11]
+6  nodes=[11,12]
+7  nodes=[12,15]
+8  nodes=[15,16]
+9  nodes=[2,5]
+10 nodes=[5,6]
+11 nodes=[6,9]
+12 nodes=[9,10]
+13 nodes=[10,13]
+14 nodes=[13,14]
+15 nodes=[14,17]
+16 nodes=[17,18]
+17 nodes=[16,18] material=beam
+18 nodes=[17,15]
+19 nodes=[12,14]
+20 nodes=[13,11]
+21 nodes=[8,10]
+22 nodes=[9,7]
+23 nodes=[4,6]
+24 nodes=[5,3]
+
+material properties
+beam E=3e+06 A=10 Ix=500 rho=0.005
+column E=3e+06 A=20 Ix=450 rho=0.005
+
+constraints
+fixed Tx=c Ty=c Tz=u Rx=u Ry=u Rz=c
+free Tx=u Ty=u Tz=u Rx=u Ry=u Rz=u
+
+canvas configuration
+node-numbers=true element-numbers=true snap=true grid=true
+snap-size=1 grid-size=1
+
+node-color=Blue element-color=Black label-font="5x8"
+tool-color=Red tool-font="fg-22"
+
+x-min=-1 x-max=10 y-min=-1 y-max=10
+x-pos=0 y-pos=0 width=502 height=502 scale=45.6364
+
+end

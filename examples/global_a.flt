@@ -1,0 +1,24 @@
+problem description
+title="Beam w/Distributed Load Sample Problem (Logan #6.14, p.256)" 
+nodes=3 elements=2
+
+nodes
+1 x=0   y=0      constraint=fixed
+2 x=120 y=120    constraint=free
+3 x=300 y=120    constraint=fixed
+
+beam elements
+1 nodes=[1,2] material=steel
+2 nodes=[2,3]			load=dead
+
+material properties
+steel a=5 e=30e6 ix=200
+
+distributed loads
+dead direction=GlobalY values=(1,-2000/12) (2,-2000/12)
+
+constraints
+fixed tx=c ty=c rz=c
+free  tx=u ty=u rz=u
+
+end

@@ -1,0 +1,34 @@
+problem description
+title="htk sample" nodes=9 elements=4
+
+nodes
+1 x=0.0 y=0.0	constraint=free_z		force=point
+2 x=0.25	constraint=hinge_x
+3 x=0.5		
+4 x=0.0 y=0.25	constraint=hinge_y
+5 x=0.25 	constraint=free
+6 x=0.5 	constraint=free
+7 x=0.0 y=0.5	constraint=pin
+8 x=0.25
+9 x=0.5
+
+htk elements
+1 nodes=[1,2,5,4] material=steel
+2 nodes=[2,3,6,5]
+3 nodes=[5,6,9,8]
+4 nodes=[4,5,8,7]
+
+material properties
+steel E=11.73e6 nu=0.15 t=0.01
+
+constraints
+free_z  Tz=u Rx=c Ry=c
+hinge_x Tz=u Rx=c Ry=u
+hinge_y Tz=u Rx=u Ry=c
+free    Tz=u Rx=u Ry=u
+pin     Tz=c Rx=u Ry=c
+
+forces
+point Fz=-1/4
+
+end

@@ -1,0 +1,17 @@
+problem description
+title="Isoparametric Sample Problem (Logan ex. 8.2, p.336)" 
+nodes=4 elements=1
+
+nodes
+1 x=3   y=2   
+2 x=5   y=2   
+3 x=5   y=4  
+4 x=3   y=4   
+
+iso2d_PlaneStress elements
+1 nodes=[1,2,3,4,0,0,0,0,0] material=steel
+
+material properties
+steel e=30e6 nu=0.25 t=1.0 rho=0.283
+
+end

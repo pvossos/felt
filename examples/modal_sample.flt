@@ -1,0 +1,27 @@
+problem description
+title="Modal Analysis Example" nodes=4 elements=3 analysis=modal
+
+analysis parameters
+mass-mode=lumped
+Rm=0.04 Rk=0.002
+
+nodes
+1	x=0.0	y=0.0	constraint=fixed
+2	x=325	y=0
+3	x=0	y=150	constraint=free
+4	x=325
+
+beam elements
+1  	nodes=[1,3]	material=column
+2  	nodes=[2,4]
+3  	nodes=[3,4]	material=beam
+
+material properties
+column A=20 Ix=450 E=3e6 rho=0.005
+beam   A=10 Ix=500 E=3e6 rho=0.005
+
+constraints
+fixed	Tx=c	Ty=c	Rz=c
+free	Tx=u	Ty=u	Rz=u
+
+end

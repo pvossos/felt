@@ -1,0 +1,27 @@
+problem description
+title="3d Beam Sample Problem (Logan ex. 6.8, p.248)" nodes=4 elements=3
+
+nodes
+1 x=0   y=0      constraint=fixed
+2 x=0   y=120    constraint=free    force=side_sway
+3 x=120 y=120 			    force=twist
+4 x=120 y=0      constraint=fixed
+
+beam elements
+1 nodes=[1,2] material=column
+2 nodes=[2,3] material=beam 
+3 nodes=[3,4] material=column
+
+material properties
+column e=30e6 ix=200 a=10
+beam e=30e6 ix=100 a=10
+
+forces
+side_sway fx=10000
+twist mz=5000
+
+constraints
+fixed tx=c ty=c rz=c
+free tx=u ty=u rz=u
+
+end

@@ -1,0 +1,49 @@
+problem description
+title="Beam Sample Problem with Loadcases"
+nodes=3 elements=2
+
+analysis parameters
+nodes=[1] dofs=[Ty]
+
+load cases
+f100 node-forces=(1, point100)
+f200 node-forces=(1, point200)
+f300 node-forces=(1, point300)
+f400 node-forces=(1, point400)
+f500 node-forces=(1, point500)
+f600 node-forces=(1, point600)
+f700 node-forces=(1, point700)
+f800 node-forces=(1, point800)
+f900 node-forces=(1, point900)
+f1000 node-forces=(1, point1000)
+
+nodes
+1  x=0   y=0 z=0 constraint=free
+2  x=240 y=0 z=0 constraint=roller
+3  x=480 y=0 z=0 constraint=fixed
+
+forces
+point100 Fy=-100
+point200 Fy=-200
+point300 Fy=-300
+point400 Fy=-400
+point500 Fy=-500
+point600 Fy=-600
+point700 Fy=-700
+point800 Fy=-800
+point900 Fy=-900
+point1000 Fy=-1000
+
+beam elements
+1  nodes=[1,2] material=steel
+2  nodes=[2,3]
+
+material properties
+steel E=30e6 A=10 Ix=100
+
+constraints
+fixed  Tx=c Ty=c Rz=c
+free   Tx=u Ty=u Rz=u
+roller Tx=u Ty=c Rz=u
+
+end

@@ -1,0 +1,29 @@
+problem description
+title="One-dimensional Transient Heat Analysis"
+nodes=3		elements=2	analysis=transient-thermal
+
+analysis parameters
+duration=3	dt=0.1
+alpha=2/3	mass-mode=consistent
+nodes=[2,3]
+
+nodes
+1	x=0.0	constraint=given
+2	x=0.01	constraint=free
+3	x=0.02
+
+rod elements
+1	nodes=[1,2]	material=copper		load=surface
+2	nodes=[2,3]				load=surface
+
+material properties
+copper	Kx=400	c=375	rho=8900	A=0.002*0.002*3.14159265358979323846
+
+distributed loads
+surface		values=(1,150) (2,25)
+
+constraints
+given	Tx=85			iTx=25
+free	Tx=u			iTx=25
+
+end

@@ -1,0 +1,1035 @@
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH Drawing 3fe "7/11/94" "Version 2.21" "Finite Element Package"
+.SH NAME
+Drawing - general purpose drawing widget
+.SH SYNOPSIS
+.B "# include <X11/Intrinsic.h>"
+.br
+\fB# include "Drawing.h"\fR
+.SH DESCRIPTION
+These files define a general purpose drawing widget that is subclass of the
+Athena \fISimple\fR widget.  The widget provides a scalable, two dimensional
+drawing area with a cartesian coordinate system and an optional background
+grid and pointer snap.  The widget is intended to provide mechanisms and not
+policies.  For example, there is no "select rectangular area with mouse"
+feature.  Instead, the application writer can specify callbacks associated
+with pointer movement and mouse button actions.
+.PP
+The widget operations allow the creation, removal, and dynamic configuration
+of figures.  The figures are maintained on a display list by the widget.
+Figures are referenced by the application writer though the opaque type
+\fIFigure\fR.  The current figure types include lines, polygons, rectangles,
+arcs, text, pixmaps, bitmaps, and groups.  The properties associated with
+figures include grouping, scaling, line width, line style, visibility, color,
+and position.
+.PP
+.SH RESOURCES
+The \fIDrawing\fR widget adds the following resources to the Athena
+\fISimple\fR widget:
+.TP 5
+\fBXtNcoordinates\fR (class \fBXtCCoordinates\fR) XtRWidget
+Specifies a \fIlabel\fR widget to be used in displaying the current
+coordinates of the pointer within the widget or \s-1NULL\s+1 if no display is
+desired.  Default value: \s-1NULL\s+1
+.TP
+\fBXtNgrid\fR (class \fBXtCGrid\fR) XtRBoolean
+Specifies if the background grid should be displayed.  The grid consists of a
+series of intersecting dashed lines lying behind all figures whose spacing is
+specified by the \fBgridSize\fR resource.  Default value: \fBFalse\fR
+.TP
+\fBXtNgridSize\fR (class \fBXtCGridSize\fR) XtRFloat
+Specifies the grid spacing in real units.  The grid lines will be drawn with
+spacing according to the value of this resource if the \fBgrid\fR resource is
+\fBTrue\fR.  Default value: 1.00
+.TP
+\fBXtNsnap\fR (class \fBXtCSnap\fR) XtRBoolean
+Specifies if pointer snap should be enabled.  Pointer snap indicates that in
+addition to reporting the actual coordinates of the pointer in a callback,
+the coordinates lying closest to the pointer and along an invisible grid
+whose spacing is given by the \fBsnapSize\fR resource should also be
+reported.
+.TP
+\fBXtNSnapSize\fR (class \fBXtCSnapSize\fR) XtRFloat
+Specifies the snap grid spacing in real units.  The invisible snap grid with
+be spaced according to the value of this resource.  This resource has no
+effect if the \fBsnap\fR resource is \fBFalse\fR.  Default value: 1.00
+.TP
+\fBXtNxMin\fR (class \fBXtCXMin\fR) XtRFloat
+Specifies the minimum value for the x axis.  This value must be less than the
+value specified by the \fBxMax\fR resource.  Default value: 0.0
+.TP
+\fBXtNxMax\fR (class \fBXtCXMax\fR) XtRFloat
+Specifies the maximum value for the x axis.  This value must be greater than
+the value specified by the \fBxMin\fR resource.  Default value: 10.0
+.TP
+\fBXtNyMin\fR (class \fBXtCYMin\fR) XtRFloat
+Specifies the minimum value for the y axis.  This value must be less than the
+value specified by the \fByMax\fR resource.  Default value: 0.0
+.TP
+\fBXtNyMax\fR (class \fBXtCYMax\fR) XtRFloat
+Specifies the maximum value for the y axis.  This value must be greater than
+the value specified by the \fByMin\fR resource.  Default value: 10.0
+.TP
+\fBXtNxScale\fR (class \fBXtCXScale\fR) XtRFloat
+Specifies the scale for the x axis in pixels per real unit.  This value must
+be greater than zero.  Default value: 50.0
+.TP
+\fBXtNyScale\fR (class \fBXtCYScale\fR) XtRFloat
+Specifies the scale for the y axis in pixels per real unit.  This value must
+be greater than zero.  Default value: 50.0
+.TP
+\fBXtNbuttonCallback\fR (class \fBXtCButtonCallback\fR) XtRCallback
+A callback list whose procedures should be called upon a button action
+(press, release, or drag).  These events include \fBButtonPress\fR,
+\fBButtonRelease\fR, and \fBMotionNotify\fR events.  The call data to the
+callback procedure will be a pointer to a \fBDrawingReport\fR structure which
+includes both the snapped and unsnapped coordinates (the snapped coordinates
+will be identical to the unsnapped coordinates if the \fBsnap\fR resource is
+\fBFalse\fR) and a pointer to the corresponding \fBXEvent\fR structure.  The
+topmost figure located under the pointer will also be included if the
+\fBautoFind\fR resource is \fBTrue\fR and the corresponding event type is
+\fBButtonPress\fR.  Default value: \s-1NULL\s+1
+.TP
+\fBXtNmotionCallback\fR (class \fBXtCMotionCallback\fR) XtRCallback
+A callback list whose procedures should be called upon pointer motion in the
+widget.  The call data to the callback procedure will be a pointer to a
+\fBDrawingReport\fR structure as described above.  The corresponding event
+type will always be \fBMotionNotify\fR.  Default value: \s-1NULL\s+1
+.TP
+\fBXtNinteractive\fR (class \fBXtCInteractive\fR) XtRBoolean
+Specifies if interactive drawing mode is enabled.  In interactive mode, an
+exclusive-or graphics context is used which provides for more efficient
+redrawing and removal of figures than if the normal graphics context were
+used.  However, the exclusive-or graphics context does not handle exposure
+events properly.  Thus, interactive mode should be used for any interactive
+operations such as moving a figure by following the pointer.  The general
+policy should be to enable interactive mode, perform the necessary operation,
+and then disable interactive mode.  The preferred way to set this resource is
+through the \fBDW_SetInteractive\fR function.  Default value: \fBFalse\fR
+.TP
+\fBXtNautoFind\fR (class \fBXtCAutoFind\fR) XtRBoolean
+Specifies if the display list is to be searched upon a button press.  If this
+resource is \fBTrue\fR then the topmost figure located under the pointer, or
+\s-1NULL\s+1 if no such figure exists, will be returned in the
+\fBDrawingReport\fR structure.  The preferred way to set this resource is
+through the \fBDW_SetAutoFind\fR function.  Default value: \fBFalse\fR
+.TP
+\fBXtNautoRedraw\fR (class \fBXtCAutoRedraw\fR) XtRBoolean
+Normally the display list is automatically redrawn upon a change to the
+display list though a \fBDW_RemoveFigure\fR, \fBDW_LowerFigure\fR, or
+\fBDW_SetAttributes\fR operation.  If this resource is \fBFalse\fR then the
+display list will not automatically be redrawn and the corresponding redraw
+requests will be buffered.  Upon setting this resource to \fBTrue\fR, any
+buffered requests will be processed.  The general policy should be to disable
+redrawing before making substantial changes to the display list and to
+re-enable redrawing once those changes are complete.  The preferred way to
+set this resource is through the \fBDW_SetAutoRedraw\fR function.  Default
+value: \fBTrue\fR
+.PP
+For convenience a function, \fBFloat2Arg\fR, is provided which converts a
+floating point value to an \fBArg\fR suitable for use with \fBXtSetArg\fR.
+.SH OPERATIONS
+The \fIDrawing\fR widget provides a variety of functions for drawing figures,
+altering the display list, changing the internal state of the widget, and
+retrieving information about the widget:
+.PP
+.nf
+.B "Figure DW_DrawLine (drawing, x1, y1, x2, y2)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B float
+.B x1, y1;
+.TP
+.B float
+.B x2, y2;
+.RE
+.PD
+.PP
+\fBDW_DrawLine\fR draws a line in the current foreground color from
+(\fIx1\fR,\fIy1\fR) to (\fIx2\fR,\fIy2\fR) using \fBXDrawLine\fR.  The figure
+representing the line, or \s-1NULL\s+1 upon an error, is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_DrawPolygon (drawing, scaled, points, npoints)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B Point
+.B points [ ];
+.TP
+.B int
+.B npoints;
+.RE
+.PD
+.PP
+\fBDW_DrawPolygon\fR draws a optionally scaled polygon whose vertices are
+given in the \fIpoints\fR array in the current foreground color using
+\fBXDrawLines\fR.  The number of vertices is specified by \fInpoints\fR.  If
+a closed polygon is desired then the first and last vertices should be
+identical.  If \fIscaled\fR is \fBTrue\fR then the polygon will be scaled,
+indicating that the vertices should rescale as the widget is rescaled.
+Unscaled polygons are not currently supported.  The figure representing the
+polygon, or \s-1NULL\s+1 upon an error, is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_FillPolygon (drawing, scaled, points, npoints)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B Point
+.B points [ ];
+.TP
+.B int
+.B npoints;
+.RE
+.PD
+.PP
+\fBDW_FillPolygon\fR draws a filled polygon figure using \fBXFillPolygon\fR
+in the same manner as \fBDW_DrawPolygon\fR.  However, if a closed polygon is
+desired the first and last vertices need not be identical.  The figure
+representing the polygon, or \s-1NULL\s+1 upon an error, is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_DrawRectangle (drawing, scaled, x, y, width, height)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B float
+.B x, y;
+.TP
+.B float
+.B width, height;
+.RE
+.PD
+.PP
+\fBDW_DrawRectangle\fR draws a rectangle in the current foreground color
+using \fBXDrawRectangle\fR.  The bottom left corner of the rectangle is
+located at (\fIx\fR,\fIy\fR).  The dimensions of the rectangle are specified
+by the \fIwidth\fR and \fIheight\fR parameters.  A positive dimension is
+along the corresponding axis and a negative dimension is opposite from the
+corresponding axis.  If \fIscaled\fR is \fBTrue\fR then the rectangle will be
+rescaled as the widget is rescaled.  If \fIscaled\fR is \fBFalse\fR then
+\fIwidth\fR and \fIheight\fR specify the dimensions in pixels which will not
+rescale.  The figure representing the rectangle, or \s-1NULL\s+1 upon an
+error, is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_FillRectangle (drawing, scaled, x, y, width, height)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B float
+.B x, y;
+.TP
+.B float
+.B width, height;
+.RE
+.PD
+.PP
+\fBDW_FillRectangle\fR is identical to \fBDW_DrawRectangle\fR except a filled
+rectangle is drawn using \fBXFillRectangle\fR.
+.PP
+.sp
+.nf
+.B "Figure DW_DrawArc (drawing, scaled, x, y, width, height, angle, length)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B float
+.B x, y;
+.TP
+.B float
+.B width, height;
+.TP
+.B float
+.B angle, length;
+.RE
+.PD
+.PP
+\fBDW_DrawArc\fR draws an arc in the current foreground color using
+\fBXDrawArc\fR.  The arc is drawn inscribed in a rectangle whose center is
+located at (\fIx\fR,\fIy\fR) and whose dimensions are specified by
+\fIwidth\fR and \fIheight\fR.  The starting angle in degrees in specified by
+\fIangle\fR and the arc length is specified by \fIlength\fR.  Scaling, as
+specified by the \fIscaled\fR parameter, is similar to
+\fBDW_DrawRectangle\fR.  The figure representing the arc, or \s-1NULL\s+1
+upon an error, is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_FillArc (drawing, scaled, x, y, width, height, angle, length)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B float
+.B x, y;
+.TP
+.B float
+.B width, height;
+.TP
+.B float
+.B angle, length;
+.RE
+.PD
+.PP
+\fBDW_FillArc\fR is identical to \fBDW_DrawArc\fR except a filled arc is
+drawn using \fBXFillArc\fR.
+.PP
+.sp
+.nf
+.B "Figure DW_DrawText (drawing, scaled, x, y, text)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B scaled;
+.TP
+.B float
+.B x, y;
+.TP
+.B String
+.B text;
+.RE
+.PD
+.PP
+\fBDW_DrawText\fR draws a text figure in the current foreground color and
+font using \fBXDrawString\fR.  The lower left corner of the text is located
+at (\fIx\fR,\fIy\fR).  The text string is specified by \fItext\fR and must be
+null terminated.  The \fIscaled\fR flag is currently ignored.  The figure
+representing the text, or \s-1NULL\s+1 upon an error, is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_FindFigure (drawing, x, y)
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B float
+.B x, y;
+.RE
+.PD
+.PP
+\fBDW_FindFigure\fR searches the display list for the topmost figure which
+includes the point (\fIx\fR,\fIy\fR).  This function is used if the
+\fBautoFind\fR resource is \fBTrue\fR and a \fBButtonPress\fR event has
+occurred.  If the located figure is a member of a group then the figure
+representing the group is returned.  Otherwise the located figure, or
+\s-1NULL\s+1 if no such figure exists, is returned.
+.PP
+.sp
+.nf
+.B "void DW_RaiseFigure (drawing, figure)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B figure;
+.RE
+.PD
+.PP
+\fBDW_RaiseFigure\fR raises the figure specified by \fIfigure\fR to the top
+of the display list.  If \fIfigure\fR is \s-1NULL\s+1 then no changes are
+made to the display list.  If \fIfigure\fR is of type \fBGroupFigure\fR then
+all figures in the group are raised.  A redraw request is not issued as the
+specified figures are simply redrawn.
+.PP
+.sp
+.nf
+.B "void DW_LowerFigure (drawing, figure)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B figure;
+.RE
+.PD
+.PP
+\fBDW_LowerFigure\fR lowers the figure specified by \fIfigure\fR to the
+bottom of the display list.  If \fIfigure\fR is \s-1NULL\s+1 then no changes
+are made to the display list.  If \fIfigure\fR is of type \fBGroupFigure\fR
+then all figures in the group are lowered.  A redraw request is issued for
+each figure which is lowered (see the \fBautoRedraw\fR resource for details).
+.PP
+.sp
+.nf
+.B "void DW_RemoveFigure (drawing, figure)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B figure;
+.RE
+.PD
+.PP
+\fBDW_RemoveFigure\fR removes the figure specified by \fIfigure\fR from the
+display list.  If \fIfigure\fR is \s-1NULL\s+1 then no changes are made to
+the display list.  If \fIfigure\fR is of type \fBGroupFigure\fR then all
+figures in the group are removed.  A redraw request is issued for each figure
+which is removed (see the \fBautoRedraw\fR resource for details).
+.PP
+.sp
+.nf
+.B "void DW_RemoveAll (drawing)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.RE
+.PD
+.PP
+\fBDW_RemoveAll\fR removes all figures from the display list, effectively
+clearing the widget.
+.PP
+.sp
+.nf
+.B "void DW_Redraw (drawing)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.RE
+.PD
+.PP
+\fBDW_Redraw\fR forces a redraw of the entire display list.  This function
+should ideally never need to be called.
+.PP
+.sp
+.nf
+.B "void DW_GetAttributes (drawing, figure, attributes)"
+.fi
+.RS
+.PD 0
+.TP 19
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B figure;
+.TP
+.B FigureAttributes
+.B *attributes;
+.RE
+.PD
+.PP
+\fBDW_GetAttributes\fR retrieves the attributes associated with the figure
+specified by \fIfigure\fR.  The attributes are returned in the structure
+pointed to by \fIattributes\fR.  A \fBFigureAttributes\fR structure includes
+the following members which apply to the types of figures as indicated.
+.PP
+.nf
+.PD 0
+.RS
+.TP 27
+.B FigureType type;
+// all figures (read only)
+.TP
+.B Figure group;
+// all figures
+.TP
+.B unsigned line_width;
+// lines, polygons, rectangles, arcs
+.TP
+.B int line_style;
+// lines, polygons, rectangles, arcs
+.TP
+.B Boolean visible;
+// lines, polygons, rectangles, arcs, text
+.TP
+.B Boolean filled;
+// polygons, rectangles, arcs
+.TP
+.B Boolean scaled;
+// polygons, rectangles, arcs, text
+.TP
+.B String color;
+// lines, polygons, rectangles, arcs, text
+.TP
+.B String text;
+// text
+.TP
+.B String font;
+// text
+.TP
+.B float x;
+// rectangles, arcs, text
+.TP
+.B float y;
+// rectangles, arcs, text
+.TP
+.B float width;
+// rectangles, arcs
+.TP
+.B float height;
+// rectangles, arcs
+.TP
+.B float arc_start;
+// arcs
+.TP
+.B float arc_length;
+// arcs
+.TP
+.B Point *points;
+// lines, polygons
+.TP
+.B unsigned npoints;
+// lines, polygons (read only)
+.TP
+.B Figure *figures;
+// groups (read only)
+.TP
+.B unsigned nfigures;
+// groups (read only)
+.TP
+.B Pixmap pixmap;
+// pixmaps, bitmaps
+.TP
+.B char *user_data;
+// all figures
+.TP
+.B XFontStruct *font_struct;
+// text (read only)
+.PD
+.RE
+.fi
+.PP
+Only those fields which are valid for the specified figure type are defined.
+The \fBuser_data\fR field is not used by the widget and is provided for the
+use of the application writer.  The types of figures are shown below.
+.PP
+.RS
+.B LineFigure
+.br
+.B PolygonFigure
+.br
+.B RectangleFigure
+.br
+.B ArcFigure
+.br
+.B TextFigure
+.br
+.B GroupFigure
+.br
+.B PixmapFigure
+.br
+.B BitmapFigure
+.RE
+.PP
+The types of line styles are shown below.
+.PP
+.RS
+.B DW_LineSolid
+.br
+.B DW_LineDashed
+.br
+.B DW_LineDotted
+.br
+.B DW_LineDotDashed
+.br
+.B DW_LineLongDashed
+.RE
+.PP
+If \fIfigure\fR is \s-1NULL\s+1 then the structure pointed to by
+\fIattributes\fR is unchanged.
+.PP
+.sp
+.nf
+.B "Boolean DW_SetAttributes (drawing, figure, valuemask, attributes)"
+.fi
+.RS
+.PD 0
+.TP 19
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B figure;
+.TP
+.B unsigned
+.B valuemask;
+.TP
+.B FigureAttributes
+.B *attributes;
+.RE
+.PD
+.PP
+\fBDW_SetAttributes\fR changes the attributes of a previously drawn figure.
+The figure whose attributes are to be changed is specified by \fIfigure\fR.
+The attributes are specified in the structure pointed to by \fIattributes\fR.
+Only those attributes as specified by the \fIvaluemask\fR are changed.  The
+mask is a bitwise inclusive \s-1OR\s+1 of zero or more of the following
+flags:
+.PP
+.RS
+.PD 0
+.TP 24
+.B DW_FigureGroup
+// group
+.TP
+.B DW_FigureLineWidth
+// line_width
+.TP
+.B DW_FigureLineStyle
+// line_style
+.TP
+.B DW_FigureVisible
+// visible
+.TP
+.B DW_FigureScaled
+// scaled
+.TP
+.B DW_FigureColor
+// color
+.TP
+.B DW_FigureFont
+// font
+.TP
+.B DW_FigureText
+// text and font_struct
+.TP
+.B DW_FigureX
+// x
+.TP
+.B DW_FigureY
+// y
+.TP
+.B DW_FigureWidth
+// width
+.TP
+.B DW_FigureHeight
+// height
+.TP
+.B DW_FigureArcStart
+// arc_start
+.TP
+.B DW_FigureArcLength
+// arc_length
+.TP
+.B DW_FigurePoints
+// points
+.TP
+.B DW_FigurePixmap
+// pixmap
+.TP
+.B DW_FigureUserData
+// user_data
+.TP
+.B DW_FigureLocation
+// x and y
+.TP
+.B DW_FigureSize
+// width and height
+.TP
+.B DW_FigureArc
+// arc_start and arc_length
+.PD
+.RE
+.PP
+If \fIfigure\fR is of type \fBGroupFigure\fR then all figures in the group
+are modified.  If \fIfigure\fR is \s-1NULL\s+1 then no changes are made.  If
+any errors occur then \fBFalse\fR is returned.  Otherwise, \fBTrue\fR is
+returned.
+.PP
+.sp
+.nf
+.B "void DW_ClipBox (figure, clip_box)"
+.fi
+.RS
+.PD 0
+.TP 13
+.B Figure
+.B figure;
+.TP
+.B XRectangle
+.B *clip_box;
+.RE
+.PD
+.PP
+\fBDW_ClipBox\fR returns the actual window coordinates of the bounding box
+for the figure specified by \fIfigure\fR.  The box is returned in the
+structure pointed to by \fIclip_box\fR.  Note that unlike other functions the
+first argument to this function is not a widget.
+.PP
+.sp
+.nf
+.B "void DW_TranslateCoords (drawing, x, y, rx, ry)
+.fi
+.RS
+.PD 0
+.TP 13
+.B Widget
+.B widget;
+.TP
+.B float
+.B x, y;
+.TP
+.B float
+.B *rx, *ry;
+.RE
+.PD
+.PP
+\fBDW_TranslateCoords\fR translates from window coordinates to real
+coordinates.  The window coordinate is given by (\fIx\fR,\fIy\fR).  The real
+coordinate is retrieved as (\fI*rx\fR,\fI*ry\fR).  This function is useful in
+action procedures where only the window coordinate is known.
+.PP
+.sp
+.nf
+.B "Boolean DW_SetForeground (drawing, color)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B String
+.B color;
+.RE
+.PD
+.PP
+\fBDW_SetForeground\fR sets the foreground color for drawing new figures.  To
+change the color of a previously drawn figure use \fBDW_SetAttributes\fR.
+The new foreground color is specified by \fIcolor\fR which is passed to
+\fBXParseColor\fR.  A cache of the assigned foreground color names is
+maintained to improve lookup time.  If the color is successfully allocated
+then \fBTrue\fR is returned.  Otherwise, \fBFalse\fR is returned and the
+current foreground color remains unchanged.
+.PP
+.sp
+.nf
+.B "Boolean DW_SetFont (drawing, font)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B String
+.B font;
+.RE
+.PD
+.PP
+\fBDW_SetFont\fR sets the font for drawing new text figures.  To change the
+font of a previously drawn figure use \fBDW_SetAttributes\fR.  The new font
+is specified by \fIfont\fR which is passed to \fBXLoadQueryFont\fR.  A cache
+of the assigned font names is maintained to improve lookup time.  If the font
+is successfully loaded then \fBTrue\fR is returned.  Otherwise, \fBFalse\fR
+is returned and the current font remains unchanged.
+.PP
+.sp
+.nf
+.B "void DW_SetLineWidth (drawing, line_width)"
+.fi
+.RS
+.PD 0
+.TP 11
+.B Widget
+.B drawing;
+.TP
+.B unsigned
+.B line_width;
+.RE
+.PD
+.PP
+\fBDW_SetLineWidth\fR sets the line width for drawing new figures.  To change
+the line width of a previously drawn figure use \fBDW_SetAttributes\fR.
+.PP
+.sp
+.nf
+.B "void DW_SetLineStyle (drawing, line_style)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B int
+.B line_style;
+.RE
+.PD
+.PP
+\fBDW_SetLineStyle\fR sets the line style for drawing new figures.  To change
+the line style of a previously drawn figure use \fBDW_SetAttributes\fR.  The
+line style is specified by \fIline_style\fR (see \fBDW_GetAttributes\fR
+above).
+.PP
+.sp
+.nf
+.B "void DW_SetInteractive (drawing, interactive)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B interactive;
+.RE
+.PD
+.PP
+\fBDW_SetInteractive\fR sets the \fBinteractive\fR resource of the widget to
+the value specified by \fIinteractive\fR (see the \fBinteractive\fR resource
+for details).
+.PP
+.sp
+.nf
+.B "void DW_SetAutoFind (drawing, auto_find)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean
+.B auto_find;
+.RE
+.PD
+.PP
+\fBDW_SetAutoFind\fR sets the \fBautoFind\fR resource of the widget to the
+value specified by \fIauto_find\fR (see the \fBautoFind\fR resource for
+details).
+.PP
+.sp
+.nf
+.B "void DW_SetAutoRedraw (drawing, auto_redraw)"
+.fi
+.RS
+.PD 0
+.TP 10
+.B Widget
+.B drawing;
+.TP
+.B Boolean;
+.B auto_redraw;
+.RE
+.PD
+.PP
+\fBDW_SetAutoRedraw\fR sets the \fBautoRedraw\fR resource of the widget to
+the value specified by \fIauto_redraw\fR (see the \fBautoRedraw\fR resource
+for details).
+.PP
+.sp
+.nf
+.B "Figure *DW_SearchArea (drawing, points, npoints, nfigures)"
+.fi
+.RS
+.PD 0
+.TP 11
+.B Widget
+.B drawing;
+.TP
+.B Point
+.B points [ ];
+.TP
+.B unsigned
+.B npoints;
+.TP
+.B unsigned
+.B *nfigures;
+.RE
+.PD
+.PP
+\fBDW_SearchArea\fR searches the specified area and returns all figures
+located within the area.  The area is specified as a polygon whose vertices
+are given in the \fIpoints\fR array.  The number of vertices is specified by
+\fInpoints\fR.  The number of figures within the area is returned in the
+memory pointed to by \fInfigures\fR.  The figures are returned by the
+function in space which has been allocated by \fBXtMalloc\fR.  The topmost
+figure found will be first in the array.  If no figures are located within
+the area then \fInfigures\fR will contain zero and \s-1NULL\s+1 is returned.
+.PP
+.sp
+.nf
+.B "Figure *DW_RetrieveAll (drawing, nfigures)"
+.fi
+.RS
+.PD 0
+.TP 11
+.B Widget
+.B drawing;
+.TP
+.B unsigned
+.B *nfigures;
+.RE
+.PD
+.PP
+\fBDW_RetrieveAll\fR retrieves all the figures on the display list.  The
+figures are returned by the function in space which has been allocated by
+\fBXtMalloc\fR.  The topmost figure will be first in the array.  If no
+figures are located within the area then \fInfigures\fR will contain zero and
+\s-1NULL\s+1 is returned.
+.PP
+.sp
+.nf
+.B "Figure DW_Group (drawing, figures, nfigures)"
+.fi
+.RS
+.PD 0
+.TP 11
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B figures [ ];
+.TP
+.B unsigned
+.B nfigures;
+.RE
+.PD
+.PP
+\fBDW_Group\fR creates a new figure of type \fBGroupFigure\fR.  The members
+of the group are specified by the \fIfigures\fR array.  The number of
+members is specified by \fInfigures\fR.  Group figures are not placed on the
+display list but do affect the \fBDW_RaiseFigure\fR, \fBDW_LowerFigure\fR,
+\fBDW_RemoveFigure\fR, and \fBDW_SetAttributes\fR functions.  Groups may be
+hierarchical.  The figure representing the group, or \s-1NULL\s+1 upon an
+error, is returned.
+.PP
+.sp
+.nf
+.B "void DW_Ungroup (drawing, group)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B Figure
+.B group;
+.RE
+.PD
+.PP
+\fBDW_Ungroup\fR disbands the group pointed to by \fIgroup\fR and
+deallocates the corresponding group figure.  The members of the group are
+unaffected except that they will not belong to any group.
+.PP
+.sp
+.nf
+.B "void DW_GetTextExtents (drawing, string, width, height)"
+.fi
+.RS
+.PD 0
+.TP 9
+.B Widget
+.B drawing;
+.TP
+.B String
+.B string;
+.TP
+.B float
+.B *width;
+.TP
+.B float
+.B *height;
+.RE
+.PD
+.PP
+\fBDW_GetTextExtents\fR retrieves the width and height of a text string, but
+does not draw the string.  The text width and height are stored in \fIwidth\fR
+and \fIheight\fR respectively.
+.SH AUTHOR
+The \fIDrawing\fR widget was developed by Darren C. Atkinson
+(atkinson@ucsd.edu) and Jason I. Gobat (jgobat@mit.edu).
+.SH SEE ALSO
+velvet(1fe), xfelt(1fe).
+.SH BUGS
+Unscaled polygons are currently not implemented.  Greater control is needed
+over drawing attributes such as fill patterns.  Scalable text figures need to
+be implemented if I can ever figure out scalable fonts under \s-1X11R5\s+1.
+The policies applied to grouped figures may need to be changed.  Figures may
+be associated with only one widget and thus the \fIwidget\fR parameter to
+many functions is redundant.
+

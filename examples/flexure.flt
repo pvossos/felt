@@ -1,0 +1,52 @@
+problem description
+nodes=11 elements=10 title="Nonlinear flexural problem"
+analysis=static-substitution
+
+analysis parameters
+load-steps=10
+tolerance=1e-6
+iterations=500
+
+nodes
+1  x=0   y=0   z=0	constraint=fixed
+2  x=10   y=0   	constraint=free
+3  x=20   y=0   
+4  x=30   y=0   
+5  x=40   y=0   
+6  x=50   y=0   
+7  x=60   y=0   
+8  x=70   y=0   
+9  x=80   y=0   
+10  x=90   y=0  
+11  x=100   y=0 	force=end_moment
+
+beam elements
+1   nodes=[1,2]		material=mat1
+2   nodes=[2,3]
+3   nodes=[3,4]
+4   nodes=[4,5]
+5   nodes=[5,6]
+6   nodes=[6,7]
+7   nodes=[7,8]
+8   nodes=[8,9]
+9   nodes=[9,10]
+10   nodes=[10,11]
+
+material properties
+   mat1		E = 2e6  
+ 		A = 10  
+		Ix = 5
+		color = red
+   mat2		E = 4e6  
+ 		A = 10  
+		Ix = 5
+		color = green
+
+forces
+end_moment   Mz=1e5
+
+constraints
+free  Tx=u  Ty=u   Rz=u
+fixed Tx=c  Ty=c   Rz=c
+
+end

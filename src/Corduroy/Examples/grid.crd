@@ -1,0 +1,23 @@
+start-node = 2
+
+grid
+start    = (1,2,3)
+end      = (4,5,6)
+x-number = 2
+y-number = 2
+z-number = 2
+x-rule   = logarithmic
+y-rule   = linear
+z-rule   = logarithmic
+
+grid
+start    = (9,8,7)
+end      = (6,5,4)
+x-number = 2
+y-number = 2
+z-number = 2
+x-rule   = linear
+y-rule   = logarithmic
+z-rule   = linear
+
+end

@@ -1,0 +1,26 @@
+problem description
+title="Spectral Analysis of a Cantilever" nodes=2 elements=1 analysis=spectral
+
+analysis parameters
+beta=0.25  	gamma=0.5  	alpha=0.0  
+start=0.0	stop=100.0	step=1
+nodes=[2] dofs=[Ty] mass-mode=lumped
+
+nodes
+1	x=0.0	y=0.0	constraint=fixed
+2	x=1.0		constraint=free		force=point	mass=10
+
+beam elements
+1	nodes=[1,2]	material=steel
+
+material properties
+steel	A=0.1	E=1e9	Ix=0.01	rho=0.0001
+
+constraints
+fixed	Tx=c Ty=c Rz=c
+free	Tx=u Ty=u Rz=u
+
+forces
+point	Fy=-100000*cos(31.4*t)
+
+end

@@ -1,0 +1,57 @@
+/*
+                                     O                                        
+                                     +                                        
+                                     +                                        
+                O                    +                     O                  
+                 +                   +                    +                   
+                  +                  +                  ++                    
+                   ++                +                 +                      
+                     +               +                +                       
+                      +              +               +                        
+                       +             +              +                         
+                        +            +            ++                          
+O+                       +           +           +                        +O  
+  ++++                    ++         +          +                     ++++    
+      ++++                  +        +         +                  ++++        
+          +++                +       +       ++               ++++            
+             ++++             +      +      +             ++++                
+                 ++++          +     +     +           +++                    
+                     ++++       +    +    +        ++++                       
+                         +++     ++  +   +     ++++                           
+                            ++++   + + ++  ++++                               
+                                +++++++++++                                   
+                                    +O+                                       
+*/
+
+# define DTR	3.14159/180.0
+
+problem description
+title="Truss Sample Problem (Logan #3.35, p.121)" nodes=6 elements=5
+
+nodes
+1 x=0	y=0			        constraint=free	    force=point_load
+2 x=-10*cos(30*DTR) y=10*sin(30*DTR)	constraint=pin
+3 x=-10*cos(60*DTR) y=10*sin(60*DTR)	
+4 x=0		    y=10		
+5 x=10*cos(60*DTR)  y=10*sin(60*DTR)
+6 x=10*cos(30*DTR)  y=10*sin(30*DTR)
+
+truss elements
+1 nodes=[2,1]	material=bar1
+2 nodes=[3,1]	
+3 nodes=[4,1] 	material=bar2
+4 nodes=[5,1]	material=bar1
+5 nodes=[6,1]
+
+material properties
+bar1 A=1 E=10e6
+bar2 A=2 E=10e6
+
+constraints
+pin  tx=c ty=c tz=c
+free tx=u ty=u tz=c
+
+forces
+point_load Fy=-2000
+
+end

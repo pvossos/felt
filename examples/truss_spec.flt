@@ -1,0 +1,26 @@
+problem description
+title="Spectral Analysis of a Spring" nodes=2 elements=1 analysis=spectral
+
+analysis parameters
+beta=0.25  gamma=0.5  alpha=0.0
+nodes=[2] dofs=[Tx] mass-mode=lumped
+start=0.0 stop=20.0 step=0.2
+
+nodes
+1	x=0.0	y=0.0	constraint=fixed
+2	x=1.0		constraint=free		mass=10 	force=point
+
+truss elements
+1	nodes=[1,2]	material=steel
+
+material properties
+steel	A=1.0	E=1000 rho=0.0	Rk=0.0001
+
+constraints
+fixed	Tx=c Ty=c Tz=c
+free	Tx=u Ty=c Tz=c
+
+forces
+point	Fx =  100*cos(40*t - 0.0)
+
+end

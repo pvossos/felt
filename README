@@ -1,0 +1,26 @@
+This is the README file for version 3.02 of FElt  - a package for
+introductory level finite element analysis.
+
+See the file README.old for a basic descriptions of previous versions of FElt
+and what it's all about.  See the file CHANGELOG for a detailed list of
+what's new/fixed in this release.  This is basically an interim bug
+fix release - there are lots of new features but for the most part
+they are only partially implemented ... The list of frequently asked 
+questions (and their answers) is in FAQ (which has not been updated
+for this release).  The documentation (felt-3.02.ps.gz) has also
+only been marginally updated.  It now includes an (incomplete)
+chapter describing the operation of WinFElt.
+
+For installation instructions see the file INSTALL.  The best way to get a
+feel for the package is to use it.  Several examples are provided in the
+examples/ directory.    Nonlinear, loadcase and load range examples
+include truss_nl.flt beam_lr.flt, beam_lc.flt, etc.
+
+As usual, we would like to stress that feedback is always appreciated ... we
+welcome all comments as to usability and functionality.  If you're using the
+package please drop us a note and let us know what you think, even if you've
+got no complaints whatsoever.  Mail bug reports, comments, hints, suggestion,
+complaints, etc. to one of us at the email addresses below.
+
+Jason Gobat					Darren Atkinson
+jgobat@mit.edu					atkinson@ucsd.edu

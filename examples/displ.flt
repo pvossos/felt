@@ -1,0 +1,25 @@
+problem description
+title="Displacement Boundary Condition Example" nodes=5 elements=4
+
+nodes
+1 x=0  y=0 constraint=fixed
+2 x=10     constraint=free
+3 x=20
+4 x=30 
+5 x=40     constraint=fixed_displacement
+
+truss elements
+1 nodes=[1,2] material=spring
+2 nodes=[2,3]
+3 nodes=[3,4]
+4 nodes=[4,5]
+
+material properties
+spring A=1000 E=2000
+
+constraints
+fixed Tx=c Ty=c Tz=c
+free  Tx=u Ty=c Tz=c
+fixed_displacement Tx=0.02 Ty=c Tz=c
+
+end

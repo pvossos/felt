@@ -1,0 +1,106 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH VELVET 1fe "5/19/94" "Version 2.20" "Finite Element Package"
+.SH NAME
+velvet \- X11 based Finite ELemenT design and analysis
+.SH SYNOPSIS
+.B velvet
+[\-\fItoolkitoption\fR]
+[\-sensitive]
+[\+sensitive]
+[\-numbers]
+[\+numbers]
+[\-nodeColor \fIcolor\fR]
+[\-elementColor \fIcolor\fR]
+[\-toolColor \fIcolor\fR]
+[\-labelFont \fIfont\fR]
+[\-toolFont \fIfont\fR]
+[\-nocpp]
+[\-cpp \fIfilename\fR]
+[\-D\fIname\fR[=\fIvalue\fR]]
+[\-U\fIname\fR]
+[\-I\fIdirectory\fR]
+[\fIfilename\fR]
+.SH DESCRIPTION
+\fIVelvet\fR is an X11 based finite element design and analysis package
+based on the \fIfelt\fR(1fe) tool and the \fIfelt\fR(4fe) input file
+syntax (velvet is smoother than felt).  If \fIfilename\fR exists
+then it will be loaded upon startup.  \fIVelvet\fR attempts to locate a
+saved parameter file upon loading an input file.  A saved parameter file
+has a common prefix with \fIfilename\fR but a ".vlv" extension.  If
+\fIfilename\fR does not exist or is absent then \fIvelvet\fR will start
+with an empty problem with the appropriate name.  Details of the mathematics
+and user interface can be found in the user's guide.
+.SH OPTIONS
+In addition to any standard toolkit option, \fIvelvet\fR accepts the
+following options:
+.TP 5
+\fB\-sensitive\fR
+Enable sensitive/insensitive menu switching.  \fIVelvet\fR has two major
+modes of operation, normal mode and edit mode.  Each mode allows only certain
+operations to be performed.  This option allows disabling of the menus
+controlling the inactive operations.  This is the default behavior but
+may be inappropriate on a slow server.  Associated resource: *sensitiveMenus.
+.TP 5
+\fB\+sensitive\fR
+Disable sensitive/insensitive menu switching.  Associated resource:
+*sensitiveMenus.
+.TP 5
+\fB\-numbers\fR
+Enable node and element numbering.  This is the default behavior.  Associated
+resource: *numbers.
+.TP 5
+\fB\+numbers\fR
+Disable node and element numbering.  Associated resource: *numbers.
+.TP 5
+\fB\-nodeColor\fI color\fR
+Sets the color of nodes and node numbers.  The default color is "blue".
+Associated resource: *nodeColor.
+.TP 5
+\fB-elementColor\fI color\fR
+Sets the color of elements and element numbers.  The default color is
+"black".  Associated resource: *elementColor.
+.TP 5
+\fB-toolColor\fR color\fR
+Sets the color of tools (rectangles, lines, circles) and interactive windows.
+The default color is "red".  Associated resource: *toolColor.
+.TP
+\fB-labelFont\fR font\fR
+Sets the font used for node and element numbers.  The default font is "5x8".
+Associated resource: *labelFont.
+.TP
+\fB-toolFont\fR font\fR
+Sets the font used for text drawn using the tools.  The default font is
+"fg-22".  Associated resource: *toolFont.
+.TP
+.B -nocpp
+Do not use a preprocessor on the input file.
+.TP
+.BI -cpp " filename"
+Use \fIfilename\fR as a preprocessor on the input file.  The default
+preprocessor is "/lib/cpp".  Any preprocssor which understands the -D, -U,
+and -I options can be used as these options are passed to the preprocessor.
+.SH WIDGETS
+In order to specify resources, it is useful to know the hierarchy of the
+widgets which compose \fIvelvet\fR.  The application defaults files contain
+(for the most part) fully qualified resource names and should be consulted
+if the resources are to be changed.
+.SH AUTHOR
+\fIVelvet\fR was developed by Jason I. Gobat (jgobat@mit.edu) and Darren
+C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+corduroy(1fe), felt(1fe), burlap(1fe), felt(4fe).

@@ -1,0 +1,143 @@
+This is the INSTALL file for the version 3.x of FElt.  There have been
+considerable changes since version 2.x, so please read this file.
+
+If you have a binary release:
+
+    The default installation prefix is /usr/local.  Executables will
+    go into /usr/local/bin, manual pages into /usr/local/man, and the
+    remaining files into /usr/local/lib/felt.
+
+    If you want to change the installation prefix then you need to do
+    a "./configure --prefix=dir", where "dir" is your prefix.  You may
+    also wish to edit ./etc/Makefile.conf to change the individual
+    installation directories.
+
+    Once the installation directories are set, all you need to do is a
+    "make install" to perform the installation.  Any necessary
+    directories will be created.
+
+
+If you are building from source:
+
+    First, read the README files.
+
+    You will need a C compiler and X11R5 or X11R6, including the
+    Athena widget set, to compile FElt.  FElt will also compile under
+    X11R4 under certain architectures, most notably SGI.
+
+    If you have gcc, we *strongly* recommend using it.  If you don't
+    have gcc then you may get all sorts of weird compile-time errors
+    about prototypes and include files.  Any warnings can probably be
+    ignored.  FElt should compile with the various native Sun
+    compilers.  Our experiences with overcoming several problems of
+    SGIs are included at the end of this file.
+
+    To configure FElt, do a "./configure" from the root of the
+    hierarchy.  On some systems, you may need to do a "sh configure".
+    The configure script should produce a list of defaults for your
+    system and create the ./etc/Makefile.conf file, which contains all
+    of the system specific information.  You can do a "./configure
+    --help" to find out how to pass options to the configure script.
+    You may also edit the ./etc/Makefile.conf file by hand.
+
+    The geompack library used for element generation is written in
+    Fortran, but C versions as converted by f2c are provided.  Using a
+    native Fortran compiler is recommended since it will probably
+    outperform the corresponding C code, but unfortunately,
+    determining what your specific Fortran libraries are is not a
+    simple process so unless you know exactly what you are doing it's
+    not worth bothering with.  You don't need to have the f2c
+    libraries to use the converted code.  If you want to use native
+    Fortran on HP-UX, then there are some hints for you in the special
+    section on HP-UX at the end of this file.
+
+    You can now do a "make" or a "make all" to build the entire package.
+    The various targets are:
+
+    make all
+	builds all executables and libraries
+
+    make clean
+	removes all executables, libraries, and object files
+
+    make clobber
+	same as a make clean, but also removes other files that can be
+	regenerated if you have the correct versions of flex and bison
+
+    make install
+	installs the executables, manual pages, and defaults files
+
+    make depend
+	at present, does nothing
+
+    make test
+	performs a simple test comparing the output from felt on
+	./etc/Tests/mixed_dist.felt with the known answers; the
+	answers may vary slightly due to floating point round-off
+	(available only from the root directory)
+
+    The entire package has been compiled and tested under SunOS (using
+    gcc and Sun's native compilers) and Linux (1.0 and 1.1 kernels).
+    Earlier releases compiled and ran on SystemV386 (R3.2.2 using
+    gcc), various SGI machines, HP-UX 8.0 and 9.0 (using HP's cc and
+    gcc), and DEC (using both OSF/1 and Ultrix) and IBM (AIX)
+    workstations.  There is no reason this one shouldn't do the same.
+
+    We personally prefer the 3D Athena widget set; if it's available
+    on your system and you want to use it, the only thing that we
+    recommend that you change are the application defaults ... simply
+    uncomment the 3D stuff in the file Velvet.ad in the ./src/Velvet
+    directory (and comment the 2D stuff).
+
+    Additional information about building and administering FElt is
+    available in Appendix A of the User's Guide and Reference manual
+    (available separately).  You'll definitely want to read this if
+    you plan on installing and actively using the system.
+
+
+---------------------------------------------------------------------------
+Special notes for SGI users:
+---------------------------------------------------------------------------
+
+Ok, we don't recommend it, but we have had some success at building
+FElt on Irix 4.0.x with the native compiler (and X11R4, which I
+believe is the standard X that is included with 4.0.x).  This is the
+kind of thing where your mileage will definitely vary - we don't
+really have a lot of experience with Irix and have no clue as to how
+consistent this will be across different versions and installations.
+
+In FElt-3.xx/lib/Felt/lexer.c you need to comment out the prototypes for
+malloc and free.  There are two places where definitions occur, you need
+to change the one like:
+
+char *malloc();
+int free();
+
+to look like:
+
+/* char *malloc();
+int free() ; */
+
+Next, copy /usr/include/stdlib.h to FElt-3.xx/include.  In the copied
+file (FElt-3.xx/include/stdlib.h), comment out the line that looks like
+
+extern int	system(const char *);
+
+It's probably somewhere around line 102, it should now look like
+
+/* extern int	system(const char *); */
+
+
+--------------------------------------------------------------------------
+Special notes for HPUX 9.0x, 700 series
+--------------------------------------------------------------------------
+
+If you want to use the native Fortran compiler then from the toplevel
+FElt directory, do 
+
+rm -f ./lib/Geompack/*.c
+
+and add the following variables to ./etc/Makefile.conf
+
+FC      = fort77
+FCOPTS  = -O

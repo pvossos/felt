@@ -1,0 +1,34 @@
+problem description
+title="Logan Example 13.8" nodes=8 elements=8 analysis=static-thermal
+
+nodes
+1	x=0	y=2	constraint=insulated
+2		y=0
+3	x=1	y=1	constraint=free
+4	x=2	y=2
+5		y=0
+6	x=3	y=1
+7	x=4	y=2
+8		y=0
+
+ctg elements
+1	nodes=[1,2,3]	material=steel
+2	nodes=[2,5,3]
+3	nodes=[3,5,4]
+4	nodes=[1,3,4]
+5	nodes=[5,6,4]
+6	nodes=[5,8,6]
+7	nodes=[7,6,8]			load=convection
+8	nodes=[4,6,7]
+
+material properties
+steel	Kx=25	Ky=25	t=1
+
+distributed loads
+convection	values=(1,20) (3,70)
+
+constraints
+insulated	Tx=100
+free		Tx=u
+
+end

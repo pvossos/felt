@@ -1,0 +1,23 @@
+triangular mesh          /* use all defaults, including CSTPlaneStress */
+boundary = [
+   (0,0)
+   (20,0)
+   (20,10)
+   (0,10)
+]
+
+hole = [
+   (6,3)
+   (8,3)
+   (8,7)
+   (6,7)
+]
+
+hole = [
+   (12,3)
+   (14,3)
+   (14,7)
+   (12,7)
+]
+
+end

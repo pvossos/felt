@@ -1,0 +1,24 @@
+problem description
+title="Logan #5.19" nodes=3 elements=2
+
+nodes
+1  x=1 y=5 z=0 constraint=fixed
+2  x=5 y=5 z=0 constraint=xroller
+3  x=9 y=5 z=0 constraint=free
+
+timoshenko elements
+1  nodes=[1,2]   material=aluminum    
+2  nodes=[2,3]   load=side2   
+
+material properties
+aluminum  E=7e+10 A=1 Ix=0.0003 nu=0.3 G=2.7e10
+
+distributed loads
+side2   direction=Perpendicular   values=(1,-8000) (2,-8000) 
+
+constraints
+fixed  tx=c ty=c tz=u rx=u ry=u rz=c
+xroller  tx=c ty=c tz=u rx=u ry=u rz=u
+free  tx=c ty=u tz=u rx=u ry=u rz=u
+
+end

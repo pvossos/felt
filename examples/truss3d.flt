@@ -1,0 +1,27 @@
+problem description
+title="Truss Sample Problem (Logan #3.42, p.123)" nodes=5 elements=4
+
+nodes
+1 x=-72 y=-36 z=0  constraint=fixed
+2 x=0   y=-36 z=0  constraint=fixed
+3 x=0   y=36  z=0  constraint=fixed
+4 x=-72 y=36  z=0  constraint=fixed
+5 x=0   y=0   z=72 constraint=free force=point_load
+
+truss elements
+1 nodes=[1,5] material=steel
+2 nodes=[2,5] material=steel
+3 nodes=[3,5] material=steel
+4 nodes=[4,5] material=steel
+
+material properties
+steel e=30e6 a=4
+
+forces
+point_load fx=1000 
+
+constraints
+fixed tx=c ty=c tz=c
+free tx=u ty=u tz=u
+
+end

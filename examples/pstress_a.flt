@@ -1,0 +1,29 @@
+problem description
+title="CST Sample Problem (Logan #7.11a, p.309)" nodes=5 elements=4
+
+nodes
+1 	x=0 	y=0	constraint=pin
+2	x=500	y=0	constraint=free		force=point
+3	x=500	y=250	constraint=pin
+4	x=0	y=250	constraint=pin
+5	x=250	y=125	constraint=free
+
+CSTPlaneStress elements
+1	nodes=[1,2,5]	material=steel
+2	nodes=[2,3,5]
+3	nodes=[3,4,5]
+4	nodes=[1,5,4]
+
+material properties
+steel	E=210e6 nu=0.30 t=5
+
+constraints
+pin tx=c ty=c
+free tx=u ty=u
+
+forces
+point	fy=-40000*cos(30*3.14159/180.0) fx=40000*sin(30*3.14159/180.0)
+
+end
+	
+

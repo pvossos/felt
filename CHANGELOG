@@ -1,0 +1,899 @@
+** Changes to FElt from 3.00 or 3.01 to 3.02 
+
+The following changes were made to the FElt syntax:
+   1. hooks for a gravity vector in the analysis section.  Doesn't
+      do anything yet, but the syntax is there ...
+   2. "static-substitution" and "static-incremental" are now valid 
+      analysis types
+   3. a "load cases" section and accompanying syntax for named
+      load cases
+   4. syntax for new analysis parameters, "tolerance", "iterations",
+      "relaxation", "load-steps".
+   5. input-node= and input-dof= parameters in the analysis 
+      parameters to allow for parametric studies in which you
+      get a table (or plot) of output that explores displacements
+      as a function of force level at a single input point
+   6. axial and radial are now valid directions for distributed loads
+
+The following bugs/things were fixed/changed:
+   1. the transform matrix for beam3d elements was incorrect if elements
+      had nodes which were out of the x-y plane.
+   2. several problems with the new Makefile scheme were corrected.
+   3. velvet was probably getting the aspect ratios wrong in drawing 
+      3d structures due to an error in the min/max checking.
+   4. the spectrum components of force structures were not being
+      initialized to either zero or NULL
+   5. save's in velvet were actually doing dumps (save all's), minor, 
+      but potentially annoying.
+   6. there was still a problem with the lumped mass matrices for 
+      htk elements.
+   7. the new PrintGlobalMatrices routine took a file pointer but
+      didn't actually use it; things were just going to stdout.
+   8. internal error in burlap's interface wit the matrix lib
+      was causing some problems with inversion and overwriting.
+   9. there were problems with iso_2d elements (or any element with
+      optional nodes) as the renumbering routines were just blindly
+      looping through element -> definition -> numnodes rather than
+      checking to make sure that all of the nodes were in fact valid.
+  10. on a similar note, the checks in velvet for out-of-plane nodes
+      were going over element -> definition -> numnodes rather than
+      element -> definition -> shapenodes (which all have to be valid
+      in the first place).
+  11. there was some sort of problem with the pre-processor and
+      corduroy (don't ask me how these things happen).  I think it's
+      fixed now, but then again, I don't really know what was wrong.
+  12. renamed AssembleStiffness and AssembleDynamic to ConstructStiffness
+      and ConstructDynamic to reflect that they both create and assemble
+      the matrices (this then parallels ConstructForceVector).  Renamed
+      ConstructTransientForce to AssembleTransientForce to reflect 
+      the fact it only fills the thing rather than creating it then
+      filling it.
+  13. the cpp command line wasn't being built properly so you couldn't
+      actually use -I, -D and -U on the felt (and corduroy) command line
+  14. memory initialization problem in Drawing.c
+  15. 2d and 3d Athena widget specific defaults were moved into
+      velvet.c and are now applied automatically at runtime as
+      appropriate.
+  16. the filename printing and scrolling in velvet's file dialog
+      was improved.
+  17. changed the analysis.nodes array into an array of actual node
+      pointers rather than node numbers.  In some ways this adds
+      a layer of complexity because whenever we input analysis nodes
+      we have to resolve their numbers by doing tree lookups in the
+      node tree; on the other hand, it is much more consistent with
+      the way we try to do things everywhere else and allows for the 
+      elimination of a clumsy mapping scheme in the FE routines themselves.  
+      With the elimination of the need for building that scheme in each FE
+      routine we can also stop passing around "old_numbers" for the
+      most part. There is probably a very slight performance hit
+      because now just about every analysis type should restore original
+      node numbers in renumbered problems before they output any
+      results (otherwise their references to analysis.nodes [i] -> number
+      will refer to a node's renumbered number ...).  I got rid
+      of MakeNodeNumberingMap() in renumber.c.
+  18. added a NodeDOF data structure for use in the re-done FindForcedDOF
+      and the accompanying spectral analysis routines ... this parallels
+      what I did to the analysis nodes - removed references to node or
+      DOF number and replaced them with pointers.
+  19. I implemented the concept of "sub-analysis types" so that I
+      could do load cases, parametric input ranges, etc.  What this
+      means is that the user can still only say analysis=static, but
+      depending on if any load cases are defined or if input-node and
+      input-dof are given, the actual analysis type used will be
+      StaticLoadCases or StaticLoadRange.  This means that driver
+      routines should call mode = SetAnalysisMode ( ) and then switch
+      on the local variable mode rather than problem.mode.  It's
+      really a sort of behind the scenes output control ...
+  20. cleaned up the printing of some of the analysis parameters on
+      FElt file writing
+  21. the new material properties for thermal analysis were not 
+      being initialized
+  22. fixed up some problems with incorrect numbers of arguments in 
+      a couple of places in velvet
+  23. the Cholesky factorization was actually returing a matrix 
+      Q such that Q^T * Q = M, rather than Q*Q^T = M which is what
+      the modal analysis routines were actually set-up to handle.
+      This was producing incorrect results for problems with
+      consistent mass matrices.  Thanks to Alvino Cossimo for pointing
+      this out and for providing the appropriate fix.
+  24. The geompack routines are flaking out for some reason that
+      I still haven't really pinned down.  I think I have it at a
+      point where they will work for problems with no holes all
+      the time and for all problems when I turn off the optimization 
+      in gcc.  Given that kind of behavior I wouldn't be surprised
+      to hear about other machine specific strangeness ... if you 
+      discover any let me know.  For now I'll just turn off the 
+      optimization on any machines that it is causing a problem on.
+
+The following features were added:
+   1. the ability to plot force-time histories from the force
+      dialog in velvet.  This means that for any given force
+      you can see what your forces (moments) look like over 
+      the course of your simulation.  It's really just intended
+      to give you a visual check that you have defined it
+      the way you actually wanted it.
+   2. added a magnification parameter to WriteGraphicsFile( )
+      which allows the routine to apply magnified displacements
+      to the nodal coordinates if you want it to spit out
+      a displaced shape plot.  Use 0.0 for backward compatibility.
+   3. an axisymmetric element
+   4. large deformation, incremental, nonlinear static analysis - sort of
+   5. load cases - it feels kind of awkward right now but I couldn't
+      think of any cleaner ways to do it.  Right now, you can define
+      a series of named load cases.  For each load case you get
+      displacement info at each of the analysis nodes and DOF.
+      The load case definition itself consists of a series of
+      (node number, force name) and (element number, distributed name)
+      assignments (the element loads are ignored right now).
+   6. logarithmic, sinusoidal, cosinusoidal, parabolic, reverse-logarithmic
+      and reverse-parabolic spacing for mesh
+      generation in corduroy.  The syntax for logarithmic had
+      always been there but had never actually been implemented.
+      The grid generation functionality was moved into a new
+      dialog to be consistent with triangle generation and
+      to allow for the selection of a given spacing.
+
+      Here's how they work: along a line of length L along which we are 
+      placing the sides of ne elements (ne+1 nodes), the i_th node is 
+      placed at a distance x_i, according to the following rules
+
+      linear:              L * (i - 1)/ne
+      cosinusoidal:        L - L*cos(pi/2 * (i - 1)/ne) 
+      sinusoidal:          L*sin(pi/2 * (i - 1)/ne) 
+      logarithmic:         L*log10(1 + 9*(i - 1)/ne)
+      parabolic:           L*((i-1)/ne)^2
+      reverse-logarithmic: L - L*log10(10 - 9*(i - 1)/ne)
+      reverse-parabolic:   L*sqrt((i - 1)/ne)
+
+      I'm not sure how useful some of them are, but they generate
+      some cool looking meshes.
+     
+   7. the ability to write out global matrices in matlab
+      format from felt
+   8. load ranges - because load cases were awkward :).  It came
+      down to the fact that I could not see one all-encompassing,
+      yet elegant, way to do everything I wanted to do with
+      load cases.  To use load ranges all you need to do is define
+      a single input DOF (with input-node= and input-dof=) 
+      and then a force range (with start=, stop=, step=) and you
+      will get displacement info at your analysis DOF (nodes=[], dofs=[])
+      at each given load level.
+   9. detailed solution information in many places.  A driver application
+      can now turn on detail printing with a single call.  Analysis
+      routines simply make calls to the new function detail() and
+      if the printing flag has been toggled all sorts of ancillary 
+      solution information can be spit out (renumbering info, iteration
+      counts, matrix sizes, etc., etc.).  Of course not all routines
+      have anything important to say.
+  10. FElt -> OOGL translation in patchwork - thanks due to Stefan Majer.
+
+The following things were changed for no apparent reason:
+   1. the velvet color scheme.  I think the new subdued colors
+      give us a more serious look.  The old scheme was really
+      starting to get on our nerves.  I think we're also planning
+      on linking statically against the Xaw3d widgets for as many
+      platforms as possible.  Again, a more serious look.
+   2. moved the etc/Tests directory to examples/
+
+
+** Changes to FElt from 2.30 to 3.00 (released 8/6/95) -
+
+The following changes were made to the FElt syntax:
+   1. constraints can now have ITx= ITy= ... IRz= statements to define
+      a set of initial displacements.  This means that we should now be
+      able to completely and independently define both the initial and
+      boundary conditions for a problem.  Tx= ... Rz= are the boundary
+      conditions and ITx= ... IRx=, Vx= ... Vz=, Ax= ... Az= are the
+      initial conditions.  I really should have done it this way from the 
+      start and technically this fixes a bug that could well have cropped
+      up in transient analysis problems with fixed (non-zero)
+      displacement BCs.  Also note that the Tx=...Rz= statements can now be
+      functions of time (i.e., expressions with t in them) just like forces
+      can be.  This allows for time varying boundary conditions.  
+
+      Is this backwards compatible?  Yes and no.  It allows for clarification 
+      of an ambiguity between boundary and initial conditions (see #3 in
+      bug fixes).  If you currently have problems with non-zero initial
+      conditions then you WILL need to change those files and move the
+      initial condition specification to ITx= ... IRz=.  If you had a
+      problem where the Tx= ... Rz= were supposed to be boundary (as
+      opposed to initial) conditions then chances are that you were not
+      getting the right answer before, but you can leave the file as is
+      and should get the right answer now.  I realize that this may
+      cause some confusion (it did for me as I was trying to work it out)
+      so just drop us a note and we'll try to clarify if you still have
+      questions.
+   2. nodes can now have a lumped mass assigned to them with mass=.  This will
+      simply add this amount of mass directly to the translational DOFs
+      for this node in the global mass matrix.  Completely backwards
+      compatible.
+   3. new analysis types are supported in the analysis= statement in the
+      problem description section.  They are: spectral, static-thermal,
+      and transient-thermal.
+   4. changed the trig functions to take arguments in radians instead of
+      degrees.  Yes, we thought that making them take degrees was a nice
+      little feature when we only thought about them as an aid to defining
+      the geometry of problems with funny angles ... but now it occurs to
+      me that more people are probably using them for harmonic forcing
+      in transient problems and for that, radians is the way to go. 
+      Besides, everybody else does it that way so we probably should 
+      have too right from the start.  This is _not_ backwards compatible
+      obviously and I apologize if it causes anyone major headaches.
+   5. added Kx, Ky, Kz (thermal conductivities) and c (heat capacitance)
+      to the list of available material properties.
+   6. added start=, stop=, step= to the analysis parameters.  stop and step
+      are essentially aliases for duration and dt in a transient analysis
+      problem; the new forms are preferred because they are more 
+      general.  Things were generalized to make room for spectral
+      analysis.
+   7. added an Rk= and Rm= to the analysis parameters.  This allows for
+      a global level of Rayleigh damping as opposed to an element by
+      element (dependent on material property) definition.  If either 
+      of these "global" parameters is given, then the global damping matrix
+      will be based on them and any element by element results will be 
+      thrown out.
+
+The following bugs/things were fixed/changed:
+   1. added a tabbing mechanism and keyboard translations to the line graph
+      drawing shell (time displacement plots).  Honest, I think that's 
+      the last pop-up shell that didn't have them :-))
+   2. put AllocationError() back into misc.c ... don't ask me how it got
+      removed in the first place.
+   3. fixed the fact that fixed displacements were not being handled in
+      transient analysis problems.  In previous versions I was treating
+      the constraint specification (Tx= ... Rz=) as the both initial
+      and boundary condition.  This could cause some real ambiguity issues
+      if you wanted to specify both obviously.  With the current fix,
+      Tx= ... Rz= are now interpreted as time varying boundary conditions 
+      (i.e., they can have t in them) and the initial displacements are 
+      explicitly specified using ITx= ...  IRz =.  See the note on syntax 
+      changes to know if you need to update any of your input files.  
+      If you had problems with non-zero IC then you probably do need to make 
+      some changes (the IC specification should be moved off of of Tx=
+      and onto ITx=).  Sorry for any confusion that this may cause, but
+      really, I think it should be much clearer now.  Note that because
+      I am now treating displacement BC properly, I had to modify the
+      hyperbolic time integration implementation so that d(i+1) is solved
+      for implicitly (as opposed to a(i+1)).
+   4. renamed several functions and moved things around so that all of the
+      ASCII output routines are now in lib/Felt/results.c instead of being
+      spread over fe.c, modal.c and dynamic.c.  Renamed dynamic.c to 
+      transient.c.  The functions which changed names are:
+
+      WriteOutput		->	WriteStructuralResults
+      ResolveConstraints	->	ZeroConstrainedDOF
+      ResolveModalConstraints	->	RemoveConstrainedDOF
+      NewmarkIterate		->	IntegrateHyperbolicDE
+      BuildInitialConditions	->	BuildHyperbolicIC
+      ResolveInitialConstraints	->	ResolveBC
+      EltStresses		->	ElementStresses
+      EltSetup			->	ElementSetup
+
+      Note that ZeroConstrainedDOF can now take NULL for the two
+      force vectors if you only want to zero out the rows and columns
+      in the stiffness (or any other) matrix.  Also ResolveBC does not do any 
+      zeroing out of the stiffness matrix.  All it does is make appropriate 
+      adjustments to the force vector for displacement boundary conditions.
+      I also got rid of CheckModalAnalysisParameters and changed
+      CheckAnalysisParameters to take an AnalysisType argument and
+      check the parameters based on the given analysis type.
+      The upshot of all this is improved clarity I think (plus it forced me
+      to clean-up/organize the prototypes in fe.h).
+   4. in yet another case of fiddling with graph.c I cleaned it up some
+      to make it more robust in terms of plotting both transient structural
+      and transient thermal results (i.e., made labels a parameter instead
+      of hard-coding them, etc.).
+   5. for Burlap's sake we got rid of ElementArray and changed the way   
+      that applications know about the list of available elements.  The
+      element definition structure changed such that the element name,
+      and pointers to the setup and stress functions are included right
+      in the definition structure.  See the updated chapter on adding 
+      new elements for details on how this affects any elements that you
+      have written.  For clarity, src/Velvet/definitions.h was renamed
+      src/Velvet/interface.h so as to not conflict with the new 
+      inc/definition.h file.  inc/element.h is gone completely.  When
+      you add new elements just add the file name to the list of objects
+      in lib/Elements/Makefile and update the initialization procedure in
+      lib/Felt/initialize.c.  There is no separate element configure
+      script that needs to be run and no elements.db file.
+   6. corduroy's debugging option wasn't handling the fairly recent addition
+      of quadrilateral grid generation.  It also wasn't printing out
+      the element type names for each different generation section.
+   7. added a dosdist target to the Makefile to create a zip file of
+      the source needed for the command line applications.  I also
+      patched up several different bits of source to check if the
+      pre-processor symbol DOS is defined to make building DOS binaries
+      less painful and easier for someone else to try.  
+   8. in a final(?) fit of messing with graph.c, I made things lots more
+      robust to make room for plotting power spectra (i.e., the x axis can
+      now be something arbitrary not just nicely spaced time points, all
+      the routines now take the graph structure/shell/drawing widget as a
+      parameter so we can have both power spectra and time domain answers
+      on screen at the same time).
+   9. another round of major cleaning - this time in the form of abandoning
+      the paradigm of passing around node, numnodes, dofs, count, etc.
+      everywhere.  There are now two dofs arrays in the problem structure:
+      problem.dofs_pos is the same as the old dofs array, problem.num_dofs
+      is the same as the variable count that used to get passed around,
+      the new array is problem.dofs_num and it gives the local DOF
+      number (1 through 6) of an active DOF in the problem, i.e., for
+      a mixed beam truss problem the two arrays will be
+
+      problem.dofs_num = [1, 2, 3, 6, 0, 0]
+      problem.dofs_pos = [1, 2, 3, 0, 0, 4] 
+      
+      The new one also allowed me to rewrite the way that various routines
+      search through the active DOFs on a given object for a given node
+      to fill in global arrays. There are also two new routines 
+      GlobalDOF and LocalDOF which map between node number, local DOF and
+      a global DOF number.  Routines that need to access the node and element
+      arrays can simply get to them through the problem structure.
+  10. InvertMatrix was broken (sort of).  It's fixed now but the calling
+      sequence of some things may have to change because it can't trash
+      it's input anymore.
+  11. added ZeroConstrainedMatrixDOF and RemoveConstrainedMatrixDOF for
+      burlap's sake.  Both are much like their more specialized counterparts
+      but are meant to be more generalized.  They only work on one matrix
+      at a time and the input can either be a full, compact or column
+      matrix.  They'll just do the right thing depending on the input.
+  12. modal results now print the frequency in Hz in addition to the radial
+      frequency.
+  13. for consistency's sake you can now draw a polyline tool object
+      with keyboard input (i.e., by inputting a series of coordinates).
+      Also, esc/quit button and ctrl-c/abort button should now work during  
+      polygon draw operations either during keyboard or mouse controlled
+      draws.
+  14. in order to keep things clear and to be consistent
+      with the change to the syntax, the analysis structure members
+      duration and dt were renamed to stop and step.
+  15. renamed WriteModalResults to WriteEigenResults.  WriteModalResults
+      is now a function to print out modal mass, stiffness and damping
+      matrices (and modal damping ratios).  
+  16. eliminated the -printk and -printm options from felt (and the
+      output control in velvet) in favor of -matrices which simply
+      prints out whatever matrices are appropriate to the problem.
+      Also, I wrote PrintGlobalMatrices to keep the solution drivers
+      from getting cluttered up - it will check for matrices of all
+      zeros as well; each analysis type in a switch now just needs to
+      check for the matrices flag and call this new function as
+      appropriate.
+  17. lots of minor cleaning to get gcc -Wall to shutup and some
+      rearranging of various bits and pieces - nothing really at the
+      user level though.  The Makefile scheme also got reworked.
+      Oh yeah, we completely removed xfelt from the distribution.
+      If you really, really want it and you don't already have it 
+      from one of the previous distributions (it hasn't change since
+      about v1.3 I think) then drop us a note and we'll get it to
+      you somehow.
+  18. looks like the velvet distributed load dialog was doing some
+      funny things with a few malloc's so things may have been getting
+      garbled.
+
+The following features were added:
+   1. burlap - yes, it's finally here.  Our very own attempt at a
+      powerful, flexible, easy-to-use interactive environment for doing
+      FEA, burlap lets you script new analyses and new elements; it lets
+      you use the results from current analyses in ways that we didn't
+      think to provide in one of the other applications; it's sort of a
+      FE-aware Matlab-like application.  There are two brand new chapters in 
+      the manual that describe it - yes, it's that big and that powerful.
+   2. thermal (heat transfer) analysis, both steady state and linear time
+      dependent forms.  Two new elements are available for these analyses:
+      a constant temperature gradient triangle (analogous to a CST), and a
+      one-dimensional rod (sort of like a truss, only simpler in that rod 
+      elements can only really exist along a single line because there is no 
+      transformation matrix applied).
+   3. added user contributed elements to the standard distribution. This
+      currently adds a triangular plate bending element (PLTGZ4) to the 
+      element library if you answer yes to the new question in the configure 
+      process (the one about building user contributed elements).  
+   4. corduroy can now generate a grid of brick elements.  This isn't really 
+      anything special but it does allow for a simplistic meshing of a 
+      rectangular solid of some kind.  Chapter 8 of the manual has been 
+      updated to reflect the changes.  Note that because velvet does not have
+      a mechanism for specifying coordinates in 3d, velvet cannot generate
+      these kinds of grids.
+   5. spectral analysis.  Just take what used to be an analysis=transient
+      statement and make it an analysis=spectral statement and watch the
+      fun (of course you really should change the duration and dt into 
+      start, stop and step frequencies and change forces to their frequency
+      domain analogs if you want output power spectra as opposed to just
+      transfer functions).  The output will be the frequency domain analog of 
+      the results that you normally see for transient analysis problems.  As 
+      usual regular old ASCII results are the default but both felt and velvet
+      can plot the power spectra or transfer functions if you want graphical 
+      results.  If you give felt the -transfer option then it will only
+      calculate transfer functions; if not then it will want frequency
+      domain forces to be applied and it will calculate output spectra instead.
+      The transfer only option is also a new toggle in the output/results
+      dialog under the solutions control menu in velvet.
+   6. now clicking on the third mouse button (right button) on a node
+      or element raises both the node (or element) dialog plus the
+      appropriate object dialogs with the objects assigned to that
+      node (or element) already highlighted, i.e., this is an easy
+      way to change the actual definition of a force that is assigned
+      to a node (keep in mind however that objects can be assigned to 
+      more than one node or element so any changes you make could affect
+      other nodes and elements).
+   7. added modal analysis to modal analysis ... what this really means is
+      that I went ahead and added some capabilities beyond just finding
+      the eigenvalues and eigenvectors.  You can now calculate the 
+      modal mass, stiffness, and damping matrices.  You can also just stop
+      at the eigenvalues and eigenvectors if you want to using the
+      -eigen switch in felt.  felt also has a new switch (-ortho) to control
+      the use of orthonormal mode shapes.  Both switches are also available
+      in the revamped output/results dialog available from the solutions
+      menu in velvet.
+   8. added a -preview option to felt.  It tries to draw an ASCII rendering
+      of the structure described by the input file.  It's far from 
+      perfect but for a lot of structures it may be enough for a quick
+      check of the validity of the problem geometry.
+   9. a very simple, one-dimensional spring element was added.  It's 
+      basically the truss without a transformation from local to global
+      coordinates; they should only ever be defined along the global
+      x axis.
+  10. added "ctrl-t ?" keyboard shortcuts for the drawing tools (ctrl-t c
+      for a circle for instance; ?=l for line, ?=t for text, ?=p for polygon,
+      ?=r for rectangle, ?=a for arc).
+      
+** Changes to FElt from 2.23 to 2.30 (released January 18, 1995) -
+
+The following bugs/things were fixed/changed:
+   1. planar elements were drawn all wrong during animation
+   2. changes to a parameter for a material property after already having 
+      solved the problem once were not properly reflected in subsequent solves.
+      The bug was in something the element library was doing but only really
+      showed up in velvet.
+   3. The original shape for 3d wireframe plots was still being drawn in
+      yellow rather than with a dashed line like it should have been based
+      on the changes from 2.0 to 2.1.
+   4. The initial implementation of the lumped mass matrix for beams did
+      not calculate an inertia for rotational DOF.  In playing around
+      with modal analysis I noticed that we should probably put something
+      in there for consistency with the kinds of answers that most people
+      expect to get.  Changed for beam3d and timoshenko elements as well.
+   5. stiffness matrices and material statistics were only printed in
+      static analysis problems.  Mass matrices can now be printed for
+      both transient and modal analysis problems as well.  Note that the
+      stiffness and mass matrices for modal analysis problems are completely
+      condensed (i.e., constrained DOFs are completely removed from the 
+      problem, not simply zero'd out).  This is one way to look at the 
+      same kind of stiffness and mass matrices for a problem that you are
+      also doing by hand (in assembling by hand of course, few if any of of us
+      actually bother to assemble the constrained DOFs in the first place).
+   6. the contour field drawing routines wasn't cleaning up properly if an
+      error occurred in the middle of the interpolation process.
+   7. moved the velvet routines in misc.c into text_entry.c and group.c 
+      to better reflect exactly what they did.  misc.h is now text_entry.h
+      because it only had prototypes for the text stuff.
+   8. I changed the matrix printing routines to make the output look more
+      like some other programs that pretty print matrices ... I think it's
+      more readable this way.
+   9. fixed scaling problems in structure/animate plots when the structure
+      only existed in one dimension (i.e., a line).  Also fixed the  
+      problem of the animation widget resizing itself too small on 
+      tall, slender structures (in essence it was not trult consistent with
+      the new plotting method of resizing/clicking/drawing ...).
+  10. added a tabbing mechanism and keyboard translations to the animation
+      pop-up shell.
+  11. I actually wrote a new README for this release.  I've also moved all the
+      old README (alpha, 1.3, 2.0) into a single file: README.old
+  12. slight fix-up to the configure script so it looks for /usr/X11R5 and
+      /usr/X11R6 for X includes and libraries.
+ 
+The following features were added:
+   1. a three-dimensional solid, 8-noded brick element was added to the
+      element library.  See chapter 3 of the updated manual for details on
+      how to use it.  There is a very simple example in etc/Tests/brick.flt.
+      For the most part, brick elements will be hard to use in velvet 
+      because of velvet's problems with drawing and defining a problem in
+      3d.  However, the wireframe structure plots (under post processing ...)
+      have been modified and should be able to handle basic rendering 
+      of problems with bricks in them (no hidden line removal though ...).
+      Animation and mode shape plots still don't work for these.
+   2. a basic form of modal analysis has been added.  Change the analysis=
+      to modal in the problem description section and FElt will calculate
+      the eigenvalues and eigenvectors for the problem.  See modal.flt
+      in etc/Tests and the new section at the end of chapter 2 in the manual.
+      Some velvet specific notes have been added in Chapter 7 (there were
+      changes to the problem/analysis and output control dialogs).  I also
+      added a section in chapter 9 to describe the numerical procedure FElt
+      uses to actually solve the generalized eigenvalue problem.
+   3. a version flag to felt.  I also added inc/version.h to help keep this
+      updated here and anywhere else it might be needed.
+   4. examples that illustrate multiple distributed loads on an element
+      (etc/Tests/dist_mult.flt) and a simple simply supported beam
+      (etc/Tests/beam_ss.flt).  
+   5. replaced GIF support with PPM support for saving images of contour
+      plots.  Though PPM is perhaps not as widespread, it is fairly well
+      supported between pbmplus and xv.  If nothing else, pbmplus gives you 
+      the power to translate to just about any other format you could think of.  
+      Note that PPM images can get pretty big, pretty quickly; you'll
+      probably want to convert to a compressing format or simply compress
+      the actual PPM file with something like gzip.  The reason for the change
+      should be obvious with all the current hoopla about CompuServe and
+      their attempted restrictions on the use of GIF - we simply figured
+      why bother with it.  We figured that EPS (see next note) and PPM
+      would be good enough for now and we'll think about changing it again
+      once some sort of simple 8-bit standard image file format begins to
+      emerge.  
+   6. encapsulated postscript support for saving contour plots.  I also
+      hacked up the file dialog yet again to make it more robust in terms
+      of having arbitrary labels on the toggles (i.e., XWD/PostScript vs.
+      PPM/EPS). 
+
+** Changes to FElt from 2.22 to 2.23 (released September 7, 1994) -
+
+The following bugs were fixed:
+   1. the problem title was not being set properly in the problem/analysis
+      dialog box.
+   2. a transient analysis problem with no nodes or DOFs defined didn't
+      save right from velvet (and therefore did not load back in either).
+   3. changed the animation and drawing popup shells to topLevel class from
+      transient because some window managers actually do some things right
+      and don't allow you to resize transients ...
+   4. invalid node numbers in a distributed load on a CST could produce core 
+      dumps because the error checks were being done in the wrong order.
+   5. the heuristic for deciding how to orient the wedge on a stress or a 
+      displacement plot was not self-consistent throughout the plotting
+      routines and in some cases this caused the scale to draw on top of
+      the actual plot.
+   6. corduroy did not put the problem description section on top of the
+      output so the resulting file could not be used directly in velvet.
+      There may have been some reason for this initially, but I can't think
+      of what it was now and it struck me as kind of annoying when I came
+      across it.
+   7. the mass matrices for HTK plate bending elements were wrong (I think).
+
+The following features were added:
+   1. corduroy and velvet can now generate a grid of quadrilateral elements.
+      This isn't really anything special but it does allow for a simplistic
+      meshing of a rectangular plate of some kind.  Chapter 8 of the manual
+      has been updated to reflect the changes.
+
+** Changes to FElt from 2.21 to 2.22 -
+
+The move to 2.22 involved purely structural changes and minor fix-ups to
+allow for cleaner compiles on different platforms using a couple of 
+different compilers.  The most visible change is the renaming of bin
+to src for consistency with current trends in other software packages.
+
+** Changes to FElt from 2.20 to 2.21 -
+
+The following change was made to the FElt syntax:
+   1. materials, constraints, loads and forces can all now have a color=
+      parameter to control the new multi-color rendering in velvet.  In
+      general the parameter would only get set by velvet during a save so
+      that colors would be maintained when the file is read back into 
+      velvet.  Other FElt applications will effectively ignore the color=
+      entirely.  The change is completely backward compatible of course.
+
+The following bugs were fixed:
+   1. The wrong menu was left sensitive during edit operations.  You should
+      have access to the canvas menu not the post-processing menu during
+      an edit.  Also made the four object pop-up menu controls sensitive
+      during edits to make it easier to change the active constraint, etc.
+      in the middle of an add operation and cleaned up the stuff that
+      should always be sensitive in the Canvas menu.  
+   2. Reading in a material database didn't automatically update the material
+      list in the element dialogs.
+   3. Changing canvas parameters in the middle of adding nodes / elements 
+      was not immediately reflected in the additions after the change was
+      made. 
+   4. Moving the first node of a line element caused that element to be
+      drawn improperly (such that it looked like it wasn't drawn at all).
+   5. renamed the actual executable filename of patchwork to patchwork
+      (instead of pw).  This means that if you ever actually installed
+      FElt-2.20 you should be sure to clobber the pw executable because the
+      new one will not overwrite the old one.  Sorry about that.
+   6. mass of truss elements not entirely in the z-plane was not properly
+      calculated.
+   7. saving a problem with no nodes or elements caused a core dump.
+   8. saving more than one GIF plot during a single session tended to be
+      unreliable ... If anyone ran into a problem where the _first_ GIF saved
+      was somehow corrupted then we'd like to hear about it because that may
+      be a separate bug.
+
+The following features were added:
+   1. A unique color can be assigned to each material, load, constraint, force.
+      This means that in velvet, elements (nodes) with different material 
+      properties (constraints) can be rendered in different colors.  If
+      an element (node) has a load (force) assigned to it then the load
+      (force) coloring will override the material (constraint) color.
+      The coloring for all objects is controlled from a single dialog 
+      accessible via the canvas menu.  
+   2. The way that post-processing windows get sized was changed to allow for
+      more user control.  Now when you plot something the first thing that 
+      happens is the window comes up blank.  You can resize this window 
+      as appropriate.  The plotting won't start until you click in the 
+      drawing area (the big blank white space); once it does start it will
+      use whatever size you had the drawing area when you clicked.
+   3. Unified the code for the post-processing drawing shells and added
+      tabbing mechanisms and keyboard translations to them.  The layout
+      widget is also now responsible for their geometry management. 
+   4. A unit conversion and problem scaling application called 
+      yardstick.  See the new subsection on units in chapter 2 and the
+      new manual page for details.
+
+** Changes to FElt from 2.16 to 2.20 -
+
+No changes to the FElt syntax.
+
+The following bugs were fixed:
+   1. the install target didn't install anything from bin/Corduroy ... oops
+   2. a couple of tweaks were made to allow for easier compiles on certain
+      machines.  see new special instructions at the end of the INSTALL file.
+      Some of these tweaks/instructions should allow for compilation of
+      FElt on systems with X11R4.
+   3. resolved the problem of circular dependencies between libelt and libfelt.
+      All of the basic matrix routines are now in lib/Matrix ... we did
+      a new library for a new application that's in the works so we might
+      as well use it for everything else.  A couple of utility routines
+      also got moved ... ElementArea ( ) is now in lib/Elements/misc.c, 
+      ZeroRowCol ( ) is now in lib/Elements/misc.c.  The new matrix library
+      has more transparent sort for compact column matrices so some of 
+      the details of routines in fe.c and dynamic.c changed.  We probably
+      introduced a few bugs by changing a major component of the mathematical
+      routines, but oh well, it's all in the name of progress, we promise.
+   4. the configuration process was changed - building xfelt is now an option
+      and the default is no.  With velvet available and xfelt not having
+      changed in several releases, we see little point in building it over
+      and over again.
+
+The following features were added:
+   1. a new application, patchwork, was added to the system.  patchwork 
+      allows you to convert files from other packages to the FElt syntax (and
+      vice versa).  Right now it can read FElt, AutoCAD-like DXF files, and
+      gnuplot data files and it can write FElt, DXF, gnuplot data, and files 
+      formatted for the software in Logan's book.  There's a new section at 
+      the end of chapter two of the manual with some more details.
+   2. The bulky solution/output dialog box was broken up into three new
+      dialogs: one to toggle solution output and one each for contour plotting
+      and structure plotting.  The latter two allow more control than was 
+      previously available for the post-processing options.  The new output
+      toggling mechanisms also now mirrors all of the command line options
+      available in felt (i.e., printk and debug are now implemented).
+      The postprocessing options and controls were moved from the solutions 
+      menu to a new menu called, appropriately enough, postprocessing.
+      The problem title and analysis mode were moved to the analysis 
+      parameters dialog box - this one dialog now is exactly analogous to
+      the problem description and analysis parameters section of the
+      FElt syntax.  The renumber toggle button (for temporary renumbering
+      during solutions only) was moved to a menu based switch on the nodes
+      menu.
+
+** Changes to FElt from 2.15 to 2.16 -
+
+No changes to the FElt syntax.
+
+The following bugs were fixed:
+   1. hitting quit with no boundary markers during element generation in
+      velvet caused some really stupid errors - even core dumps.  
+   2. plotting stress contours for a problem with all zero stresses 
+      caused floating exceptions (surprise, surprise).
+   3. plotting structure plots by doing a plot structure on solution from
+      the output dialog box either didn't work right or core dumped
+   4. plotting anything for iso2d elements was generally pretty screwed up
+   
+The following features were added:
+   1. the ability to move tool figures around the drawing area in velvet -
+      simply select move from the tools menu, click on the figure to relocate,
+      move it around, and click again to drop it in the new position.
+   2. feature or bug-fix?  iso_quad elements actually define a mass matrix
+      now during transient analysis (always lumped)
+   3. a bindist target was added to the main Makefile to simplify making
+      binary distributions
+
+** Changes to FElt from 2.1 to 2.15 -
+
+No changes to the FElt syntax.
+
+The following bugs were fixed:
+   1. Trying to plot stresses for an invalid stress component probably 
+      produced unpredictable results as we weren't checking for this.  Now
+      velvet should (rightly) report an error when you give a stress 
+      component that is out of range.
+   2. There is better colormap handling - if it can't get 128 colors it will
+      use (and most importantly make maximum use of) what it can get.  It
+      also warns when it only get 64 colors or less (half of what it
+      wanted to get).  The results could get kind of screwy previously.
+   3. The first time you type make it should check to see if you have done
+      a make config or not - if not it will force you to do one.  We also
+      removed the etc/config.in file so the make config should now do a 
+      better job of guessing what local defaults should be.
+
+The following features were added:
+   1. A new plate bending element was added, with symbolic type name
+      "htk".  It has four nodes (where the fourth can be the third repeated
+      for degeneration to a triangle), and 3 DOFs (Tz, Rx, Ry).  The 
+      internal forces calculated are M11, M12, M21, Q1, and Q2. Distributed
+      loads on these still aren't operational. There is an example in 
+      etc/Tests/htk.flt.
+   2. The ability to do color shaded contour plots of nodal displacement
+      components for planar elements.  (Just like stress plots).  This is
+      one good way to visualize the Tz DOF of a problem with the new htk 
+      elements.  The solution control dialog was modified to handle the
+      controls of these plots.
+   3. Dumping any of the color contour plots now produces a GIF file instead
+      of an XWD.  The theory here is that GIFs are easier for most people
+      to work with - plus you don't have to worry about whether or not the
+      window is obscured when you click on OK in the file dialog.
+
+** Changes to FElt from 2.0 to 2.1 -
+
+The following changes were made to the FElt syntax:
+   All changes are completely backward compatible in this release - all
+   original v2.0 (or v1.3 even) problems will not need any modifications.
+
+   1. addition of canvas configuration and display list sections to 
+      standard FElt syntax to replace the .vlv files.  Now all of the
+      customization for problem appearance and tool figures is stored
+      directly in a plain-text format right within the standard FElt
+      file.  If these sections are present and felt is used on the problem
+      they are simply ignored.  If velvet is used to read the file then
+      this info will be used to restore the canvas to its previous
+      appearance and to reconstruct all of the tool figures.
+
+The following bugs were fixed:
+   
+   1. cpp_args was not initialized in problem.c (ParseCppOptions) which
+      broke the file handling on a DEC Alpha (thanks to Sanjay Gavindjee)
+   2. some very early editions of v2.0 that may have gone out did
+      not properly read from standard input.
+
+The following features were added:
+   
+   1. PostScript output in canvas dumps, structure plots, etc.
+      A mod to the file dialog to allow for optional toggle buttons
+      which control whether the user wants XWD or PS output.
+   2. line styles went into the drawing widget.  In structure plots
+      this means that the original undisplaced structure is drawn
+      with a dashed rather than a yellow line.
+   3. renamed the Problem ... menu to Solutions ..., renamed Define ...
+      under this menu to Output ... in an attempt to be more explicit
+      about what those options actually do.  Dump ... under Canvas ...
+      was renamed to Save canvas ...
+   4. graphical time-displacement plots in place of the regular felt
+      output ascii versions ... much nicer and they save as PostScript 
+      plots that print really well.
+   5. elimination of those damn .vlv files in favor of additions to the
+      FElt syntax to describe all of the canvas and tool stuff in plain
+      text.  (see above) 
+   6. the cursor in the main drawing area changes to a watch during
+      computational waits now (ooh, ahhh).
+   7. corduroy ... no really now, it's actually a complete program
+      that actually works. (see the new chapter in the manual)
+   8. in that same vein, a routine to coalesce nodes was incorporated
+      into all the generation stuff.  What this means is that you 
+      should now be able to get away with generating elements in
+      adjacent regions at two different times, etc.  Nodes that are
+      very near to each other, but are not connected (i.e., because
+      you generated a bunch of elements and nodes and then went back
+      and did the same thing right near or next to the first bunch)
+      will be merged together.
+
+** Changes to FElt from 1.3 to 2.0 (released February 12, 1994) -
+
+The following changes were made to the FElt syntax:
+   All changes are completely backward copmpatible in this release - all
+   original static problems will not need any modifications.
+
+   1. t is now a valid token in expressions.  In a transient analysis problem
+      it will stand for time in a force and be dynamically evaluated throughout
+      the course of the simulation.  In static problems it will simply
+      be evaluated at t=0 at startup and treated as a constant expression.
+   2. valid expressions can now use the intrinsic functions hypot, log, 
+      log10, ceil, floor, fmod, fabs, exp and pow.  They can also make use of
+      the C style ternary if-then-else operator (t < 10 ? 15*t : exp(-0.03*t))
+   3. a mechanism for time-magnitude pairs for discretized dynamic forces
+      was added.
+   4. an analysis= parameter in the problem description section to control what
+      type of analysis is performed (static or transient) for that problem.
+      The default is static if nothing is specified.
+   5. an "analysis parameters" section to control the variables in 
+      transient analysis problems - beta, gamma, and alpha are parameters
+      in the HHT integration scheme.  duration and dt control the length
+      and the time-step of the integration.  nodes= and dofs= control
+      what node (and which DOFs at each node) are included in the output.
+      mass-mode= controls what type of element mass matrices should be formed, 
+      either consistent or lumped.
+   
+The following bugs were fixed:
+   1. a couple problems with trying to solve problems (or do anything for that
+      matter) after you'd deleted elements in velvet.
+   2. the variable 'time' in lib/Widgets/post.c was renamed 'when' to avoid
+      conflicts with some installations of gcc
+   3. a local implementation of strdup was provided for systems that insist
+      on being totally and solely ANSI and POSIX compliant.
+   4. delete window hooks were added to the post-processing popups so you
+      can now close them with the window manager and the entire program
+      won't crash.
+   5. a bug? ... well, the Fortran compiler was taken out as an option in
+      the configuration - it's just too confusing for people as most people
+      do not know what the extra libraries are that they need to link in.
+ 
+The following features were added:
+   1. transient analysis using Hilbert-Hughes-Taylor alpha variant of
+      Newmark integration.  The C and M matrices are also assembled directly
+      into a compact column representation.  Dynamic forces can be specified
+      as continuous functions of t (see syntax changes above).
+      -plot and -table options were added to felt to control the output.
+   2. direct assembly into compact columns for the K, M and C matrices - this
+      can represent a major savings in memory.
+   3. automatic node renumbering for bandwidth/profile reduction of the
+      matrices - in felt it is activated by a command line switch;
+      in velvet you can do it once and for all and the way your problem
+      is shown and saved will reflect the new numbering or you can implement
+      it with a toggle as in felt that just does it to solve the problem
+      and then reverts back to the old numbers to show you your solution
+   4. renumber and summary toggles were added to the solution dialog in
+      velvet to mirror felt command line options.  plot and table toggles
+      in that same dialog reflect new command line options in felt that control
+      the output for a transient analysis problem.
+   5. static and transient mode analysis toggles in the solution dialog
+      to control the problem mode (equivalent to analysis= in the problem
+      description section of a FElt file).
+   6. an analysis parameters dialog box to account for the new section
+      in the FElt syntax.
+   7. animation of transient analysis simulations as a special case solution
+      mode for these types of problems.  The animation popup includes controls
+      for speed, play forward/backward, stop and a time counter. 
+   8. the ability to evaluate an expression wherever velvet is expecting a
+      floating point number in a dialog box (i.e., forces, material properties,
+      nodal coordinates) just like you can use an expression in the regular
+      FElt syntax, including the variable t in dynamic forces.
+   9. element mass matrix (consistent and lumped) definitions for truss, 
+      beam and timoshenko elements.  Only lumped mass formulations are done
+      for beam3d and cst elements.  Nothing is done for isoparametric 
+      elements.
+
+** Changes to FElt from 1.0a to 1.3 (released November 7, 1993) -
+
+The following changes were made to the FElt syntax:
+   1. addition of 'hinge' or 'h' as a keyword after the R[xyz]=
+      token in a constraint to indicate a hinged DOF
+   2. addition of a valid expression after the T[xyz]= or R[xyz]=
+      token in a constraint to indicate a displacement boundary  
+      condition.  Tx=c for examples is now equivalent to Tx=0.0.
+   3. directions 'x','y', and 'z' are no longer valid.  This is
+      the only backward incompatible change to the syntax.  Valid
+      directions now include LocalX, LocalY, LocalZ, GlobalX,
+      GlobalY and GlobalZ.  Check the element definitions in the
+      user's manual to see what these things mean.
+   4. you can now use sqrt() in expressions (just like you   
+      you could use sin, cos and tan before).
+
+The following bugs were fixed:
+   1. a bug in xfelt which caused a core dump when you tried to
+      draw a problem in 3d when it was only a 2d problem.
+   2. a bug in the internal forces calculated for beams which always
+      caused the second end moment to be printed as zero.
+   3. several bugs in 3d beam elements including an error in the
+      global <-> local transform matrix and a typo in the resolution
+      of distributed loads.  I think they actually work now :-).
+   4. not really a bug, but the directions of loads on beam elements'
+      got straightened out and is probably a bit more consistent now.
+   5. consistency amongst text commands, menu options and keyboard
+      shortcuts was substantially improved.
+   6. does the original user's manual count as a bug?  Well the new one
+      should actually print on any old postscript printer, plus it
+      contains a wealth of new information and is organized a whole lot
+      better.
+
+The following features were added:
+   1. hinged DOFs, displacement boundary conditions.
+   2. a simple, illustrative Timoshenko beam element.
+   3. plotting of 2d planar stress fields with color imaging in velvet.
+   4. plotting of the displaced structure in velvet.
+   5. loads directed along the global coordinate axes on beams and beam3ds 
+   6. a real file selection mechanism for velvet
+   7. much improved, consistent, self-contained force, material, 
+      load and constraint dialogs in velvet
+   8. unified node and element edit/info dialogs
+   9. a problem solution control dialog in velvet
+  10. unified interface mechanism for all the dialogs, including tab groups
+      and the ability to leave dialogs up throughout a work session
+  11. translation include files and a built-in include path for cpp
+      in felt and velvet.
+  12. element numbering
+

@@ -1,0 +1,58 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH CORDUROY 1fe "2/25/94" "Version 2.1" "Finite Element Package"
+.SH NAME
+corduroy \- element mesh generator
+.SH SYNOPSIS
+.B corduroy
+[\-help]
+[\-debug]
+[\-nocpp]
+[\-cpp \fIfilename\fR]
+[\-D\fIname\fR[=\fIvalue\fR]]
+[\-U\fIname\fR]
+[\-I\fIdirectory\fR]
+[\fIfilename\fR]
+.SH DESCRIPTION
+\fICorduroy\fR is an element mesh generator with a flexible input file
+syntax (see \fIcorduroy\fR(4fe)) that writes a \fIfelt\fR(4fe) file to
+standard output.  If no \fIfilename\fR is given then the standard input is
+used.  Any syntactic or semantic errors are reported to standard error.  A
+complete description of the mathematics can be found in the user's guide.
+.SH OPTIONS
+\fICorduroy\fR accepts the following options:
+.TP 5
+.B \-help
+Write a message describing valid command line options to standard error
+and exit.
+.TP
+.B \-debug
+Write the processed file to standard error in the form of a valid input
+file.
+.TP
+.B \-nocpp
+Do not use a preprocessor on the input file.
+.TP
+.BI \-cpp " filename"
+Use \fIfilename\fR as a preprocessor on the input file.  The default
+preprocessor is "/lib/cpp".  Any preprocssor which understands the -D, -U,
+and -I options can be used as these options are passed to the preprocessor.
+.SH AUTHOR
+\fICorduroy\fR was developed by Jason I. Gobat (jgobat@mit.edu) and Darren
+C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+felt(1fe), velvet(1fe), corduroy(4fe), felt(4fe), burlap(1fe).

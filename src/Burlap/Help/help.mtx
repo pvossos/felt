@@ -1,0 +1,130 @@
+func chol
+chol (X)
+
+    Returns the cholesky decomposition, B, of X, such that B*B' = X.  B
+    will be lower triangular.  X must be symmetric and positive definite.
+
+
+func cols
+cols (X)
+
+    Returns the number of columns of X.  A scalar is defined to have a
+    single column.
+
+
+func compact
+compact (X)
+
+    Returns a compact-storage matrix whose elements are identical to X,
+    which must be a symmetric matrix.  The space required by a compact
+    matrix is approximately equal to the number of non-zero entries.  The
+    compact representation of a scalar is itself.
+
+
+func det
+det (X)
+
+    Returns the determinant of X, which must be nonsingular.  The
+    determinant of a scalar is itself.
+
+
+func eig
+eig (X)
+eig (X, V)
+
+    Return a column vector containing the eigenvalues of X, which must be
+    square.  If X is a scalar then X is returned.  If a variable V is
+    specified and X is symmetric then V will contain the matrix of
+    eigenvectors on output.  Otherwise, V is ignored.
+
+
+func eye
+eye (m)
+eye (m, n)
+
+    Returns an identity matrix of size (m x n).  If n is omitted then an
+    (m x m) matrix is returned.  Both m and n must be scalars.
+
+
+func inv
+inv (X)
+
+    Returns the inverse of X, or (1/X).  X must be a either a nonsingular
+    matrix or a non-zero scalar.
+
+
+func lu
+lu (X)
+lu (X, L)
+lu (X, L, U)
+lu (X, L, U, P)
+
+    Computes the LU decomposition of X, which must be nonsingular.  The
+    return value is row permuted combination of L and U, with the diagonal
+    of L not being stored since L is unit lower triangular.  If the
+    remaining parameters are variables then they will contain L, U, and/or P
+    (the permutation matrix) on output, such that P*L*U=X.
+
+
+func norm
+norm (X)
+norm (X, s)
+
+    Returns the norm of X.  If X is a scalar then s is ignored and the
+    absolute value of X is returned.  If X is a vector then s may be one of
+    "1", "2", or "fro" indicating that the 1-norm, 2-norm, or frobenius-norm
+    (identical to the 2-norm) is to be computed.  The default is to compute
+    the 2-norm.  If X is a matrix then s may be either "1" or "fro"
+    indicating that the 1-norm or frobenius-norm is to be computed.  The
+    default is to compute the frobenius-norm.
+
+
+func ones
+ones (m)
+ones (m, n)
+
+    Returns a matrix of size (m x n) whose elements are all one.  If n is
+    not specified then an (m x m) matrix is returned.  Both m and n must be
+    scalars.
+
+
+func qr
+qr (X)
+qr (X, Q)
+qr (X, Q, R)
+
+    Computes the QR decomposition of X, which must be overdetermined (tall
+    and thin).  The return value is R, which is right triangular, such that
+    Q'*X=R.  If a variable Q is specified then it will contain the
+    orthogonal matrix of the decomposition on output.
+
+
+func rand
+rand ( )
+rand (m)
+rand (m, n)
+rand (m, n, s)
+
+    Returns a matrix of size (m x n) with randomly generated elements
+    between zero and one.  If n is omitted then an (m x m) matrix is
+    returned.  If both m and n are absent then a random scalar is returned.
+    If s is specified and is non-zero then it used to seed then random
+    number generator.  Both m and n must be scalars.
+
+
+func rows
+rows (X)
+
+    Returns the number of rows of X.  A scalar is defined to have a
+    single row.
+
+
+func zeros func zeroes
+zeros (m)
+zeros (m, n)
+
+    Returns a matrix of size (m x n) whose elements are all zero.  If n is
+    not specified then an (m x m) matrix is returned.  Both m and n must be
+    scalars.
+
+

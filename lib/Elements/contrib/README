@@ -1,0 +1,9 @@
+The elements defined by the source files in this directory are not supported
+by the authors of FElt.  We just collect them from people who have written
+them and make them available as part of the standard distribution as a
+convenience to you the user who might find them useful.  For details on
+any of them I strongly recommend that you simply take a look at the source
+code and associated comments.  These elements will be included in the
+standard element library during the default build process.  If you do not
+want them included edit the Makefile in lib/Elements and set the CONTRIB =
+line to nothing (i.e., make it empty).  

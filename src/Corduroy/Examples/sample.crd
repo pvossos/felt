@@ -1,0 +1,13 @@
+line
+start	= (0,0)
+end	= (10,10)
+number	= 2
+element-type	= beam
+
+line
+start	= (10,10)
+end	= (20,20)
+number	= 2
+element-type 	= beam
+
+end

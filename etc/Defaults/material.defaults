@@ -1,0 +1,9 @@
+material properties
+one_inch_bar A=1.0    E=30e6
+two_inch_bar A=2.0    E=30e6
+no_8_bar     A=0.7854 E=30e6
+no_9_bar     A=0.994  E=30e6
+no_3_bar     A=0.1104 E=30e6
+no_5_bar     A=0.3068 E=30e6
+
+end

@@ -1,0 +1,27 @@
+problem description
+title="Simple Brick" nodes=8 elements=1 analysis=static
+
+nodes
+1 	x=0	y=0	z=0	constraint=fixed
+2	x=1		
+3	x=1	y=1
+4	x=0	y=1
+5	x=0	y=0	z=1	constraint=free		force=corner
+6	x=1						force=corner
+7	x=1	y=1					force=corner
+8	x=0	y=1					force=corner
+
+brick elements
+1 nodes=[1,2,3,4,5,6,7,8] material=steel
+
+material properties
+steel nu=0.3 E=30e6
+
+forces
+corner Fz=1000
+
+constraints
+fixed	Tx=c Ty=c Tz=c
+free	Tx=u Ty=u Tz=u
+
+end

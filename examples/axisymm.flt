@@ -1,0 +1,27 @@
+problem description
+nodes = 5 	elements = 4		title = "Axisymmetric Example"
+
+axisymmetric elements
+1  nodes=[1,2,5]	material = steel
+2  nodes=[2,3,5]
+3  nodes=[3,4,5]
+4  nodes=[4,1,5]	load = pressure
+
+nodes
+1  x=0.5	z=0	constraint=free
+2  x=1.0	z=0	
+3  x=1.0        z=0.5	
+4  x=0.5	z=0.5	
+5  x=0.75       z=0.25	
+
+distributed loads
+pressure direction=radial  values=(2,1) (1,1)
+
+material properties
+steel   E=30e6   nu=0.3
+
+constraints
+roller Tx=u	Tz=c
+free   Tx=u     Tz=u
+
+end

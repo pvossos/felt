@@ -1,0 +1,8 @@
+problem description
+title="Truss Problem" nodes=0 elements=0
+
+constraints
+pin	tx=c	ty=c	tz=c
+free	tx=u	ty=u	tz=c
+
+end

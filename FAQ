@@ -1,0 +1,296 @@
+This is the list of frequently asked questions for FElt 
+
+last modified: 07-16-95 
+
+ 1. What is FElt? 
+      What kinds of problems can FElt solve? 
+      Can FElt solve my type of problem? 
+      Can I modify FElt to make it solve my type of problem? 
+      On that same note, can I add new kinds of elements? 
+ 2. Where can I get FElt? 
+ 3. What machines does FElt run on? 
+      Is there a Windows interface to FElt? 
+      What about a Motif or OpenLook interface? 
+      Can I compile FElt using X11R4 (R3 ...) ? 
+      Where can I get gzip to unpack the tar files on cs.ucsd.edu? 
+ 4. I think I found a bug, what now? 
+ 5. Is there a newsgroup or mailing list for FElt? 
+      What kind of things should I post to the mailing list and what kinds of
+      things should I contact the authors for? 
+ 6. Why do the FElt components have such stupid names? 
+
+ 1. What is FElt?
+
+   FElt is a free system for introductory level finite element analysis. It is
+   primarily intended as a teaching tool for introductory type courses in finite
+   elements - probably in the mechanical/structural/civil fields. In a command
+   line environment, FElt uses an intuitive, straightforward input syntax to
+   describe problems. It also includes a graphical user interface for
+   workstations that allows the user to set-up, solve and post-process the
+   problem in a single CAD-like environment. 
+
+   From the end-user point of view, FElt consists of six programs: felt, burlap,
+   velvet, corduroy, patchwork, and yardstick. felt is the basic command-line
+   application; burlap is an interactive Matlab-like environment for scripting
+   your own elements and analyses; velvet is the primary GUI interface into the
+   bulk of the functionality in FElt; corduroy is command-line program for
+   automatic element generation; patchwork is a command-line application for
+   file format conversion to and from the FElt syntax; and yardstick is a simple
+   program for problem scaling and unit conversion. 
+
+   Felt is the simplest - it takes a FElt input file and spits back appropriate
+   ASCII based (tabular or ASCII graphics) results depending on the problem
+   type. The command line application felt is the only interface of the three
+   analysis engines (felt, velvet, burlap) that is available under DOS. 
+
+   Velvet is the most powerful interface into the pre-programmed functionality
+   of FElt - it allows for complete graphical problem definition through
+   pulldown menus, popup dialog boxes and an interactive drawing area. It
+   offers all of the capabilities of both felt and corduroy and has several options
+   for post-processing, including color stress plots for planar elements, plots of
+   the displaced structure, animation, graphical time-displacement plots for
+   transient analysis problems, graphical frequency domain plots of transfer
+   functions and output spectra for spectral analysis, and graphical plots of
+   mode shapes for modal analysis problems. 
+
+   Burlap is the most powerful interface in terms of raw FE computing power
+   simply because you can make it perform analyses that are not otherwise
+   available in FElt simply by scripting your own analyses algorithms in burlap's
+   powerful Matlab-like syntax. You can also use burlap to try out new element
+   definitions quickly and easily or to manipulate the results from one of FElt's
+   pre-programmed analyses in a novel way that is otherwise not provided for. 
+
+      What kinds of problems can FElt solve?
+
+      As distributed, FElt can solve the classic problems in linear statics and
+      linear dynamics for both structural and thermal mechanics (i.e.,
+      problems of the form Kd = F, Md'' + Cd' + Kd = F , or Md' + Kd = F).
+      It can also solve the generalized eigenvalue problem (K - lM)x = 0
+      and use this information in modal analysis. It can do spectral
+      (frequency domain) analysis of transient structural problems. The
+      element library consists of truss, beam (Timoshenko and Euler),
+      constant strain triangular, bilinear planar isoparametric, plate bending
+      (selective reduced integration quadrilateral), isoparametric solid (eight
+      node brick) elements, and rod and constant temperature gradient
+      thermal elements. 
+
+      Can FElt solve my type of problem?
+
+      Unless it fits into one of the classes above there are no built-in solvers
+      for your type of problem. You may be able to use burlap to write your
+      own solver though. 
+
+      Can I modify FElt to make it solve my type of problem?
+
+      Probably, and we'd be happy to help. The only reason FElt cannot do
+      more right from the start is partly because we don't have time and
+      partly because it is very hard to keep everything simple,
+      straightforward and intuitive if we support every different type of
+      analysis and algorithm - especially because beyond the basics there
+      are so many different possibilities. What may interest one person on
+      the serious research level is probably not going to interest the majority
+      of other users. 
+
+      FElt does offer a lot of basic support that would be useful in a broad
+      class of finite element programs. If you do want to add your own
+      analysis algorithms, the best place to start is to probably look at the
+      source code for the felt driver program (bin/Felt/felt.c) and see how it
+      handles switching between static, dynamic and modal analyses. Then
+      take a look at the routines for static (lib/Felt/fe.c), dynamic
+      (lib/Felt/transient.c), modal (lib/Felt/modal.c), and spectral
+      (lib/Felt/spectral.c) problems to see how the different types of
+      algorithms make use of the data structures and general routines to
+      actually go about getting a solution. 
+
+      Finally, we want people to know that our major motivation for
+      creating burlap were questions just like this. With burlap you now
+      have two options for performing analyses that don't already exist -
+      you can modify and add to the FElt source as outlined above or you
+      can script your algorithm in burlap. The latter is probably much easier
+      and we encourage people to try it out. If we do end up with a lot of
+      neat analyses scripted into burlap then perhaps we can start putting
+      together a library of this functionality for general distribution. That
+      kind of growth in functionality sounds a lot nicer to us because it would
+      be a lot easier to maintain and distribute. 
+
+      On that same note, can I add new kinds of elements?
+
+      Absolutely, there's even a whole chapter in the user's manual devoted
+      to this very topic. We'd be very interested if you did add a new
+      element because we'd like to start putting a user contributed element
+      library together for distribution with with regular sources. 
+
+      Also, just like you can add your own new analyses through burlap,
+      keep in mind that you can script new elements in burlap as well. This
+      is a potentially much easier way to go about it. Whichever way you
+      choose to go about it, let us know what you come up with - we'd like
+      to hear whatever success (or horror) stories people might have. 
+
+ 2. Where can I get FElt?
+
+   The latest version of FElt, in all its incarnations, is always available via
+   anonymous ftp from cs.ucsd.edu. Once you have ftp'd to cs.ucsd.edu login as
+   anonymous and give your email address as the password. cd to /pub/felt and
+   grab whatever files you need for your particular situation. As of this update,
+   the latest version is v3.00. Information (and hypertext access to the ftp site)
+   is available via World Wide Web (e.g., Mosaic) at 
+
+   http://www-cse.ucsd.edu/users/atkinson/FElt/felt.html 
+
+   if you want to take a more serious look at some of FElt's capabilities before
+   you actually take it for a test drive on your machine. 
+
+ 3. What machines does FElt run on?
+
+   The complete version of FElt (including the X11 based graphical user
+   interfaces) has compiled and tested on HPs, DECs, Suns, SGIs, 386/486s
+   running Linux and SysV R3, and IBM workstations. It should do the same on
+   any reasonable Unix system with X11R5 or R6. In general we provide
+   binaries for Sparc stations running SunOS or Solaris and 386s with Linux, but
+   there is no guarantee that the binaries are as up to date as the source code.
+   When in doubt just grab the source code and build it yourself - really, it's
+   easy. 
+
+   DOS executables are available for the command-line applications felt,
+   corduroy, yardstick, and patchwork. A simple graphical application, feltvu is
+   also available. You need to have at least a 386 to use the DOS versions. 
+
+      Is there a Windows interface to FElt?
+
+      Not yet, and we're probably not the folks to write it as neither of us
+      have much experience with Windows programming. If someone else
+      would like to volunteer then I'd suggest starting with something like
+      xfelt as it's really pretty simple. There may be people working on this
+      - let us know if you're thinking about something like it and we'll try
+      our best to make sure that people don't duplicate a lot of effort. 
+
+      What about a Motif or OpenLook interface?
+
+      Well we originally chose to work with the Athena widgets because
+      the price is right and because they allow us to maintain FElt as a 100%
+      free product. With the current set-up anyone (in theory at least) can
+      get and build everything they need to get FElt up and running free. If
+      we had worked in Motif then we at least would have had to shell out
+      for Motif for Linux and people without Motif simply would be out of
+      luck unless they happened to be working on one of the few machines
+      that we could provide statically linked binaries for. We also recognize
+      that we could maintain separate GUI interfaces, but we feel that our
+      development time is better spent on functionality rather than on
+      constantly keeping two or more separate interfaces up to date. In
+      addition, it's our feeling that Motif or OpenLook or any other widget
+      set would not offer us any significant additional capabilities that we
+      haven't already worked out with the Athena widgets. 
+
+      However, if you just want a slightly different look and feel than the
+      stylized default look of velvet then please feel free to change it - that's
+      what Xresources are for after all. The easiest way to get a slightly
+      more Motif look (not really the feel though) is to switch to the 3d
+      Athena widgets. I know that these are readily available as compiled
+      libraries for Linux and should be for some other machines as well;
+      they're also really easy to build yourself if you are so inclined. Once
+      you have them all you have to do is swap them for your regular
+      Athena shared library (or re-link if you don't use shared libs); the
+      next time you run velvet everything should be 3d. There are some
+      recommended changes to the app defaults for velvet if you do decide
+      to go this route, they're at the bottom of Velvet.ad in src/Velvet. 
+
+      Can I compile FElt using X11R4 (R3 ...)?
+
+      Not really - you really should have X11R5 or R6. Compiled libraries
+      should be available for most machines. If not, source code for the
+      X11R5 distribution is available via anonymous ftp from ftp.x.org and
+      pre- compiled libraries should be available from many places on the
+      net. Now that X11R6 is available you should be able to use that just as
+      well as R5. 
+
+      If you really want to do it with X11R4, then you can try the following:
+      from ftp.x.org get three header files from the untarred R5 or R6
+      sources - Xfuncs.h, Xfuncproto.h, Xosdefs.h. Make a directory
+      FElt-x.xx/inc/X11 and copy these three files into it. Then just do a
+      regular make as described in the INSTALL file. See the notes on
+      SGIs in the INSTALL file if you need a few more details. 
+
+      Where can I get gzip to unpack the tar files on cs.ucsd.edu?
+
+      Source code is available from prep.ai.mit.edu. Binaries for a wide
+      variety of machines should also be available from various archives on
+      the net. Building gnu binaries from source is really easy, just untar
+      them, cd into the directory into which they unpacked, type configure
+      and then type make. 
+
+ 4. I think I found a bug, what now?
+
+   Send one of us email (jgobat@mit.edu or atkinson@ucsd.edu). Please,
+   please, please, include as much information as possible in your report. Things
+   that are absolutely essential: 
+      version of FElt that you are using 
+      the application that you think the bug is in (felt, velvet, everything,
+      etc.), this is particularly helpful if the bug only shows up in velvet but
+      not in felt (or the reverse) 
+      type of machine and operating system (including the OS version) that
+      you are using 
+      if you are using a pre-built binary or if you are using a binary that you
+      built yourself; if you built the binary, how did you build it (gcc, native
+      cc, etc.) 
+      and of course a detailed description of what went wrong and what you
+      were doing when it went wrong. If possible send us the input file that
+      causes the problem, if you can't do that then tell us what kind of
+      analysis you are doing and any other relevant details specific to your
+      problem. 
+
+ 5. Is there a newsgroup or mailing list for FElt?
+
+   There is a mailing list. To subscribe to the list send a one line email message
+   that says 
+
+   subscribe felt-l 
+
+   to listserv@mecheng.asme.org. To send a message to the list just send it like
+   regular email to felt-l@mecheng.asme.org. Incremental release
+   announcements and bug fixes will be posted to the mailing list. Major release
+   announcements will be made to the following newsgroups:
+   comp.os.linux.announce, sci.math.num-analysis, sci.engr, sci.engr.civil, and
+   sci.engr.mechanical. So if you really want to keep up on new versions and
+   capabilities, you should subscribe to the mailing list. 
+
+      What kind of things should I post to the mailing list and what
+      kinds of things should I contact the authors for?
+
+      The list is generally for announcements, bug fixes, and questions that
+      several FElt users might have an interest in (i.e., I'm trying to make
+      FElt solve a problem like xxx, how have other people modeled this? or
+      I really think that velvet should be able to do xxx, what does everyone
+      else think?). We'd also like it to be a forum for discussion of what
+      types of things people would like to see in FElt. 
+
+      For bug reports that you think are specific to your machine or things
+      that other users probably don't have an interest in, feel free to send
+      email to one of us: jgobat@mit.edu or atkinson@ucsd.edu. See the 
+      question on bugs for details on how to submit a bug report. 
+
+ 6. Why do the FElt components have such stupid names?
+
+   Well, FElt is obvious, right? Finite ELemenT. felt the application came first -
+   it's the most basic interface into the system. Now when it comes to fabrics,
+   everybody knows that velvet is smoother than felt ... thus the slickest GUI
+   interface is called velvet. xfelt is simply xfelt because it is nothing more than
+   an encapsulator, with no real functionality beyond that provided by felt. 
+
+   After this, we start to stretch because with the felt - velvet connection we
+   have this fabric motif to keep up on. 
+
+   - Burlap is rough but functional, just like its namesake fabric. It may not be
+   as easy to use as velvet (or maybe it is if you like scripting in Matlab-like
+   mathematical languages) but you can do an awful lot with it. 
+
+   - Corduroy has that regular ripple effect so its sort of like a mesh ... 
+
+   - Patchwork, well we figured that was better than convert simply to avoid
+   conflicts. How many systems have some local app called convert to do
+   whatever, or how many little hacks are there called convert. It seemed
+   common enough to us that we figured we might as well call it something
+   different. Patchwork implies a lot of different fabrics coming together so it
+   seemed as good as anything else. 
+
+   - A yardstick is used to measure fabric ... measuring implies some sort of
+   units. 

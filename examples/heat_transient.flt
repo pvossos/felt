@@ -1,0 +1,38 @@
+problem description
+title="Logan Example 13.8" nodes=8 elements=8 analysis=transient-thermal
+
+analysis parameters
+duration=0.2	dt=0.01	alpha=0.50 	mass-mode=lumped
+nodes=[3,6]
+
+nodes
+1	x=0	y=.02	constraint=insulated
+2		y=0
+3	x=.01	y=.01	constraint=free
+4	x=.02	y=.02
+5		y=0
+6	x=.03	y=.01
+7	x=.04	y=.012
+8		y=0
+
+ctg elements
+1	nodes=[1,2,3]	material=steel
+2	nodes=[2,5,3]
+3	nodes=[3,5,4]
+4	nodes=[1,3,4]
+5	nodes=[5,6,4]
+6	nodes=[5,8,6]
+7	nodes=[7,6,8]			load=convection
+8	nodes=[4,6,7]
+
+material properties
+steel	Kx=400	Ky=400	t=.001	c=375	rho=8900
+
+distributed loads
+convection	values=(1,150) (3,25)
+
+constraints
+insulated	Tx=85
+free		Tx=u
+
+end

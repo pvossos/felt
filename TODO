@@ -1,0 +1,52 @@
+Due to our own lack of experience/hardware/software, we definitely need
+volunteers (we'd be willing to help where we could of course) for this stuff:
+
+	o some sort of Windows interface - preferably velvet for Windows, but
+          it could also be xfelt for Windows to start with (that would be 
+          a lot easier).
+        o as part of the above or as a separate undertaking, we need someone
+          to compile the command line applications under DOS such that they
+          will run on a 286 and while Windows is running.  The current binaries
+          are built with DJGPP (gcc for DOS); the kind of binaries I'm talking
+          about would need to be compiled with Microsoft or Borland C I think.
+          If someone wanted to write pre- or post-processing applications for
+          DOS that would be cool too.  Post-processing would be particularly
+          easy if someone just wanted to parse out the standard felt ASCII
+          output.  You could start with feltvu as a simple starting point.
+          It might be nice if someone could port feltvu to a different 
+          compiler as well.  I think most major DOS compilers probably
+          handle graphics drivers in a more reliable way than the current
+          set of DJGPP graphics lib drivers which people have had a lot of
+          trouble with.
+	o all of the above kinds of things (particularly just binaries of the
+          command-line applications) for the Mac.
+
+Things that maybe we'll get to someday, but if you want to try them first
+then please feel free.  In no particular order:
+
+	o make use of the Layout widget for geometry management of the main GUI
+	o more intelligent use of the command line ... command completion
+	  and argument specification ... type node hit space,
+  	  get a "list of options" type delete hit space, get a prompt
+	  for a number, type number hit return, etc.  In other
+	  words make it something along the lines of some of the
+	  popular CAD systems.
+ 	o improve plotting of displaced shapes. This probably means that
+	  element writers need to provide a pointer to a function which
+	  knows about the shape functions for an element and can fill in
+	  a vector over the area or length of the element based on 
+	  nodal displacements which, when plotted, will reflect the true
+	  displaced shape of the element ...  
+	o add snap to tool capability
+	o robust quadrilateral mesh generation, 3-d mesh generation, etc, etc.
+	o additional higher-order elements
+	o fold Timoshenko beam theory into the standard beam, i.e., if
+	  kappa or nu is given then expect a G and use Timoshenko
+	  theory instead of Euler-Bernoulli.
+	o put some real effort into internationalization.  The current 
+	  functionality is there because it was easy.  More robust
+	  implementation would mean maintaining a table, in code probably,
+	  that mapped all possible input and as much output as possible
+	  to a language determined by the user.
+        o plug in something more universal than PPM to replace GIF - this will
+          have to wait until some sort of agreeable format emerges of course.

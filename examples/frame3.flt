@@ -1,0 +1,52 @@
+problem description
+title="3-bay frame analysis" 
+nodes=8 elements=9 
+analysis=static
+
+analysis parameters
+nodes=[8,6,3] dofs=[Tx, Ty]
+
+load cases
+cables    node-forces=(3, cable) (5, cable) (7, cable)
+machinery node-forces=(7, fan) (8, fan)
+
+nodes
+1 x=0   y=0   constraint=fixed
+2 x=360 y=0
+3 x=0   y=180 constraint=free 
+4 x=360     
+5 x=0   y=300			
+6 x=360
+7 x=0	y=420			
+8 x=360
+
+beam elements
+1 nodes=[1,3] material=wall_bottom
+2 nodes=[3,5] material=wall_top
+3 nodes=[5,7] 
+4 nodes=[7,8] material=floor_top     load=top_wt    
+5 nodes=[5,6] material=floor_bottom  load=bottom_wt
+6 nodes=[3,4] 			     load=bottom_wt
+7 nodes=[8,6] material=wall_top	     
+8 nodes=[6,4]
+9 nodes=[4,2] material=wall_bottom
+
+material properties
+wall_bottom  A=13.2 Ix=249 E=30e6
+wall_top     A=6.2  Ix=107 E=30e6
+floor_top    A=12.3 Ix=133 E=30e6
+floor_bottom A=24.7 Ix=237 E=30e6
+
+distributed loads
+top_wt    direction=perpendicular    values=(1,-62.5) (2,-62.5)
+bottom_wt direction=perpendicular    values=(1,-130) (2,-130)
+
+constraints
+fixed Tx=c Ty=c Rz=c
+free  Tx=u Ty=u Rz=u
+
+forces
+cable     Fx=2000
+fan       Fy=-6000
+
+end

@@ -1,0 +1,11 @@
+line
+start  = (1,2,3)
+end    = (4,5,6)
+number = 10
+
+line
+start  = (9,8,7)
+end    = (6,5,4)
+number = 1
+
+end

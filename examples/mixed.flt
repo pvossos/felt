@@ -1,0 +1,27 @@
+problem description
+title="Mixed Element Sample Problem (Logan #5.10, p.189)" nodes=3 elements=2 
+
+nodes
+1 x=0 y=0 constraint=fixed 
+2 x=240 y=0 constraint=free force=point_load
+3 x=240 y=-120 constraint=pin 
+
+beam elements
+1 nodes=[1,2] material=steel
+
+truss elements
+2 nodes=[2,3] material=spring
+
+material properties
+steel e=29e6 ix=200 a=10
+spring e=29e6 a=4.14e-3
+
+forces
+point_load fy=-2000
+
+constraints
+fixed tx=c ty=c tz=c rz=c
+free tx=u ty=u tz=c rz=u
+pin tx=c ty=c tz=c rz=c
+
+end

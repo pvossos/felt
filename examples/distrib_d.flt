@@ -1,0 +1,26 @@
+problem description
+title="Distributed load sample problem (Logan #5.22, p. 192)"
+nodes=3 elements=2
+
+nodes
+1 x=0	y=0	constraint=fixed
+2 x=10		constraint=pin
+3 x=20		constraint=free
+
+beam elements
+1 nodes=[1,2] material=steel load=half1
+2 nodes=[2,3] material=steel load=half2
+
+material properties
+steel E=29e6*12*12 Ix=150/12/12/12/12 A=1.0
+
+distributed loads
+half1 direction=perpendicular values=(1,0) (2,-2000)
+half2 direction=perpendicular values=(1,-2000) (2,-4000)
+
+constraints
+fixed Tx=c Ty=c Rz=c
+free  Tx=u Ty=u Rz=u
+pin   Tx=c Ty=c Rz=u
+
+end

@@ -1,0 +1,21 @@
+problem description
+title="Timoshenko Cantilever Example" nodes=2 elements=1
+
+constraints
+fixed Tx=c Ty=c Rz=c
+free  Tx=c Ty=u Rz=u
+
+material properties
+test E=10 Ix=10 kappa=0.5 G=10 A=1
+
+distributed loads
+weight direction=perp values=(2,0) (1,10)
+
+nodes
+1 x=0  constraint=fixed
+2 x=10 constraint=free
+
+timoshenko elements
+1 nodes=[1,2] material=test load=weight
+
+end

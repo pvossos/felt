@@ -1,0 +1,30 @@
+problem description
+title="Distribued Load Sample Problem (Logan 6.28, p.261)"
+nodes=5 elements=4
+
+material properties
+steel A=0.5e-2 Ix=0.5e-4 E=210e9
+
+constraints
+fixed Tx=C Ty=C Rz=C
+free  Tx=U Ty=U Rz=U
+
+nodes
+1 x=0  y=0	constraint=fixed
+2 x=0  y=4	constraint=free
+3 x=10 y=4	constraint=fixed
+4 x=0  y=8	constraint=free
+5 x=10 y=8	constraint=fixed
+
+distributed loads
+tri1 direction=perp values=(1,-300e3) (2,-150e3)
+tri2 direction=perp values=(1,-150e3) (2,0)
+
+beam elements
+1 nodes=[1,2] material=steel 	load=tri1
+2 nodes=[2,4] 			load=tri2
+3 nodes=[2,3]
+4 nodes=[4,5]
+
+end
+

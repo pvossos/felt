@@ -1,0 +1,27 @@
+problem description
+title="Beam Sample Problem with a Load Range"
+nodes=3 elements=2
+
+analysis parameters
+nodes=[1] dofs=[Ty]
+start=100 stop=1000 step=100
+input-dof=Ty input-node=1
+
+nodes
+1  x=0   y=0 z=0 constraint=free
+2  x=240 y=0 z=0 constraint=roller
+3  x=480 y=0 z=0 constraint=fixed
+
+beam elements
+1  nodes=[1,2] material=steel
+2  nodes=[2,3]
+
+material properties
+steel E=30e6 A=10 Ix=100
+
+constraints
+fixed  Tx=c Ty=c Rz=c
+free   Tx=u Ty=u Rz=u
+roller Tx=u Ty=c Rz=u
+
+end

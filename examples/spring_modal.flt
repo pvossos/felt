@@ -1,0 +1,24 @@
+problem description
+title="Modal Analysis of Spring Mass"
+nodes=3 elements=2 analysis=modal
+
+analysis parameters
+mass-mode=lumped
+
+nodes
+1	x=0.0	y=0.0	constraint=fixed
+2	x=1.0		constraint=free		mass=10
+3	x=2.0		constraint=free		mass=10
+
+truss elements
+1	nodes=[1,2]	material=steel
+2	nodes=[2,3]	material=steel
+
+material properties
+steel	A=1.0	E=1000   rho=0.0	Rk=0.002
+
+constraints
+fixed	Tx=c Ty=c Tz=c
+free	Tx=u Ty=c Tz=c
+
+end

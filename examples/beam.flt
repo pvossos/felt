@@ -1,0 +1,35 @@
+problem description
+title="Beam Sample Problem (Logan #5.5, p.188)"
+nodes=3 elements=2
+
+nodes
+1  x=0 y=0 z=0 constraint=free force=point_load
+2  x=240 y=0 z=0 constraint=roller
+3  x=480 y=0 z=0 constraint=fixed
+
+beam elements
+1  nodes=[1,2] material=steel
+2  nodes=[2,3]
+
+material properties
+steel E=3e+07 A=10 Ix=100
+
+constraints
+fixed Tx=c Ty=c Tz=u Rx=u Ry=u Rz=c
+free Tx=u Ty=u Tz=u Rx=u Ry=u Rz=u
+roller Tx=u Ty=c Tz=u Rx=u Ry=u Rz=u
+
+forces
+point_load Fy=-1000
+
+canvas configuration
+node-numbers=true element-numbers=true snap=false grid=false
+snap-size=48 grid-size=48
+
+node-color=Blue element-color=Black label-font="5x8"
+tool-color=Red tool-font="fg-22"
+
+x-min=-24 x-max=504 y-min=-264 y-max=264
+x-pos=0 y-pos=0 width=502 height=502 scale=0.950758
+
+end

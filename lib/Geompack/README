@@ -1,0 +1,71 @@
+Version 1 of GEOMPACK available in February 1991 (old version):
+   - Contains files basic2d.tar.Z, basic3d.tar.Z, decomp2d.tar.Z,
+     deltr2d.tar.Z, deltr3d.tar.Z, general.tar.Z, mdf2d.tar.Z, triang2d.tar.Z,
+     vispol.tar.Z, Errcodes
+   - Errcodes is file of error codes and descriptions; remaining files are
+     compressed, tar'ed directories of Fortran 77 routines and some data files
+
+Version 2 of GEOMPACK available in June 1992 (current version):
+   - Contains updates to Version 1 files (slight changes to some routines
+     plus a few new routines); obtain new version for (5) below
+   - Contains new files (compressed, tar'ed directories) convex3d.tar.Z,
+     dechol3d.tar.Z, decomp3d.tar.Z, deltrkd.tar.Z, mdf3d.tar.Z, triang3d.tar.Z
+   - Users' guide is available in postscript format in file UserGuide.ps.Z
+
+Current routines in GEOMPACK:
+(1) 2-D convex decomposition and triangulation of polygonal regions - copy
+      Errcodes, general.tar.Z, basic2d.tar.Z, vispol.tar.Z, decomp2d.tar.Z,
+      mdf2d.tar.Z, triang2d.tar.Z; see references [JoS86, Joe86, Joe91c]
+(2) 2-D Delaunay triangulation - copy Errcodes, general.tar.Z, basic2d.tar.Z,
+      deltr2d.tar.Z; see reference [Joe91c]
+(3) 3-D Delaunay triangulation - copy Errcodes, general.tar.Z, basic3d.tar.Z,
+      deltr3d.tar.Z; see references [Joe89, Joe91a, Joe91c]
+(4) k-D Delaunay triangulation - copy Errcodes, general.tar.Z, deltrkd.tar.Z;
+      see reference [Joe92b]
+(5) 3-D convex decomposition and triangulation of polyhedral regions - copy
+      Errcodes, general.tar.Z, basic2d.tar.Z, vispol.tar.Z, decomp2d.tar.Z,
+      mdf2d.tar.Z, triang2d.tar.Z, basic3d.tar.Z, deltr3d.tar.Z,
+      convex3d.tar.Z, dechol3d.tar.Z, decomp3d.tar.Z, mdf3d.tar.Z,
+      triang3d.tar.Z; see references [Joe91b, Joe92a, Joe92c]
+
+If any questions, comments, suggestions, or bugs, contact
+   Barry Joe
+   Dept. of Computing Science
+   Univ. of Alberta
+   Edmonton, Alberta, Canada  T6G 2H1
+   Phone: (403) 492-5757
+   Email: barry@cs.ualberta.ca
+
+References:
+[JoS86]  B. Joe and R. B. Simpson (1986), Triangular meshes for regions
+            of complicated shape, Intern. J. Num. Meth. Eng., 23, pp. 751-778.
+
+[Joe86]  B. Joe (1986), Delaunay triangular meshes in convex polygons,
+            SIAM J. Sci. Stat. Comput., 7, pp. 514-539.
+
+[Joe89]  B. Joe (1989), Three-dimensional triangulations from local
+            transformations, SIAM J. Sci. Stat. Comput., 10, pp. 718-741.
+ 
+[Joe91a] B. Joe (1991), Construction of three-dimensional Delaunay
+            triangulations using local transformations, Computer Aided
+            Geometric Design, 8, pp. 123-142.
+  
+[Joe91b] B. Joe (1991), Delaunay versus max-min solid angle triangulations
+            for three-dimensional mesh generation, Intern. J. Num. Meth. Eng.,
+            31, pp. 987-997.
+
+[Joe91c] B. Joe (1991), GEOMPACK - a software package for the generation of
+	    meshes using geometric algorithms, Adv. Eng. Software, 13,
+	    pp. 325-331.
+
+[Joe92a] B. Joe (1992), Three-dimensional boundary-constrained triangulations,
+            in "Artificial Intelligence, Expert Systems, and Symbolic
+	    Computing - Proc. of 13th IMACS World Congress", ed. E. N. Houstis
+	    and J. R. Rice, Elsevier Science Publishers, pp. 215-222.
+  
+[Joe92b] B. Joe (1992), Construction of k-dimensional Delaunay triangulations
+            using local transformations, to appear in SIAM J. Sci. Stat.
+	    Comput., approx. 23 pages.
+ 
+[Joe92c] B. Joe (1992), Tetrahedral mesh generation in polyhedral regions based
+            on convex polyhedron decompositions, submitted for publication.

@@ -1,0 +1,24 @@
+problem description
+title="Truss Sample Problem (Logan ex. 3.10, p.101)" nodes=3 elements=2
+
+nodes
+1 x=0 y=0 constraint=fixed
+2 x=30 y=0 constraint=free
+3 x=60 y=0 
+
+foo elements
+1 nodes=[1,2] material=steel load=tri1
+2 nodes=[2,3] material=steel load=tri2
+
+material properties
+steel a=2 e=30e6 
+
+distributed loads
+tri1 direction=parallel values=(1,-600) (2,-300)
+tri2 direction=parallel values=(1,-300) (2,0)
+
+constraints
+fixed tx=c ty=c tz=c
+free tx=u ty=c tz=c
+
+end

@@ -1,0 +1,30 @@
+problem description
+title="Classical Truss-Spring Nonlinear Problem"
+nodes=3 elements=2 analysis=static-substitution
+
+analysis parameters
+iterations = 500
+tolerance  = 1e-6
+load-steps = 50
+
+nodes
+1 x=0	  y=0	constraint=pin
+2 x=100   y=1	constraint=roller		force=P
+3 x=100	  y=-1	constraint=pin
+
+truss elements
+1 nodes=[1,2]	material=EA
+2 nodes=[2,3]	material=k
+
+material properties
+EA	E=1	A=1e7
+k	E=2	A=6   Kx=6
+
+forces
+P	Fy=-5
+
+constraints
+pin    Tx=c Ty=c Tz=c
+roller Tx=c Ty=u Tz=c
+
+end

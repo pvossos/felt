@@ -1,0 +1,240 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH CORDUROY 4fe "5/19/94" "Version 2.30" "Finite Element Package"
+.SH NAME
+corduroy \- element mesh generation description file format
+.SH DESCRIPTION
+The \fIcorduroy\fR(4fe) file format is used by the \fIcorduroy\fR(1fe)
+application for describing the desired element mesh generation.  In general
+white space is unimportant in a file, arbitrary numeric expressions may
+be used, and case of keywords is unimportant.  As per standard convention,
+boldface items represent keywords, italicized items represent the syntax of
+the grammar, and items in brackets are optional.  The file syntax is shown
+below.
+.PP
+.RS
+.RI [ " initialization " ]
+.br
+.RI [ " generators " ]
+.br
+.B "end"
+.RE
+.SS Initialization
+The \fIinitialization\fR section occurs first in the file if present.  It
+defines parameters common to all generators and has the following syntax.
+.PP
+.RS
+.BI "start-node = " expression
+.br
+.BI "start-element = " expression
+.br
+.BI "constraint = " name
+.br
+.BI "material = " name
+.RE
+.PP
+The default \fIstart-node\fR and \fIstart-element\fR is one.  If a
+\fIconstraint\fR is given then the \fIname\fR will be assigned to the
+generated nodes.  Similarly, if a \fImaterial\fR is given then the \fIname\fR
+will be assigned to the generated elements.
+.SS Generators
+The \fIgenerators\fR section contains specifications for generating the
+elements and the associated nodes.  The section has the following syntax.
+.PP
+.RS
+.RI [ " line-generator " ]
+.br
+.RI [ " grid-generator " ]
+.br
+.RI [ " quadrilateral-grid-generator " ]
+.br
+.RI [ " brick-grid-generator " ]
+.br
+.RI [ " triangular-mesh-generator " ]
+.RE
+.SS Lines
+A \fIline-generator\fR specifies the generation of elements along a line in
+three dimensions.  The generator has the following syntax.
+.PP
+.RS
+[ \fBstart = \fItriple \fR]
+.br
+[ \fBend = \fItriple \fR]
+.br
+[ \fBnumber = \fIexpression \fR]
+.br
+[ \fBrule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBelement-type = \fIname \fR]
+.RE
+.PP
+where a \fItriple\fR has one of the following forms:
+.PP
+.RS
+\fB( \fIexpression \fB, \fIexpression \fB, \fIexpression \fB)\fR
+.br
+\fB( \fIexpression \fB, \fIexpression \fB)\fR
+.br
+.RE
+.PP
+If the z-coordinate of a triple is not specified then the previously
+specified z-coordinate is used.  The initial default z-coordinate is zero.
+The \fIstart\fR and \fIend\fR triples define the starting and ending
+coordinates of the line respectively.  The number of elements along the line
+is specified by \fInumber\fR.  The \fIrule\fR assignment controls whether
+the elements are linearly or logarithmically distributed along the line.
+The \fIelement-type\fR specifies the type of elements to be generated.
+The type of the element defined by \fIname\fR must be a linear element.
+.SS Grids
+A \fIgrid-generator\fR specifies the generation of elements within a
+three-dimensional grid.  The generator has the following syntax.
+.PP
+.RS
+[ \fBstart = \fItriple \fR]
+.br
+[ \fBend = \fItriple\fR ]
+.br
+[ \fBx-number = \fIexpression\fR ]
+.br
+[ \fBy-number = \fIexpression\fR ]
+.br
+[ \fBz-number = \fIexpression\fR ]
+.br
+[ \fBx-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBy-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBz-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBelement-type = \fIname \fR]
+.RE
+.PP
+The \fIstart\fR and \fIend\fR triples define the diagonally opposite corners
+of the grid.  The \fIx-number\fR, \fIy-number\fR, and \fIz-number\fR
+assignments specify the number of elements along the x, y, and z dimensions
+respectively.  Similarly, the \fIx-rule\fR, \fIy-rule\fR, and \fIz-rule\fR
+assignments specify whether the elements are to be generated linearly or
+logarithmically along the x, y, and z dimensions respectively.  The type
+of the element specified by \fIname\fR must be a linear element.
+.SS Quadrilateral Grids
+A \fIquadrilateral-grid-generator\fR specifies the generation of four-node
+planar elements within a two-dimensional grid.  The generator has the 
+following syntax.
+.PP
+.RS
+[ \fBstart = \fIpair \fR]
+.br
+[ \fBend = \fIpair\fR ]
+.br
+[ \fBx-number = \fIexpression\fR ]
+.br
+[ \fBy-number = \fIexpression\fR ]
+.br
+[ \fBx-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBy-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBelement-type = \fIname \fR]
+.RE
+.PP
+The \fIstart\fR and \fIend\fR pairs define the diagonally opposite corners
+of the grid.  The \fIx-number\fR, and \fIy-number\fR
+assignments specify the number of elements along the x and y dimensions
+respectively.  Similarly, the \fIx-rule\fR, and \fIy-rule\fR
+assignments specify whether the elements are to be generated linearly or
+logarithmically along the x and y dimensions, respectively.  The type
+of the element specified by \fIname\fR must be a four-node planar element.
+.SS Brick Grids
+A \fIbrick-grid-generator\fR specifies the generation of solid brick elements 
+within a three-dimensional grid.  The generator has the following syntax.
+.PP
+.RS
+[ \fBstart = \fItriple \fR]
+.br
+[ \fBend = \fItriple\fR ]
+.br
+[ \fBx-number = \fIexpression\fR ]
+.br
+[ \fBy-number = \fIexpression\fR ]
+.br
+[ \fBz-number = \fIexpression\fR ]
+.br
+[ \fBx-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBy-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBz-rule = \fBlinear \fR| \fBlog \fR]
+.br
+[ \fBelement-type = \fIname \fR]
+.RE
+.PP
+The \fIstart\fR and \fIend\fR triples define the diagonally opposite corners
+of the grid.  The \fIx-number\fR, \fIy-number\fR, and \fIz-number\fR
+assignments specify the number of elements along the x, y, and z dimensions
+respectively.  Similarly, the \fIx-rule\fR, \fIy-rule\fR, and \fIz-rule\fR
+assignments specify whether the elements are to be generated linearly or
+logarithmically along the x, y, and z dimensions respectively.  The type
+of the element specified by \fIname\fR must be an eight node solid element.
+.SS Triangular meshes
+A \fItriangular-mesh-generator\fR specifies the generation of triangular
+elements within a two-dimensional mesh.  The generator has the following
+syntax.
+.PP
+.RS
+[ \fBtolin = \fIexpression \fR]
+.br
+[ \fBangspc = \fIexpression \fR]
+.br
+[ \fBangtol = \fIexpression \fR]
+.br
+[ \fBdmin = \fIexpression \fR]
+.br
+[ \fBkappa = \fIexpression \fR]
+.br
+[ \fBmin = \fIexpression \fR]
+.br
+[ \fBmax = \fIexpression \fR]
+.br
+[ \fBboundary = [ \fIpair-list \fB] \fR]
+.br
+[ \fBhole = [ \fIpair-list \fB] \fR]
+.br
+[ \fBelement-type = \fIname \fR]
+.RE
+.PP
+where a \fIpair\fR has the following form:
+.PP
+.RS
+\fB( \fIexpression \fB, \fIexpression \fB)
+.RE
+.PP
+The \fItolin\fR, \fIangspc\fR, \fIangtol\fR, \fIdmin\fR, \fIkappa\fR,
+\fImin\fR, and \fImax\fR parameters control the specifics of the mesh
+generation and are discussed in the user's guide.  The element type specified
+by \fIname\fR must be a planar, triangular element.  The \fIboundary\fR
+assignment specifies the boundary points of the mesh which must be given in
+counter-clockwise order.  The \fIpair-list\fR is a sequence of \fIpairs\fR.
+A \fIhole\fR assignment specifies a hole within the mesh and similarly the
+points must be given in counter-clockwise order.  Unlike other assignments, a
+\fIhole\fR assignment does not overwrite a previous assignment but instead
+adds to it.  Thus, more than hole can be specified by repeating the
+\fIhole\fR assignment as many times as necessary.
+.SH AUTHOR
+The \fIcorduroy\fR file format was developed by Jason I. Gobat
+(jgobat@mit.edu) and Darren C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+corduroy(1fe), felt(4fe).

@@ -1,0 +1,27 @@
+problem description
+title="Heat Transfer Sample Problem" nodes=5 elements=4 analysis=static-thermal
+
+nodes
+1 	x=0	y=0	constraint=insulated
+2	x=2		constraint=free
+3	x=2	y=2	
+4	x=0		constraint=insulated
+5	x=1	y=1	constraint=free
+
+ctg elements
+1	nodes=[1,2,5]	material=steel
+2	nodes=[1,5,4]
+3	nodes=[4,5,3]
+4	nodes=[2,3,5]			load=convection
+
+material properties
+steel 	Kx=25 Ky=25 t=1
+
+distributed loads
+convection	values=(1,20) (2,50)
+
+constraints
+insulated	Tx=100
+free		Tx=u
+
+end

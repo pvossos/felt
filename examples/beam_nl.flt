@@ -1,0 +1,28 @@
+problem description
+title="Thin Pin-Pin Beam" 
+nodes=3 elements=2 analysis=static-substitution
+
+analysis parameters
+load-steps = 10     tolerance = 0.001     
+iterations = 50     relaxation = 1.0
+
+nodes
+1 x=0	y=0	constraint=pin
+2 x=120 y=0	constraint=free    force=point
+3 x=240	y=0	constraint=pin
+
+beam elements
+1 nodes=[1,2]	material=steel
+2 nodes=[2,3]
+
+material properties
+steel E=10e6 A=0.785 Ix=0.05
+
+constraints
+pin    Tx=c Ty=c Rz=u
+free   Tx=u Ty=u Rz=u
+
+forces
+point   Fy=-10
+
+end

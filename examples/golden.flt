@@ -1,0 +1,91 @@
+/*
+                     O+++++++O++++++O++++++O+++++++O                          
+                   +++       +      +      +       +++                        
+                 ++  +       +      +      +       +  ++                      
+               ++    +       +      +      +       +    ++                    
+             +O      +       +      +      +       +      O+                  
+           ++ +      +       +      +      +       +      + ++                
+         ++   +      +       +      +      +       +      +   ++              
+       O+     +      +       +      +      +       +      +     +O            
+     +++      +      +       +      +      +       +      +      +++          
+   ++  +      +      +       +      +      +       +      +      +  ++        
+ ++    +      +      +       +      +      +       +      +      +    ++      
+O++++++O++++++O++++++++++++++O++++++O++++++O++++++++++++++O++++++O++++++O     
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     +                             +                          
+                     O                             O                          
+*/
+
+problem description
+title="Golden Gate" nodes=20 elements=27
+
+nodes
+1  x=15 y=40 z=0 constraint=frei
+2  x=15 y=10 z=0 constraint=Festeinspannung
+3  x=35 y=40 z=0 constraint=frei
+4  x=35 y=10 z=0 constraint=Festeinspannung
+5  x=0 y=25 z=0 constraint=Kugelgelenk
+6  x=50 y=25 z=0
+7  x=5 y=25 z=0 constraint=frei
+8  x=10 y=25 z=0
+9  x=20 y=25 z=0
+10  x=25 y=25 z=0
+11  x=30 y=25 z=0
+12  x=40 y=25 z=0
+13  x=45 y=25 z=0
+14  x=5 y=30 z=0
+15  x=10 y=35 z=0
+16  x=40 y=35 z=0
+17  x=45 y=30 z=0
+18  x=20 y=40 z=0
+19  x=25 y=40 z=0
+20  x=30 y=40 z=0
+
+beam elements
+1  nodes=[1,2]   material=Stahl    
+2  nodes=[3,4]   
+3  nodes=[5,7]   load=l1   
+4  nodes=[7,8]   load=l1   
+5  nodes=[8,9]   load=l1   
+6  nodes=[9,10]   load=l1   
+7  nodes=[10,11]   load=l1   
+8  nodes=[11,12]   load=l1   
+9  nodes=[12,13]   load=l1   
+10  nodes=[13,6]   load=l1   
+11  nodes=[5,14]   
+12  nodes=[14,15]   
+13  nodes=[15,1]   
+14  nodes=[3,16]   
+15  nodes=[16,17]   
+16  nodes=[17,6]   
+17  nodes=[1,18]   
+18  nodes=[18,19]   
+19  nodes=[19,20]   
+20  nodes=[20,3]   
+21  nodes=[19,10]   
+22  nodes=[18,9]   
+23  nodes=[20,11]   
+24  nodes=[15,8]   
+25  nodes=[14,7]   
+26  nodes=[16,12]   
+27  nodes=[17,13]   
+
+material properties
+Stahl  E=210000 A=100 Ix=10 Iy=10 Iz=0 J=0 G=0 nu=0.3 t=0 rho=7.8 kappa=0
+
+distributed loads
+l1   direction=GlobalY   values=(1,-1000) (2,-1000) 
+
+constraints
+frei  tx=u ty=u tz=c rx=u ry=u rz=u
+Festeinspannung  tx=c ty=c tz=c rx=u ry=u rz=c
+Kugelgelenk  tx=c ty=c tz=c rx=u ry=u rz=u
+
+end

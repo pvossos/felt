@@ -1,0 +1,24 @@
+problem description
+title="Simply Supported Beam" nodes=3 elements=2 analysis=static
+
+nodes
+1 x=0	y=0	constraint=pin
+2 x=5	y=0	constraint=free		force=point
+3 x=10	y=0	constraint=roller
+
+beam elements
+1 nodes=[1,2]	material=steel
+2 nodes=[2,3]
+
+material properties
+steel E=30e6 A=1.0 Ix=127
+
+forces
+point	Fy=-1000
+
+constraints
+pin    Tx=c Ty=c Rz=u
+roller Tx=u Ty=c Rz=u
+free   Tx=u Ty=u Rz=u
+
+end

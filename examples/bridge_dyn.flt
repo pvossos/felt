@@ -1,0 +1,86 @@
+problem description
+title="Truss Sample Problem (Bridge)" nodes=12 elements=32 
+analysis=transient
+
+analysis parameters
+beta=0.25 gamma=0.5 duration=6.0 dt=0.05
+nodes=[4,5,6] dofs=[Ty] mass-mode=lumped
+
+nodes
+1	x=0	y=0	z=0	constraint=pinned
+2	x=70	y=18		constraint=free
+3	x=140	y=0		constraint=roller
+4	x=55	y=30		constraint=free		force=front_pallet
+5	x=70						
+6	x=85						force=front_pallet
+7	x=0	y=0	z=48 	constraint=roller_z
+8 	x=70	y=18		constraint=free
+9 	x=140	y=0		constraint=roller_xz
+10	x=55	y=30		constraint=free		force=rear_pallet
+11	x=70					
+12	x=85						force=rear_pallet
+
+truss elements
+1	nodes=[1,2]	material=flat
+2	nodes=[1,4]	material=double
+3	nodes=[2,4]     material=angle
+4	nodes=[4,5]	material=angle
+5	nodes=[2,5]	material=flat
+6	nodes=[5,6]	material=angle
+7	nodes=[2,6]	material=angle
+8	nodes=[2,3]	material=flat 
+9	nodes=[3,6]	material=double
+10	nodes=[1,7]	material=flat
+11	nodes=[3,9]	material=flat
+12	nodes=[2,8]	material=flat
+13	nodes=[4,10]    material=flat
+14	nodes=[5,11]	material=flat
+15	nodes=[6,12]	material=flat
+16	nodes=[7,8]	material=angle 
+17	nodes=[7,10]	material=angle 
+18	nodes=[8,10]	material=flat 
+19	nodes=[10,11]	material=angle 
+20	nodes=[8,11]	material=flat 
+21	nodes=[11,12]   material=angle
+22	nodes=[8,12]	material=flat 
+23	nodes=[8,9]	material=angle 
+24	nodes=[12,9]	material=angle  
+
+/*
+ * The non-symmetric bracing ...
+ */
+
+25 	nodes=[1,5]	material=flat
+26	nodes=[3,5]	material=flat
+27	nodes=[1,3]	material=angle	
+28	nodes=[7,9]	material=flat  
+29	nodes=[4,7]	material=angle
+30	nodes=[6,9]	
+31	nodes=[4,11]	material=flat
+32	nodes=[6,11]	         
+
+material properties
+flat	a=0.25		e=29e6	rho=3.4*0.25/12
+angle	a=0.4375	e=29e6	rho=3.4*0.4375/12
+triple	a=0.75		e=29e6	rho=3.4*0.75/12
+built	a=0.875		e=29e6	rho=3.4*0.875/12
+double	a=0.5		e=29e6	rho=3.4*0.5/12
+
+/* 
+ * based on an eccentric (6") load of 1000 lbs 
+ * there will be 625 pounds going to the front truss
+ * and 375 pounds going to the back truss
+ */
+
+forces
+front_pallet fy=-625/2*cos(t) 
+rear_pallet fy=-375/2*cos(t)
+
+constraints
+pinned    tx=c ty=c tz=c
+roller    tx=u ty=c tz=c
+roller_z  tx=c ty=c tz=u
+roller_xz tx=u ty=c tz=u
+free      tx=u ty=u tz=u
+
+end

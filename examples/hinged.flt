@@ -1,0 +1,23 @@
+problem description
+title="Hinge Sample" nodes=3 elements=2
+
+nodes
+1 x=0	y=0	constraint = fixed
+2 x=10	y=0	constraint = hinge force=point
+3 x=15  y=0	constraint = fixed
+
+beam elements
+1 nodes=[1,2] material=steel
+2 nodes=[2,3] 
+
+material properties
+steel A=1 E=210e9 Ix=4e-4
+
+constraints
+fixed tx=c ty=c rz=c
+hinge tx=u ty=u rz=h
+
+forces
+point Fy=-10000
+
+end

@@ -1,0 +1,23 @@
+problem description
+title="A bunch of lines that cause errors" nodes=4 elements=3
+
+nodes
+1 x=a.0 y=0.1 z=3 force=undefined constraint=junk
+2 x=3.1 y=-021 z=4 constraint=pine
+3 x=5 constraint=idiot
+
+beam elements
+1 node=[3,6] material=wood
+2 node=[1,2] load=heavy
+4 node=[1,8] 
+
+material properties
+/* there are none */
+
+distributed loads
+heavy direction=thatway values=(0,7800) (100,9400)
+
+constraints
+pin Tx=c
+
+end

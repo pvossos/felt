@@ -1,0 +1,6 @@
+grid
+element-type = beam
+start        = (0,0,0)   end      = (100,500,100)
+x-number     = 4         y-number = 20              z-number = 4
+
+end

@@ -1,0 +1,32 @@
+/* 
+ * Sample of translation capabilities with cpp.  Of course, I only
+ * translated the keywords, because that's all I know :-).
+ * deutsche.trn should be a link to german.trn to really do it right.
+ */
+
+# include "german.trn"
+
+problembeschreibung
+titel="German Translation of beam.flt" knoten=3 elemente=2 
+
+knoten
+1 x=0   y=0 krafte=point_load   zwangsbedingung=free
+2 x=240 y=0 zwangsbedingung=roller
+3 x=480 y=0 zwangsbedingung=fixed
+
+beam elemente
+1 knoten=[1,2] material=steel
+2 knoten=[2,3] material=steel
+
+materialeigenschaften
+steel e=30e6 ix=100 a=10
+
+kraefte
+point_load fy=-1000
+
+zwangsbedingungen
+roller tx=u ty=c rz=u
+fixed tx=c ty=c rz=c
+free tx=u ty=u rz=u
+
+ende

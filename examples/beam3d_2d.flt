@@ -1,0 +1,23 @@
+problem description
+title="3d Beam Sample Problem (Logan #6.9, p.255)" nodes=3 elements=2
+
+nodes
+1 x=0 y=0 z=0 constraint=fixed
+2 x=0 y=4 z=0 constraint=free force=moment
+3 x=5 y=4 z=0 constraint=fixed
+
+beam3d elements
+1 nodes=[1,2] material=steel
+2 nodes=[2,3] material=steel
+
+material properties
+steel e=210e9 a=2e-2 iy=2e-4 iz=2e-4 J=1 G=1
+
+forces
+moment mz=200e3
+
+constraints
+fixed tx=c ty=c tz=c rx=c ry=c rz=c
+free tx=u ty=u rx=c ry=c rz=u
+
+end

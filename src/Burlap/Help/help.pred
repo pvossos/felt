@@ -1,0 +1,48 @@
+pred any?
+any? (X)
+
+    Returns true (one) if any element of X is non-zero.  Otherwise, returns
+    false (zero).  X must be a matrix or a scalar.
+
+
+pred compact?
+compact? (A)
+
+    Returns true (one) if A is a compact-storage matrix.  Otherwise, returns
+    false (zero).
+
+
+pred every?
+every? (X)
+
+    Returns true (one) if every element of X is non-zero.  Otherwise, returns
+    false (zero).  X must be a matrix or a scalar.
+
+
+pred matrix?
+matrix? (A)
+
+    Returns true (one) if A is a matrix (and not a scalar).  Otherwise,
+    returns false (zero).
+
+
+pred null?
+null? (A)
+
+    Returns true (one) if A is null (has not been assigned a value).
+    Otherwise, returns false (zero).
+
+
+pred scalar?
+scalar? (A)
+
+    Returns true (one) if A is a scalar.  Otherwise, returns false (zero).
+
+
+pred symmetric?
+symmetric? (X)
+
+    Returns true (one) if any X is a symmetric matrix or a scalar.  Otherwise,
+    false (zero).  X must be a matrix or a scalar.
+
+

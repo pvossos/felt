@@ -1,0 +1,24 @@
+problem description
+title="CST w/Distributed Load (Logan #7.10, p.309)" nodes=4 elements=2
+
+nodes
+1 x=0 y=0 z=0	constraint=pin
+2 x=0 y=10 	constraint=pin
+3 x=20 y=10	constraint=free
+4 x=20 y=0	constraint=free
+
+CSTPlaneStress elements
+1 nodes=[1,3,2] material=steel
+2 nodes=[1,4,3] material=steel load=shear
+
+material properties
+steel t=1 e=30e6 nu=0.30
+
+distributed loads
+shear direction=GlobalY values=(2,-1000) (3,-1000)
+
+constraints
+pin	tx=c ty=c
+free	tx=u ty=u
+
+end

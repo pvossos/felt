@@ -1,0 +1,818 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH FELT 4fe "8/4/95" "Version 3.00" "Finite Element Package"
+.SH NAME
+felt \- finite element problem description file format
+.SH DESCRIPTION
+The \fIfelt\fR(4fe) file format is used by the programs of the finite element
+package, \fIfelt\fR(1fe), \fIvelvet\fR(1fe), and \fIburlap\fR(1fe)
+to describe a finite element problem.  The file is human
+readable and consists of a friendly, intuitive syntax rather than a table of
+numbers.  Syntactic and semantic errors are detected and reported assuring
+that only valid problem descriptions are used.  In general white space is
+unimportant, arbitrary numeric expressions may be used, and case of
+keywords is unimportant.  As per standard convention, boldface items
+represent keywords, italicized items represent the syntax of the grammar, and
+items in brackets are optional.  The file syntax is shown below.
+.PP
+.RS
+.RI [ " problem-description " ]
+.br
+.RI [ " analysis-parameters " ]
+.br
+.RI [ " object-definitions " ]
+.br
+.RI [ " appearance-description " ]
+.br
+.B "end"
+.RE
+.SS Problem description
+The \fIproblem-description\fR section specifies the problem title and the
+number of nodes and elements in the problem.  If this section is not
+specified then the problem will be unnamed and is assumed to contain zero
+nodes and zero elements.  This section may be absent for example in defaults
+files which define objects but do not specify an actual problem instance.
+The format for a \fIproblem-description\fR is given below.
+.PP
+.RS
+.B "problem description"
+.br
+[
+.BI "title = " string
+]
+.br
+[
+.BI "nodes = " integer
+]
+.br
+[
+.BI "elements = " integer
+]
+.br
+[
+\fBanalysis =\fB static \fR|\fB transient \fR|\fB modal\fR
+|\fB static-thermal\fR|\fB transient-thermal\fR|\fB spectral\fR
+]
+.RE
+.PP
+If the \fBtitle\fR is missing then the problem is unnamed.  If \fBnodes\fR
+or \fBelements\fR is missing then none of that type of object are expected.
+The assignments can occur in any order and can even be repeated with the
+last assignment being used.
+.SS Analysis parameters
+The \fIanalysis-parameters\fR section defines any parameters for a specific
+type of analysis.  Currently, this section is used only if the analysis mode
+is \fBtransient\fR.  The format of the \fIanalysis-parameters\fR section
+is given below.
+.PP
+.RS
+.B "analysis parameters"
+.br
+[
+.BI "alpha = " expression
+]
+.br
+[
+.BI "beta = " expression
+]
+.br
+[
+.BI "gamma = " expression
+]
+.br
+[
+.BI "step = " expression
+]
+.br
+[
+.BI "start = " expression
+]
+.br
+[
+.BI "stop = " expression
+]
+.br
+[
+.BI "Rm = " expression
+]
+.br
+[
+.BI "Rk = " expression
+]
+.br
+[
+.BI "nodes = [ " node-list " ]"
+]
+.br
+[
+.BI "dofs = [ " dof-list " ]"
+]
+.br
+[
+\fBmass-mode =\fB lumped \fR|\fB consistent\fR
+]
+.RE
+.PP
+The \fBalpha\fR, \fBbeta\fR, and\fBgamma\fR parameters are used in numerical
+integration schemes (transient and transient-thermal analysis).
+\fBstart\fR, \fBstop\fR, and \fBstep\fR define the range of time or
+frequency interest for transient or spectral analyses.  In transient
+analyses, \fBstart\fR is meaningless and \fBduration\fR and \fBdt\fR can
+be used as aliases for \fBstop\fR and \fBstep\fR, respectively.  \fBRk\fR
+and \fBRm\fR are global Rayleigh (stiffness and mass) damping proportionality
+constants.  The \fInode-list\fR is a comma or white space separated list of 
+node numbers that are of interest in the analysis.  Similarly, the 
+\fIdof-list\fR is a list of the degrees of freedom (\fBTx\fR, \fBTy\fR, 
+\fBTz\fR, \fBRx\fR, \fBRy\fR, and \fBRz\fR) that are of interest.
+.PP
+An \fIobject-definition\fR section defines objects of a specified type.
+Objects include nodes, elements, materials, constraints, forces, and
+distributed loads.
+Each of these types of objects is discussed below.  Multiple
+\fIobject-definition\fR sections are allowed and the sections may occur in
+any order.
+.SS Nodes
+Nodes are points in cartesian space to which elements are attached.  A
+node must have a constraint and may have an optional force.  A node is
+identified by a natural number.  The syntax is as follows:
+.PP
+.RS
+\fBnodes\fR
+.br
+\fInode-definitions\fR
+.RE
+.PP
+where a \fInode-definition\fR takes the following form:
+.PP
+.RS
+.I node-number
+.br
+[
+.BI "x = " expression
+]
+.br
+[
+.BI "y = " expression
+]
+.br
+[
+.BI "z = " expression
+]
+.br
+[
+.BI "constraint = " constraint-name
+]
+.br
+[
+.BI "force = " force-name
+]
+.br
+[
+.BI "mass = " expression
+]
+.RE
+.PP
+The \fInode-number\fR starts the definition.  Each node must have a unique
+number.  If a cartesian coordinate is not given then the coordinate of the
+previous node is used.  Similarly, if no constraint is given then the
+constraint applied to the previous node is used.  As above, the assignments
+can appear in any order and any number of times.  As indicated above, some
+objects are identified by their name and some by their number.  Elements and
+nodes have numbers while materials, forces, loads, and constraints have
+names.
+.SS Elements
+Elements are linear, planar, or solid objects which are attached to nodes.
+Each element must have a material and may have optional loads.  Furthermore,
+each element has a type, or definition.  Like nodes, elements are identified
+by a unique natural number.  Elements of specific type are defined with the
+following syntax:
+.PP
+.RS
+.IB "element-type " elements
+.br
+.I element-definition
+.RE
+.PP
+where an \fIelement-type\fR is one of the following:
+.PP
+.RS
+.B spring
+.br
+.B truss
+.br
+.B beam
+.br
+.B beam3d
+.br
+.B CSTPlaneStrain
+.br
+.B CSTPlaneStress
+.br
+.B iso2d_PlaneStrain
+.br
+.B iso2d_PlaneStress
+.br
+.B quad_PlaneStrain
+.br
+.B quad_PlaneStress
+.br
+.B timoshenko
+.br
+.B htk
+.br
+.B brick
+.br
+.B ctg
+.br
+.B rod
+.RE
+.PP
+and an \fIelement-definition\fR has the following form:
+.PP
+.RS
+.I element-number
+.br
+.BI "nodes = [ " node-list " ]"
+.br
+[
+.BI "material = " material-name
+]
+.br
+[
+.BI "load = " load-name-list
+]
+.RE
+.PP
+The \fIelement-number\fR starts the definition.  Each element must have a
+unique number.  If no material is given then the material applied to the
+previous element is used.  The \fIload-name-list\fR is a list of up to three
+loads to apply to the element.  The \fInode-list\fR is a comma or white space
+separated list of node numbers.  Each type of element requires a certain of
+nodes and in some cases a special "null node" which is numbered zero may be
+used to indicate a gap or filler in the list.
+.SS Materials
+Elements are made of a type of material.  Each material has a name and
+certain physical properties not all of which may be used by any one
+element.  The syntax for defining materials is as follows:
+.PP
+.RS
+.B "material properties"
+.br
+.I "material-definitions"
+.RE
+.PP
+where \fImaterial-definition\fR has the following form:
+.PP
+.RS
+.nf
+.PD 0
+.I material-name
+.TP 25
+[ \fBcolor =\fI string\fR ]
+# color for \fIvelvet\fR
+.TP
+[ \fBE =\fI expression\fR ]
+# Young's modulus
+.TP
+[ \fBIx =\fI expression\fR ]
+# moment of inertia about x-x axis
+.TP
+[ \fBIy =\fI expression\fR ]
+# moment of inertia about y-y axis
+.TP
+[ \fBIz =\fI expression\fR ]
+# moment of inertia about z-z axis
+.TP
+[ \fBA =\fI expression\fR ]
+# cross-sectional area
+.TP
+[ \fBJ =\fI expression\fR ]
+# polar moment of inertia
+.TP
+[ \fBG =\fI expression\fR ]
+# bulk (shear) modulus
+.TP
+[ \fBt =\fI expression\fR ]
+# thickness
+.TP
+[ \fBrho =\fI expression\fR ]
+# density
+.TP
+[ \fBnu =\fI expression\fR ]
+# Poisson's ratio
+.TP
+[ \fBkappa =\fI expression\fR ]
+# shear force correction
+.TP
+[ \fBRk =\fI expression\fR ]
+# Rayleigh damping coefficient (K)
+.TP
+[ \fBRm =\fI expression\fR ]
+# Rayleigh damping coefficient (M)
+.TP
+[ \fBKx =\fI expression\fR ]
+# thermal conductivity in the x-direction
+.TP
+[ \fBKy =\fI expression\fR ]
+# thermal conductivity in the y-direction
+.TP
+[ \fBKy =\fI expression\fR ]
+# thermal conductivity in the z-direction
+.TP
+[ \fBc =\fI expression\fR ]
+# heat capacitance
+.PD
+.fi
+.RE
+.PP
+The \fImaterial-name\fR starts the definition.  If an attribute of a material
+is not specified then that attribute is zero.  The assignments may occur in
+any order.  The \fIcolor\fR specifies the color to use in drawing the
+material within \fIvelvet\fR, and is ignored by other applications.
+.SS Constraints
+Constraints are applied to nodes to indicate about which axes a node can
+move.  The syntax for defining a constraint is as follows:
+.PP
+.RS
+.B "constraints"
+.br
+.I "constraint-definitions"
+.RE
+.PP
+where \fIconstraint-definition\fR has the following form:
+.PP
+.RS
+.PD 0
+.I constraint-name
+.TP 32
+.nf
+[ \fBcolor =\fI string\fR ]
+# color for \fIvelvet\fR
+.TP
+[ \fBtx =\fB c \fR|\fB u \fR|\fI expression \fR]
+# boundary translation along x axis
+.TP
+[ \fBty =\fB c \fR|\fB u \fR|\fI expression \fR]
+# boundary translation along y axis
+.TP
+[ \fBtz =\fB c \fR|\fB u \fR|\fI expression \fR]
+# boundary translation along z axis
+.TP
+[ \fBrx =\fB c \fR|\fB u \fR|\fI expression \fR|\fB h \fR]
+# boundary rotation about x axis
+.TP
+[ \fBry =\fB c \fR|\fB u \fR|\fI expression \fR|\fB h \fR]
+# boundary rotation about y axis
+.TP
+[ \fBrz =\fB c \fR|\fB u \fR|\fI expression \fR|\fB h \fR]
+# boundary rotation about z axis
+.TP
+[ \fBitx =\fI expression\fR ]
+# initial displacement along x axis
+.TP
+[ \fBity =\fI expression\fR ]
+# initial displacement along y axis
+.TP
+[ \fBitz =\fI expression\fR ]
+# initial displacement along z axis
+.TP
+[ \fBirx =\fI expression\fR ]
+# initial rotation about x axis
+.TP
+[ \fBiry =\fI expression\fR ]
+# initial rotation about y axis
+.TP
+[ \fBirz =\fI expression\fR ]
+# initial rotation about z axis
+.TP
+[ \fBvx =\fI expression\fR ]
+# initial velocity along x axis
+.TP
+[ \fBvy =\fI expression\fR ]
+# initial velocity along y axis
+.TP
+[ \fBvz =\fI expression\fR ]
+# initial velocity along z axis
+.TP
+[ \fBax =\fI expression\fR ]
+# initial accel. along x axis
+.TP
+[ \fBay =\fI expression\fR ]
+# initial accel. along y axis
+.TP
+[ \fBaz =\fI expression\fR ]
+# initial accel. along z axis
+.fi
+.PD
+.RE
+.PP
+The \fIconstraint-name\fR starts the definition.  A value of \fBc\fR
+for a boundary condition indicates that the axis is constrained; a value 
+of \fBu\fR indicates that the axis is unconstrained.  
+An expression indicates a displacement (non-zero) boundary condition and
+may contain the \fBt\fR variable for time varying boundary conditions in 
+transient analysis problems.  The initial dislacement, velocity and 
+acceleration specifications are only used in transient problems.
+A value of \fBh\fR for a rotational boundary condition indicates
+a hinge.  By default, all axes are unconstrained.  The \fIcolor\fR specifies
+the color to use in drawing the constraint within \fIvelvet\fR, and is
+ignored by other applications.
+.SS Forces
+Forces, or point loads, may be applied to nodes.  The syntax for a force
+definition is as follows:
+.PP
+.RS
+.B "forces"
+.br
+.I "force-definitions"
+.RE
+.PP
+where a \fIforce-definition\fR has the following form:
+.PP
+.RS
+.PD 0
+.I "force-name"
+.TP 25
+[ \fBcolor =\fI string\fR ]
+# color for \fIvelvet\fR
+.TP
+[ \fBFx = \fIexpression\fR ]
+# force along x axis
+.TP
+[ \fBFy = \fIexpression\fR ]
+# force along y axis
+.TP
+[ \fBFz = \fIexpression\fR ]
+# force along z axis
+.TP
+[ \fBMx = \fIexpression\fR ]
+# moment about x axis
+.TP
+[ \fBMy = \fIexpression\fR ]
+# moment about y axis
+.TP
+[ \fBMz = \fIexpression\fR ]
+# moment about z axis
+.TP
+[ \fBSfx = \fIexpression\fR ]
+# frequency-domain spectra of force along x axis
+.TP
+[ \fBSfy = \fIexpression\fR ]
+# frequency-domain spectra of force along y axis
+.TP
+[ \fBSfz = \fIexpression\fR ]
+# frequency-domain spectra of force along z axis
+.TP
+[ \fBSmx = \fIexpression\fR ]
+# frequency-domain spectra of moment about x axis
+.TP
+[ \fBSmy = \fIexpression\fR ]
+# frequency-domain spectra of moment about y axis
+.TP
+[ \fBSmz = \fIexpression\fR ]
+# frequency-domain spectra of moment about z axis
+.PD
+.RE
+.PP
+The \fIforce-name\fR starts the definition.  If the force or moment is not
+specified then it is assumed to be zero.  The
+\fIexpressions\fR for forces may be time-varying.  Time-varying expressions
+include the single variable \fBt\fR to represent the current time in the
+solution of a dynamic problem or consist of a list of discrete (time, value)
+pairs.  Frequency varying expressions for spectra can also use \fBw\fR to
+represent the independent variable (radial frequency).
+The \fIcolor\fR specifies the color to use in drawing the force
+within \fIvelvet\fR, and is ignored by other applications.
+.SS Loads
+Distributed loads, or loads for short, are applied to elements.  The syntax
+for a defining a distributed load is as follows:
+.PP
+.RS
+.B "distributed loads"
+.br
+.I "load-definitions"
+.RE
+.PP
+where a \fIload-definition\fR has the following form:
+.PP
+.RS
+.nf
+.I "load-name"
+.PD 0
+.TP 25
+[ \fBcolor =\fI string\fR ]
+# color for \fIvelvet\fR
+.TP
+[ \fBdirection = \fIdir\fR ]
+# direction
+.TP
+[ \fBvalues = \fIpair-list\fR ]
+# local nodes and magnitudes
+.PD
+.fi
+.RE
+.PP
+The \fIload-name\fR starts the definition.  The \fIdir\fR is one of
+\fBLocalX\fR, \fBLocalY\fR, \fBLocalZ\fR (local coordinate system),
+\fBGlobalX\fR, \fBGlobalY\fR, \fBGlobalZ\fR (global coordinate system),
+\fBparallel\fR, or \fBperpendicular\fR.  The \fIpair-list\fR is a sequence of
+\fIpairs\fR.  A \fIpair\fR is a node number and an expression enclosed in
+parentheses.  The node number refers to the position within the element
+rather than referring to an actual node.  The \fIcolor\fR specifies the color
+to use in drawing the load within \fIvelvet\fR, and is ignored by other
+applications.
+.SS Appearance Description
+The \fIappearance-description\fR section is used by \fIvelvet\fR to
+describe the appearance of a problem.  This section is currently not used by
+\fIfelt\fR.  The appearance includes the state of the drawing area and
+any tool figures.  This section consists of two subsections, the
+\fIcanvas-configuration\fR section and the \fIfigure-list\fR section.  The
+\fIcanvas-configuration\fR section has the following syntax.
+.PP
+.RS
+.B "canvas configuration"
+.br
+.I "canvas-parameters"
+.RE
+.PP
+where a \fIcanvas-parameter\fR has the following form:
+.PP
+.RS
+.nf
+.PD 0
+.TP 35
+[ \fBnode-numbers = \fIboolean \fR]
+# node numbering
+.TP
+[ \fBelement-numbers = \fIboolean \fR]
+# element numbering
+.TP
+[ \fBsnap = \fIboolean \fR]
+# snap grid status
+.TP
+[ \fBgrid = \fIboolean \fR]
+# visible grid status
+.TP
+[ \fBsnap-size = \fIexpression \fR]
+# snap grid size
+.TP
+[ \fBgrid-size = \fIexpression \fR]
+# visible grid size
+.TP
+[ \fBnode-color = \fIcolor-name \fR]
+# node color
+.TP
+[ \fBelement-color = \fIcolor-name \fR]
+# element color
+.TP
+[ \fBlabel-font = \fIfont-name \fR]
+# labeling font
+.TP
+[ \fBtool-color = \fIcolor-name \fR]
+# tool figure color
+.TP
+[ \fBtool-font = \fIfont-name \fR]
+# text figure font
+.TP
+[ \fBx-min = \fIexpression \fR]
+# x-axis minimum
+.TP
+[ \fBx-max = \fIexpression \fR]
+# x-axis maximum
+.TP
+[ \fBy-min = \fIexpression \fR]
+# y-axis minimum
+.TP
+[ \fBy-max = \fIexpression \fR]
+# y-axis maximum
+.TP
+[ \fBx-pos = \fIexpression \fR]
+# x position of drawing area
+.TP
+[ \fBy-pos = \fIexpression \fR]
+# y position of drawing area
+.TP
+[ \fBwidth = \fIexpression \fR]
+# width of viewport window
+.TP
+[ \fBheight = \fIexpression \fR]
+# height of viewport window
+.TP
+[ \fBscale = \fIexpression \fR]
+# scale of drawing area
+.fi
+.PD
+.RE
+.PP
+A \fIboolean\fR is either \fBtrue\fR or \fBfalse\fR.  A \fIcolor-name\fR is
+the name of a valid X11 color.  Similarly, a \fIfont-name\fR is the name of a
+valid X11 font.  The last five parameters are probably not very meaningful to
+the user.  The \fIfigure-list\fR section has the following syntax.
+.PP
+.RS
+.B "figure list"
+.br
+.I "figure-definitions"
+.RE
+.PP
+where a \fIfigure-definition\fR has the following form:
+.PP
+.RS
+.PD 0
+.TP 30
+\fIfigure-type\fR
+.TP
+[ \fBx = \fIexpression \fR]
+# x coordinate
+.TP
+[ \fBy = \fIexpression \fR]
+# y coordinate
+.TP
+[ \fBwidth = \fIexpression \fR]
+# width
+.TP
+[ \fBheight = \fIexpression \fR]
+# height
+.TP
+[ \fBstart = \fIexpression \fR]
+# starting angle
+.TP
+[ \fBlength = \fIexpression \fR]
+# arc length
+.TP
+[ \fBtext = \fIname \fR]
+# text string
+.TP
+[ \fBcolor = \fIname \fR]
+# color
+.TP
+[ \fBfont = \fIname \fR]
+# text font
+.TP
+[ \fBpoints = [ \fIpoint-list\fB ] \fR]
+# line points
+.PD
+.RE
+.PP
+The \fIfigure-type\fR starts the definition and is one of \fBrectangle\fR,
+\fBpolyline\fR, \fBtext\fR, or \fBarc\fR.  Note that not all properties
+have meaning for all figures.  Any unneeded property is ignored.  If a color
+or font property is not given then the previous property is used.  The
+\fIpoint-list\fR is a list of (x-coordinate, y-coordinate) pairs.
+.SS Expressions
+An \fIexpression\fR can be either constant or time-varying.  As discussed
+above, time-varying expressions contain the variable \fBt\fR or consist of a
+list of discrete (time, value) pairs.  If a time-varying expression is given
+where a constant expression is expected, the expression is evaluated at time
+zero.  An \fIexpression\fR has one of the following forms, where all
+operators have the precedences and associativities given to them in the C
+programming language.
+.PP
+.RS
+.PD 0
+.nf
+.TP 37
+\fIexpression\fB ? \fIexpression\fB : \fIexpression\fR
+# in-line conditional
+.TP
+\fIexpression\fB || \fIexpression\fR
+# logical or
+.TP
+\fIexpression\fB && \fIexpression\fR
+# logical and
+.TP
+\fIexpression\fB | \fIexpression\fR
+# integer inclusive or
+.TP
+\fIexpression\fB ^ \fIexpression\fR
+# integer exclusive or
+.TP
+\fIexpression\fB & \fIexpression\fR
+# integer and
+.TP
+\fIexpression\fB == \fIexpression\fR
+# equality
+.TP
+\fIexpression\fB != \fIexpression\fR
+# inequality
+.TP
+\fIexpression\fB < \fIexpression\fR
+# less than
+.TP
+\fIexpression\fB > \fIexpression\fR
+# greater than
+.TP
+\fIexpression\fB <= \fIexpression\fR
+# less than or equal
+.TP
+\fIexpression\fB >= \fIexpression\fR
+# greater than or equal
+.TP
+\fIexpression\fB << \fIexpression\fR
+# integer shift left
+.TP
+\fIexpression\fB >> \fIexpression\fR
+# integer shift right
+.TP
+\fIexpression\fB + \fIexpression\fR
+# addition
+.TP
+\fIexpression\fB - \fIexpression\fR
+# subtraction
+.TP
+\fIexpression\fB * \fIexpression\fR
+# multiplication
+.TP
+\fIexpression\fB / \fIexpression\fR
+# division
+.TP
+\fIexpression\fB % \fIexpression\fR
+# integer remainder
+.TP
+\fB- \fIexpression\fR
+# arithmetic negation
+.TP
+\fB! \fIexpression\fR
+# logical negation
+.TP
+\fB~ \fIexpression\fR
+# integer bitwise negation
+.TP
+\fB( \fIexpression\fB )\fR
+# enforce precedence
+.TP
+\fBsin (\fI expression\fB )\fR
+# sine
+.TP
+\fBcos (\fI expression\fB )\fR
+# cosine
+.TP
+\fBtan (\fI expression\fB )\fR
+# tangent
+.TP
+\fBpow (\fI expression\fB , \fIexpression \fB)\fR
+# power (exponentiation)
+.TP
+\fBexp (\fI expression\fB )\fR
+# exponential
+.TP
+\fBlog (\fI expression\fB )\fR
+# natural logarithm
+.TP
+\fBlog10 (\fI expression\fB )\fR
+# base-10 logarithm
+.TP
+\fBsqrt (\fI expression\fB )\fR
+# square root
+.TP
+\fBhypot (\fI expression\fB , \fIexpression \fB)\fR
+# Euclidean distance
+.TP
+\fBfloor (\fI expression\fB )\fR
+# floor
+.TP
+\fBceil (\fI expression\fB )\fR
+# ceiling
+.TP
+\fBfmod (\fI expression\fB , \fIexpression \fB)\fR
+# floating point remainder
+.TP
+\fBfabs (\fI expression\fB )\fR
+# absolute value
+.TP
+\fBnumber\fR
+# literal value
+.TP
+\fBt\fR
+# current time
+.fi
+.PD
+.RE
+.PP
+Finally, a discretely valued expression has the following syntax, where the
+optional \fB+\fR indicates that the list represents one cycle of an infinite
+waveform.
+.PP
+.RS
+\fB( \fIexpression \fB',' \fIexpression \fB) \fR... [ \fB+ \fR]
+.RE
+.SH AUTHOR
+The \fIfelt\fR file format was developed by Jason I. Gobat (jgobat@mit.edu)
+and Darren C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+corduroy(1fe), felt(1fe), velvet(1fe), xfelt(1fe), corduroy(4fe).
+

@@ -1,0 +1,23 @@
+problem description
+title="Beam w/Distributed Load Sample Problem (Logan #5.24, p.192)" 
+nodes=3 elements=2
+
+nodes
+1 x=0 y=0 constraint=pin
+2 x=5    
+3 x=9
+
+beam elements
+1 nodes=[1,2] material=steel load=weight
+2 nodes=[2,3]                load=weight
+
+material properties
+steel a=10 ix=2e-4 e=210e9
+
+distributed loads
+weight direction=perp values=(1,-5000) (2,-5000)
+
+constraints
+pin tx=c ty=c
+
+end

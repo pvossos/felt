@@ -1,0 +1,48 @@
+problem description
+title="dynamic frame analysis" nodes=8 elements=9 analysis=spectral
+
+analysis parameters
+beta=0.25  gamma=0.5  alpha=0.0  
+start=0.0  stop=40.0  step=0.2
+nodes=[3,8] dofs=[Tx] mass-mode=lumped
+
+nodes
+1 x=0   y=0   constraint=fixed
+2 x=360 y=0
+3 x=0   y=180 constraint=free   
+4 x=360     
+5 x=0   y=300			force=f1
+6 x=360
+7 x=0	y=420			force=f1
+8 x=360
+
+beam elements
+1 nodes=[1,3] material=wall_bottom
+2 nodes=[3,5] material=wall_top
+3 nodes=[5,7] 
+4 nodes=[7,8] material=floor_top     load=top_wt    
+5 nodes=[5,6] material=floor_bottom  load=bottom_wt
+6 nodes=[3,4] 			     load=bottom_wt
+7 nodes=[8,6] material=wall_top	     
+8 nodes=[6,4]
+9 nodes=[4,2] material=wall_bottom
+
+material properties
+wall_bottom  A=13.2 Ix=249 E=30e6 rho=0.0049
+wall_top     A=6.2  Ix=107 E=30e6 rho=0.0104
+floor_top    A=12.3 Ix=133 E=30e6 rho=0.01315
+floor_bottom A=24.7 Ix=237 E=30e6 rho=0.0136
+
+distributed loads
+top_wt    direction=perpendicular    values=(1,-62.5) (2,-62.5)
+bottom_wt direction=perpendicular    values=(1,-130) (2,-130)
+
+forces
+f1 Sfx=1.25/4*pow(6.0,4.0)/pow(w,5.0)*9*exp(-1.25*pow(6.0/w, 4.0)) 
+
+
+constraints
+fixed Tx=c Ty=c Rz=c
+free  Tx=u Ty=u Rz=u
+
+end

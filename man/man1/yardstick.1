@@ -1,0 +1,89 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH YARDSTICK 1fe "07/03/94" "Version 2.21" "Finite Element Package"
+.SH NAME
+yardstick \- unit conversion and problem scaling application
+.SH SYNOPSIS
+.B yardstick
+[\-il \fIlength unit\fR]
+[\-if \fIforce unit\fR]
+[\-ol \fIlength unit\fR]
+[\-of \fIforce unit\fR]
+[\-ls \fIlength scale factor\fR]
+[\-fs \fIforce scale factor\fR]
+[\fIfilename\fR]
+.SH DESCRIPTION
+\fIyardstick\fR is a program to scale the numerical quantities in a FElt input
+file; converting FElt files from one set of units to another
+(e.g., Newtons and meters to pounds and inches) is a special case of this
+operation and as such is given special treatment.  For unit conversion you
+must specify input and output unit names for force and length quantities;
+\fIyardstick\fR will figure out the appropriate scale factors. Mass units are
+converted based on the length and force units that you specify.
+Time units are always assumed to be seconds so no conversion options 
+are provided.  For simple scaling you simply specify multiplicative
+scale factors for both force quantities and length quantities.  Mass and time
+quantities are treated as in the special case of unit conversion.
+.SH OPTIONS
+\fIyardstick\fR accepts the following options.  Note that for unit conversion
+all four of \fI-il\fR, \fI-if\fR, \fI-ol\fR, \fI-of\fR must be specified and
+that unit conversion and simple scaling (\fI-fs\fR and \fI-ls\fR) are exclusive
+options.
+.TP 5
+.B \-help
+Write a message describing valid command line options to standard error
+and exit.
+.TP
+.B -il (--input-length) \fIlength units\fR
+The symbolic name of the length units used in the input file.  Valid names
+are m (meters), mm (millimeters), cm (centimeters), ft (feet), in (inches).
+.TP
+.B -if (--input-force) \fIforce units\fR
+The symbolic name of the force units used in the input file.  Valid names
+are N (Newtons), MN (mega-Newtons), GN (giga-Newtons), lbs (pounds),  
+kips (kilopounds).
+.TP
+.B -ol (--output-length) \fIlength units\fR
+The symbolic name of the length units for the output (i.e., what the input
+units will be converted to).  Available types are the same as for input
+length units.
+.TP
+.B -of (--output-force) \fIforce units\fR
+The symbolic name of the force units for the output (i.e., what the input
+units will be converted to).  Available types are the same as for input
+length units.
+.TP
+.B -ls (--length-scale) \fIlength quantity scale factor\fR
+The multiplicative factor by which length quantities within the input file
+will be scaled.
+.TP
+.B -fs (--force-scale) \fIforce quantity scale factor\fR
+The multiplicative factor by which force quantities within the input file
+will be scaled.
+.TP
+.B \-nocpp
+Do not use a preprocessor on the input file.
+.TP
+.BI \-cpp " filename"
+Use \fIfilename\fR as a preprocessor on the input file.  The default
+preprocessor is "/lib/cpp".  Any preprocssor which understands the -D, -U,
+and -I options can be used as these options are passed to the preprocessor.
+.SH AUTHOR
+\fIyardstick\fR was developed by Jason I. Gobat (jgobat@mit.edu) and Darren
+C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+felt(4fe).

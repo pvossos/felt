@@ -1,0 +1,57 @@
+/*
+
+                    O                                      +O                 
+                  ++ ++                                  ++  +                
+                 +     +                               ++     +               
+               ++       +                            ++        +              
+              +          ++                       +++          +O             
+             +             +                    ++           ++  +            
+           ++               +                 ++          +++     ++          
+          +                  ++            +++          ++          +         
+        ++                     +         ++           ++             +        
+       +                        +      ++          +++                ++      
+     ++                          ++  ++          ++                     +     
+    +                              O+         +++                        +    
+   +                                ++      ++                            ++  
+ ++                                   ++  ++                                + 
+O+++++++++++++++++++++++++++++++++++++++O+                                   O
+
+*/
+
+problem description
+title="Logan Sample Problem 6-25-2 p.260" nodes=7 elements=8
+
+nodes
+1  x=0 y=0 z=0 constraint=pin
+2  x=10 y=15 z=0 constraint=free force=seat
+3  x=17.333 y=4 z=0
+4  x=20 y=0 z=0
+5  x=30 y=15 z=0 force=handlebars
+6  x=32 y=11.25 z=0
+7  x=38 y=0 z=0 constraint=roller
+
+beam elements
+1  nodes=[1,2]   material=steel_1    
+2  nodes=[2,3]   material=steel_2345    
+3  nodes=[1,4]   
+4  nodes=[3,5]   
+5  nodes=[4,6]   
+6  nodes=[5,6]   material=steel_678    
+7  nodes=[6,7]   
+8  nodes=[3,4]   
+
+material properties
+steel_1  E=3e+07 A=0.1 Ix=0.01 Iy=0 Iz=0 J=0 G=0 nu=0 t=0 rho=0 kappa=0
+steel_2345  E=3e+07 A=0.15 Ix=0.02 Iy=0 Iz=0 J=0 G=0 nu=0 t=0 rho=0 kappa=0
+steel_678  E=3e+07 A=0.3 Ix=0.1 Iy=0 Iz=0 J=0 G=0 nu=0 t=0 rho=0 kappa=0
+
+constraints
+pin  tx=c ty=c tz=u rx=u ry=u rz=u
+free  tx=u ty=u tz=u rx=u ry=u rz=u
+roller  tx=u ty=c tz=u rx=u ry=u rz=u
+
+forces
+seat  Fx=0 Fy=-125 Fz=0 Mx=0 My=0 Mz=0
+handlebars  Fx=0 Fy=-25 Fz=0 Mx=0 My=0 Mz=0
+
+end

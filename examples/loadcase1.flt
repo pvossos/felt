@@ -1,0 +1,27 @@
+problem description
+nodes=2 elements=1
+title="Cantilever Study with Load Cases"
+
+load cases
+tip_load	node-forces=(2, point_load)
+end_moment	node-forces=(2, end_moment)
+
+nodes
+1  x=0.0	constraint=fixed
+2  x=10.0	constraint=free
+
+beam elements
+1   nodes=[1,2]	  material=steel
+
+material properties
+steel   E=30e6   A=2.0   Ix=100
+
+constraints
+free   Tx=u  Ty=u   Rz=u
+fixed  Tx=c  Ty=c   Rz=c
+
+forces
+point_load    Fy=-100
+end_moment    Mz=-100
+
+end

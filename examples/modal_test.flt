@@ -1,0 +1,28 @@
+problem description
+title="Cantilever beam: Modal analysis"
+nodes=5 elements=4 analysis=modal
+
+analysis parameters
+mass-mode=consistent
+
+nodes
+1  x=0 y=0 z=0 constraint=encanstre
+2  x=2 y=0 z=0 constraint=free
+3  x=4 y=0 z=0
+4  x=8 y=0 z=0
+5  x=12 y=0 z=0
+
+beam elements
+1  nodes=[1,2] material=steel
+2  nodes=[2,3]
+3  nodes=[3,4]
+4  nodes=[4,5]
+
+material properties
+steel E=3e+07 A=0.0625 Ix=0.000325 rho=0.000735
+
+constraints
+encanstre Tx=c Ty=c Tz=u Rx=u Ry=u Rz=c
+free      Tx=u Ty=u Tz=u Rx=u Ry=u Rz=u
+
+end

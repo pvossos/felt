@@ -1,0 +1,13 @@
+function foo ( )
+    for n in nodes
+	nodes (i) = 1
+    end
+    write ("hello")
+    write ("there")
+
+    write 1 + 2
+    write ("hello")
+    write ("there")
+end
+
+write ("hello")

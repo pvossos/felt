@@ -1,0 +1,68 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH PATCHWORK 1fe "5/19/94" "Version 2.20" "Finite Element Package"
+.SH NAME
+patchwork \- file format conversion application
+.SH SYNOPSIS
+.B patchwork
+[\-help]
+[\-iformat \fIfilename\fR]
+[\-oformat \fIfilename\fR]
+[\-nocpp]
+[\-cpp \fIfilename\fR]
+.SH DESCRIPTION
+\fIPatchwork\fR is a program to convert between different types of problem
+description file formats. Obviously, it is mainly intended as a method to go 
+back and forth between standard \fIfelt\fR(4fe) files and files formatted 
+for input into other popular systems (e.g., DXF), but it could just as well 
+be used to go between two of the alternative formats. In the above synopsis, 
+\fBiformat\fR and \fBoformat\fR should be replaced with appropriate input and 
+output format styles (see below).
+.SH OPTIONS
+\fIPatchwork\fR accepts the following options:
+.TP 5
+.B \-help
+Write a message describing valid command line options to standard error
+and exit.
+.TP
+.BI \-iformat " filename"
+Currently, \fBiformat\fR should be one of \fBdxf\fR, \fBfelt\fR, or
+\fBgraph\fR, specifying that the input is either a DXF file, a standard FElt 
+input file, or a data file for a graphing application like \fIgnuplot\fR,
+respectively.  A filename of "\-" indicates that input should be read from 
+standard input.
+.TP
+.BI \-oformat " filename"
+Currently, \fBoformat\fR should be one of \fBdxf\fR, \fBfelt\fR, \fBgraph\fR, 
+or \fBlogan\fR, specifying that the resulting output should be formatted as
+DXF, FElt, as input for \fIgnuplot\fR, or as appropriate input for the 
+software that accompanies D.L. Logan's introductory finite element text.  A 
+filename of "\-" indicates that the output should be written to standard 
+output.
+.TP
+.B \-nocpp
+Do not use a preprocessor on the input file.
+.TP
+.BI \-cpp " filename"
+Use \fIfilename\fR as a preprocessor on the input file.  The default
+preprocessor is "/lib/cpp".  Any preprocssor which understands the -D, -U,
+and -I options can be used as these options are passed to the preprocessor.
+.SH AUTHOR
+\fIPatchwork\fR was developed by Jason I. Gobat (jgobat@mit.edu) and Darren
+C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+felt(4fe).

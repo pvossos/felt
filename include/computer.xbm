@@ -1,0 +1,25 @@
+/*
+    This file is part of the FElt finite element analysis package.
+    Copyright (C) 1993,1994 Jason I. Gobat and Darren C. Atkinson
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#define computer_width 16
+#define computer_height 16
+static char computer_bits[] = {
+   0x00, 0x00, 0xfe, 0x7f, 0x01, 0x80, 0x95, 0xb0, 0x8d, 0x96, 0xed, 0xb0,
+   0xad, 0x96, 0xf5, 0x90, 0x01, 0x80, 0xfe, 0x7f, 0x08, 0x10, 0xf8, 0x1f,
+   0xac, 0x2a, 0x56, 0x55, 0xfe, 0x7f, 0x00, 0x00};

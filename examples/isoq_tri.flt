@@ -1,0 +1,27 @@
+problem description
+title="CST Sample Problem (Logan #7.11b, p.309)" nodes=5 elements=4
+
+nodes
+1 x=0      y=0   constraint=free
+2 x=400e-3 y=0   constraint=free
+3 x=400e-3 y=400e-3 constraint=pin
+4 x=0      y=400e-3 constraint=pin
+5 x=200e-3 y=200e-3 constraint=free force=point
+
+quad_PlaneStress elements
+1 nodes=[1,2,5,5] material=steel
+2 nodes=[2,3,5,5]
+3 nodes=[3,4,5,5]
+4 nodes=[1,5,4,4] material=steel
+
+material properties
+steel e=210e9 nu=0.30 t=5e-3
+
+forces
+point fy=-30000
+
+constraints
+pin tx=c ty=c 
+free tx=u ty=u
+
+end

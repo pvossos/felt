@@ -1,0 +1,27 @@
+problem description
+title="Isoparametric Sample Problem (EDSEP example #8)" nodes=6 elements=2
+
+nodes
+1 x=0     y=5     constraint=free
+2 x=50 	          			force=point1
+3 x=100
+4 x=0	  y=-5    constraint=pin
+5 x=50		  constraint=free	force=point1
+6 x=100	 	  constraint=roller
+
+iso2d_PlaneStress elements
+1 nodes=[2,1,4,5,0,0,0,0,0] material=steel
+2 nodes=[3,2,5,6,0,0,0,0,0] 
+
+material properties
+steel e=3e5 nu=0.2 t=1.0
+
+constraints
+pin tx=c ty=c
+roller tx=u ty=c
+free tx=u ty=u
+
+forces
+point1 fy=-250
+
+end

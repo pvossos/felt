@@ -1,0 +1,38 @@
+	/*
+	 * An example taken from the EDSEP user's manual (#4)
+	 */
+
+problem description
+title="Beam w/Distributed Load Example Problem" nodes=5 elements=4
+
+nodes
+1 x=0    y=0     constraint=pinned
+2 x=800          constraint=free     force=point
+3 x=1600         constraint=free     
+4 x=2800         constraint=roller
+5 x=1600 y=-400  constraint=fixed
+
+beam elements
+1 nodes=[1,2] material=steel load=weight
+2 nodes=[2,3] material=steel load=weight
+3 nodes=[3,4] material=steel load=weight
+4 nodes=[3,5] material=light load=light_wt
+
+material properties
+steel e=3e3 a=3000 ix=7e5
+light e=3e3 a=1000 ix=8.25e4
+
+distributed loads
+weight direction=perp values=(1,-0.26) (2,-0.26)
+light_wt direction=parallel values=(1,0.0868) (2,0.0868)
+
+constraints
+fixed tx=c ty=c tz=c rz=c
+free tx=u ty=u tz=c rz=u
+roller tx=u ty=c tz=c rz=u
+pinned tx=c ty=c tz=c rz=u
+
+forces
+point fy=-40
+
+end

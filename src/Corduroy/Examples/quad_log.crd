@@ -1,0 +1,12 @@
+start-node    = 1
+start-element = 1
+
+quadrilateral grid
+start    = (0,0)
+end      = (10,3)
+x-number = 20
+y-number = 6
+x-rule   = logarithmic
+y-rule   = reverse-logarithmic
+
+end

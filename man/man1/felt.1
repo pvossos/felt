@@ -1,0 +1,115 @@
+.\"    This file is part of the FElt finite element analysis package.
+.\"    Copyright (C) 1993-1996 Jason I. Gobat and Darren C. Atkinson
+.\"
+.\"    This program is free software; you can redistribute it and/or modify
+.\"    it under the terms of the GNU General Public License as published by
+.\"    the Free Software Foundation; either version 2 of the License, or
+.\"    (at your option) any later version.
+.\"
+.\"    This program is distributed in the hope that it will be useful,
+.\"    but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\"    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\"    GNU General Public License for more details.
+.\"
+.\"    You should have received a copy of the GNU General Public License
+.\"    along with this program; if not, write to the Free Software
+.\"    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+.TH FELT 1fe "6/02/95" "Version 3.00" "Finite Element Package"
+.SH NAME
+felt \- command line based Finite ELemenT engine
+.SH SYNOPSIS
+.B felt
+[\-help]
+[\-version]
+[\-debug]
+[\-preview]
+[\-summary]
+[\-plot]
+[\+table]
+[\-transfer]
+[\-orthonormal]
+[\-eigen]
+[\-renumber]
+[\-matrices]
+[\-graphics \fIfilename\fR]
+[\-nocpp]
+[\-cpp \fIfilename\fR]
+[\-D\fIname\fR[=\fIvalue\fR]]
+[\-U\fIname\fR]
+[\-I\fIdirectory\fR]
+[\fIfilename\fR]
+.SH DESCRIPTION
+\fIFelt\fR is a command line based finite element engine which reads
+a \fIfelt\fR(4fe) file and writes the results to standard output.  If
+no \fIfilename\fR is given then the standard input is used.  Any syntactic
+or semantic errors are reported to standard error.  A complete description
+of the mathematics can be found in the user's guide.
+.SH OPTIONS
+\fIFelt\fR accepts the following options:
+.TP 5
+.B \-version
+Write the current version number and exit.
+.TP
+.B \-help
+Write a message describing valid command line options to standard error
+and exit.
+.TP
+.B \-debug
+Write the processed file to standard output in the form of a valid input
+file.
+.TP
+.B \-preview
+Write an ASCII rendering of the problem geometry.
+.TP
+.B \-summary
+Write a material summary describing the total length, area, and volume of
+each material used to standard output.
+.TP
+.B \-plot
+Include a time-displacement plot in the output of a transient analysis
+problem.
+.TP
+.B \+table
+Do not output a table of times vs. displacements in the output of a transient
+analysis problem.  Simple tabular output is the default.
+.TP
+.B \-transfer
+Only compute transfer functions for spectral analysis (stop calculations
+before output spectra are computed).
+.TP
+.B \-eigen
+Only perform the eigenvalue calculations (natural frequencies and mode
+shapes) in modal analysis.
+.TP
+.B \-orthonormal
+Use orthonormal mode shapes when calculating modal matrices (normalize 
+the eigenvectors such that the modal mass matrix is the identity matrix).
+.TP
+.B \-renumber
+Make an attempt at optimally renumbering the nodes in order to minimize
+the storage requirements of the stiffness (and mass and damping) matrices.
+This option will invoke a GPS/Gibbs-King renumbering algorithm.  For small
+problems the extra overhead of this algorithm is probably not worth the
+effort.  For large problems (> 100 nodes or so) the savings in both memory
+and overall execution time can be quite significant however.
+.TP
+.B \-matrices
+Print the global (stiffness, mass, damping) matrices that are appropriate
+to the analysis type for this problem.
+.TP
+.BI \-graphics " filename"
+Create \fIfilename\fR as a graphics file in \fIgnuplot\fR(1) format for
+visualizing the structure.  This option is used by \fIxfelt\fR(1fe).
+.TP
+.B \-nocpp
+Do not use a preprocessor on the input file.
+.TP
+.BI \-cpp " filename"
+Use \fIfilename\fR as a preprocessor on the input file.  The default
+preprocessor is "/lib/cpp".  Any preprocssor which understands the -D, -U,
+and -I options can be used as these options are passed to the preprocessor.
+.SH AUTHOR
+\fIFelt\fR was developed by Jason I. Gobat (jgobat@mit.edu) and Darren
+C. Atkinson (atkinson@ucsd.edu).
+.SH SEE ALSO
+corduroy(1fe), gnuplot(1), velvet(1fe), burlap(1fe), felt(4fe).

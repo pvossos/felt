@@ -1,0 +1,22 @@
+problem description
+title="3d Beam Sample Problem (Logan #5.21 p.192)" nodes=2 elements=1
+
+nodes
+1 x=0   y=0 z=0 constraint=fixed
+2 x=360 y=0 z=0 constraint=pin 
+
+beam3d elements
+1 nodes=[1,2] material=steel load=dead
+
+material properties
+steel e=29e6 a=1 iy=200 iz=200 j=1 g=1 
+
+distributed loads
+dead direction=LocalY values=(1,-2000/12) (2,-2000/12)
+
+constraints
+fixed tx=c ty=c tz=c rx=c ry=c rz=c
+free tx=u ty=u tz=c rx=c ry=c rz=u
+pin tx=c ty=c tz=c rx=c ry=c rz=u
+
+end

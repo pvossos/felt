@@ -1,0 +1,1052 @@
+!    This file is part of the FElt finite element analysis package.
+!    Copyright (C) 1993-1995 Jason I. Gobat and Darren C. Atkinson
+!
+!    This program is free software; you can redistribute it and/or modify
+!    it under the terms of the GNU General Public License as published by
+!    the Free Software Foundation; either version 2 of the License, or
+!    (at your option) any later version.
+!
+!    This program is distributed in the hope that it will be useful,
+!    but WITHOUT ANY WARRANTY; without even the implied warranty of
+!    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+!    GNU General Public License for more details.
+!
+!    You should have received a copy of the GNU General Public License
+!    along with this program; if not, write to the Free Software
+!    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+
+! fonts
+
+*control*MenuButton*font:			*new century schoolbook-medium-r-normal-*-14*
+*control*SimpleMenu*font:			*new century schoolbook-medium-r-normal-*-14*
+*Dialog*font:					*new century schoolbook-medium-r-normal-*-14*
+*Command*font:					*new century schoolbook-medium-r-normal-*-14*
+*Label*font:					*new century schoolbook-medium-r-normal-*-14*
+*entryShell*font:				*new century schoolbook-medium-r-normal-*-14*
+*listShell*font:				*new century schoolbook-medium-r-normal-*-14*
+*entryShell*Text*font:				*helvetica-bold-r-normal--14*
+*TransientShell*Dialog*value*font:		9x15bold
+
+
+! command line options
+
+*sensitiveMenus:				True
+*numbers:					True
+*nodeColor:					Blue
+*elementColor:					Black
+*toolColor:					Red
+*labelFont:					5x8
+*toolFont:					fg-22
+
+
+! miscellaneous resources
+
+*form.background:				#000080
+*form.foreground:				black
+*beNiceToColormap:				False
+*Scrollbar.background:				#d3d3d3
+*Drawing.background:				white
+
+*highlightThickness:				0
+*SimpleMenu.cursor:				hand2
+*infod.title:					Velvet
+
+
+! transient shell resources
+
+*TransientShell*allowShellResize:		True
+*TransientShell*background:			#a9a9a9
+*TransientShell*foreground:			#000080
+*TransientShell*borderColor:			#000080
+*TransientShell*Command*background:		#d3d3d3
+*TransientShell*Command*foreground:		#000080
+*TransientShell*Text*background:		white
+*TransientShell*Text*foreground:		black
+*TransientShell*List*foreground:		black
+*TransientShell*List*background:		white
+*TransientShell*Dialog*justify:			left
+
+! toplevel shell resources (we use toplevels for post-processing, etc)
+
+*TopLevelShell*allowShellResize:		True
+*TopLevelShell*background:			#a9a9a9
+*TopLevelShell*foreground:			#000080
+*TopLevelShell*borderColor:			#000080
+*TopLevelShell*Command*background:		#d3d3d3
+*TopLevelShell*Command*foreground:		#000080
+
+! the control form widget
+
+*control*foreground:				#000080
+*control*background:				white
+*control.background:				#a9a9a9
+
+*control*bottom:				ChainTop
+*control*top:					ChainTop
+*control*left:					ChainLeft
+
+*control*MenuButton*width:			140
+*control*MenuButton*justify:			left
+*control*MenuButton*borderColor:		Black
+*control*MenuButton*background:			#d3d3d3
+*control*Command*borderColor:			Black
+*control*Command*background:			#d3d3d3
+*control*Command*width:				140
+
+*control.bottom:				ChainBottom
+*control.top:					ChainTop
+*control.right:					ChainLeft
+*control.left:					ChainLeft
+
+*control.file.label:				File ...
+*control.file.menuName:				fileMenu
+*control.fileMenu.new.label:			New
+*control.fileMenu.open.label:			Open ...
+*control.fileMenu.save.label:			Save
+*control.fileMenu.save_as.label:		Save as ...
+*control.fileMenu.save_all.label:		Save all ...
+*control.fileMenu.restore.label:		Restore
+*control.fileMenu.exit.label:			Exit
+*control.fileMenu.openDB.label:			Open database ...
+*control.fileMenu.updateDB.label:		Update database ...
+
+*control.problem.fromVert:			file
+*control.problem.label:				Solutions ...
+*control.problem.menuName:			problemMenu
+*control.problemMenu.solve.label:		Solve
+*control.problemMenu.animate.label:		Animate
+*control.problemMenu.prob_analysis.label:	Problem/Analysis ...
+*control.problemMenu.output.label:		Results/Output ...
+*control.problemMenu.load_cases.label:		Load cases ...
+
+*control.postprocess.fromVert:			problem
+*control.postprocess.label:			Postprocess ...
+*control.postprocess.menuName:			postprocessMenu
+*control.postprocessMenu.plot_stress.label:	Plot stresses
+*control.postprocessMenu.plot_displ.label:	Plot displacements
+*control.postprocessMenu.plot_struct.label:	Plot structure
+*control.postprocessMenu.contour.label:		Contouring ...
+*control.postprocessMenu.wireframe.label:	Wireframes ...
+
+*control.canvas.fromVert:			postprocess
+*control.canvas.label:				Canvas ...
+*control.canvas.menuName:			canvasMenu
+*control.canvasMenu.configure.label:		Configure ...
+*control.canvasMenu.colors.label:		Color control ...
+*control.canvasMenu.zoomOut.label:		Zoom to fit
+*control.canvasMenu.zoomIn.label:		Zoom Window
+*control.canvasMenu.save_xwd.label:		Save canvas ...
+*control.canvasMenu.node_numbering.label:	Node numbering      
+*control.canvasMenu.elt_numbering.label:	Element numbering   
+*control.canvasMenu.snap.label:			Snap
+*control.canvasMenu.grid.label:			Grid
+
+*control.tools.fromVert:			canvas
+*control.tools.label:				Tools ...
+*control.tools.menuName:			toolsMenu
+*control.toolsMenu.line.label:			Line
+*control.toolsMenu.circle.label:		Circle
+*control.toolsMenu.arc.label:			Arc
+*control.toolsMenu.rectangle.label:		Rectangle
+*control.toolsMenu.polygon.label:		Polyline
+*control.toolsMenu.text.label:			Text
+*control.toolsMenu.move.label:			Move
+*control.toolsMenu.delete.label:		Delete
+
+*control.apply.fromVert:			tools
+*control.apply.label:				Apply ...
+*control.apply.menuName:			applyMenu
+*control.applyMenu.forces.label:		Forces
+*control.applyMenu.materials.label:		Materials
+*control.applyMenu.loads.label:			Loads
+*control.applyMenu.constraints.label:		Constraints
+
+*control.nodes.fromVert:			apply
+*control.nodes.label:				Nodes ...
+*control.nodes.menuName:			nodesMenu
+*control.nodesMenu.add.label:			Add
+*control.nodesMenu.delete.label:		Delete
+*control.nodesMenu.edit.label:			Edit ...
+*control.nodesMenu.move.label:			Move
+*control.nodesMenu.mass.label:			Lumped mass
+*control.nodesMenu.renumber.label:		Renumber perm
+*control.nodesMenu.renumber_solve.label:	Renumber temp  
+
+*control.elements.fromVert:			nodes
+*control.elements.label:			Elements ...
+*control.elements.menuName:			elementsMenu
+*control.elementsMenu.add.label:		Add
+*control.elementsMenu.delete.label:		Delete
+*control.elementsMenu.edit.label:		Edit ...
+*control.elementsMenu.set_type.label:		Set type ...
+*control.elementsMenu.generate.label:		Generate ...
+
+*control.materials_d.fromVert:			elements
+*control.materials_d.label:			Materials ...
+*control.materials_d.justify:			left
+
+*control.constraints_d.fromVert:		materials_d
+*control.constraints_d.justify:			left
+*control.constraints_d.label:			Constraints ...
+
+*control.forces_d.fromVert:			constraints_d
+*control.forces_d.label:			Forces ...
+*control.forces_d.justify:			left
+
+*control.loads_d.fromVert:			forces_d
+*control.loads_d.label:				Loads ...
+*control.loads_d.justify:			left
+
+*control.info.justify:				left
+*control.info.fromVert:				loads_d
+*control.info.label:				Info
+
+*control.spacer.background:			#a9a9a9
+*control.spacer.width:				140
+*control.spacer.bottom:				ChainBottom
+*control.spacer.top:				ChainTop
+*control.spacer.borderWidth:			0
+*control.spacer.fromVert:			info
+
+*control.quit.bottom:				ChainBottom
+*control.quit.top:				ChainBottom
+*control.quit.fromVert:				spacer
+*control.quit.label:				Quit
+
+*control.abort.bottom:				ChainBottom
+*control.abort.top:				ChainBottom
+*control.abort.fromVert:			quit
+*control.abort.label:				Abort
+
+
+! the viewport widget
+
+*form.viewport.fromHoriz:			control
+*form.viewport.right:				ChainRight
+*form.viewport.left:				ChainLeft
+*form.viewport.top:				ChainTop
+*form.viewport.bottom:				ChainBottom
+*form.viewport.allowHoriz:			True
+*form.viewport.allowVert:			True
+*form.viewport.useBottom:			True
+*form.viewport.useRight:			True
+*form.viewport.width:				502
+*form.viewport.height:				502
+
+
+! the coord label widget
+
+*coord.background:				#000080
+*coord.font:					9x15bold
+*coord.foreground:				white
+*coord.bottom:					ChainBottom
+*coord.top:					ChainBottom
+*coord.right:					ChainLeft
+*coord.left:					ChainLeft
+*coord.fromVert:				control
+*coord.borderWidth:				0
+*coord.width:					140
+*coord.label:
+
+
+! the bottom form widget
+
+*bottom*foreground:				#000080
+*bottom*background:				#d3d3d3
+*bottom*left:					ChainLeft
+*bottom*right:					ChainRight
+*bottom*bottom:					ChainBottom
+*bottom*top:					ChainBottom
+*bottom.fromVert:				viewport
+*bottom.fromHoriz:				control
+
+*bottom.status.background:			#d3d3d3
+*bottom.status.borderWidth:			0
+*bottom.status.label:				Command:
+*bottom.status.right:				ChainLeft
+*bottom.status.foreground:			#000080
+
+*bottom.entry*font:				9x15bold
+*bottom.entry.horizDistance:			0
+*bottom.entry.width:				412
+*bottom.entry.left:				ChainLeft
+*bottom.entry.right:				Rubber
+*bottom.entry.borderWidth:			0
+*bottom.entry.fromHoriz:			status
+*bottom.entry*background:			#a9a9a9
+*bottom.entry*foreground:			black
+
+
+! visualization shells
+
+*displShell*dw.background:			white
+*displShell.layout.borderColor:			Black
+*displShell.layout*borderWidth:			0
+*displShell.layout*highlightThickness:		0
+
+*stressShell*dw.background:			white
+*stressShell.layout.borderColor:		Black
+*stressShell.layout*borderWidth:		0
+*stressShell.layout*highlightThickness:		0
+
+*structShell*dw.background:			white
+*structShell.layout.borderColor:		Black
+*structShell.layout*borderWidth:		0
+*structShell.layout*highlightThickness:		0
+
+*tdShell*td_dw.background:			white
+*tdShell.layout.borderColor:			Black
+*tdShell.layout*borderWidth:			0
+*tdShell.layout*highlightThickness:		0
+
+*forceShell*force_dw.background:		white
+*forceShell.layout.borderColor:			Black
+*forceShell.layout*borderWidth:			0
+*forceShell.layout*highlightThickness:		0
+
+*fpShell*fp_dw.background:			white
+*fpShell.layout.borderColor:			Black
+*fpShell.layout*borderWidth:			0
+*fpShell.layout*highlightThickness:		0
+
+*animateShell.layout.borderColor:		Black
+*animateShell*animate_dw.background:		white
+*animateShell*reverse*shapeStyle:		Rectangle
+*animateShell*forward*shapeStyle:		Rectangle
+*animateShell*rreverse*shapeStyle:		Rectangle
+*animateShell*fforward*shapeStyle:		Rectangle
+*animateShell*fforward.background:		#d3d3d3
+*animateShell*rreverse.background:		#d3d3d3
+*animateShell*stop*shapeStyle:			Rectangle
+*animateShell*step_label*background:		#d3d3d3
+*animateShell*step_label*foreground:		#000080
+*animateShell*step_label*font:			10x20
+*animateShell*dismiss.borderWidth:		0
+
+*modalShell.layout.borderColor:			Black
+*modalShell*modal_dw.background:		white
+*modalShell*reverse*shapeStyle:			Rectangle
+*modalShell*forward*shapeStyle:			Rectangle
+*modalShell*forward.background:			#d3d3d3
+*modalShell*reverse.background:			#d3d3d3
+*modalShell*freq_label*borderWidth:		0
+*modalShell*freq_label*foreground:		#000080
+*modalShell*freq_label*font:			10x20
+*modalShell*mode_label*borderWidth:		0
+*modalShell*mode_label*foreground:		#000080
+*modalShell*mode_label*font:			10x20
+*modalShell*dismiss.borderWidth:		0
+*modalShell*save.borderWidth:			0
+
+! the file dialog
+
+*fileDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*fileDialog.layout.entry*font:			9x15bold
+*fileDialog.layout.viewport.list.font:		9x15bold
+
+*fileDialog.layout.borderColor:			Black
+*fileDialog.layout*borderWidth:			0
+*fileDialog.layout*highlightThickness:		0
+
+*fileDialog*highlightThickness:			0
+*fileDialog*foreground:				#000080
+*fileDialog*background:				#a9a9a9
+*fileDialog*Command*foreground:			#000080
+*fileDialog.layout.entry*foreground:		black
+*fileDialog.layout.entry*background:		white
+*fileDialog.layout.viewport.list.foreground:	black
+*fileDialog.layout.viewport.list.background:	white
+*fileDialog.layout.viewport.vertical.background:	#d3d3d3
+*fileDialog.layout.okay.background:		#d3d3d3
+*fileDialog.layout.cancel.background:		#d3d3d3
+
+! the dump dialog
+
+*dumpDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*dumpDialog.layout.entry*font:			9x15bold
+*dumpDialog.layout.viewport.list.font:		9x15bold
+
+*dumpDialog.layout.borderColor:			Black
+*dumpDialog.layout*borderWidth:			0
+*dumpDialog.layout*highlightThickness:		0
+
+*dumpDialog*highlightThickness:			0
+*dumpDialog*foreground:				#000080
+*dumpDialog*background:				#a9a9a9
+*dumpDialog*Command*foreground:			#000080
+*dumpDialog.layout.entry*foreground:		black
+*dumpDialog.layout.entry*background:		white
+*dumpDialog.layout.viewport.list.foreground:	black
+*dumpDialog.layout.viewport.list.background:	white
+*dumpDialog.layout.viewport.vertical.background:	#d3d3d3
+*dumpDialog.layout.okay.background:		#d3d3d3
+*dumpDialog.layout.cancel.background:		#d3d3d3
+*dumpDialog*layout.Toggle*background:		#d3d3d3
+*dumpDialog*layout.Toggle*foreground:		red
+
+
+! the constraint dialog
+
+*constraintDialog*highlightThickness:		0
+*constraintDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*constraintDialog.layout.Text*font:		9x15bold
+*constraintDialog.layout.viewport.list.font:	9x15bold
+*constraintDialog.layout.help.shell.text*font:	9x15
+
+*constraintDialog.layout.borderColor:			Black
+*constraintDialog.layout*borderWidth:			0
+*constraintDialog.layout.help.shell.borderWidth:	1
+*constraintDialog.layout*highlightThickness:		0
+
+*constraintDialog*foreground:				#000080
+*constraintDialog*background:				#a9a9a9
+*constraintDialog*layout.Toggle*background:		#d3d3d3
+*constraintDialog*layout.Toggle*foreground:		red
+*constraintDialog.layout.Text*foreground:		black
+*constraintDialog.layout.Text*background:		white
+*constraintDialog.layout.viewport.list.foreground:	black
+*constraintDialog.layout.viewport.list.background:	white
+*constraintDialog.layout.viewport.vertical.background:	#d3d3d3
+*constraintDialog.layout.Command.background:		#d3d3d3
+*constraintDialog.layout.Command.foreground:		#000080
+*constraintDialog.layout.Core.background:		#000080
+*constraintDialog.layout.help.background:		#d3d3d3
+*constraintDialog.layout.help.foreground:		#000080
+*constraintDialog.layout.help.shell.text*background:	white
+*constraintDialog.layout.help.shell.text*foreground:	black
+
+
+! the force dialog
+
+*forceDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*forceDialog.layout.Text*font:			9x15bold
+*forceDialog.layout.viewport.list.font:		9x15bold
+*forceDialog.layout.help.shell.text*font:	9x15
+
+*forceDialog.layout.borderColor:		Black
+*forceDialog.layout*borderWidth:		0
+*forceDialog.layout.help.shell.borderWidth:	1
+*forceDialog.layout*highlightThickness:		0
+
+*forceDialog*foreground:			#000080
+*forceDialog*background:			#a9a9a9
+*forceDialog.layout.Text*foreground:		black
+*forceDialog.layout.Text*background:		white
+*forceDialog.layout.Toggle*foreground:		red
+*forceDialog.layout.Toggle*background:		#d3d3d3
+*forceDialog.layout.viewport.list.foreground:	black
+*forceDialog.layout.viewport.list.background:	white
+*forceDialog.layout.viewport.vertical.background:	#d3d3d3
+*forceDialog.layout.Command.background:		#d3d3d3
+*forceDialog.layout.Core.background:		#000080
+*forceDialog.layout.Command.foreground:		#000080
+*forceDialog.layout.help.foreground:		#000080
+*forceDialog.layout.help.background:		#d3d3d3
+*forceDialog.layout.help.shell.text*background:	white
+*forceDialog.layout.help.shell.text*foreground:	black
+*forceDialog.layout.plot_force.label:		Plot Force
+*forceDialog.layout.plot_moment.label:		Plot Moment
+
+
+! the distributed load dialog
+
+*loadDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*loadDialog.layout.Text*font:			9x15bold
+*loadDialog.layout.viewport.list.font:		9x15bold
+*loadDialog.layout.help.shell.text*font:	9x15
+
+*loadDialog.layout.borderColor:			Black
+*loadDialog.layout*borderWidth:			0
+*loadDialog.layout.help.shell.borderWidth:	1
+*loadDialog.layout*highlightThickness:		0
+
+*loadDialog*foreground:				#000080
+*loadDialog*background:				#a9a9a9
+*loadDialog.layout.Toggle*foreground:		red
+*loadDialog.layout.Toggle*background:		#d3d3d3
+*loadDialog.layout.Text*foreground:		black
+*loadDialog.layout.Text*background:		white
+*loadDialog.layout.viewport.list.foreground:	black
+*loadDialog.layout.viewport.list.background:	white
+*loadDialog.layout.viewport.vertical.background:	#d3d3d3
+*loadDialog.layout.Command.background:		#d3d3d3
+*loadDialog.layout.Core.background:		#000080
+*loadDialog.layout.Command.foreground:		#000080
+*loadDialog.layout.help.foreground:		#000080
+*loadDialog.layout.help.background:		#d3d3d3
+*loadDialog.layout.help.shell.text*background:	white
+*loadDialog.layout.help.shell.text*foreground:	black
+
+
+! the material dialog
+
+*materialDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*materialDialog.layout.Text*font:		9x15bold
+*materialDialog.layout.viewport.list.font:	9x15bold
+*materialDialog.layout.help.shell.text*font:	9x15
+
+*materialDialog.layout.borderColor:		Black
+*materialDialog.layout*borderWidth:		0
+*materialDialog.layout.help.shell.borderWidth:	1
+*materialDialog.layout*highlightThickness:	0
+
+*materialDialog*foreground:				#000080
+*materialDialog*background:				#a9a9a9
+*materialDialog.layout.Text*foreground:			black
+*materialDialog.layout.Text*background:			white
+*materialDialog.layout.viewport.list.foreground:	black
+*materialDialog.layout.viewport.list.background:	white
+*materialDialog.layout.viewport.vertical.background:	#d3d3d3
+*materialDialog.layout.Command.background:		#d3d3d3
+*materialDialog.layout.Core.background:			#000080
+*materialDialog.layout.help.background:			#d3d3d3
+*materialDialog.layout.Command.foreground:		#000080
+*materialDialog.layout.help.foreground:		#000080
+*materialDialog.layout.help.shell.text*background:	white
+*materialDialog.layout.help.shell.text*foreground:	black
+
+*materialDialog.layout*shell.text*foreground:		black
+*materialDialog.layout*shell.text*background:		white
+*materialDialog.layout*shell.text*font:	        	9x15
+*materialDialog.layout*shell*borderWidth:		1
+
+*materialDialog.layout.E_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.A_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Ix_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Iy_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Iz_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.J_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.G_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Rk_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Rm_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Y_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.t_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.nu_name.font:	-adobe-symbol-medium-r-normal--14*
+*materialDialog.layout.kappa_name.font:	-adobe-symbol-medium-r-normal--14*
+*materialDialog.layout.rho_name.font:	-adobe-symbol-medium-r-normal--14*
+*materialDialog.layout.Kx_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Ky_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.Kz_name.font:	-adobe-helvetica-medium-r-normal--14*
+*materialDialog.layout.c_name.font:	-adobe-helvetica-medium-r-normal--14*
+
+! the colors dialog
+
+*colorsDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*colorsDialog.layout.Viewport*font:		9x15bold
+*colorsDialog.layout.Viewport*Scrollbar.background:	#d3d3d3
+*colorsDialog.layout.help.shell.text*font:	9x15
+
+*colorsDialog.layout.borderColor:		Black
+*colorsDialog.layout*borderWidth:		0
+*colorsDialog.layout.help.shell.borderWidth:	1
+*colorsDialog.layout*highlightThickness:	0
+
+*colorsDialog*foreground:				#000080
+*colorsDialog*background:				#a9a9a9
+*colorsDialog.layout.Viewport*foreground:		black
+*colorsDialog.layout.Viewport*background:		white
+*colorsDialog.layout.viewport.vertical.background:	#d3d3d3
+*colorsDialog.layout.Command.background:		#d3d3d3
+*colorsDialog.layout.Core.background:			#000080
+*colorsDialog.layout.Command.foreground:		#000080
+*colorsDialog.layout.help.foreground:		#000080
+*colorsDialog.layout.help.background:			#d3d3d3
+*colorsDialog.layout.help.shell.text*background:	white
+*colorsDialog.layout.help.shell.text*foreground:	black
+
+*colorsDialog.layout*shell*borderWidth:		1
+
+! the node dialog
+
+*nodeDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*nodeDialog.layout.Text*font:			9x15bold
+*nodeDialog.layout.viewport.list.font:		9x15bold
+*nodeDialog.layout.help.shell.text*font:	9x15
+*nodeDialog.layout.SimpleMenu*font:		9x15bold
+*nodeDialog.layout.SimpleMenu*cursor:		hand2
+
+*nodeDialog.layout.borderColor:			Black
+*nodeDialog.layout*borderWidth:			0
+*nodeDialog.layout.help.shell.borderWidth:	1
+*nodeDialog.layout.SimpleMenu.borderWidth:	1
+*nodeDialog.layout*highlightThickness:		0
+
+*nodeDialog*foreground:				#000080
+*nodeDialog*background:				#a9a9a9
+*nodeDialog.layout.Text*borderColor:		#a9a9a9
+*nodeDialog.layout.Text*foreground:		black
+*nodeDialog.layout.Text*background:		white
+*nodeDialog.layout.Command.background:		#d3d3d3
+*nodeDialog.layout.Repeater.background:		#d3d3d3
+*nodeDialog.layout.Repeater.foreground:		#000080
+*nodeDialog.layout.MenuButton.background:	#d3d3d3
+*nodeDialog.layout.MenuButton.foreground:	#000080
+*nodeDialog.layout.SimpleMenu.background:	white
+*nodeDialog.layout.Core.background:		#000080
+*nodeDialog.layout.help.background:		#d3d3d3
+*nodeDialog.layout.Command.foreground:		#000080
+*nodeDialog.layout.help.foreground:		#000080
+*nodeDialog.layout.help.shell.text*background:	white
+*nodeDialog.layout.help.shell.text*foreground:	black
+*nodeDialog.layout.SimpleMenu*foreground:	black
+*nodeDialog.layout.translationX*borderWidth:	2
+*nodeDialog.layout.translationY*borderWidth:	2
+*nodeDialog.layout.translationZ*borderWidth:	2
+*nodeDialog.layout.rotationX*borderWidth:	2
+*nodeDialog.layout.rotationY*borderWidth:	2
+*nodeDialog.layout.rotationZ*borderWidth:	2
+*nodeDialog.layout.forceName.topMargin:		5
+*nodeDialog.layout.constraintName.topMargin:	5
+
+
+! the element dialog
+
+*elementDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*elementDialog.layout*Text*font:		9x15bold
+*elementDialog.layout.help.shell.text*font:	9x15
+*elementDialog.layout.SimpleMenu*font:		9x15bold
+*elementDialog.layout.viewport.stresses.font:	9x15bold
+*elementDialog.layout.SimpleMenu*cursor:	hand2
+
+*elementDialog.layout.borderColor:		Black
+*elementDialog.layout*borderWidth:		0
+*elementDialog.layout.help.shell.borderWidth:	1
+*elementDialog.layout.SimpleMenu.borderWidth:	1
+*elementDialog.layout*highlightThickness:	0
+
+*elementDialog*foreground:				#000080
+*elementDialog*background:				#a9a9a9
+*elementDialog.layout.viewport.stresses.foreground:	black
+*elementDialog.layout.viewport.stresses.background:	white
+*elementDialog.layout*Text*foreground:			black
+*elementDialog.layout*Text*background:			white
+*elementDialog.layout.Command.background:		#d3d3d3
+*elementDialog.layout.Repeater.background:		#d3d3d3
+*elementDialog.layout.Repeater.foreground:		#000080
+*elementDialog.layout.MenuButton.background:		#d3d3d3
+*elementDialog.layout.MenuButton.foreground:		#000080
+*elementDialog.layout.SimpleMenu.background:		white
+*elementDialog.layout.Core.background:			#000080
+*elementDialog.layout.Command.foreground:		#000080
+*elementDialog.layout.help.foreground:		#000080
+*elementDialog.layout.help.background:			#d3d3d3
+*elementDialog.layout.help.shell.text*background:	white
+*elementDialog.layout.help.shell.text*foreground:	black
+*elementDialog.layout.SimpleMenu*foreground:		black
+*elementDialog.layout.materialName.topMargin:		5
+*elementDialog.layout.load1Name.topMargin:		5
+*elementDialog.layout.load2Name.topMargin:		5
+*elementDialog.layout.load3Name.topMargin:		5
+
+
+! the element list
+
+*elementList*font:				*new century schoolbook-medium-r-normal-*-14*
+*elementList.layout.entry*font:			9x15bold
+*elementList.layout.viewport.list.font:		9x15bold
+*elementList.layout.viewport.vertical.background:	#d3d3d3
+
+*elementList.layout.borderColor:		Black
+*elementList.layout*borderWidth:		0
+*elementList.layout*highlightThickness:		0
+
+*elementList*foreground:			#000080
+*elementList*background:			#a9a9a9
+*elementList.layout.entry*foreground:		black
+*elementList.layout.entry*background:		white
+*elementList.layout.viewport.list.foreground:	black
+*elementList.layout.viewport.list.background:	white
+*elementList.layout.accept.background:		#d3d3d3
+*elementList.layout.accept.foreground:		#000080
+*elementList.layout.dismiss.background:		#d3d3d3
+*elementList.layout.dismiss.foreground:		#000080
+
+! the grid dialog
+
+*gridDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*gridDialog.layout.Text*font:			9x15bold
+*gridDialog.layout.help.shell.text*font:	9x15
+
+*gridDialog.layout.borderColor:		Black
+*gridDialog.layout*borderWidth:		0
+*gridDialog.layout.help.shell.borderWidth:	1
+*gridDialog.layout*highlightThickness:	0
+
+*gridDialog*foreground:				#000080
+*gridDialog*background:				#a9a9a9
+*gridDialog.layout.Text*foreground:			black
+*gridDialog.layout.Text*background:			white
+*gridDialog.layout.Command.background:		#d3d3d3
+*gridDialog.layout.help.background:			#d3d3d3
+*gridDialog.layout.Command.foreground:		#000080
+*gridDialog.layout.Core.background:		#000080
+*gridDialog.layout.help.foreground:		#000080
+*gridDialog.layout.help.shell.text*background:	white
+*gridDialog.layout.help.shell.text*foreground:	black
+*gridDialog.layout*shell.text*foreground:		black
+*trimegridg.layout*shell.text*background:		white
+*gridDialog.layout*shell.text*font:	        	9x15
+*gridDialog.layout*shell*borderWidth:		1
+*gridDialog.layout.MenuButton.background:   #d3d3d3
+*gridDialog.layout.MenuButton.foreground:   #000080
+*gridDialog.layout.SimpleMenu.background:   white
+*gridDialog.layout.SimpleMenu*foreground:   black
+*gridDialog.layout.SimpleMenu*font:         9x15bold
+*gridDialog.layout.SimpleMenu*cursor:               hand2
+*gridDialog.layout.SimpleMenu.borderWidth:  1
+
+
+! the trimesh dialog
+
+*trimeshDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*trimeshDialog.layout.Text*font:		9x15bold
+*trimeshDialog.layout.help.shell.text*font:	9x15
+
+*trimeshDialog.layout.borderColor:		Black
+*trimeshDialog.layout*borderWidth:		0
+*trimeshDialog.layout.help.shell.borderWidth:	1
+*trimeshDialog.layout*highlightThickness:	0
+
+*trimeshDialog*foreground:				#000080
+*trimeshDialog*background:				#a9a9a9
+*trimeshDialog.layout.Text*foreground:			black
+*trimeshDialog.layout.Text*background:			white
+*trimeshDialog.layout.Command.background:		#d3d3d3
+*trimeshDialog.layout.help.background:			#d3d3d3
+*trimeshDialog.layout.Command.foreground:		#000080
+*trimeshDialog.layout.Core.background:		#000080
+*trimeshDialog.layout.help.foreground:		#000080
+*trimeshDialog.layout.help.shell.text*background:	white
+*trimeshDialog.layout.help.shell.text*foreground:	black
+
+*trimeshDialog.layout*shell.text*foreground:		black
+*trimeshDialog.layout*shell.text*background:		white
+*trimeshDialog.layout*shell.text*font:	        	9x15
+*trimeshDialog.layout*shell*borderWidth:		1
+
+*trimeshDialog.layout.tolin_name.font:  -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.angspc_name.font: -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.angtol_name.font: -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.dmin_name.font:   -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.min_name.font:    -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.max_name.font:    -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.nholes_name.font: -adobe-helvetica-medium-r-normal--14*
+*trimeshDialog.layout.kappa_name.font:  -adobe-symbol-medium-r-normal--14*
+
+
+! the canvas dialog
+
+*canvasDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*canvasDialog.layout.Text*font:			9x15bold
+*canvasDialog.layout.help.shell.text*font:	9x15
+
+*canvasDialog.layout.borderColor:		Black
+*canvasDialog.layout*borderWidth:		0
+*canvasDialog.layout.help.shell.borderWidth:	1
+*canvasDialog.layout*highlightThickness:	0
+
+*canvasDialog*foreground:				#000080
+*canvasDialog*background:				#a9a9a9
+*canvasDialog.layout.Text*foreground:			black
+*canvasDialog.layout.Text*background:			white
+*canvasDialog.layout.Toggle*background:			#d3d3d3
+*canvasDialog.layout.Toggle*foreground:			red
+*canvasDialog.layout.Command.background:		#d3d3d3
+*canvasDialog.layout.Command.foreground:		#000080
+*canvasDialog.layout.Core.background:		#000080
+*canvasDialog.layout.help.foreground:		#000080
+*canvasDialog.layout.help.background:			#d3d3d3
+*canvasDialog.layout.help.shell.text*background:	white
+*canvasDialog.layout.help.shell.text*foreground:	black
+
+*canvasDialog.layout*shell.text*foreground:		black
+*canvasDialog.layout*shell.text*background:		white
+*canvasDialog.layout*shell.text*font:	        	9x15
+*canvasDialog.layout*shell*borderWidth:			1
+
+
+! the solution dialog
+
+*solutionDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*solutionDialog.layout.Text*font:		9x15bold
+*solutionDialog.layout.help.shell.text*font:	9x15
+
+*solutionDialog.layout.borderColor:		Black
+*solutionDialog.layout*borderWidth:		0
+*solutionDialog.layout.help.shell.borderWidth:	1
+*solutionDialog.layout*highlightThickness:	0
+
+*solutionDialog*foreground:				#000080
+*solutionDialog*background:				#a9a9a9
+
+*solutionDialog.layout.Toggle*background:		#d3d3d3
+*solutionDialog.layout.Toggle*foreground:		red
+*solutionDialog.layout.Command.background:		#d3d3d3
+*solutionDialog.layout.Core.background:			#000080
+*solutionDialog.layout.Command.foreground:		#000080
+*solutionDialog.layout.help.foreground:		#000080
+*solutionDialog.layout.help.background:			#d3d3d3
+*solutionDialog.layout.help.shell.text*background:	white
+*solutionDialog.layout.help.shell.text*foreground:	black
+
+*solutionDialog.layout*shell.text*foreground:		black
+*solutionDialog.layout*shell.text*background:		white
+*solutionDialog.layout*shell.text*font:	        	9x15
+*solutionDialog.layout*shell*borderWidth:		1
+
+*solutionDialog.layout.Text*foreground:			black
+*solutionDialog.layout.Text*background:			white
+
+! the wireframe control dialog
+
+*wireframeDialog.layout.Rheostat.dialColor:		#000080
+*wireframeDialog.layout.Rheostat.tickColor:		#000080
+*wireframeDialog.layout.Rheostat.arrowColor:		#000080
+*wireframeDialog.layout.Rheostat.arrowWidth:		10
+*wireframeDialog.layout.Rheostat.innerArrowLength:	15
+*wireframeDialog.layout.Rheostat.outerArrowLength:	21
+
+*wireframeDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*wireframeDialog.layout.Text*font:		9x15bold
+*wireframeDialog.layout.help.shell.text*font:	9x15
+
+*wireframeDialog.layout.borderColor:		Black
+*wireframeDialog.layout*borderWidth:		0
+*wireframeDialog.layout.help.shell.borderWidth:	1
+*wireframeDialog.layout*highlightThickness:	0
+
+*wireframeDialog*foreground:				#000080
+*wireframeDialog*background:				#a9a9a9
+
+*wireframeDialog.layout.Toggle*background:		#d3d3d3
+*wireframeDialog.layout.Toggle*foreground:		red
+*wireframeDialog.layout.Command.background:		#d3d3d3
+*wireframeDialog.layout.Core.background:		#000080
+*wireframeDialog.layout.help.background:		#d3d3d3
+*wireframeDialog.layout.Command.foreground:		#000080
+*wireframeDialog.layout.help.foreground:		#000080
+*wireframeDialog.layout.help.shell.text*background:	white
+*wireframeDialog.layout.help.shell.text*foreground:	black
+
+*wireframeDialog.layout*shell.text*foreground:		black
+*wireframeDialog.layout*shell.text*background:		white
+*wireframeDialog.layout*shell.text*font:	       	9x15
+*wireframeDialog.layout*shell*borderWidth:		1
+
+*wireframeDialog.layout.Text*foreground:		black
+*wireframeDialog.layout.Text*background:		white
+
+! the contour control dialog
+
+*contourDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*contourDialog.layout.Text*font:		9x15bold
+*contourDialog.layout.help.shell.text*font:	9x15
+
+*contourDialog.layout.borderColor:		Black
+*contourDialog.layout*borderWidth:		0
+*contourDialog.layout.help.shell.borderWidth:	1
+*contourDialog.layout*highlightThickness:	0
+
+*contourDialog*foreground:				#000080
+*contourDialog*background:				#a9a9a9
+
+*contourDialog.layout.Toggle*background:		#d3d3d3
+*contourDialog.layout.Toggle*foreground:		red
+*contourDialog.layout.Command.background:		#d3d3d3
+*contourDialog.layout.Core.background:			#000080
+*contourDialog.layout.Command.foreground:		#000080
+*contourDialog.layout.help.foreground:		#000080
+*contourDialog.layout.help.background:		#d3d3d3
+*contourDialog.layout.help.shell.text*background:	white
+*contourDialog.layout.help.shell.text*foreground:	black
+
+*contourDialog.layout*shell.text*foreground:		black
+*contourDialog.layout*shell.text*background:		white
+*contourDialog.layout*shell.text*font:	       		9x15
+*contourDialog.layout*shell*borderWidth:		1
+
+*contourDialog.layout.Text*foreground:		black
+*contourDialog.layout.Text*background:		white
+
+! the analysis parameters dialog
+
+*analysisDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*analysisDialog.layout.Text*font:		9x15bold
+*analysisDialog.layout.help.shell.text*font:	9x15
+
+*analysisDialog.layout.step_name.font:    -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.stop_name.font:    -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.start_name.font:   -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.Rk_name.font:      -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.Rm_name.font:      -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.beta_name.font:    -adobe-symbol-medium-r-normal--14*
+*analysisDialog.layout.alpha_name.font:   -adobe-symbol-medium-r-normal--14*
+*analysisDialog.layout.gamma_name.font:   -adobe-symbol-medium-r-normal--14*
+*analysisDialog.layout.iterations_name.font:   -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.tolerance_name.font:   -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.load_steps_name.font:   -adobe-helvetica-medium-r-normal--14*
+*analysisDialog.layout.relaxation_name.font:   -adobe-helvetica-medium-r-normal--14*
+
+*analysisDialog.layout.borderColor:		Black
+*analysisDialog.layout*borderWidth:		0
+*analysisDialog.layout.help.shell.borderWidth:	1
+*analysisDialog.layout*highlightThickness:	0
+
+*analysisDialog*foreground:				#000080
+*analysisDialog*background:				#a9a9a9
+*analysisDialog.layout.Text*foreground:			black
+*analysisDialog.layout.Text*background:			white
+*analysisDialog.layout.Toggle*background:		#d3d3d3
+*analysisDialog.layout.Toggle*foreground:		red
+*analysisDialog.layout.Command.background:		#d3d3d3
+*analysisDialog.layout.Core.background:			#000080
+*analysisDialog.layout.Command.foreground:		#000080
+*analysisDialog.layout.help.foreground:			#000080
+*analysisDialog.layout.help.background:			#d3d3d3
+*analysisDialog.layout.help.shell.text*background:	white
+*analysisDialog.layout.help.shell.text*foreground:	black
+
+*analysisDialog.layout*shell.text*foreground:		black
+*analysisDialog.layout*shell.text*background:		white
+*analysisDialog.layout*shell.text*font:	        	9x15
+*analysisDialog.layout*shell*borderWidth:		1
+
+! the node dialog
+
+*loadcaseDialog*font:				*new century schoolbook-medium-r-normal-*-14*
+*loadcaseDialog.layout.Text*font:			9x15bold
+*loadcaseDialog.layout.viewport.list.font:		9x15bold
+*loadcaseDialog.layout.help.shell.text*font:	9x15
+*loadcaseDialog.layout.SimpleMenu*font:		9x15bold
+*loadcaseDialog.layout.SimpleMenu*cursor:		hand2
+*loadcaseDialog.layout.SimpleMenu.borderWidth:	1
+
+*loadcaseDialog.layout.borderColor:			Black
+*loadcaseDialog.layout*borderWidth:			0
+*loadcaseDialog.layout.help.shell.borderWidth:	1
+*loadcaseDialog.layout*highlightThickness:		0
+
+*loadcaseDialog*foreground:				#000080
+*loadcaseDialog*background:				#a9a9a9
+*loadcaseDialog.layout.viewport.list.foreground:	black
+*loadcaseDialog.layout.viewport.list.background:	white
+*loadcaseDialog.layout.viewport.vertical.background:	#d3d3d3
+*loadcaseDialog.layout.Text*borderColor:		#a9a9a9
+*loadcaseDialog.layout.Text*foreground:		black
+*loadcaseDialog.layout.Text*background:		white
+*loadcaseDialog.layout.Command.background:		#d3d3d3
+*loadcaseDialog.layout.Repeater.background:		#d3d3d3
+*loadcaseDialog.layout.Repeater.foreground:		#000080
+*loadcaseDialog.layout.MenuButton.background:	#d3d3d3
+*loadcaseDialog.layout.MenuButton.foreground:	#000080
+*loadcaseDialog.layout.SimpleMenu.background:	white
+*loadcaseDialog.layout.Core.background:		#000080
+*loadcaseDialog.layout.help.background:		#d3d3d3
+*loadcaseDialog.layout.Command.foreground:		#000080
+*loadcaseDialog.layout.help.foreground:		#000080
+*loadcaseDialog.layout.help.shell.text*background:	white
+*loadcaseDialog.layout.help.shell.text*foreground:	black
+*loadcaseDialog.layout.SimpleMenu*foreground:	black
+
+
+! output dialogs
+
+*outputDialog.layout.borderColor:	Black
+*outputDialog.layout*borderWidth:	0
+*outputDialog.layout.text*font:		9x15
+*outputDialog.layout.text*foreground:	black
+*outputDialog.layout.text*background:	white
+*outputDialog.layout.text*Scrollbar.background: #d3d3d3
+
+*errorDialog.layout.borderColor:	Black
+*errorDialog.layout*borderWidth:	0
+*errorDialog.layout.text*font:		*new century schoolbook-medium-r-normal-*-14*
+*errorDialog.layout.text*foreground:	#000080
+*errorDialog.layout.text*background:	#a9a9a9
+
+*proceedDialog.layout.borderColor:	Black
+*proceedDialog.layout*borderWidth:	0
+*proceedDialog.layout.text*font:	*new century schoolbook-medium-r-normal-*-14*
+*proceedDialog.layout.text*foreground:	#000080
+*proceedDialog.layout.text*background:	#a9a9a9
+
+*qsaveDialog.layout.borderColor:	Black
+*qsaveDialog.layout*borderWidth:	0
+*qsaveDialog.layout.text*font:		*new century schoolbook-medium-r-normal-*-14*
+*qsaveDialog.layout.text*foreground:	#000080
+*qsaveDialog.layout.text*background:	#a9a9a9
+
+
+! translations
+
+*Text*Translations: #override\n\
+Ctrl<Key>R: no-op()\n\
+Ctrl<Key>S: no-op()\n\
+Meta<Key>I: no-op()\n
+
+*Dialog*value.translations: #override \
+     <Key>Return: SetSelectedOkay() 
+
+*bottom.entry.translations: #override \
+Ctrl<Key>s:		MenuAction(snap)\n\
+Ctrl<Key>g:		MenuAction(grid)\n\
+Ctrl<Key>n:		MenuAction(node_numbering)\n\
+Ctrl<Key>e:		MenuAction(elt_numbering)\n\
+:Ctrl<Key>z:		MenuAction(zoomIn)\n\
+:Ctrl<Key>Z:		MenuAction(zoomOut)\n\
+Ctrl<Key>v:		MenuAction(solve)\n\
+Ctrl<Key>x:		MenuAction(exit)\n\
+<Key>c:			insert-char()\n\
+<Key>l:			insert-char()\n\
+<Key>n:			insert-char()\n\
+<Key>m:			insert-char()\n\
+<Key>o:			insert-char()\n\
+<Key>r:			insert-char()\n\
+<Key>s:			insert-char()\n\
+<Key>w:			insert-char()\n\
+<Key>x:			insert-char()\n\
+<Key>p:			insert-char()\n\
+Ctrl<Key>t,<Key>c:	MenuAction(circle)\n\
+Ctrl<Key>t,<Key>r:	MenuAction(rectangle)\n\
+Ctrl<Key>t,<Key>p:	MenuAction(polygon)\n\
+Ctrl<Key>t,<Key>l:	MenuAction(line)\n\
+Ctrl<Key>t,<Key>t:	MenuAction(text)\n\
+Ctrl<Key>d,<Key>m:	MenuAction(materials_d)\n\
+Ctrl<Key>d,<Key>c:	MenuAction(constraints_d)\n\
+Ctrl<Key>d,<Key>l:	MenuAction(loads_d)\n\
+Ctrl<Key>a,<Key>l:	MenuAction(loads)\n\
+Ctrl<Key>a,<Key>c:	MenuAction(constraints)\n\
+Ctrl<Key>a,<Key>m:	MenuAction(materials)\n\
+Ctrl<Key>f,<Key>n:	MenuAction(new)\n\
+Ctrl<Key>f,<Key>r:	MenuAction(restore)\n\
+Ctrl<Key>f,<Key>x:	MenuAction(exit)\n\
+Ctrl<Key>f,<Key>s:	MenuAction(save)\n\
+Ctrl<Key>f,<Key>w:	MenuAction(save_as)\n\
+Ctrl<Key>f,<Key>o:	MenuAction(open)\n\
+Ctrl<Key>a,<Key>f:	MenuAction(forces)\n\
+Ctrl<Key>d,<Key>f:	MenuAction(forces_d)\n\
+Ctrl<Key>t,<Key>a:	MenuAction(arc)\n\
+<Key>f:			insert-char()\n\
+<Key>a:			insert-char()\n\
+<Key>t:			insert-char()\n
+
+
+! 2d specific defaults
+
+!*shapeStyle:				Oval
+!*control*spacer.height:			100
+!*control*MenuButton*height:		19
+!*control*Command*height:		19
+!*elementDialog*MenuButton*shapeStyle:	Rectangle
+!*nodeDialog*MenuButton*shapeStyle:	Rectangle
+!*elementDialog*help*shapeStyle:		Oval
+!*nodeDialog*help*shapeStyle:		Oval
+
+
+! 3d specific defaults
+
+!*shapeStyle:					Rectangle
+!*control*spacer.height:				43
+!*control*MenuButton*height:			26
+!*control*Command*height:			26

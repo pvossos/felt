@@ -6,6 +6,7 @@
  *
  */
 
+# ifdef NEED_STRDUP
 char
 *strdup(str)
 char *str;
@@ -17,3 +18,4 @@ char *str;
 	return(strcpy(copy, str));
 }
 /* strdup.c ends here */
+# endif

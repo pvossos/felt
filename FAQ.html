@@ -8,7 +8,7 @@ FElt FAQ
 <H1>
 This is the list of frequently asked questions for FElt
 </H1>
-last modified: 07-16-95
+last modified: 11-18-97
 
 <OL>
 <LI><A HREF="#What-is">What is FElt?</A>
@@ -32,10 +32,6 @@ last modified: 07-16-95
 
 <LI><A HREF="#Bugs">I think I found a bug, what now?</A>
 <LI><A HREF="#Newsgroup">Is there a newsgroup or mailing list for FElt?</A>
-
-<UL>
-<LI><A HREF="#Posting">What kind of things should I post to the mailing list and what kinds of things should I contact the authors for?</A>
-</UL>
 
 <LI><A HREF="#Names">Why do the FElt components have such stupid names?</A>
 </OL>
@@ -98,11 +94,13 @@ and linear dynamics for both structural and thermal mechanics (i.e., problems
 of the form Kd = F, Md'' + Cd' + Kd = F , or Md' + Kd = F).  It can also solve 
 the generalized eigenvalue problem (K - lM)x = 0 and use this information in 
 modal analysis.  It can do spectral (frequency domain) analysis of transient 
-structural problems.  The element library consists of truss, beam (Timoshenko 
-and Euler), constant strain triangular, bilinear planar isoparametric,  plate 
-bending (selective reduced integration quadrilateral), isoparametric solid 
-(eight node brick) elements, and rod and constant temperature gradient
-thermal elements.
+structural problems.  Nonlinear static analysis is in the works with
+the first cut being a simplistic static substitution scheme.
+The element library consists of truss, beam (Timoshenko 
+and Euler), constant strain triangular, bilinear planar isoparametric,  
+axisymmetric, plate bending (selective reduced integration quadrilateral), 
+isoparametric solid (eight node brick) elements, and rod and constant 
+temperature gradient thermal elements.
 
 <H3><LI><A NAME="Can-it">Can FElt solve my type of problem?</A></H2>
 
@@ -168,19 +166,16 @@ we'd like to hear whatever success (or horror) stories people might have.
 
 <P>
 The latest version of FElt, in all its incarnations, is always available
-via anonymous ftp from cs.ucsd.edu.  Once you have ftp'd to cs.ucsd.edu
-login as anonymous and give your email address as the password.  cd
-to /pub/felt and grab whatever files you need for your particular
-situation.  As of this update, the latest version is v3.00.
-Information (and hypertext access to the ftp site) is available via
-World Wide Web (e.g., Mosaic) at
+via anonymous ftp from ftp.felt.sourceforge.net.  As of this update, the 
+latest version is v3.05.  Information is available via the Web at
 
 <P>
-http://www-cse.ucsd.edu/users/atkinson/FElt/felt.html 
+http://felt.sourceforge.net/
 
 <P>
 if you want to take a more serious look at some of FElt's capabilities
 before you actually take it for a test drive on your machine.
+There is an ftp mirror site at ftp.isd.uni-stuttgart.de in pub/src/FEM/Felt.
  
 <H2><LI><A NAME="What-machines">What machines does FElt run on?</A></H2>
 
@@ -196,17 +191,26 @@ really, it's easy.
 
 <P>
 DOS executables are available for the command-line applications felt,
-corduroy, yardstick, and patchwork.  A simple graphical application, feltvu 
-is also available.  You need to have at least a 386 to use the DOS versions.
+corduroy, yardstick, burlap, and patchwork.  A simple graphical 
+application, feltvu is also available.  You need to have at least a 
+386 to use the DOS versions.  As of v3.02 we have switched to
+DJGPP v2.0 and the DOS versions should run under Windows 3.1.
+Also as of v3.02, there are 32-bit Windows (95 and NT) versions 
+of all the programs (including velvet).  You need X server software
+to make velvet work of course.  
 
 <UL>
 <H3><LI><A NAME="Windows">Is there a Windows interface to FElt?</A></H3>
 
 <P>
-Not yet, and we're probably not the folks to write it as neither of us
-have much experience with Windows programming.  If someone else would
-like to volunteer then I'd suggest starting with something like xfelt
-as it's really pretty simple.   There may be people working on this -
+With the release of WinFElt, yes there is.  After an extended beta
+period of WinFElt v1.0 for both Windows 95 and Windows 3.1, WinFElt 
+v1.1 for Windows 95 and Windows NT is now available.
+
+There is no velvet-like CAD-style native Windows interface, however, 
+and we're probably not the folks to write it as neither of us
+have much experience with Windows programming.  
+There may be people working on this -
 let us know if you're thinking about something like it and we'll try
 our best to make sure that people don't duplicate a lot of effort.
 
@@ -298,43 +302,18 @@ Things that are absolutely essential:
 FElt?</A></H2>
 
 <P>
-There is a mailing list.  To subscribe to the list send a one line email
-message that says
-
-<P>
-subscribe felt-l
-
-<P>
-to listserv@mecheng.asme.org.  To send a message to the list just send
-it like regular email to felt-l@mecheng.asme.org.  Incremental
-release announcements and bug fixes will be posted to the mailing list.
-Major release announcements will be made to the following newsgroups:
+There was a real mailing list that is now dead.  Instead we are manually
+maintaining a list of people who would like to receive periodic
+updates about releases and bug fixes.  Send a note to jgobat@mit.edu
+indicating that you would like your name added to such a list.
+Incremental release announcements and bug fixes will be posted to the mailing 
+list.  Major release announcements will be made to the following newsgroups:
 comp.os.linux.announce, sci.math.num-analysis, sci.engr, sci.engr.civil,
 and sci.engr.mechanical.  So if you really want to keep up on new 
 versions and capabilities, you should subscribe to the mailing list.
 
-<UL>
-<H3><LI><A NAME="Posting">What kind of things should I post to the mailing
-list and what kinds of things should I contact the authors for?</A></H3>
-
-<P>
-The list is generally for announcements, bug fixes, and questions that
-several FElt users might have an interest in (i.e., I'm trying to make
-FElt solve a problem like xxx, how have other people modeled this? or
-I really think that velvet should be able to do xxx, what does everyone
-else think?).  We'd also like it to be a forum for discussion of what
-types of things people would like to see in FElt.
-
-<P>
-For bug reports that you think are specific to your machine or things
-that other users probably don't have an interest in, feel free to send 
-email to one of us: jgobat@mit.edu or atkinson@ucsd.edu.  See
-the <A HREF="#Bugs">question on bugs</A> for details on how to submit
-a bug report.
-</UL>
-
-<H3><LI><A NAME="Names">Why do the FElt components have such stupid
-names?</A></H3>
+<H2><LI><A NAME="Names">Why do the FElt components have such stupid
+names?</A></H2>
 
 <P>
 Well, FElt is obvious, right?  Finite ELemenT.  felt the application

@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -362,8 +362,8 @@ unsigned LocalIsoShapeFunctions (element, N, dNdx, dNde, weights)
    double		*gauss_points;
    double		*gauss_wts;
    static unsigned	numnodes;
-   static unsigned 	points [10];
-   static unsigned	prev_points [10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+   static int 	        points [10];
+   static int	        prev_points [10] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
    unsigned		same_flag;
 
    same_flag = 1;

@@ -1,5 +1,5 @@
 #    This file is part of the FElt finite element analysis package.
-#    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+#    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-DIRS	= Burlap Corduroy Felt Patchwork Velvet Yardstick
+DIRS	= Burlap Corduroy Felt Loom Patchwork Velvet Yardstick
 CURDIR	= ./src
 TOPDIR	= ..
 

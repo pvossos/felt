@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -39,7 +39,6 @@
 #define RAWBITS	1
 
 static XImage	*img;
-static int	*rev_pixel;
 static int	black;
 static int	white;
 
@@ -56,7 +55,7 @@ static int GetPixel( x, y )
    else if (point == black)
       color = 128;
    else
-      color = rev_pixel [point];
+      color = PixelToCell(point);
 
    return color;
 }
@@ -126,11 +125,10 @@ static void ClosePPM (fp, rawbits)
    return;
 }
 
-void XImageToPPM (filename, ximage, ncells, rev, bl, wh)
+void XImageToPPM (filename, ximage, ncells, bl, wh)
    char		*filename;
    XImage	*ximage;
    unsigned	ncells;
-   int		*rev;
    int		bl;
    int		wh;
 {
@@ -163,7 +161,6 @@ void XImageToPPM (filename, ximage, ncells, rev, bl, wh)
    Blue[129]   = 255;
 
    img = ximage;
-   rev_pixel = rev;
    black = bl;
    white = wh;
 

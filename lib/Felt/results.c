@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -55,6 +55,7 @@ void WriteStructuralResults (output, title, R, numreactions)
     Reaction   *R;
     unsigned	numreactions;
 {
+    FILE       *fd;
     Element    *element;
     Node       *node;
     unsigned	numelts,
@@ -67,6 +68,9 @@ void WriteStructuralResults (output, title, R, numreactions)
     node    = problem.nodes;
     numnodes = problem.num_nodes;
     numelts  = problem.num_elements;
+
+    fd = GetDetailStream( );
+    SetDetailStream (output);
  
     fprintf (output,"\n** %s **\n\n",title);
     fprintf (output,"Nodal Displacements\n");
@@ -90,6 +94,10 @@ void WriteStructuralResults (output, title, R, numreactions)
         else {
            count = 0;
            for (j = 1 ; j <= element[i] -> ninteg ; j++) {
+              detail ("(%g %g %g)  ", 
+		       element [i] -> stress [j] -> x,
+		       element [i] -> stress [j] -> y,
+		       element [i] -> stress [j] -> z);
               for (k = 1 ; k <= element[i] -> definition -> numstresses ; k++) {
                  fprintf (output," % 11.5g", element[i]->stress[j]->values[k]);
                  count++;
@@ -118,6 +126,8 @@ void WriteStructuralResults (output, title, R, numreactions)
           fprintf (output,"%3d        %s        % 11.5g\n",R[i] -> node, 
                    dof_names [R[i] -> dof], R[i] -> force);
     }
+
+    SetDetailStream(fd);
 
     return;
 }

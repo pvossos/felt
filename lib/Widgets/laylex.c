@@ -45,7 +45,8 @@ int LayYYleng; extern char LayYYtext[];
 int LayYYmorfg;
 extern char *LayYYsptr, LayYYsbuf[];
 int LayYYtchar;
-FILE *LayYYin = {stdin}, *LayYYout = {stdout};
+/* FILE *LayYYin = {stdin}, *LayYYout = {stdout}; */
+FILE *LayYYin, *LayYYout; 
 extern int LayYYlineno;
 struct LayYYsvf { 
 	struct LayYYwork *LayYYstoff;

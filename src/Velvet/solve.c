@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -909,8 +909,8 @@ void SetupStresses (build_elt)
 
     XtSetArg (arglist[0], XtNdepth, &depth);
     XtGetValues (toplevel, arglist, 1);
-    if (depth != 8) {
-        error ("you must have an 8-bit deep screen to do stress plots");
+    if (depth < 8) {
+        error ("you must have a > 8-bit deep screen to do stress plots");
         return;
     }
 
@@ -976,8 +976,8 @@ void SetupDisplacements (build_arrays)
 
     XtSetArg (arglist[0], XtNdepth, &depth);
     XtGetValues (toplevel, arglist, 1);
-    if (depth != 8) {
-        error ("you must have an 8-bit deep screen to do displacement plots");
+    if (depth < 8) {
+        error ("you must have a > 8-bit deep screen to do displacement plots");
         return;
     }
 

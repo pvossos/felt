@@ -56,15 +56,10 @@ typedef union {
 #define	X_RULE_EQ	308
 #define	Y_RULE_EQ	309
 #define	Z_RULE_EQ	310
-#define	TOLIN_EQ	311
-#define	ANGSPC_EQ	312
-#define	ANGTOL_EQ	313
-#define	DMIN_EQ	314
-#define	KAPPA_EQ	315
-#define	MIN_EQ	316
-#define	MAX_EQ	317
-#define	BOUNDARY_EQ	318
-#define	HOLE_EQ	319
+#define	TARGET_EQ	311
+#define	ALPHA_EQ	312
+#define	BOUNDARY_EQ	313
+#define	HOLE_EQ	314
 
 
 extern YYSTYPE yylval;

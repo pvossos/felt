@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -691,9 +691,9 @@ static int EquivNodalForces (e, N, shape, ninteg)
       }
    }
 
-   ScaleMatrix (equiv, equiv, area, 0.0);
+   ScaleMatrix (equiv, equiv, area/4, 0.0);
 
-   for (i = 1 ; i <= shape ; i++)
+   for (i = 1 ; i <= shape ; i++) 
       e -> node [i] -> eq_force[Tz] = VectorData (equiv) [3*i - 2];
 
    return 0;

@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@
 extern void srand48 ();
 extern double drand48 ();
 
-# ifdef DOS
+# if (defined DOS || defined __CYGWIN32__)
 # define srand48 srand
 # define drand48 rand
 # endif

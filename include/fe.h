@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -33,6 +33,17 @@
 # define TINY 1.0e-60
 # define UnspecifiedValue (-99999999)
 
+# ifndef M_PI
+# define M_PI 3.14159265358979323846
+# endif
+
+# ifndef M_PI_2
+#define M_PI_2          1.57079632679489661923  /* pi/2 */
+# endif
+
+# ifndef M_PI_4
+#define M_PI_4          0.78539816339744830962  /* pi/4 */
+# endif
 
 /* Analysis types */
 

@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -492,7 +492,7 @@ void SetNormalMode ()
 
    XtSetArg (arglist[0], XtNdepth, &depth);
    XtGetValues (toplevel, arglist, 1);
-   if (depth != 8) {
+   if (depth < 8) {
       XtSetSensitive (panel [2].menuentry[0].widget, False);
       XtSetSensitive (panel [2].menuentry[1].widget, False);
    }

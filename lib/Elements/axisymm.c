@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ int axisymmetricEltStress ( );
 
 struct definition axisymmetricDefinition = {
     "axisymmetric", axisymmetricEltSetup, axisymmetricEltStress, 
-    Planar, 3, 3, 4, 2, {0, 1, 3, 0, 0, 0, 0}, 0
+    Planar, 3, 3, 4, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
 Matrix  AxisymmetricLocalB 	     ( );
@@ -76,12 +76,12 @@ int axisymmetricEltSetup (element, mass_mode, tangent)
    if (D == NullMatrix)
       return 1;
 
-/*
+
    fprintf (stdout,"element %d D = \n", element -> number);
    PrintMatrix (D, stdout);
    fprintf (stdout,"element %d B = \n", element -> number);
    PrintMatrix (B, stdout);
-*/
+
 
    if (element -> K == NullMatrix)
       element -> K = CreateMatrix (6,6);
@@ -162,6 +162,7 @@ int axisymmetricEltStress (element)
 
    element -> stress [1] -> x = r_avg;
    element -> stress [1] -> y = z_avg;
+   element -> stress [1] -> z = 0.0;
 
    element -> stress [1] -> values [1] = mdata(stress,1,1);
    element -> stress [1] -> values [2] = mdata(stress,2,1);
@@ -196,9 +197,9 @@ Matrix AxisymmetricLocalB (element, area, r_avg, z_avg)
    rc1 = element -> node[1] -> x;
    rc2 = element -> node[2] -> x;
    rc3 = element -> node[3] -> x;
-   zc1 = element -> node[1] -> z;
-   zc2 = element -> node[2] -> z;
-   zc3 = element -> node[3] -> z;
+   zc1 = element -> node[1] -> y;
+   zc2 = element -> node[2] -> y;
+   zc3 = element -> node[3] -> y;
 
    alpha[1] = rc2*zc3 - zc2*rc3;
    alpha[2] = rc3*zc1 - zc3*rc1;
@@ -291,9 +292,9 @@ Vector AxisymmetricEquivNodalForces (element, area, err_count)
    r1 = element -> node[1] -> x;
    r2 = element -> node[2] -> x;
    r3 = element -> node[3] -> x;
-   z1 = element -> node[1] -> z;
-   z2 = element -> node[2] -> z;
-   z3 = element -> node[3] -> z;
+   z1 = element -> node[1] -> y;
+   z2 = element -> node[2] -> y;
+   z3 = element -> node[3] -> y;
 
    alpha[1] = r2*z3 - r3*z2;
    alpha[2] = r3*z1 - z3*r1;
@@ -349,8 +350,8 @@ Vector AxisymmetricEquivNodalForces (element, area, err_count)
 
       r1 = element -> node[node_a] -> x;
       r2 = element -> node[node_b] -> x;
-      z1 = element -> node[node_a] -> z;
-      z2 = element -> node[node_b] -> z;
+      z1 = element -> node[node_a] -> y;
+      z2 = element -> node[node_b] -> y;
 
       p1 = element -> distributed[i] -> value[1].magnitude;
       p2 = element -> distributed[i] -> value[2].magnitude;

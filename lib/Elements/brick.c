@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ int brickEltSetup (element, mass_mode, tangent)
    if (count)
       return count;
 
-   LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1);
+   LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1, 0);
    jac = GlobalShapeFunctions (element, dNdxi, dNde, dNdzt, dNdx, dNdy, dNdz);
 
    D = IsotropicD (element);
@@ -160,7 +160,7 @@ int brickEltStress (element)
    if (D == NullMatrix)
       return 1;
 
-   LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1);
+   LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1, 0);
    jac = GlobalShapeFunctions (element, dNdxi, dNde, dNdzt, dNdx, dNdy, dNdz);
 
    for (i = 1 ; i <= 8 ; i++) {
@@ -190,6 +190,7 @@ int brickEltStress (element)
     
       element -> stress [i] -> x = x;
       element -> stress [i] -> y = y; 
+      element -> stress [i] -> z = z; 
       element -> stress [i] -> values [1] = VectorData (stress) [1];
       element -> stress [i] -> values [2] = VectorData (stress) [2];
       element -> stress [i] -> values [3] = VectorData (stress) [3];
@@ -271,26 +272,41 @@ static double xi_points [ ]   = {0, -PT, PT, PT, -PT, -PT, PT, PT, -PT};
 static double eta_points [ ]  = {0, -PT, -PT, PT, PT, -PT, -PT, PT, PT};
 static double zeta_points [ ] = {0, -PT, -PT, -PT, -PT, PT, PT, PT, PT};
 
-static void LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, first)
+static void LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, first, nodal)
    Element	element;
    Matrix	N;
    Matrix	dNdxi;
    Matrix	dNde;
    Matrix	dNdzt;
    int		first;
+   int		nodal;
 {
    double	eta, en;
    double	xi, xn;
    double	zeta, zn;
    unsigned	i, j;
+   double      *xi_p;
+   double      *eta_p;
+   double      *zeta_p;
 
    if (!first)
       return;
 
+   if (nodal) {
+      xi_p = xi_n;
+      eta_p = e_n;
+      zeta_p = zt_n;
+   }
+   else {
+      xi_p = xi_points;
+      eta_p = eta_points;
+      zeta_p = zeta_points;
+   }
+
    for (i = 1 ; i <= 8 ; i++) {		/* loop over integration points   */
-      xi   = xi_points [i]; 
-      eta  = eta_points [i]; 		/* set the int. point coordinates */
-      zeta = zeta_points [i]; 
+      xi   = xi_p [i]; 
+      eta  = eta_p [i]; 		/* set the int. point coordinates */
+      zeta = zeta_p [i]; 
 
       for (j = 1 ; j <= 8 ; j++) {	/* loop over nodes		    */
          xn = xi_n [j];

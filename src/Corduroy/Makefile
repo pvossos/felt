@@ -1,5 +1,5 @@
 #    This file is part of the FElt finite element analysis package.
-#    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+#    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
 LEX	= flex
 LDFLAGS	= $(LDOPTS)
 LFLAGS	= -i
-LIBS	= $(LIBGEN) $(LIBGEOMPACK) $(LIBFELT) $(LIBELT) $(LIBMTX) -lm
+LIBS	= $(LIBGEN) $(LIBFELT) $(LIBELT) $(LIBMTX) -lm
 OBJS	= corduroy.o debug.o error.o generator.o lexer.o parser.o
 PROG	= corduroy
 SRCS	= lexer.c parser.c

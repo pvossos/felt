@@ -1,5 +1,5 @@
 #    This file is part of the FElt finite element analysis package.
-#    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+#    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -17,9 +17,13 @@
 
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
 LIB	= libgen.a
-OBJS	= brick_grid.o coalesce.o grid.o line.o quad_grid.o rules.o triangle.o
+OBJS	= brick_grid.o coalesce.o grid.o line.o quad_grid.o rules.o \
+          trimesh.o triangle.o
 
 CURDIR	= ./lib/Generate
 TOPDIR	= ../..
 
 include $(TOPDIR)/etc/Makefile.lib
+
+triangle.o:	triangle.c triangle.h
+		$(CC) $(CCOPTS) -DTRILIBRARY -DREDUCED -c triangle.c -o triangle.o

@@ -13,6 +13,8 @@ ROOT/src/Patchwork/patchwork
 ROOT/src/Patchwork/Makefile
 ROOT/src/Yardstick/yardstick
 ROOT/src/Yardstick/Makefile
+ROOT/src/Loom/loom
+ROOT/src/Loom/Makefile
 ROOT/examples
 ROOT/etc
 ROOT/man

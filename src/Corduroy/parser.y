@@ -107,7 +107,7 @@ static struct _curve	curve;
 
 %token	X_NUMBER_EQ Y_NUMBER_EQ Z_NUMBER_EQ X_RULE_EQ Y_RULE_EQ Z_RULE_EQ
 
-%token	TOLIN_EQ ANGSPC_EQ ANGTOL_EQ DMIN_EQ KAPPA_EQ MIN_EQ MAX_EQ
+%token	TARGET_EQ ALPHA_EQ
 %token	BOUNDARY_EQ HOLE_EQ
 
 %type	<i> INTEGER rule
@@ -574,13 +574,8 @@ trimesh_specifier
 	: TRIMESH
 	    {
 		trimesh.numcurves  = 0;
-		trimesh.tolin	   = 0;
-		trimesh.angspc	   = 30;
-		trimesh.angtol	   = 20;
-		trimesh.dmin	   = .5;
-		trimesh.kappa	   = .25;
-		trimesh.min	   = 50;
-		trimesh.max	   = 100;
+		trimesh.alpha	   = 2.0;
+		trimesh.target	   = 100;
 
 		trimesh.definition = last_trimesh_definition;
 
@@ -604,39 +599,14 @@ trimesh_parameter
 		Deallocate ($2);
 	    }
 
-	| TOLIN_EQ constant_expression
+	| ALPHA_EQ constant_expression
 	    {
-		trimesh.tolin = $2;
+		trimesh.alpha = $2;
 	    }
 
-	| ANGSPC_EQ constant_expression
+	| TARGET_EQ INTEGER
 	    {
-		trimesh.angspc = $2;
-	    }
-
-	| ANGTOL_EQ constant_expression
-	    {
-		trimesh.angtol = $2;
-	    }
-
-	| DMIN_EQ constant_expression
-	    {
-		trimesh.dmin = $2;
-	    }
-
-	| KAPPA_EQ constant_expression
-	    {
-		trimesh.kappa = $2;
-	    }
-
-	| MIN_EQ constant_expression
-	    {
-		trimesh.min = $2;
-	    }
-
-	| MAX_EQ constant_expression
-	    {
-		trimesh.max = $2;
+		trimesh.target = $2;
 	    }
 
 	| BOUNDARY_EQ '[' pair_list ']'

@@ -1,5 +1,6 @@
 
-/*  A Bison parser, made from parser.y with Bison version GNU Bison version 1.24
+/*  A Bison parser, made from parser.y
+ by  GNU Bison version 1.25
   */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -159,7 +160,7 @@
 
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -198,8 +199,9 @@
 
 extern void yyerror ( );
 extern int  yylex  ( );
+# ifdef NEED_STRDUP
 extern char *strdup ( );
-
+# endif
 
 /* Last parameters (default for some parameters is to inherit the last). */
 
@@ -270,7 +272,7 @@ static unsigned		  figure_size;		/* size of figure list	   */
 static unsigned		  fig_point_size;	/* size of point list	   */
 static FigInfo		 *figure;		/* current figure	   */
 
-#line 116 "parser.y"
+#line 117 "parser.y"
 typedef union {
     int       i;
     double    d;
@@ -279,23 +281,6 @@ typedef union {
     CasePair  cp;
     char      c;
 } YYSTYPE;
-
-#ifndef YYLTYPE
-typedef
-  struct yyltype
-    {
-      int timestamp;
-      int first_line;
-      int first_column;
-      int last_line;
-      int last_column;
-      char *text;
-   }
-  yyltype;
-
-#define YYLTYPE yyltype
-#endif
-
 #include <stdio.h>
 
 #ifndef __cplusplus
@@ -489,38 +474,42 @@ static const short yyrhs[] = {   173,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   191,   192,   197,   211,   212,   217,   218,   223,   229,   234,
-   239,   244,   251,   252,   257,   258,   259,   260,   261,   262,
-   263,   264,   265,   266,   267,   274,   279,   280,   285,   290,
-   318,   319,   325,   326,   331,   336,   341,   346,   351,   357,
-   362,   369,   374,   385,   386,   391,   396,   421,   422,   428,
-   429,   434,   456,   461,   463,   468,   473,   478,   487,   496,
-   509,   522,   535,   540,   541,   546,   551,   565,   566,   571,
-   577,   582,   587,   592,   597,   602,   607,   612,   617,   622,
-   627,   632,   637,   642,   647,   652,   657,   662,   669,   674,
-   675,   680,   685,   700,   701,   706,   712,   717,   738,   743,
-   748,   753,   762,   771,   785,   790,   791,   796,   801,   816,
-   817,   822,   828,   833,   838,   843,   848,   853,   858,   863,
-   868,   873,   878,   883,   888,   895,   900,   901,   906,   911,
-   926,   927,   932,   938,   948,   958,   968,   978,   988,   998,
-  1003,  1008,  1013,  1018,  1023,  1028,  1033,  1038,  1043,  1048,
-  1053,  1058,  1063,  1068,  1076,  1081,  1086,  1096,  1101,  1102,
-  1106,  1110,  1124,  1125,  1129,  1154,  1179,  1184,  1189,  1194,
-  1203,  1212,  1225,  1230,  1231,  1236,  1241,  1246,  1251,  1256,
-  1261,  1266,  1271,  1276,  1281,  1286,  1291,  1296,  1301,  1306,
-  1321,  1332,  1337,  1344,  1349,  1354,  1359,  1367,  1372,  1377,
-  1389,  1399,  1404,  1414,  1419,  1420,  1425,  1430,  1435,  1440,
-  1445,  1450,  1455,  1460,  1465,  1470,  1475,  1480,  1485,  1490,
-  1495,  1500,  1506,  1512,  1518,  1524,  1535,  1540,  1548,  1549,
-  1554,  1559,  1585,  1586,  1591,  1596,  1601,  1606,  1611,  1616,
-  1621,  1627,  1633,  1639,  1644,  1657,  1670,  1683,  1694,  1700,
-  1714,  1731,  1732,  1733,  1738,  1759,  1767,  1777,  1788,  1798,
-  1808,  1814,  1820,  1826,  1832,  1838,  1844,  1850,  1856,  1862,
-  1868,  1874,  1880,  1886,  1892,  1898,  1904,  1909,  1915,  1921,
-  1927,  1932,  1938,  1944,  1950,  1955,  1961,  1967,  1973,  1979,
-  1985,  1991,  1997,  2003,  2009,  2015,  2021,  2027,  2036,  2045,
-  2054,  2065
+   192,   193,   198,   212,   213,   218,   219,   224,   230,   235,
+   240,   245,   252,   253,   258,   259,   260,   261,   262,   263,
+   264,   265,   266,   267,   268,   275,   280,   281,   286,   291,
+   319,   320,   326,   327,   332,   337,   342,   347,   352,   358,
+   363,   370,   375,   386,   387,   392,   397,   422,   423,   429,
+   430,   435,   457,   462,   464,   469,   474,   479,   488,   497,
+   510,   523,   536,   541,   542,   547,   552,   566,   567,   572,
+   578,   583,   588,   593,   598,   603,   608,   613,   618,   623,
+   628,   633,   638,   643,   648,   653,   658,   663,   670,   675,
+   676,   681,   686,   701,   702,   707,   713,   718,   739,   744,
+   749,   754,   763,   772,   786,   791,   792,   797,   802,   817,
+   818,   823,   829,   834,   839,   844,   849,   854,   859,   864,
+   869,   874,   879,   884,   889,   896,   901,   902,   907,   912,
+   927,   928,   933,   939,   949,   959,   969,   979,   989,   999,
+  1004,  1009,  1014,  1019,  1024,  1029,  1034,  1039,  1044,  1049,
+  1054,  1059,  1064,  1069,  1077,  1082,  1087,  1097,  1102,  1103,
+  1107,  1111,  1125,  1126,  1130,  1155,  1180,  1185,  1190,  1195,
+  1204,  1213,  1226,  1231,  1232,  1237,  1242,  1247,  1252,  1257,
+  1262,  1267,  1272,  1277,  1282,  1287,  1292,  1297,  1302,  1307,
+  1322,  1333,  1338,  1345,  1350,  1355,  1360,  1368,  1373,  1378,
+  1390,  1400,  1405,  1415,  1420,  1421,  1426,  1431,  1436,  1441,
+  1446,  1451,  1456,  1461,  1466,  1471,  1476,  1481,  1486,  1491,
+  1496,  1501,  1507,  1513,  1519,  1525,  1536,  1541,  1549,  1550,
+  1555,  1560,  1586,  1587,  1592,  1597,  1602,  1607,  1612,  1617,
+  1622,  1628,  1634,  1640,  1645,  1658,  1671,  1684,  1695,  1701,
+  1715,  1732,  1733,  1734,  1739,  1760,  1768,  1778,  1789,  1799,
+  1809,  1815,  1821,  1827,  1833,  1839,  1845,  1851,  1857,  1863,
+  1869,  1875,  1881,  1887,  1893,  1899,  1905,  1910,  1916,  1922,
+  1928,  1933,  1939,  1945,  1951,  1956,  1962,  1968,  1974,  1980,
+  1986,  1992,  1998,  2004,  2010,  2016,  2022,  2028,  2037,  2046,
+  2055,  2066
 };
+#endif
+
+
+#if YYDEBUG != 0 || defined (YYERROR_VERBOSE)
 
 static const char * const yytname[] = {   "$","error","$undefined.","'?'","':'",
 "OR","AND","'|'","'^'","'&'","EQUALS","NEQUAL","'<'","'>'","LT_EQ","GT_EQ","LSHIFT",
@@ -563,7 +552,7 @@ static const char * const yytname[] = {   "$","error","$undefined.","'?'","':'",
 "figure_definition_list","figure_definition","figure_type","figure_parameter_list",
 "figure_parameter","figure_pair_list","figure_pair","variable_expression","discrete_pair_list",
 "discrete_pair","enable_copy","constant_expression","expression","function",
-"if_action","else_action","or_action","and_action",""
+"if_action","else_action","or_action","and_action", NULL
 };
 #endif
 
@@ -1053,7 +1042,7 @@ static const short yycheck[] = {    91,
     14,    15,    16,    17,    18,    19,    20,    21,    22
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+#line 3 "/usr/share/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -1202,22 +1191,26 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #define YYMAXDEPTH 10000
 #endif
 
+#ifndef YYPARSE_RETURN_TYPE
+#define YYPARSE_RETURN_TYPE int
+#endif
+
 /* Prevent warning if -Wstrict-prototypes.  */
 #ifdef __GNUC__
-int yyparse (void);
+YYPARSE_RETURN_TYPE yyparse (void);
 #endif
 
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
-#define __yy_memcpy(FROM,TO,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
+#define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
 #ifndef __cplusplus
 
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (from, to, count)
-     char *from;
+__yy_memcpy (to, from, count)
      char *to;
+     char *from;
      int count;
 {
   register char *f = from;
@@ -1233,7 +1226,7 @@ __yy_memcpy (from, to, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *from, char *to, int count)
+__yy_memcpy (char *to, char *from, int count)
 {
   register char *f = from;
   register char *t = to;
@@ -1246,7 +1239,7 @@ __yy_memcpy (char *from, char *to, int count)
 #endif
 #endif
 
-#line 192 "/usr/lib/bison.simple"
+#line 196 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1255,14 +1248,20 @@ __yy_memcpy (char *from, char *to, int count)
    to the proper pointer type.  */
 
 #ifdef YYPARSE_PARAM
-#define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
-#else
-#define YYPARSE_PARAM
+#ifdef __cplusplus
+#define YYPARSE_PARAM_ARG void *YYPARSE_PARAM
 #define YYPARSE_PARAM_DECL
-#endif
+#else /* not __cplusplus */
+#define YYPARSE_PARAM_ARG YYPARSE_PARAM
+#define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
+#endif /* not __cplusplus */
+#else /* not YYPARSE_PARAM */
+#define YYPARSE_PARAM_ARG
+#define YYPARSE_PARAM_DECL
+#endif /* not YYPARSE_PARAM */
 
-int
-yyparse(YYPARSE_PARAM)
+YYPARSE_RETURN_TYPE
+yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
   register int yystate;
@@ -1379,12 +1378,12 @@ yynewstate:
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
       yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss1, (char *)yyss, size * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
       yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs1, (char *)yyvs, size * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
       yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls1, (char *)yyls, size * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1545,7 +1544,7 @@ yyreduce:
   switch (yyn) {
 
 case 3:
-#line 198 "parser.y"
+#line 199 "parser.y"
 {
 		last_x = 0;
 		last_y = 0;
@@ -1555,32 +1554,32 @@ case 3:
 	    ;
     break;}
 case 8:
-#line 224 "parser.y"
+#line 225 "parser.y"
 {
 		Deallocate (problem.title);
 		problem.title = yyvsp[0].s;
 	    ;
     break;}
 case 9:
-#line 230 "parser.y"
+#line 231 "parser.y"
 {
 		problem.num_nodes = yyvsp[0].i;
 	    ;
     break;}
 case 10:
-#line 235 "parser.y"
+#line 236 "parser.y"
 {
 		problem.num_elements = yyvsp[0].i;
 	    ;
     break;}
 case 11:
-#line 240 "parser.y"
+#line 241 "parser.y"
 {
 		problem.mode = yyvsp[0].i;
 	    ;
     break;}
 case 30:
-#line 291 "parser.y"
+#line 292 "parser.y"
 {
 		if (yyvsp[0].i < 1 || yyvsp[0].i > problem.num_nodes) {
 		    error ("node number %u is illegal", yyvsp[0].i);
@@ -1606,48 +1605,48 @@ case 30:
 	    ;
     break;}
 case 32:
-#line 320 "parser.y"
+#line 321 "parser.y"
 {yyval.i = yyvsp[-1].d;;
     break;}
 case 35:
-#line 332 "parser.y"
+#line 333 "parser.y"
 {
 		node -> x = last_x = yyvsp[0].d;
 	    ;
     break;}
 case 36:
-#line 337 "parser.y"
+#line 338 "parser.y"
 {
 		node -> y = last_y = yyvsp[0].d;
 	    ;
     break;}
 case 37:
-#line 342 "parser.y"
+#line 343 "parser.y"
 {
 		node -> z = last_z = yyvsp[0].d;
 	    ;
     break;}
 case 38:
-#line 347 "parser.y"
+#line 348 "parser.y"
 {
                 node -> m = yyvsp[0].d;
             ;
     break;}
 case 39:
-#line 352 "parser.y"
+#line 353 "parser.y"
 {
 		Deallocate (node -> force);
 		node -> force = (Force) yyvsp[0].s;
 	    ;
     break;}
 case 40:
-#line 358 "parser.y"
+#line 359 "parser.y"
 {
 		node -> constraint = (Constraint) (last_constraint = yyvsp[0].s);
 	    ;
     break;}
 case 43:
-#line 375 "parser.y"
+#line 376 "parser.y"
 {
 		definition = defnlookup (yyvsp[0].s);
 		Deallocate (yyvsp[0].s);
@@ -1656,7 +1655,7 @@ case 43:
 	    ;
     break;}
 case 47:
-#line 397 "parser.y"
+#line 398 "parser.y"
 {
 		if (yyvsp[0].i < 1 || yyvsp[0].i > problem.num_elements) {
 		    error ("element number %u is illegal", yyvsp[0].i);
@@ -1679,11 +1678,11 @@ case 47:
 	    ;
     break;}
 case 49:
-#line 423 "parser.y"
+#line 424 "parser.y"
 {yyval.i = yyvsp[-1].d;;
     break;}
 case 52:
-#line 435 "parser.y"
+#line 436 "parser.y"
 {
 		unsigned i;
 		unsigned size;
@@ -1706,39 +1705,39 @@ case 52:
 	    ;
     break;}
 case 53:
-#line 457 "parser.y"
+#line 458 "parser.y"
 {
 		element -> material = (Material) (last_material = yyvsp[0].s);
 	    ;
     break;}
 case 56:
-#line 469 "parser.y"
+#line 470 "parser.y"
 {
 		*int_ptr ++ = yyvsp[0].i;
 	    ;
     break;}
 case 57:
-#line 474 "parser.y"
+#line 475 "parser.y"
 {
 		*int_ptr ++ = yyvsp[0].i;
 	    ;
     break;}
 case 58:
-#line 479 "parser.y"
+#line 480 "parser.y"
 {
 		int_ptr = int_array;
 		*int_ptr ++ = yyvsp[0].i;
 	    ;
     break;}
 case 59:
-#line 488 "parser.y"
+#line 489 "parser.y"
 {
 		if (yyvsp[0].i > problem.num_nodes)
 		    error ("node number %u is illegal", yyvsp[0].i);
 	    ;
     break;}
 case 60:
-#line 497 "parser.y"
+#line 498 "parser.y"
 {
 		if (element -> numdistributed == 3) {
 		    error ("element %u has too many loads", element -> number);
@@ -1752,7 +1751,7 @@ case 60:
 	    ;
     break;}
 case 61:
-#line 510 "parser.y"
+#line 511 "parser.y"
 {
 		if (element -> numdistributed == 3) {
 		    error ("element %u has too many loads", element -> number);
@@ -1766,7 +1765,7 @@ case 61:
 	    ;
     break;}
 case 62:
-#line 523 "parser.y"
+#line 524 "parser.y"
 {
 		element -> numdistributed = 1;
 		Deallocate (element -> distributed [element -> numdistributed]);
@@ -1775,7 +1774,7 @@ case 62:
 	    ;
     break;}
 case 67:
-#line 552 "parser.y"
+#line 553 "parser.y"
 {
 		material = CreateMaterial (yyvsp[0].s);
 		found = TreeInsert (problem.material_tree, material);
@@ -1788,116 +1787,116 @@ case 67:
 	    ;
     break;}
 case 70:
-#line 572 "parser.y"
+#line 573 "parser.y"
 {
 		Deallocate (material -> color);
                 material -> color = yyvsp[0].s;
 	    ;
     break;}
 case 71:
-#line 578 "parser.y"
+#line 579 "parser.y"
 {
 		material -> E = yyvsp[0].d;
 	    ;
     break;}
 case 72:
-#line 583 "parser.y"
+#line 584 "parser.y"
 {
 		material -> Ix = yyvsp[0].d;
 	    ;
     break;}
 case 73:
-#line 588 "parser.y"
+#line 589 "parser.y"
 {
 		material -> Iy = yyvsp[0].d;
 	    ;
     break;}
 case 74:
-#line 593 "parser.y"
+#line 594 "parser.y"
 {
 		material -> Iz = yyvsp[0].d;
 	    ;
     break;}
 case 75:
-#line 598 "parser.y"
+#line 599 "parser.y"
 {
 		material -> A = yyvsp[0].d;
 	    ;
     break;}
 case 76:
-#line 603 "parser.y"
+#line 604 "parser.y"
 {
 		material -> J = yyvsp[0].d;
 	    ;
     break;}
 case 77:
-#line 608 "parser.y"
+#line 609 "parser.y"
 {
 		material -> G = yyvsp[0].d;
 	    ;
     break;}
 case 78:
-#line 613 "parser.y"
+#line 614 "parser.y"
 {
 		material -> t = yyvsp[0].d;
 	    ;
     break;}
 case 79:
-#line 618 "parser.y"
+#line 619 "parser.y"
 {
 		material -> rho = yyvsp[0].d;
 	    ;
     break;}
 case 80:
-#line 623 "parser.y"
+#line 624 "parser.y"
 {
 		material -> nu = yyvsp[0].d;
 	    ;
     break;}
 case 81:
-#line 628 "parser.y"
+#line 629 "parser.y"
 {
 		material -> kappa = yyvsp[0].d;
 	    ;
     break;}
 case 82:
-#line 633 "parser.y"
+#line 634 "parser.y"
 {
 		material -> Rk = yyvsp[0].d;
 	    ;
     break;}
 case 83:
-#line 638 "parser.y"
+#line 639 "parser.y"
 {
 		material -> Rm = yyvsp[0].d;
 	    ;
     break;}
 case 84:
-#line 643 "parser.y"
+#line 644 "parser.y"
 {
                 material -> Kx = yyvsp[0].d;
             ;
     break;}
 case 85:
-#line 648 "parser.y"
+#line 649 "parser.y"
 {
                 material -> Ky = yyvsp[0].d;
             ;
     break;}
 case 86:
-#line 653 "parser.y"
+#line 654 "parser.y"
 {
                 material -> Kz = yyvsp[0].d;
             ;
     break;}
 case 87:
-#line 658 "parser.y"
+#line 659 "parser.y"
 {
                 material -> c = yyvsp[0].d;
             ;
     break;}
 case 93:
-#line 686 "parser.y"
+#line 687 "parser.y"
 {
 		load = CreateDistributed (yyvsp[0].s, 0);
 		found = TreeInsert (problem.distributed_tree, load);
@@ -1910,20 +1909,20 @@ case 93:
 	    ;
     break;}
 case 96:
-#line 707 "parser.y"
+#line 708 "parser.y"
 {
 		Deallocate (load -> color);
                 load -> color = yyvsp[0].s;
 	    ;
     break;}
 case 97:
-#line 713 "parser.y"
+#line 714 "parser.y"
 {
 		load -> direction = yyvsp[0].i;
 	    ;
     break;}
 case 98:
-#line 718 "parser.y"
+#line 719 "parser.y"
 {
 		unsigned i;
 		unsigned size;
@@ -1945,26 +1944,26 @@ case 98:
 	    ;
     break;}
 case 100:
-#line 744 "parser.y"
+#line 745 "parser.y"
 {
 		*pair_ptr ++ = yyvsp[0].p;
 	    ;
     break;}
 case 101:
-#line 749 "parser.y"
+#line 750 "parser.y"
 {
 		*pair_ptr ++ = yyvsp[0].p;
 	    ;
     break;}
 case 102:
-#line 754 "parser.y"
+#line 755 "parser.y"
 {
 		pair_ptr = pair_array;
 		*pair_ptr ++ = yyvsp[0].p;
 	    ;
     break;}
 case 103:
-#line 763 "parser.y"
+#line 764 "parser.y"
 {
 		if (yyvsp[-3].i < 1 || yyvsp[-3].i > problem.num_nodes)
 		    error ("node number %u is illegal", yyvsp[-3].i);
@@ -1974,7 +1973,7 @@ case 103:
 	    ;
     break;}
 case 104:
-#line 772 "parser.y"
+#line 773 "parser.y"
 {
 		if (yyvsp[-2].i < 1 || yyvsp[-2].i > problem.num_nodes)
 		    error ("node number %u is illegal", yyvsp[-2].i);
@@ -1984,7 +1983,7 @@ case 104:
 	    ;
     break;}
 case 109:
-#line 802 "parser.y"
+#line 803 "parser.y"
 {
 		force = CreateForce (yyvsp[0].s);
 		found = TreeInsert (problem.force_tree, force);
@@ -1997,86 +1996,86 @@ case 109:
 	    ;
     break;}
 case 112:
-#line 823 "parser.y"
+#line 824 "parser.y"
 {
 		Deallocate (force -> color);
                 force -> color = yyvsp[0].s;
 	    ;
     break;}
 case 113:
-#line 829 "parser.y"
+#line 830 "parser.y"
 {
 		AssignForce (force, Fx, InCore, copy_input (0));
 	    ;
     break;}
 case 114:
-#line 834 "parser.y"
+#line 835 "parser.y"
 {
 		AssignForce (force, Fy, InCore, copy_input (0));
 	    ;
     break;}
 case 115:
-#line 839 "parser.y"
+#line 840 "parser.y"
 {
 		AssignForce (force, Fz, InCore, copy_input (0));
 	    ;
     break;}
 case 116:
-#line 844 "parser.y"
+#line 845 "parser.y"
 {
 		AssignForce (force, Mx, InCore, copy_input (0));
 	    ;
     break;}
 case 117:
-#line 849 "parser.y"
+#line 850 "parser.y"
 {
 		AssignForce (force, My, InCore, copy_input (0));
 	    ;
     break;}
 case 118:
-#line 854 "parser.y"
+#line 855 "parser.y"
 {
 		AssignForce (force, Mz, InCore, copy_input (0));
 	    ;
     break;}
 case 119:
-#line 859 "parser.y"
+#line 860 "parser.y"
 {
 		AssignSpectrum (force, Fx, InCore, copy_input (0));
 	    ;
     break;}
 case 120:
-#line 864 "parser.y"
+#line 865 "parser.y"
 {
 		AssignSpectrum (force, Fy, InCore, copy_input (0));
 	    ;
     break;}
 case 121:
-#line 869 "parser.y"
+#line 870 "parser.y"
 {
 		AssignSpectrum (force, Fz, InCore, copy_input (0));
 	    ;
     break;}
 case 122:
-#line 874 "parser.y"
+#line 875 "parser.y"
 {
 		AssignSpectrum (force, Mx, InCore, copy_input (0));
 	    ;
     break;}
 case 123:
-#line 879 "parser.y"
+#line 880 "parser.y"
 {
 		AssignSpectrum (force, My, InCore, copy_input (0));
 	    ;
     break;}
 case 124:
-#line 884 "parser.y"
+#line 885 "parser.y"
 {
 		AssignSpectrum (force, Mz, InCore, copy_input (0));
 	    ;
     break;}
 case 130:
-#line 912 "parser.y"
+#line 913 "parser.y"
 {
 		constraint = CreateConstraint (yyvsp[0].s);
 		found = TreeInsert (problem.constraint_tree, constraint);
@@ -2089,14 +2088,14 @@ case 130:
 	    ;
     break;}
 case 133:
-#line 933 "parser.y"
+#line 934 "parser.y"
 {
 		Deallocate (constraint -> color);
                 constraint -> color = yyvsp[0].s;
 	    ;
     break;}
 case 134:
-#line 939 "parser.y"
+#line 940 "parser.y"
 {
                 if (yyvsp[0].c == VariableExpression)
                    AssignConstraint (constraint, Tx, InCore, copy_input(0), 1);
@@ -2107,7 +2106,7 @@ case 134:
 	    ;
     break;}
 case 135:
-#line 949 "parser.y"
+#line 950 "parser.y"
 {
                 if (yyvsp[0].c == VariableExpression)
                    AssignConstraint (constraint, Ty, InCore, copy_input(0), 1);
@@ -2118,7 +2117,7 @@ case 135:
 	    ;
     break;}
 case 136:
-#line 959 "parser.y"
+#line 960 "parser.y"
 {
                 if (yyvsp[0].c == VariableExpression)
                    AssignConstraint (constraint, Tz, InCore, copy_input(0), 1);
@@ -2129,7 +2128,7 @@ case 136:
 	    ;
     break;}
 case 137:
-#line 969 "parser.y"
+#line 970 "parser.y"
 {
                 if (yyvsp[0].c == VariableExpression)
                    AssignConstraint (constraint, Rx, InCore, copy_input(0), 1);
@@ -2140,7 +2139,7 @@ case 137:
 	    ;
     break;}
 case 138:
-#line 979 "parser.y"
+#line 980 "parser.y"
 {
                 if (yyvsp[0].c == VariableExpression)
                    AssignConstraint (constraint, Ry, InCore, copy_input(0), 1);
@@ -2151,7 +2150,7 @@ case 138:
 	    ;
     break;}
 case 139:
-#line 989 "parser.y"
+#line 990 "parser.y"
 {
                 if (yyvsp[0].c == VariableExpression)
                    AssignConstraint (constraint, Rz, InCore, copy_input(0), 1);
@@ -2162,109 +2161,109 @@ case 139:
 	    ;
     break;}
 case 140:
-#line 999 "parser.y"
+#line 1000 "parser.y"
 {
                 constraint -> ix [Tx] = yyvsp[0].d;
             ;
     break;}
 case 141:
-#line 1004 "parser.y"
+#line 1005 "parser.y"
 {
                 constraint -> ix [Ty] = yyvsp[0].d;
             ;
     break;}
 case 142:
-#line 1009 "parser.y"
+#line 1010 "parser.y"
 {
                 constraint -> ix [Tz] = yyvsp[0].d;
             ;
     break;}
 case 143:
-#line 1014 "parser.y"
+#line 1015 "parser.y"
 {
                 constraint -> ix [Rx] = yyvsp[0].d;
             ;
     break;}
 case 144:
-#line 1019 "parser.y"
+#line 1020 "parser.y"
 {
                 constraint -> ix [Ry] = yyvsp[0].d;
             ;
     break;}
 case 145:
-#line 1024 "parser.y"
+#line 1025 "parser.y"
 {
                 constraint -> ix [Rz] = yyvsp[0].d;
             ;
     break;}
 case 146:
-#line 1029 "parser.y"
+#line 1030 "parser.y"
 {
 		constraint -> vx [Tx] = yyvsp[0].d;
 	    ;
     break;}
 case 147:
-#line 1034 "parser.y"
+#line 1035 "parser.y"
 {
 		constraint -> vx [Ty] = yyvsp[0].d;
 	    ;
     break;}
 case 148:
-#line 1039 "parser.y"
+#line 1040 "parser.y"
 {
 		constraint -> vx [Tz] = yyvsp[0].d;
 	    ;
     break;}
 case 149:
-#line 1044 "parser.y"
+#line 1045 "parser.y"
 {
 		constraint -> ax [Tx] = yyvsp[0].d;
 	    ;
     break;}
 case 150:
-#line 1049 "parser.y"
+#line 1050 "parser.y"
 {
 		constraint -> ax [Ty] = yyvsp[0].d;
 	    ;
     break;}
 case 151:
-#line 1054 "parser.y"
+#line 1055 "parser.y"
 {
 		constraint -> ax [Tz] = yyvsp[0].d;
 	    ;
     break;}
 case 153:
-#line 1064 "parser.y"
+#line 1065 "parser.y"
 {
 		yyval.c = VariableExpression;
 	    ;
     break;}
 case 154:
-#line 1069 "parser.y"
+#line 1070 "parser.y"
 {
 		yyval.c = yyvsp[0].i;
 	    ;
     break;}
 case 155:
-#line 1077 "parser.y"
+#line 1078 "parser.y"
 {
 		yyval.c = VariableExpression;
 	    ;
     break;}
 case 156:
-#line 1082 "parser.y"
+#line 1083 "parser.y"
 {
 		yyval.c = yyvsp[0].i;
 	    ;
     break;}
 case 157:
-#line 1087 "parser.y"
+#line 1088 "parser.y"
 {
 		yyval.c = yyvsp[0].i;
 	    ;
     break;}
 case 162:
-#line 1111 "parser.y"
+#line 1112 "parser.y"
 {
 		loadcase = CreateLoadCase (yyvsp[0].s);
 		found = TreeInsert (problem.loadcase_tree, loadcase);
@@ -2277,7 +2276,7 @@ case 162:
 	    ;
     break;}
 case 165:
-#line 1130 "parser.y"
+#line 1131 "parser.y"
 {
 		unsigned i;
 		unsigned size;
@@ -2303,7 +2302,7 @@ case 165:
 	    ;
     break;}
 case 166:
-#line 1155 "parser.y"
+#line 1156 "parser.y"
 {
 		unsigned i;
 		unsigned size;
@@ -2329,26 +2328,26 @@ case 166:
 	    ;
     break;}
 case 168:
-#line 1185 "parser.y"
+#line 1186 "parser.y"
 {
 		*case_ptr ++ = yyvsp[0].cp;
 	    ;
     break;}
 case 169:
-#line 1190 "parser.y"
+#line 1191 "parser.y"
 {
 		*case_ptr ++ = yyvsp[0].cp;
 	    ;
     break;}
 case 170:
-#line 1195 "parser.y"
+#line 1196 "parser.y"
 {
 		case_ptr = case_array;
 		*case_ptr ++ = yyvsp[0].cp;
 	    ;
     break;}
 case 171:
-#line 1204 "parser.y"
+#line 1205 "parser.y"
 {
 		if (yyvsp[-3].i < 1 || yyvsp[-3].i > problem.num_nodes)
 		    error ("node number %u is illegal", yyvsp[-3].i);
@@ -2358,7 +2357,7 @@ case 171:
 	    ;
     break;}
 case 172:
-#line 1213 "parser.y"
+#line 1214 "parser.y"
 {
 		if (yyvsp[-2].i < 1 || yyvsp[-2].i > problem.num_nodes)
 		    error ("node number %u is illegal", yyvsp[-2].i);
@@ -2368,91 +2367,91 @@ case 172:
 	    ;
     break;}
 case 176:
-#line 1237 "parser.y"
+#line 1238 "parser.y"
 {
 		analysis.alpha = yyvsp[0].d;
 	    ;
     break;}
 case 177:
-#line 1242 "parser.y"
+#line 1243 "parser.y"
 {
 		analysis.beta = yyvsp[0].d;
 	    ;
     break;}
 case 178:
-#line 1247 "parser.y"
+#line 1248 "parser.y"
 {
 		analysis.gamma = yyvsp[0].d;
 	    ;
     break;}
 case 179:
-#line 1252 "parser.y"
+#line 1253 "parser.y"
 {
                 analysis.Rk = yyvsp[0].d;
             ;
     break;}
 case 180:
-#line 1257 "parser.y"
+#line 1258 "parser.y"
 {
                 analysis.Rm = yyvsp[0].d;
             ;
     break;}
 case 181:
-#line 1262 "parser.y"
+#line 1263 "parser.y"
 {
 		analysis.start = yyvsp[0].d;
 	    ;
     break;}
 case 182:
-#line 1267 "parser.y"
+#line 1268 "parser.y"
 {
 		analysis.step = yyvsp[0].d;
 	    ;
     break;}
 case 183:
-#line 1272 "parser.y"
+#line 1273 "parser.y"
 {
 		analysis.stop = yyvsp[0].d;
 	    ;
     break;}
 case 184:
-#line 1277 "parser.y"
+#line 1278 "parser.y"
 {
 		analysis.iterations = yyvsp[0].i;
 	    ;
     break;}
 case 185:
-#line 1282 "parser.y"
+#line 1283 "parser.y"
 {
 		analysis.load_steps = yyvsp[0].i;
 	    ;
     break;}
 case 186:
-#line 1287 "parser.y"
+#line 1288 "parser.y"
 {
 		analysis.relaxation = yyvsp[0].d;
 	    ;
     break;}
 case 187:
-#line 1292 "parser.y"
+#line 1293 "parser.y"
 {
 		analysis.tolerance = yyvsp[0].d;
 	    ;
     break;}
 case 188:
-#line 1297 "parser.y"
+#line 1298 "parser.y"
 {
                 analysis.input_dof = yyvsp[0].i;
             ;
     break;}
 case 189:
-#line 1302 "parser.y"
+#line 1303 "parser.y"
 {
                 analysis.input_node = (Node) yyvsp[0].i;
             ;
     break;}
 case 190:
-#line 1307 "parser.y"
+#line 1308 "parser.y"
 {
 		unsigned i;
 
@@ -2468,7 +2467,7 @@ case 190:
 	    ;
     break;}
 case 191:
-#line 1322 "parser.y"
+#line 1323 "parser.y"
 {
 		int i;
 
@@ -2480,13 +2479,13 @@ case 191:
 	    ;
     break;}
 case 192:
-#line 1333 "parser.y"
+#line 1334 "parser.y"
 {
 		analysis.mass_mode = yyvsp[0].i;
 	    ;
     break;}
 case 193:
-#line 1338 "parser.y"
+#line 1339 "parser.y"
 {
                 analysis.gravity [1] = triple_x;
                 analysis.gravity [2] = triple_y;
@@ -2494,37 +2493,37 @@ case 193:
             ;
     break;}
 case 195:
-#line 1350 "parser.y"
+#line 1351 "parser.y"
 {
 		*int_ptr ++ = yyvsp[0].i;
 	    ;
     break;}
 case 196:
-#line 1355 "parser.y"
+#line 1356 "parser.y"
 {
 		*int_ptr ++ = yyvsp[0].i;
 	    ;
     break;}
 case 197:
-#line 1360 "parser.y"
+#line 1361 "parser.y"
 {
 		int_ptr = int_array;
 	    ;
     break;}
 case 198:
-#line 1368 "parser.y"
+#line 1369 "parser.y"
 {
 		analysis.dofs [yyvsp[0].i] = 1;
 	    ;
     break;}
 case 199:
-#line 1373 "parser.y"
+#line 1374 "parser.y"
 {
 		analysis.dofs [yyvsp[0].i] = 1;
 	    ;
     break;}
 case 200:
-#line 1378 "parser.y"
+#line 1379 "parser.y"
 {
 		int i;
 
@@ -2534,7 +2533,7 @@ case 200:
 	    ;
     break;}
 case 201:
-#line 1390 "parser.y"
+#line 1391 "parser.y"
 {
 		triple_x = yyvsp[-4].d;
 		triple_y = yyvsp[-2].d;
@@ -2542,150 +2541,150 @@ case 201:
 	    ;
     break;}
 case 202:
-#line 1400 "parser.y"
+#line 1401 "parser.y"
 {
 		yyval.d = yyvsp[0].d;
 	    ;
     break;}
 case 203:
-#line 1405 "parser.y"
+#line 1406 "parser.y"
 {
                 yyval.d = 0.0;
             ;
     break;}
 case 207:
-#line 1426 "parser.y"
+#line 1427 "parser.y"
 {
 		appearance.node_numbers = yyvsp[0].i;
 	    ;
     break;}
 case 208:
-#line 1431 "parser.y"
+#line 1432 "parser.y"
 {
 		appearance.element_numbers = yyvsp[0].i;
 	    ;
     break;}
 case 209:
-#line 1436 "parser.y"
+#line 1437 "parser.y"
 {
 		appearance.snap = yyvsp[0].i;
 	    ;
     break;}
 case 210:
-#line 1441 "parser.y"
+#line 1442 "parser.y"
 {
 		appearance.grid = yyvsp[0].i;
 	    ;
     break;}
 case 211:
-#line 1446 "parser.y"
+#line 1447 "parser.y"
 {
 		appearance.snap_size = yyvsp[0].d;
 	    ;
     break;}
 case 212:
-#line 1451 "parser.y"
+#line 1452 "parser.y"
 {
 		appearance.grid_size = yyvsp[0].d;
 	    ;
     break;}
 case 213:
-#line 1456 "parser.y"
+#line 1457 "parser.y"
 {
 		appearance.x_min = yyvsp[0].d;
 	    ;
     break;}
 case 214:
-#line 1461 "parser.y"
+#line 1462 "parser.y"
 {
 		appearance.x_max = yyvsp[0].d;
 	    ;
     break;}
 case 215:
-#line 1466 "parser.y"
+#line 1467 "parser.y"
 {
 		appearance.y_min = yyvsp[0].d;
 	    ;
     break;}
 case 216:
-#line 1471 "parser.y"
+#line 1472 "parser.y"
 {
 		appearance.y_max = yyvsp[0].d;
 	    ;
     break;}
 case 217:
-#line 1476 "parser.y"
+#line 1477 "parser.y"
 {
 		appearance.x_pos = yyvsp[0].d;
 	    ;
     break;}
 case 218:
-#line 1481 "parser.y"
+#line 1482 "parser.y"
 {
 		appearance.y_pos = yyvsp[0].d;
 	    ;
     break;}
 case 219:
-#line 1486 "parser.y"
+#line 1487 "parser.y"
 {
 		appearance.width = yyvsp[0].d;
 	    ;
     break;}
 case 220:
-#line 1491 "parser.y"
+#line 1492 "parser.y"
 {
 		appearance.height = yyvsp[0].d;
 	    ;
     break;}
 case 221:
-#line 1496 "parser.y"
+#line 1497 "parser.y"
 {
 		appearance.scale = yyvsp[0].d;
 	    ;
     break;}
 case 222:
-#line 1501 "parser.y"
+#line 1502 "parser.y"
 {
 		Deallocate (appearance.node_color);
 		appearance.node_color = yyvsp[0].s;
 	    ;
     break;}
 case 223:
-#line 1507 "parser.y"
+#line 1508 "parser.y"
 {
 		Deallocate (appearance.element_color);
 		appearance.element_color = yyvsp[0].s;
 	    ;
     break;}
 case 224:
-#line 1513 "parser.y"
+#line 1514 "parser.y"
 {
 		Deallocate (appearance.label_font);
 		appearance.label_font = yyvsp[0].s;
 	    ;
     break;}
 case 225:
-#line 1519 "parser.y"
+#line 1520 "parser.y"
 {
 		Deallocate (appearance.tool_color);
 		appearance.tool_color = yyvsp[0].s;
 	    ;
     break;}
 case 226:
-#line 1525 "parser.y"
+#line 1526 "parser.y"
 {
 		Deallocate (appearance.tool_font);
 		appearance.tool_font = yyvsp[0].s;
 	    ;
     break;}
 case 228:
-#line 1541 "parser.y"
+#line 1542 "parser.y"
 {
 		figure_size = 0;
 	    ;
     break;}
 case 232:
-#line 1560 "parser.y"
+#line 1561 "parser.y"
 {
 		if (appearance.num_figures == figure_size) {
 		    figure_size = figure_size ? figure_size <<= 1 : 4;
@@ -2709,64 +2708,64 @@ case 232:
 	    ;
     break;}
 case 235:
-#line 1592 "parser.y"
+#line 1593 "parser.y"
 {
 		figure -> x = yyvsp[0].d;
 	    ;
     break;}
 case 236:
-#line 1597 "parser.y"
+#line 1598 "parser.y"
 {
 		figure -> y = yyvsp[0].d;
 	    ;
     break;}
 case 237:
-#line 1602 "parser.y"
+#line 1603 "parser.y"
 {
 		figure -> width = yyvsp[0].d;
 	    ;
     break;}
 case 238:
-#line 1607 "parser.y"
+#line 1608 "parser.y"
 {
 		figure -> height = yyvsp[0].d;
 	    ;
     break;}
 case 239:
-#line 1612 "parser.y"
+#line 1613 "parser.y"
 {
 		figure -> start = yyvsp[0].d;
 	    ;
     break;}
 case 240:
-#line 1617 "parser.y"
+#line 1618 "parser.y"
 {
 		figure -> length = yyvsp[0].d;
 	    ;
     break;}
 case 241:
-#line 1622 "parser.y"
+#line 1623 "parser.y"
 {
 		Deallocate (figure -> text);
 		figure -> text = yyvsp[0].s;
 	    ;
     break;}
 case 242:
-#line 1628 "parser.y"
+#line 1629 "parser.y"
 {
 		Deallocate (figure -> color);
 		figure -> color = yyvsp[0].s;
 	    ;
     break;}
 case 243:
-#line 1634 "parser.y"
+#line 1635 "parser.y"
 {
 		Deallocate (figure -> font);
 		figure -> font = yyvsp[0].s;
 	    ;
     break;}
 case 245:
-#line 1645 "parser.y"
+#line 1646 "parser.y"
 {
 		if (fig_point_size == figure -> num_points) {
 		    fig_point_size <<= 1;
@@ -2780,7 +2779,7 @@ case 245:
 	    ;
     break;}
 case 246:
-#line 1658 "parser.y"
+#line 1659 "parser.y"
 {
 		if (fig_point_size == figure -> num_points) {
 		    fig_point_size <<= 1;
@@ -2794,7 +2793,7 @@ case 246:
 	    ;
     break;}
 case 247:
-#line 1671 "parser.y"
+#line 1672 "parser.y"
 {
 		figure -> points = Allocate (FigInfoPair, 2);
 		if (figure -> points == NULL)
@@ -2805,21 +2804,21 @@ case 247:
 	    ;
     break;}
 case 248:
-#line 1684 "parser.y"
+#line 1685 "parser.y"
 {
 		figure_x = yyvsp[-3].d;
 		figure_y = yyvsp[-1].d;
 	    ;
     break;}
 case 249:
-#line 1695 "parser.y"
+#line 1696 "parser.y"
 {
 		EmitCode (HaltOp);
 		SetIP (0);
 	    ;
     break;}
 case 250:
-#line 1701 "parser.y"
+#line 1702 "parser.y"
 {
 		if (table_error)
 		    EmitCode (PushOp, 0.0);
@@ -2834,7 +2833,7 @@ case 250:
 	    ;
     break;}
 case 251:
-#line 1715 "parser.y"
+#line 1716 "parser.y"
 {
 		if (table_error)
 		    EmitCode (PushOp, 0.0);
@@ -2849,7 +2848,7 @@ case 251:
 	    ;
     break;}
 case 255:
-#line 1739 "parser.y"
+#line 1740 "parser.y"
 {
 		if (yyvsp[-3].d < last_time) {
 		    error ("point not in nondecreasing order");
@@ -2868,13 +2867,13 @@ case 255:
 	    ;
     break;}
 case 256:
-#line 1760 "parser.y"
+#line 1761 "parser.y"
 {
 		copy_input (1);
 	    ;
     break;}
 case 257:
-#line 1768 "parser.y"
+#line 1769 "parser.y"
 {
 		EmitCode (HaltOp);
 		SetIP (0);
@@ -2882,7 +2881,7 @@ case 257:
 	    ;
     break;}
 case 258:
-#line 1778 "parser.y"
+#line 1779 "parser.y"
 {
 		int ip = GetIP ( );
 		SetIP (ip - yyvsp[0].i - 2);
@@ -2894,7 +2893,7 @@ case 258:
 	    ;
     break;}
 case 259:
-#line 1789 "parser.y"
+#line 1790 "parser.y"
 {
 		int ip = GetIP ( );
 		SetIP (ip - yyvsp[0].i - 3);
@@ -2905,7 +2904,7 @@ case 259:
 	    ;
     break;}
 case 260:
-#line 1799 "parser.y"
+#line 1800 "parser.y"
 {
 		int ip = GetIP ( );
 		SetIP (ip - yyvsp[0].i - 3);
@@ -2916,278 +2915,278 @@ case 260:
 	    ;
     break;}
 case 261:
-#line 1809 "parser.y"
+#line 1810 "parser.y"
 {
 		EmitCode (OrOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 262:
-#line 1815 "parser.y"
+#line 1816 "parser.y"
 {
 		EmitCode (XorOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 263:
-#line 1821 "parser.y"
+#line 1822 "parser.y"
 {
 		EmitCode (AndOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 264:
-#line 1827 "parser.y"
+#line 1828 "parser.y"
 {
 		EmitCode (EqOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 265:
-#line 1833 "parser.y"
+#line 1834 "parser.y"
 {
 		EmitCode (NeqOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 266:
-#line 1839 "parser.y"
+#line 1840 "parser.y"
 {
 		EmitCode (LtOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 267:
-#line 1845 "parser.y"
+#line 1846 "parser.y"
 {
 		EmitCode (GtOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 268:
-#line 1851 "parser.y"
+#line 1852 "parser.y"
 {
 		EmitCode (LteqOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 269:
-#line 1857 "parser.y"
+#line 1858 "parser.y"
 {
 		EmitCode (GteqOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 270:
-#line 1863 "parser.y"
+#line 1864 "parser.y"
 {
 		EmitCode (LsftOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 271:
-#line 1869 "parser.y"
+#line 1870 "parser.y"
 {
 		EmitCode (RsftOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 272:
-#line 1875 "parser.y"
+#line 1876 "parser.y"
 {
 		EmitCode (AddOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 273:
-#line 1881 "parser.y"
+#line 1882 "parser.y"
 {
 		EmitCode (SubOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 274:
-#line 1887 "parser.y"
+#line 1888 "parser.y"
 {
 		EmitCode (MulOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 275:
-#line 1893 "parser.y"
+#line 1894 "parser.y"
 {
 		EmitCode (DivOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 276:
-#line 1899 "parser.y"
+#line 1900 "parser.y"
 {
 		EmitCode (ModOp);
 		yyval.i = yyvsp[-2].i + 1 + yyvsp[0].i;
 	    ;
     break;}
 case 277:
-#line 1905 "parser.y"
+#line 1906 "parser.y"
 {
 		yyval.i = yyvsp[0].i;
 	    ;
     break;}
 case 278:
-#line 1910 "parser.y"
+#line 1911 "parser.y"
 {
 		EmitCode (NegOp);
 		yyval.i = 1 + yyvsp[0].i;
 	    ;
     break;}
 case 279:
-#line 1916 "parser.y"
+#line 1917 "parser.y"
 {
 		EmitCode (NotOp);
 		yyval.i = 1 + yyvsp[0].i;
 	    ;
     break;}
 case 280:
-#line 1922 "parser.y"
+#line 1923 "parser.y"
 {
 		EmitCode (InvOp);
 		yyval.i = 1 + yyvsp[0].i;
 	    ;
     break;}
 case 281:
-#line 1928 "parser.y"
+#line 1929 "parser.y"
 {
 		yyval.i = yyvsp[-1].i;
 	    ;
     break;}
 case 282:
-#line 1933 "parser.y"
+#line 1934 "parser.y"
 {
 		EmitCode (PushOp, (double) yyvsp[0].i);
 		yyval.i = 2;
 	    ;
     break;}
 case 283:
-#line 1939 "parser.y"
+#line 1940 "parser.y"
 {
 		EmitCode (PushOp, yyvsp[0].d);
 		yyval.i = 2;
 	    ;
     break;}
 case 284:
-#line 1945 "parser.y"
+#line 1946 "parser.y"
 {
 		EmitCode (TimeOp);
 		yyval.i = 1;
 	    ;
     break;}
 case 286:
-#line 1956 "parser.y"
+#line 1957 "parser.y"
 {
 		EmitCode (SinOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 287:
-#line 1962 "parser.y"
+#line 1963 "parser.y"
 {
 		EmitCode (CosOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 288:
-#line 1968 "parser.y"
+#line 1969 "parser.y"
 {
 		EmitCode (TanOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 289:
-#line 1974 "parser.y"
+#line 1975 "parser.y"
 {
 		EmitCode (PowOp);
 		yyval.i = yyvsp[-3].i + yyvsp[-1].i + 1;
 	    ;
     break;}
 case 290:
-#line 1980 "parser.y"
+#line 1981 "parser.y"
 {
 		EmitCode (ExpOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 291:
-#line 1986 "parser.y"
+#line 1987 "parser.y"
 {
 		EmitCode (LnOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 292:
-#line 1992 "parser.y"
+#line 1993 "parser.y"
 {
 		EmitCode (LogOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 293:
-#line 1998 "parser.y"
+#line 1999 "parser.y"
 {
 		EmitCode (SqrtOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 294:
-#line 2004 "parser.y"
+#line 2005 "parser.y"
 {
 		EmitCode (HypotOp);
 		yyval.i = yyvsp[-3].i + yyvsp[-1].i + 1;
 	    ;
     break;}
 case 295:
-#line 2010 "parser.y"
+#line 2011 "parser.y"
 {
 		EmitCode (FloorOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 296:
-#line 2016 "parser.y"
+#line 2017 "parser.y"
 {
 		EmitCode (CeilOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 297:
-#line 2022 "parser.y"
+#line 2023 "parser.y"
 {
 		EmitCode (FmodOp);
 		yyval.i = yyvsp[-3].i + yyvsp[-1].i + 1;
 	    ;
     break;}
 case 298:
-#line 2028 "parser.y"
+#line 2029 "parser.y"
 {
 		EmitCode (FabsOp);
 		yyval.i = yyvsp[-1].i + 1;
 	    ;
     break;}
 case 299:
-#line 2037 "parser.y"
+#line 2038 "parser.y"
 {
 		EmitCode (JzOp, 0);
 		yyval.i = 2;
 	    ;
     break;}
 case 300:
-#line 2046 "parser.y"
+#line 2047 "parser.y"
 {
 		EmitCode (JmpOp, 0);
 		yyval.i = 2;
 	    ;
     break;}
 case 301:
-#line 2055 "parser.y"
+#line 2056 "parser.y"
 {
 		EmitCode (CopyOp);
 		EmitCode (JnzOp, 0);
@@ -3196,7 +3195,7 @@ case 301:
 	    ;
     break;}
 case 302:
-#line 2066 "parser.y"
+#line 2067 "parser.y"
 {
 		EmitCode (CopyOp);
 		EmitCode (JzOp, 0);
@@ -3206,7 +3205,7 @@ case 302:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 487 "/usr/lib/bison.simple"
+#line 498 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -3402,7 +3401,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 2074 "parser.y"
+#line 2075 "parser.y"
 
 
 # ifdef YYBYACC

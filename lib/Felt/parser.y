@@ -40,8 +40,9 @@
 
 extern void yyerror ( );
 extern int  yylex  ( );
+# ifdef NEED_STRDUP
 extern char *strdup ( );
-
+# endif
 
 /* Last parameters (default for some parameters is to inherit the last). */
 

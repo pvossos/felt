@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -628,7 +628,7 @@ ContourDialog ContourDialogCreate (parent, name, title)
 
     XtSetArg (args [0], XtNdepth, &depth);
     XtGetValues (parent, args, 1);
-    if (depth != 8) {
+    if (depth < 8) {
         XtSetSensitive (contourd -> s_equalize, False);
         XtSetSensitive (contourd -> d_equalize, False);
         XtSetSensitive (contourd -> s_plot_elt, False);

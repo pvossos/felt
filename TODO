@@ -1,23 +1,7 @@
 Due to our own lack of experience/hardware/software, we definitely need
 volunteers (we'd be willing to help where we could of course) for this stuff:
 
-	o some sort of Windows interface - preferably velvet for Windows, but
-          it could also be xfelt for Windows to start with (that would be 
-          a lot easier).
-        o as part of the above or as a separate undertaking, we need someone
-          to compile the command line applications under DOS such that they
-          will run on a 286 and while Windows is running.  The current binaries
-          are built with DJGPP (gcc for DOS); the kind of binaries I'm talking
-          about would need to be compiled with Microsoft or Borland C I think.
-          If someone wanted to write pre- or post-processing applications for
-          DOS that would be cool too.  Post-processing would be particularly
-          easy if someone just wanted to parse out the standard felt ASCII
-          output.  You could start with feltvu as a simple starting point.
-          It might be nice if someone could port feltvu to a different 
-          compiler as well.  I think most major DOS compilers probably
-          handle graphics drivers in a more reliable way than the current
-          set of DJGPP graphics lib drivers which people have had a lot of
-          trouble with.
+	o some sort of velvet-like interface for Windows
 	o all of the above kinds of things (particularly just binaries of the
           command-line applications) for the Mac.
 
@@ -39,7 +23,10 @@ then please feel free.  In no particular order:
 	  displaced shape of the element ...  
 	o add snap to tool capability
 	o robust quadrilateral mesh generation, 3-d mesh generation, etc, etc.
-	o additional higher-order elements
+	o additional higher-order elements -- particularly an LST and maybe
+	  a quadratic 6-node axisymm element.  The current linear axisymm
+          element could also be made more accurate given an actual
+          stiffness integration scheme.  These last would all be fairly easy.
 	o fold Timoshenko beam theory into the standard beam, i.e., if
 	  kappa or nu is given then expect a G and use Timoshenko
 	  theory instead of Euler-Bernoulli.
@@ -48,5 +35,18 @@ then please feel free.  In no particular order:
 	  implementation would mean maintaining a table, in code probably,
 	  that mapped all possible input and as much output as possible
 	  to a language determined by the user.
-        o plug in something more universal than PPM to replace GIF - this will
-          have to wait until some sort of agreeable format emerges of course.
+        o plug in something more universal than PPM to replace GIF - 
+          PNG probably? 
+        o fix the object apply code in velvet so that when an object
+          gets applied to a node or element its color changes as appropriate
+          (rather than waiting for a recolor request from the color
+          control dialog).
+        o an OpenGL 3D stress viewer
+        o consolidation of much of the isoparametric code: brick, CST, LST,
+          quad, axisymm. 
+        o uniform stresses, nodally averaged stresses as appropriate,
+          principle stresses, von Mises stress
+        o better, more uniform handling of distributed loads
+        o better handling of thermal analysis for the two elements that
+	  we currently have, convection over the ctg surface for example,
+          rather than just the end

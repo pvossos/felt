@@ -1,20 +1,32 @@
-This is the README file for version 3.02 of FElt  - a package for
+This is the README file for version 3.05 of FElt  - a package for
 introductory level finite element analysis.
 
 See the file README.old for a basic descriptions of previous versions of FElt
 and what it's all about.  See the file CHANGELOG for a detailed list of
-what's new/fixed in this release.  This is basically an interim bug
-fix release - there are lots of new features but for the most part
-they are only partially implemented ... The list of frequently asked 
-questions (and their answers) is in FAQ (which has not been updated
-for this release).  The documentation (felt-3.02.ps.gz) has also
-only been marginally updated.  It now includes an (incomplete)
-chapter describing the operation of WinFElt.
+what's new/fixed in this release.  This is basically a bug fix release - 
+there are some new features and some minor improvements to the features
+that were new in 3.02 but hadn't been finished.  Some of them still
+aren't finished.  There's nothing new on the nonlinear analysis front
+for example.  The documentation (felt-3.05.ps.gz) has been marginally
+brought up to date.  No new content really, but some old, now irrelevant,
+stuff has been removed.  There are now very brief descriptions of 
+the previously undocumented elements: axisymmetric, rod, and ctg.
 
-For installation instructions see the file INSTALL.  The best way to get a
-feel for the package is to use it.  Several examples are provided in the
-examples/ directory.    Nonlinear, loadcase and load range examples
-include truss_nl.flt beam_lr.flt, beam_lc.flt, etc.
+The biggest change is the dropping of Geompack in favor of Triangle
+for triangular mesh generation.  Triangle is a bit easier to use and
+seems to be bit more reliable for our purposes.  Accordingly the
+corduroy syntax for triangles has changed.  On the list of most annoying
+bugs that are finally fixed is the requirement of 8-bit color depths
+for contour plots; 16-, 24-, 32-bpp should all work now.  Let us know
+if that's not the case.
+
+In other news, we've moved project management over to SourceForge.  This 
+includes ftp, web, and mailing lists:
+
+FTP:           felt.sourceforge.net/pub/FElt
+WWW:           http://felt.sourceforge.net
+Mailing lists: http://lists.sourceforge.net/mailmain/listinfo/felt-announce  
+               http://lists.sourceforge.net/mailmain/listinfo/felt-users
 
 As usual, we would like to stress that feedback is always appreciated ... we
 welcome all comments as to usability and functionality.  If you're using the
@@ -23,4 +35,4 @@ got no complaints whatsoever.  Mail bug reports, comments, hints, suggestion,
 complaints, etc. to one of us at the email addresses below.
 
 Jason Gobat					Darren Atkinson
-jgobat@mit.edu					atkinson@ucsd.edu
+jgobat@whoi.edu					datkinson@clarku.edu

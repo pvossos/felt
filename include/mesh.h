@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -42,16 +42,11 @@ typedef struct _curve {
 } *Curve;
 
 typedef struct _trimesh {
-   Definition	definition;	/* element definition			*/
-   double	tolin;		/* relative tolerance			*/
-   double	angspc;		/* angular spacing			*/
-   double	angtol;		/* angular tolerance			*/
-   double	kappa;		/* mesh density function		*/
-   double	dmin;		/* min distribution function variation 	*/
-   int		min;		/* minimum number to generate		*/
-   int		max;		/* maximum number to generate		*/
-   unsigned	numcurves;	/* number of curves (first is boundary)	*/
-   Curve	*curves; 	/* array of curve structures		*/
+   Definition	definition;	/* element definition			    */
+   int		target;		/* target number to generate		    */
+   double       alpha;          /* elt area constraint is alpha*Atot/target */
+   unsigned	numcurves;	/* number of curves (first is boundary)	    */
+   Curve	*curves; 	/* array of curve structures		    */
 } *TriMesh;
 
 typedef struct _line {

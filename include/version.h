@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,6 +20,6 @@
 # ifndef _VERSION_H
 # define _VERSION_H
 
-# define VERSION	"v3.02"
+# define VERSION	"v3.05"
 
 # endif /* _VERSION_H */

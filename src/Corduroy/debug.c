@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -124,13 +124,8 @@ int WriteCorduroyFile (filename)
 
 	printf ("triangular mesh\n");
         printf ("element-type = %s\n", mesh -> definition -> name); 
-	printf ("tolin  = %g\n", mesh -> tolin);
-	printf ("angtol = %g\n", mesh -> angtol);
-	printf ("angspc = %g\n", mesh -> angspc);
-	printf ("kappa  = %g\n", mesh -> kappa);
-	printf ("dmin   = %g\n", mesh -> dmin);
-	printf ("min    = %u\n", mesh -> min);
-	printf ("max    = %u\n", mesh -> max);
+	printf ("target = %d\n", mesh -> target);
+	printf ("alpha  = %g\n", mesh -> alpha);
 
 	for (j = 0; j < mesh -> numcurves; j ++) {
 	    curve = mesh -> curves [j];

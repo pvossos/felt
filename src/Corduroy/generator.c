@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -31,7 +31,9 @@
 # include "generator.h"
 # include "definition.h"
 
+# ifdef NEED_STRDUP
 extern char *strdup ( );
+# endif
 
 
 # define streq(a,b)	!strcmp(a,b)

@@ -42,15 +42,13 @@ static void rleputrest PROTO(( void ));
 
 static FILE 	*output;
 static XImage   *img;
-static int      *rev_pixel;
 static int      black;
 static int      white;
 
-void XImageToEPS (filename, ximage, ncells, rev, bl, wh)
+void XImageToEPS (filename, ximage, ncells, bl, wh)
     char	*filename;
     XImage	*ximage;
     unsigned	ncells;
-    int		*rev;
     int		bl;
     int		wh;
 {
@@ -76,7 +74,6 @@ void XImageToEPS (filename, ximage, ncells, rev, bl, wh)
     Blue[129] = 255;
 
     img = ximage;
-    rev_pixel = rev;
     black = bl;
     white = wh;
 
@@ -205,7 +202,7 @@ static int GetPixel( x, y )
    else if (point == black)
       color = 128;
    else
-      color = rev_pixel [point];
+      color = PixelToCell(point);
 
    return color;
 }

@@ -110,13 +110,8 @@ z-number{eq}			{return Z_NUMBER_EQ;}
 x-rule{eq}			{return X_RULE_EQ;}
 y-rule{eq}			{return Y_RULE_EQ;}
 z-rule{eq}			{return Z_RULE_EQ;}
-tolin{eq}			{return TOLIN_EQ;}
-angspc{eq}			{return ANGSPC_EQ;}
-angtol{eq}			{return ANGTOL_EQ;}
-dmin{eq}			{return DMIN_EQ;}
-kappa{eq}			{return KAPPA_EQ;}
-min{eq}				{return MIN_EQ;}
-max{eq}				{return MAX_EQ;}
+target{eq}			{return TARGET_EQ;}
+alpha{eq}			{return ALPHA_EQ;}
 boundary{eq}			{return BOUNDARY_EQ;}
 hole{eq}			{return HOLE_EQ;}
 

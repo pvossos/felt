@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ int CSTElementSetup (element, mass_mode, tangent, type)
       return 1;
    }
    if (element -> material -> E == 0) {
-      error ("CST element %d has 0.0 for Poisson's ratio (nu)", element -> number);
+      error ("CST element %d has 0.0 for Young's modulus (E)", element -> number);
       return 1;
    }
    if (element -> material -> t == 0) {

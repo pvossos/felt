@@ -41,7 +41,9 @@
 # undef strtol
 extern double atof ( );
 extern long strtol ( );
+# ifdef NEED_STRDUP
 extern char *strdup ( );
+# endif 
 
 
 static char *filename;

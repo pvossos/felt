@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,13 +49,8 @@ extern int    atoi ( );
 struct trimesh_dialog {
     Widget  shell;		/* topLevelShell  <specified>	*/
     Widget  layout;		/*	Layout  layout		*/
-    Widget  tolin;		/*	     AsciiText tolin	*/
-    Widget  angtol;		/*	     AsciiText angtol	*/
-    Widget  angspc;		/*	     AsciiText angspc	*/
-    Widget  dmin;		/*	     AsciiText dmin	*/
-    Widget  kappa;		/*	     AsciiText kapp	*/
-    Widget  min;		/*	     AsciiText min	*/
-    Widget  max;		/*	     AsciiText max	*/
+    Widget  target;		/*	     AsciiText target	*/
+    Widget  alpha;		/*	     AsciiText alpha	*/
     Widget  nholes;		/*	     AsciiText nholes	*/
     Widget  help;		/*	     MenuButton  help	*/
     Widget  okay;		/*	     Command  okay	*/
@@ -66,22 +61,16 @@ struct trimesh_dialog {
 
 
 static String property_labels [ ] = {
-    "tolin:", "angspc:", "angtol:", "dmin:", "k:", "min:", "max:", "nholes:"
+    "target:", "alpha:", "nholes:"
 };
 
 static String property_names [ ] = {
-    "tolin_name", "angspc_name", "angtol_name", "dmin_name", "kappa_name", 
-    "min_name", "max_name", "nholes_name"
+    "target_name", "alpha_name", "nholes_name"
 };
 
 static String property_help [ ] = {
-   "relative tolerance",
-   "angular spacing",
-   "angular tolerance",
-   "minimum distribution function variation",
-   "mesh density function",
-   "minimum number of triangles to generate",
-   "desired number of triangles",
+   "target number of elements",
+   "area constraint factor: max elt area = alpha*Atot/target",
    "number of holes in the generation region"
 };
 
@@ -95,63 +84,25 @@ static char layout_string [ ] =
      horizontal { \
         vertical { \
             4 \
-            ((height tolin - height tolin_name) / 2) \
-            tolin_name \
-            ((height tolin - height tolin_name) / 2) \
+            ((height target - height target_name) / 2) \
+            target_name \
+            ((height target - height target_name) / 2) \
 	    4 \
-            ((height angspc - height angspc_name) / 2) \
-            angspc_name \
-            ((height angspc - height angspc_name) / 2) \
-            4 \
-            ((height angtol - height angtol_name) / 2) \
-            angtol_name \
-            ((height angtol - height angtol_name) / 2) \
-            4 \
-            ((height dmin - height dmin_name) / 2) \
-            dmin_name \
-            ((height dmin - height dmin_name) / 2) \
-            4 \
-        } \
-        1 \
-        vertical { \
-            4 \
-            tolin \
-            4 \
-            angspc \
-            4 \
-            angtol \
-            4 \
-            dmin \
-            4 \
-        } \
-        4 \
-        vertical { \
-            4 \
-            ((height kappa - height kappa_name) / 2) \
-            kappa_name \
-            ((height kappa - height kappa_name) / 2) \
-            4 \
-            ((height min - height min_name) / 2) \
-            min_name \
-            ((height min - height min_name) / 2) \
-            4 \
-            ((height max - height max_name) / 2) \
-            max_name \
-            ((height max - height max_name) / 2) \
+            ((height alpha - height alpha_name) / 2) \
+            alpha_name \
+            ((height alpha - height alpha_name) / 2) \
             4 \
             ((height nholes - height nholes_name) / 2) \
             nholes_name \
             ((height nholes - height nholes_name) / 2) \
-            4\
+            4 \
         } \
         1 \
         vertical { \
             4 \
-            kappa \
+            target \
             4 \
-            min \
-            4 \
-            max \
+            alpha \
             4 \
             nholes \
             4 \
@@ -308,47 +259,17 @@ static void TrimeshDialogSet (trimeshd)
 
     XtSetArg (args [0], XtNstring, &value);
 
-    XtGetValues (trimeshd -> tolin, args, 1); 
-    trimeshd -> tm -> tolin = exptod (value, NULL);
-    sprintf (buffer, (trimeshd -> tm -> tolin ? "%g" : "0.0"), 
-             trimeshd -> tm -> tolin);
-    SetTextString (trimeshd -> tolin, buffer);
+    XtGetValues (trimeshd -> target, args, 1); 
+    trimeshd -> tm -> target = exptod (value, NULL);
+    sprintf (buffer, (trimeshd -> tm -> target ? "%d" : "0.0"), 
+             trimeshd -> tm -> target);
+    SetTextString (trimeshd -> target, buffer);
 
-    XtGetValues (trimeshd -> angspc, args, 1); 
-    trimeshd -> tm -> angspc = exptod (value, NULL);
-    sprintf (buffer, (trimeshd -> tm -> angspc ? "%g" : "0.0"), 
-             trimeshd -> tm -> angspc);
-    SetTextString (trimeshd -> angspc, buffer);
-
-    XtGetValues (trimeshd -> angtol, args, 1); 
-    trimeshd -> tm -> angtol = exptod (value, NULL);
-    sprintf (buffer, (trimeshd -> tm -> angtol ? "%g" : "0.0"), 
-             trimeshd -> tm -> angtol);
-    SetTextString (trimeshd -> angtol, buffer);
-
-    XtGetValues (trimeshd -> dmin, args, 1); 
-    trimeshd -> tm -> dmin = exptod (value, NULL);
-    sprintf (buffer, (trimeshd -> tm -> dmin ? "%g" : "0.0"), 
-             trimeshd -> tm -> dmin);
-    SetTextString (trimeshd -> dmin, buffer);
-
-    XtGetValues (trimeshd -> kappa, args, 1); 
-    trimeshd -> tm -> kappa = exptod (value, NULL);
-    sprintf (buffer, (trimeshd -> tm -> kappa ? "%g" : "0.0"), 
-             trimeshd -> tm -> kappa);
-    SetTextString (trimeshd -> kappa, buffer);
-
-    XtGetValues (trimeshd -> min, args, 1); 
-    trimeshd -> tm -> min = atoi (value);
-    sprintf (buffer, (trimeshd -> tm -> min ? "%d" : "0"), 
-             trimeshd -> tm -> min);
-    SetTextString (trimeshd -> min, buffer);
-
-    XtGetValues (trimeshd -> max, args, 1); 
-    trimeshd -> tm -> max = atoi (value);
-    sprintf (buffer, (trimeshd -> tm -> max ? "%d" : "0"), 
-             trimeshd -> tm -> max);
-    SetTextString (trimeshd -> max, buffer);
+    XtGetValues (trimeshd -> alpha, args, 1); 
+    trimeshd -> tm -> alpha = exptod (value, NULL);
+    sprintf (buffer, (trimeshd -> tm -> alpha ? "%g" : "0.0"), 
+             trimeshd -> tm -> alpha);
+    SetTextString (trimeshd -> alpha, buffer);
 
     XtGetValues (trimeshd -> nholes, args, 1); 
     numholes = atoi (value);
@@ -372,7 +293,7 @@ TrimeshDialog TrimeshDialogCreate (parent, name, title)
 {
     Cardinal		i;
     Arg			args [1];
-    Widget		group [11];
+    Widget		group [6];
     TrimeshDialog	trimeshd;
     Dimension		width;
     Position		x;
@@ -412,31 +333,11 @@ TrimeshDialog TrimeshDialogCreate (parent, name, title)
 			 layoutWidgetClass, trimeshd -> shell,
 			 layout_args, XtNumber (layout_args));
 
-    trimeshd -> tolin  = XtCreateManagedWidget ("tolin",
+    trimeshd -> target  = XtCreateManagedWidget ("target",
 			 asciiTextWidgetClass, trimeshd -> layout,
 			 text_args, XtNumber (text_args));
 
-    trimeshd -> angspc  = XtCreateManagedWidget ("angspc",
-			 asciiTextWidgetClass, trimeshd -> layout,
-			 text_args, XtNumber (text_args));
-
-    trimeshd -> angtol  = XtCreateManagedWidget ("angtol",
-			 asciiTextWidgetClass, trimeshd -> layout,
-			 text_args, XtNumber (text_args));
-
-    trimeshd -> dmin = XtCreateManagedWidget ("dmin",
-			 asciiTextWidgetClass, trimeshd -> layout,
-			 text_args, XtNumber (text_args));
-
-    trimeshd -> kappa = XtCreateManagedWidget ("kappa",
-			 asciiTextWidgetClass, trimeshd -> layout,
-			 text_args, XtNumber (text_args));
-
-    trimeshd -> min = XtCreateManagedWidget ("min",
-			 asciiTextWidgetClass, trimeshd -> layout,
-			 text_args, XtNumber (text_args));
-
-    trimeshd -> max = XtCreateManagedWidget ("max",
+    trimeshd -> alpha  = XtCreateManagedWidget ("alpha",
 			 asciiTextWidgetClass, trimeshd -> layout,
 			 text_args, XtNumber (text_args));
 
@@ -471,36 +372,26 @@ TrimeshDialog TrimeshDialogCreate (parent, name, title)
 
     /* set the defaults */
 
-    SetTextString (trimeshd -> tolin, "0.0");
-    SetTextString (trimeshd -> angspc, "30.0");
-    SetTextString (trimeshd -> angtol, "20.0");
-    SetTextString (trimeshd -> dmin, "0.5");
-    SetTextString (trimeshd -> kappa, "0.25");
-    SetTextString (trimeshd -> min, "50");
-    SetTextString (trimeshd -> max, "100");
+    SetTextString (trimeshd -> target, "100");
+    SetTextString (trimeshd -> alpha, "2.0");
     SetTextString (trimeshd -> nholes, "0");
 
 
     /* Create a tab group for the material dialog. */
 
-    group [0]  = trimeshd -> tolin;
-    group [1]  = trimeshd -> angspc;
-    group [2]  = trimeshd -> angtol;
-    group [3]  = trimeshd -> dmin;
-    group [4]  = trimeshd -> kappa;
-    group [5]  = trimeshd -> min;
-    group [6]  = trimeshd -> max;
-    group [7]  = trimeshd -> nholes;
-    group [8]  = trimeshd -> help;
-    group [9]  = trimeshd -> okay;
-    group [10] = trimeshd -> cancel;
+    group [0]  = trimeshd -> target;
+    group [1]  = trimeshd -> alpha;
+    group [2]  = trimeshd -> nholes;
+    group [3]  = trimeshd -> help;
+    group [4]  = trimeshd -> okay;
+    group [5] = trimeshd -> cancel;
 
     XtGetValues (trimeshd -> layout, color_args, XtNumber (color_args));
     CreateTabGroup (trimeshd -> shell, group, XtNumber (group), 
                     highlight, True);
 
     XtRealizeWidget (trimeshd -> shell);
-    SetFocus (trimeshd -> tolin);
+    SetFocus (trimeshd -> target);
 
     XtSetArg (args [0], XtNwidth, &width);
     XtGetValues (trimeshd -> layout, args, 1);
@@ -513,13 +404,8 @@ TrimeshDialog TrimeshDialogCreate (parent, name, title)
 
     AddDeleteWindowProtocol (trimeshd -> shell, "TrimeshDialogAction()");
 
-    XtOverrideTranslations (trimeshd -> tolin,	text_translations);
-    XtOverrideTranslations (trimeshd -> angspc,	text_translations);
-    XtOverrideTranslations (trimeshd -> angtol,	text_translations);
-    XtOverrideTranslations (trimeshd -> dmin,	text_translations);
-    XtOverrideTranslations (trimeshd -> kappa,	text_translations);
-    XtOverrideTranslations (trimeshd -> min,	text_translations);
-    XtOverrideTranslations (trimeshd -> max,	text_translations);
+    XtOverrideTranslations (trimeshd -> target,	text_translations);
+    XtOverrideTranslations (trimeshd -> alpha,	text_translations);
     XtOverrideTranslations (trimeshd -> nholes,	text_translations);
     XtOverrideTranslations (trimeshd -> cancel, command_translations);
     XtOverrideTranslations (trimeshd -> okay,   command_translations);

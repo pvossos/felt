@@ -1,3 +1,44 @@
+** Changes to FElt from 3.02 to 3.05 (first version released on SourceForge)
+
+The following changes were made to the FElt syntax:
+   1. changed the sense of coordinates for axisymmetric elements to
+      make them easier to use with mesh generation.  x is still radial
+      but now y is vertical/axial.  Previously z was vertical.  
+
+The following bugs/things were fixed/changed:
+   1. some small bugs in axisymmetric, ctg, htk, and iso_2d elements
+      that I haven't been really good about keeping tack of.  Try
+      the new version and see if your answers look better -- if they
+      look worse then let me know ...
+   2. you can now use the -details switch to get the coordinates of
+      the points where stresses are calculated in the text display of
+      results.
+   3. added radial and axial directions to the load dialog in velvet
+      and to the file writing routines.  They'd gotten left out when
+      axisymmetric elements were originally implemented.
+   4. finally resolved the colormap issue in velvet so you can 
+      use color stress and displacement plots on > 8-bit displays.
+      Take a look at src/Velvet/XCC.README to see how you too can
+      accomplish this if you're X11 colormap impaired like us.
+   5. dropped Geompk in favor of Triangle by J.R. Shewchuk.  Several
+      reasons for the change: Geompk was always a little finicky,
+      mostly because of our interface probably, but it was sometimes
+      difficult to coax a mesh out of Geompk.  The interface to
+      Triangle is very simple, it is coded in C which makes compilation
+      and configuration on other architectures simple, and it seems
+      to be pretty easy to get a decent mesh out of it.  Accordingly,
+      the main input parameters have changed to target and alpha.
+      target is the approximate number of desired elements in the mesh.
+      alpha is used to generate a maximum bound on the area of a generated
+      element: Amax of an elt = alpha*Atotal/target.  Triangle appears to
+      have a lot of other options for mesh refinement, angle constraints
+      etc., but none of these are made use of at this point.  Most of the
+      hooks for Geompk are still available if someone really wants to
+      switch back.  The call to GenerateTriMesh did not change for 
+      applications, but the applications did change to account for
+      the loss of Geompk parameters (min, max, angspc, angtol, etc.)
+      and the addition of target and alpha.
+     
 ** Changes to FElt from 3.00 or 3.01 to 3.02 
 
 The following changes were made to the FElt syntax:

@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -62,6 +62,8 @@ struct load_dialog {
     Widget	   globalZ;		/*	     Toggle     GlobalZ   */
     Widget	   parallel;		/*	     Toggle	parallel  */
     Widget	   perpendicular;	/*	     Toggle	perpendic */
+    Widget	   radial;	
+    Widget	   axial;	
     Widget	   nodenum[4];		/*	     AsciiText  nodenum   */
     Widget	   magnitude[4];	/*	     AsciiText  magnitude */
     Widget         viewport;		/*	     Viewport  viewport	  */
@@ -82,13 +84,13 @@ struct load_dialog {
 
 static String labels [ ] = {
     "Name:", "LocalX", "LocalY", "LocalZ", "GlobalX", "GlobalY", 
-    "GlobalZ", "perpend", "parallel", "Node", "Magnitude"
+    "GlobalZ", "perpend", "parallel", "radial", "axial", "Node", "Magnitude"
 };
 
 static String names [ ] = {
      "nameLabel","localX_label","localY_label","localZ_label","globalX_label",
      "globalY_label", "globalZ_label", "perpendicular_label",
-     "parallel_label", "node_label", "magnitude_label"
+     "parallel_label", "radial_label", "axial_label", "node_label", "magnitude_label"
 };
 
 static LoadDialog  dialog;
@@ -141,6 +143,10 @@ static String layout_string =
                     perpendicular_label \
                     ((height perpendicular - height perpendicular_label) / 2) \
                     4 \
+                    ((height axial - height axial_label) / 2) \
+                    axial_label \
+                    ((height axial - height axial_label) / 2) \
+                    4 \
              	} \
      	        4 \
                 vertical { \
@@ -151,6 +157,8 @@ static String layout_string =
                     localZ \
                     4 \
                     perpendicular \
+ 	            4 \
+                    axial \
  	            4 \
  	        } \
  	        4 \
@@ -171,6 +179,10 @@ static String layout_string =
                     parallel_label \
                     ((height parallel - height parallel_label) / 2) \
                     4 \
+                    ((height radial - height radial_label) / 2) \
+                    radial_label \
+                    ((height radial - height radial_label) / 2) \
+                    4 \
        	        } \
        	        4 \
      	        vertical { \
@@ -181,6 +193,8 @@ static String layout_string =
                     globalZ \
                     4 \
                     parallel \
+ 	            4 \
+                    radial \
  	            4 \
  	        } \
             } \
@@ -479,6 +493,10 @@ static Direction GetRadioState (loadd)
    if (state) return Parallel;
    XtGetValues (loadd -> perpendicular, args, 1);
    if (state) return Perpendicular;
+   XtGetValues (loadd -> radial, args, 1);
+   if (state) return Radial;
+   XtGetValues (loadd -> axial, args, 1);
+   if (state) return Axial;
 
    return 0; 
 }
@@ -608,6 +626,12 @@ static void Change (w, client_data, call_data)
           break;
        case Perpendicular: 
           SetRadioState (loadd -> perpendicular, &Forced, NULL);
+          break;
+       case Radial: 
+          SetRadioState (loadd -> radial, &Forced, NULL);
+          break;
+       case Axial: 
+          SetRadioState (loadd -> axial, &Forced, NULL);
           break;
        default:
           SetRadioState (loadd -> localX, &Forced, NULL);
@@ -961,6 +985,14 @@ LoadDialog LoadDialogCreate (parent, name, title, callback, closure)
                           toggleWidgetClass, loadd -> layout,
                           toggle_args, XtNumber (toggle_args));
 
+    loadd -> axial = XtCreateManagedWidget ("axial",
+                          toggleWidgetClass, loadd -> layout,
+                          toggle_args, XtNumber (toggle_args));
+
+    loadd -> radial = XtCreateManagedWidget ("radial",
+                          toggleWidgetClass, loadd -> layout,
+                          toggle_args, XtNumber (toggle_args));
+
 
     loadd -> accept   = XtCreateManagedWidget ("accept",
 			 commandWidgetClass, loadd -> layout,
@@ -1007,10 +1039,12 @@ LoadDialog LoadDialogCreate (parent, name, title, callback, closure)
     group [3]  = loadd -> localY;
     group [4]  = loadd -> localZ;
     group [5]  = loadd -> perpendicular;
+    group [9]  = loadd -> axial; 
     group [6]  = loadd -> globalX;
     group [7]  = loadd -> globalY;
     group [8]  = loadd -> globalZ;
     group [9]  = loadd -> parallel; 
+    group [9]  = loadd -> radial; 
     for (i = 0 ; i < 4 ; i++) {
        group [10 + 2*i] = loadd -> nodenum[i];
        group [10 + 2*i + 1] = loadd -> magnitude[i];
@@ -1054,6 +1088,8 @@ LoadDialog LoadDialogCreate (parent, name, title, callback, closure)
     XtOverrideTranslations (loadd -> globalZ,   toggle_translations);
     XtOverrideTranslations (loadd -> perpendicular, toggle_translations);
     XtOverrideTranslations (loadd -> parallel,      toggle_translations);
+    XtOverrideTranslations (loadd -> radial,      toggle_translations);
+    XtOverrideTranslations (loadd -> axial,      toggle_translations);
     XtOverrideTranslations (loadd -> accept,	command_translations);
     XtOverrideTranslations (loadd -> dismiss,	command_translations);
     XtOverrideTranslations (loadd -> delete,	command_translations);
@@ -1072,6 +1108,8 @@ LoadDialog LoadDialogCreate (parent, name, title, callback, closure)
     XtAddCallback (loadd -> globalY, XtNcallback, SetRadioState, &Button);
     XtAddCallback (loadd -> globalZ, XtNcallback, SetRadioState, &Button);
     XtAddCallback (loadd -> parallel,XtNcallback,SetRadioState, &Button);
+    XtAddCallback (loadd -> radial,  XtNcallback,SetRadioState, &Button);
+    XtAddCallback (loadd -> axial,   XtNcallback,SetRadioState, &Button);
     XtAddCallback (loadd -> perpendicular, XtNcallback,SetRadioState, &Button);
 
     XtAddCallback (loadd -> list,    XtNcallback, Change,  (XtPointer) loadd);

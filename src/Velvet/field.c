@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-1997 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,6 +38,7 @@
 # include "allocate.h"
 # include "error.h"
 # include "procedures.h"
+# include "XCC.h"
 
 # define HORIZ	1
 # define VERT	2
@@ -54,9 +55,10 @@ Widget CreateDrawingShell ( );
 
 static unsigned		numcells;
 static unsigned long	pixel [NUMCELLS];   	
-static unsigned		rev_pixel [256];
 static Pixmap		pixmap;
 static XImage		*ximage;
+
+static int		depth;
 
 static Widget		stressShell;
 static Widget		stress_dw;
@@ -91,11 +93,11 @@ static void DumpContourImage (pixmap, img, msg)
                     img -> height, -1, ZPixmap);
 
    if (strcmp (format, "PPM") == 0)
-      XImageToPPM (save_file, tmp, numcells, rev_pixel, 
+      XImageToPPM (save_file, tmp, numcells, 
                    BlackPixel (display, DefaultScreen (display)),
                    WhitePixel (display, DefaultScreen (display)));
    else if (strcmp (format, "EPS") == 0)
-      XImageToEPS (save_file, tmp, numcells, rev_pixel, 
+      XImageToEPS (save_file, tmp, numcells, 
                    BlackPixel (display, DefaultScreen (display)),
                    WhitePixel (display, DefaultScreen (display)));
 
@@ -120,52 +122,52 @@ static void S_SaveCallback (w, client_data, call_data)
    DumpContourImage (s_pixmap, s_ximage, "Save Stress Plot");
 }
 
-static void InitializeColormap ()
+static void InitializeColormap (shell)
+   Widget	shell;
 {
+
+   XCC			xcc;
    static int		initialized = 0;
    Colormap		cmap;
-   unsigned long	plane_masks [8];
-   Status		result;
-   XColor		colors [NUMCELLS];
    unsigned		cell;
-   int			ncells;
    int			screen;
    Display		*display;
+   Visual		*visual;
+   Arg			args [1];
 
    if (initialized)
       return;
 
+   XtSetArg (args [0], XtNdepth, &depth);
+   XtGetValues (shell, args, 1);
+
    display = XtDisplay (toplevel);
    screen = DefaultScreen (display);
+   visual = DefaultVisual (display, screen);
    
-   cmap = DefaultColormap (display, screen);
+   xcc = XCCCreate(display, visual, 0, 1, 0, &cmap);
+   
+   for (cell = 0 ; cell < NUMCELLS ; cell++) 
+      pixel [cell] = XCCGetPixel(xcc, color_values [cell].r,
+                                      color_values [cell].g,
+                                      color_values [cell].b);
+  
 
-   for (ncells = NUMCELLS ; ncells > 1 ; ncells--) {
-      result = XAllocColorCells (display, cmap, True, plane_masks, 0,
-                                 pixel, ncells);
-      if (result) 
-         break;
-   }
-
-   for (cell = 0 ; cell < ncells ; cell++) {
-      colors [cell].red = color_values [cell].r;
-      colors [cell].green = color_values [cell].g;
-      colors [cell].blue = color_values [cell].b;
-      colors [cell].pixel = pixel [cell];
-      colors [cell].flags = DoRed | DoGreen | DoBlue;
-      
-      rev_pixel [pixel [cell]] = cell;
-   }
-
-   if (ncells < NUMCELLS / 2)
-      error ("only got %d colors - this may look funny", ncells);
-
-   XStoreColors (display, cmap, colors, ncells);
- 
-   numcells = ncells;
+   numcells = NUMCELLS;
 
    initialized = 1;
    return;
+}
+
+int PixelToCell(pix)
+{
+   int     i;
+   
+   for (i = 0 ; i < NUMCELLS ; i++)
+      if (pix == pixel [i])
+         return i;
+
+   return -1;
 }
 
 static void HequalImage (white)
@@ -190,7 +192,7 @@ static void HequalImage (white)
          point = XGetPixel (ximage, j, i);
          if (point != white) {
             area++;
-            value = rev_pixel [point];         
+            value = PixelToCell(point);
             histogram [value]++;
          }
       }
@@ -216,7 +218,7 @@ static void HequalImage (white)
 
          point = XGetPixel (ximage, j, i);
          if (point != white) {
-            value = rev_pixel [point];
+            value = PixelToCell(point);
             value = (char) vstar [value]; 
             point = pixel [value];
             XPutPixel (ximage, j, i, point);
@@ -290,10 +292,27 @@ static void LoadImage (z,width,height,mask,equalize,wedge_orient)
       }
    }
 
-   ximage = XCreateImage (display, visual, 8, ZPixmap, 0, 0, 
-                          width, height, 8, 0);
+   if (depth <= 8) {
+      ximage = XCreateImage (display, visual, depth, ZPixmap, 0, 0, 
+                             width, height, 8, 0);
 
-   ximage -> data = Allocate (char, width * height);
+      ximage -> data = Allocate (unsigned char, width * height);
+   }
+   else if (depth <= 16) {
+      ximage = XCreateImage (display, visual, depth, ZPixmap, 0, 0, 
+                             width, height, 16, 0);
+
+      ximage -> data = (unsigned char *) 
+                           malloc(sizeof(unsigned short) * width * height);
+   }
+   else if (depth <= 32) {
+      ximage = XCreateImage (display, visual, depth, ZPixmap, 0, 0, 
+                             width, height, 32, 0);
+
+      ximage -> data = (unsigned char *) 
+                           malloc(sizeof(unsigned int) * width * height);
+   }
+
 
    slope = (float) numcells / (max - min);
 
@@ -402,7 +421,7 @@ static void PlotContourField (shell, dw, node, numnodes, element, numelts, nd,
    char		**mask;
    unsigned	wedge_orient;
 
-   InitializeColormap ();
+   InitializeColormap (shell);
 
    if (ximage != NULL) {
       XDestroyImage (ximage);

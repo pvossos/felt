@@ -1,6 +1,6 @@
 /*
     This file is part of the FElt finite element analysis package.
-    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 1993-2006 Jason I. Gobat and Darren C. Atkinson
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -41,43 +41,47 @@
 # ifndef DOS
 static char *usage = "\
 usage: felt [options] [filename]\n\
-       -debug              write debugging output\n\
-       -preview            write a simple ASCII rendering of the problem\n\
-       +table              do not print tabular dynamic results\n\
-       -plot               plot dynamic, load case, or load range results\n\
-       -transfer           only show transfer functions for spectral results\n\
-       -eigen              only compute eigen results for modal analysis\n\
-       -orthonormal        use orthonormal mode shapes for modal matrices\n\
-       -renumber           force automatic node renumbering\n\
-       -summary            include material summary statistics\n\
-       -matrices           print the global matrices\n\
-       -details            print ancillary analysis details\n\
-       -matlab filename    write the global matrices to a file\n\
-       -graphics filename  create file for structure visualization\n\
-       -version            print version information and exit\n\
-       -nocpp              do not use a preprocessor\n\
-       -cpp filename       preprocessor to use\n\
-       -Dname[=value]      define a macro\n\
-       -Uname              undefine a macro\n\
-       -Idirectory         specify include directory\n\
+       -debug               write debugging output\n\
+       -preview             write a simple ASCII rendering of the problem\n\
+       +table               do not print tabular dynamic results\n\
+       -plot                plot dynamic, load case, or load range results\n\
+       -transfer            only show transfer functions for spectral results\n\
+       -eigen               only compute eigen results for modal analysis\n\
+       -orthonormal         use orthonormal mode shapes for modal matrices\n\
+       -renumber            force automatic node renumbering\n\
+       -summary             include material summary statistics\n\
+       -matrices            print the global matrices\n\
+       -details             print ancillary analysis details\n\
+       -matlab filename     write the global matrices to a file\n\
+       -matlab-all filename write all matrices to a file\n\
+       -gnuplot             output tables readable by gnuplot\n\
+       -graphics filename   create file for structure visualization\n\
+       -version             print version information and exit\n\
+       -nocpp               do not use a preprocessor\n\
+       -cpp filename        preprocessor to use\n\
+       -Dname[=value]       define a macro\n\
+       -Uname               undefine a macro\n\
+       -Idirectory          specify include directory\n\
 ";
 # else
 static char *usage = "\
 usage: felt [options] [filename]\n\
-       -debug              write debugging output\n\
-       -preview            write a simple ASCII rendering of the problem\n\
-       +table              do not print tabular dynamic results\n\
-       -plot               do graphical plot for dynamic results\n\
-       -transfer           only show transfer functions for spectral results\n\
-       -eigen              only compute eigen results for modal analysis\n\
-       -orthonormal        use orthonormal mode shapes for modal matrices\n\
-       -renumber           force automatic node renumbering\n\
-       -summary            include material summary statistics\n\
-       -matrices           print the global matrices\n\
-       -details            print ancillary analysis details\n\
-       -matlab filename    write the global matrices to a file\n\
-       -graphics filename  create file for structure visualization\n\
-       -version            print version information and exit\n\
+       -debug               write debugging output\n\
+       -preview             write a simple ASCII rendering of the problem\n\
+       +table               do not print tabular dynamic results\n\
+       -plot                do graphical plot for dynamic results\n\
+       -transfer            only show transfer functions for spectral results\n\
+       -eigen               only compute eigen results for modal analysis\n\
+       -orthonormal         use orthonormal mode shapes for modal matrices\n\
+       -renumber            force automatic node renumbering\n\
+       -summary             include material summary statistics\n\
+       -matrices            print the global matrices\n\
+       -details             print ancillary analysis details\n\
+       -matlab filename     write the global matrices to a file\n\
+       -matlab-all filename write all matrices to a file\n\
+       -gnuplot             output tables readable by gnuplot\n\
+       -graphics filename   create file for structure visualization\n\
+       -version             print version information and exit\n\
 ";
 # endif
 
@@ -92,11 +96,37 @@ static int   orthonormal = 0;
 static int   doplot = 0;
 static int   dotable = 1;
 static int   renumber = 0;
+static int   gnuplot = 0;
 static int   details = 0;
 static char *graphics = NULL;
 static char *matlab = NULL;
+static char *matlab_all = NULL;
+
+static void WriteGnuplotTable( Matrix, Matrix, FILE*); 
 
 
+static void InitData( data)
+    Problem *data;
+{
+    data->M      = NullMatrix;    /* Initialize all matrices to Null */
+    data->C      = NullMatrix;
+    data->K      = NullMatrix;
+    data->Mcond  = NullMatrix;
+    data->Ccond  = NullMatrix;
+    data->Kcond  = NullMatrix;
+    data->Mm     = NullMatrix;
+    data->Cm     = NullMatrix;
+    data->Km     = NullMatrix;
+    data->H      = NULL;          /* This is a pointer to a matrix   */
+    data->S      = NullMatrix;
+    data->F      = NullMatrix;
+    data->Fcond  = NullMatrix;
+    data->d      = NullMatrix;
+    data->x      = NullMatrix;
+    data->lambda = NullMatrix;
+    data->dtable = NullMatrix;
+    data->ttable = NullMatrix;
+}
 /************************************************************************
  * Function:	ParseFeltOptions					*
  *									*
@@ -144,6 +174,8 @@ static int ParseFeltOptions (argc, argv)
             orthonormal = 1;
         } else if (streq (arg, "-renumber")) {
             renumber = 1;
+        } else if (streq (arg, "-gnuplot")) {
+            gnuplot = 1;
         } else if (streq (arg, "-details")) {
             details = 1;
 	} else if (streq (arg, "-matlab")) {
@@ -152,6 +184,12 @@ static int ParseFeltOptions (argc, argv)
 		return 1;
 	    }
 	    matlab = argv [i];
+	} else if (streq (arg, "-matlab-all")) {
+	    if (++ i == *argc) {
+		fputs (usage, stderr);
+		return 1;
+	    }
+	    matlab_all = argv [i];
 	} else if (streq (arg, "-graphics")) {
 	    if (++ i == *argc) {
 		fputs (usage, stderr);
@@ -175,26 +213,9 @@ int main (argc, argv)
     int   argc;
     char *argv [ ];
 {
-    char	 *title;		/* title of problem		*/
-    Matrix	  M, K, C;		/* global matrices		*/
-    Matrix	  Mcond, Ccond, Kcond;	/* condensed matrices		*/
-    Matrix	  Mm, Km, Cm;		/* modal matrices		*/
-    Matrix	 *H;			/* transfer function matrices   */
-    Matrix	  S;			/* output spectra		*/
-    Vector	  F,			/* force vector			*/
-		  Fcond;		/* condensed force vector	*/
-    Vector	  d;			/* displacement vectors		*/
-    Matrix	  x;			/* eigenvectors			*/
-    Vector	  lambda;		/* eigenvalues			*/
-    NodeDOF	 *forced;		/* array of forced nodal DOF    */
-    unsigned	  numforced;		/* number of forced DOF		*/
     int		  status;		/* return status		*/
-    Reaction	 *R;			/* reaction force vector	*/
-    unsigned	  numreactions;		/* the number of reactions	*/
-    Matrix	  dtable;		/* time-displacement table	*/
-    Matrix	  ttable;		/* time step table		*/
-    unsigned	 *old_numbers;		/* original node numbering	*/
-    AnalysisType  mode;			/* current analysis type	*/
+
+    InitData( &problem);
 
         /*
          * Do everything to setup the problem
@@ -221,9 +242,6 @@ int main (argc, argv)
 
     if (ReadFeltFile (argc == 2 ? argv [1] : "-"))
 	exit (1);
-
-    title    = problem.title;
-
 
 	/*
 	 * If debugging write the problem as we understand it to stdout
@@ -266,19 +284,19 @@ int main (argc, argv)
 	 * renumber the nodes if desired
 	 */
 
-    old_numbers = NULL;
+    problem.old_numbers = NULL;
 
     if (renumber) 
-	old_numbers = RenumberNodes (problem.nodes, problem.elements, 
+	problem.old_numbers = RenumberNodes (problem.nodes, problem.elements, 
                                      problem.num_nodes, problem.num_elements);
 
 	/*
 	 * switch on the problem type (transient or static)
 	 */
 
-    mode = SetAnalysisMode ( );
+    problem.mode = SetAnalysisMode ( );
 
-    switch (mode) {
+    switch (problem.mode) {
 
        case Transient:
           status = CheckAnalysisParameters (Transient);
@@ -286,34 +304,37 @@ int main (argc, argv)
           if (status) 
              Fatal ("%d Errors found in analysis parameters.", status);
 
-          status = ConstructDynamic (&K, &M, &C);
+          status = ConstructDynamic (&(problem.K), &(problem.M), &(problem.C));
           if (matrices)
-             PrintGlobalMatrices (stdout, M, C, K);
+             PrintGlobalMatrices (stdout, (problem.M), (problem.C), (problem.K));
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, M, C, K);
+             MatlabGlobalMatrices (matlab, (problem.M), (problem.C), (problem.K));
  
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
           if (analysis.step > 0.0) {
-             dtable = IntegrateHyperbolicDE (K, M, C);
-             ttable = NullMatrix;
+             (problem.dtable) =
+		 IntegrateHyperbolicDE (problem.K, problem.M, problem.C);
+             (problem.ttable) = NullMatrix;
           }
           else
-             dtable = RosenbrockHyperbolicDE (K, M, C, &ttable);
+             (problem.dtable) =
+	       RosenbrockHyperbolicDE (problem.K, problem.M, problem.C, &(problem.ttable));
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, problem.old_numbers, problem.num_nodes);
 
-          if (dtable == NullMatrix)
+          if ((problem.dtable) == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
 
           if (dotable)
-             WriteTransientTable (dtable, ttable, stdout);
+             gnuplot ? WriteGnuplotTable( problem.dtable, problem.ttable, stdout) :
+		 WriteTransientTable (problem.dtable, problem.ttable, stdout);
     
           if (doplot)
-             PlotTransientTable (dtable, ttable, analysis.step, stdout);
+             PlotTransientTable (problem.dtable, problem.ttable, analysis.step, stdout);
 
           break;
        
@@ -325,108 +346,109 @@ int main (argc, argv)
           if (status) 
              Fatal ("%d Errors found in analysis parameters.", status);
 
-          status = ConstructDynamic (&K, &M, &C);
+          status = ConstructDynamic (&(problem.K), &(problem.M), &(problem.C));
           
           if (matrices) 
-             PrintGlobalMatrices (stdout, M, NullMatrix, K);
+             PrintGlobalMatrices (stdout, (problem.M), NullMatrix, (problem.K));
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, M, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, (problem.M), NullMatrix, (problem.K));
  
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
-          dtable = IntegrateParabolicDE (K, M);
+          (problem.dtable) = IntegrateParabolicDE ((problem.K), (problem.M));
 
-          if (dtable == NullMatrix)
+          if ((problem.dtable) == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
 
           if (dotable)
-             WriteTransientTable (dtable, NullMatrix, stdout);
+             WriteTransientTable ((problem.dtable), NullMatrix, stdout);
     
           if (doplot)
-             PlotTransientTable (dtable, NullMatrix, analysis.step, stdout);
+             PlotTransientTable ((problem.dtable), NullMatrix, analysis.step, stdout);
 
           break;
 
        case Static:
 
-          K = ConstructStiffness(&status);
+          (problem.K) = ConstructStiffness(&status);
           if (status)
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, problem.K);
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, problem.K);
 
-          F = ConstructForceVector ( );
+          problem.F = ConstructForceVector ( );
 
-          ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
+          ZeroConstrainedDOF (problem.K, problem.F, &(problem.Kcond), &(problem.Fcond));
 
-          d = SolveForDisplacements (Kcond, Fcond);
-          if (d == NullMatrix)
+          problem.d = SolveForDisplacements (problem.Kcond, problem.Fcond);
+          if ((problem.d) == NullMatrix)
              Fatal ("could not solve for global displacements");
 
           status = ElementStresses ( );
           if (status) 
              Fatal ("%d Fatal errors found computing element stresses", status);
     
-          numreactions = SolveForReactions (K, d, old_numbers, &R);
+          (problem.numreactions) =
+	    SolveForReactions ((problem.K), (problem.d), (problem.old_numbers), &(problem.R));
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
 
-          WriteStructuralResults (stdout, title, R, numreactions);
+          WriteStructuralResults (stdout, (problem.title), (problem.R), (problem.numreactions));
 
           break;
 
        case StaticLoadCases:
        case StaticLoadRange:
-          status = CheckAnalysisParameters (mode);
+          status = CheckAnalysisParameters ((problem.mode));
           if (status)
              Fatal ("%d errors found in analysis parameters.", status);
 
-          K = ConstructStiffness(&status);
+          (problem.K) = ConstructStiffness(&status);
           if (status)
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, (problem.K));
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, (problem.K));
 
-          F = ConstructForceVector ( );
+          (problem.F) = ConstructForceVector ( );
           
-          ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
+          ZeroConstrainedDOF ((problem.K), (problem.F), &(problem.Kcond), &(problem.Fcond));
            
-          if (mode == StaticLoadCases)
-             dtable = SolveStaticLoadCases (Kcond, Fcond);
+          if ((problem.mode) == StaticLoadCases)
+             (problem.dtable) = SolveStaticLoadCases ((problem.Kcond), (problem.Fcond));
           else
-             dtable = SolveStaticLoadRange (Kcond, Fcond);
+             (problem.dtable) = SolveStaticLoadRange ((problem.Kcond), (problem.Fcond));
 
-          if (dtable == NullMatrix)
+          if ((problem.dtable) == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
 
           if (dotable)
-             if (mode == StaticLoadCases)
-                WriteLoadCaseTable (dtable, stdout);
+             if ((problem.mode) == StaticLoadCases)
+                WriteLoadCaseTable ((problem.dtable), stdout);
              else 
-                WriteLoadRangeTable (dtable, stdout);
+                WriteLoadRangeTable ((problem.dtable), stdout);
 
           if (doplot)
-             if (mode == StaticLoadCases)
-                PlotLoadCaseTable (dtable, stdout);
+             if ((problem.mode) == StaticLoadCases)
+                PlotLoadCaseTable ((problem.dtable), stdout);
              else 
-                PlotLoadRangeTable (dtable, stdout);
+                PlotLoadRangeTable ((problem.dtable), stdout);
 
           break; 
 
@@ -437,83 +459,85 @@ int main (argc, argv)
           if (status) 
              Fatal ("%d errors found in analysis parameters.", status);
 
-          K = CreateNonlinearStiffness (&status);
+          (problem.K) = CreateNonlinearStiffness (&status);
           if (status)
              Fatal ("could not create global stiffness matrix");
          
-          F = ConstructForceVector ( );
+          (problem.F) = ConstructForceVector ( );
  
-          if (mode == StaticSubstitutionLoadRange)
-             dtable = SolveNonlinearLoadRange (K, F, 0);
+          if ((problem.mode) == StaticSubstitutionLoadRange)
+             (problem.dtable) = SolveNonlinearLoadRange ((problem.K), (problem.F), 0);
           else
-             dtable = SolveNonlinearLoadRange (K, F, 0); /* should be 1*/
+             (problem.dtable) =
+	       SolveNonlinearLoadRange ((problem.K), (problem.F), 0); /* should be 1*/
              
-          if (dtable == NullMatrix)
+          if ((problem.dtable) == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
                 
           if (dotable)
-             WriteLoadRangeTable (dtable, stdout);
+             WriteLoadRangeTable ((problem.dtable), stdout);
 
           if (doplot)
-             PlotLoadRangeTable (dtable, stdout);
+             PlotLoadRangeTable ((problem.dtable), stdout);
 
           break;
 
        case StaticSubstitution:
        case StaticIncremental:
-          status = CheckAnalysisParameters (mode);
+          status = CheckAnalysisParameters ((problem.mode));
           if (status) 
              Fatal ("%d errors found in analysis parameters.", status);
 
-          K = CreateNonlinearStiffness (&status);
+          (problem.K) = CreateNonlinearStiffness (&status);
           if (status)
              Fatal ("could not create global stiffness matrix");
          
-          F = ConstructForceVector ( );
+          (problem.F) = ConstructForceVector ( );
  
-          if (mode == StaticSubstitution)
-             d = StaticNonlinearDisplacements (K, F, 0);
+          if ((problem.mode) == StaticSubstitution)
+             (problem.d) = StaticNonlinearDisplacements ((problem.K), (problem.F), 0);
           else
-             d = StaticNonlinearDisplacements (K, F, 0); /* should be 1 */
+             (problem.d) =
+	       StaticNonlinearDisplacements ((problem.K), (problem.F), 0); /* should be 1 */
              
-          if (d == NullMatrix)
+          if ((problem.d) == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
                 
-          WriteStructuralResults (stdout, title, NULL, 0);
+          WriteStructuralResults (stdout, (problem.title), NULL, 0);
 
           break;
 
        case StaticThermal:
 
-          K = ConstructStiffness(&status);
+          (problem.K) = ConstructStiffness(&status);
 
           if (status)
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, (problem.K));
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, (problem.K));
 
-          F = ConstructForceVector ( );
+          (problem.F) = ConstructForceVector ( );
           
-          ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
+          ZeroConstrainedDOF ((problem.K), (problem.F), &(problem.Kcond), &(problem.Fcond));
      
-          d = SolveForDisplacements (Kcond, Fcond);
-          if (d == NullVector)
+          (problem.d) = SolveForDisplacements ((problem.Kcond), (problem.Fcond));
+          if ((problem.d) == NullVector)
              exit (1);
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
 
-          WriteTemperatureResults (stdout, title);
+          WriteTemperatureResults (stdout, (problem.title));
 
           break;
 
@@ -523,35 +547,38 @@ int main (argc, argv)
           if (status) 
              Fatal ("%d Errors found in analysis parameters.", status);
 
-          status = ConstructDynamic (&K, &M, &C);
+          status = ConstructDynamic (&(problem.K), &(problem.M), &(problem.C));
           
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
-          RemoveConstrainedDOF (K, M, C, &Kcond, &Mcond, &Ccond);
+          RemoveConstrainedDOF ((problem.K), (problem.M), (problem.C),
+	      &(problem.Kcond), &(problem.Mcond), &(problem.Ccond));
 
           if (matrices)
-             PrintGlobalMatrices (stdout, Mcond, Ccond, Kcond);
+             PrintGlobalMatrices (stdout, (problem.Mcond), (problem.Ccond), (problem.Kcond));
  
           if (matlab) 
-             MatlabGlobalMatrices (matlab, Mcond, Ccond, Kcond);
+             MatlabGlobalMatrices (matlab, (problem.Mcond), (problem.Ccond), (problem.Kcond));
 
-          status = ComputeEigenModes (Kcond, Mcond, &lambda, &x);
+          status =
+	    ComputeEigenModes ((problem.Kcond), (problem.Mcond), &(problem.lambda), &(problem.x));
 
           if (status == M_NOTPOSITIVEDEFINITE)
              Fatal ("coefficient matrix is not positive definite.");
           else if (status)
              Fatal ("could not compute eigenmodes (report status code %d).", status);
 
-          NormalizeByFirst (x, x);
-          WriteEigenResults (lambda, x, title, stdout);
+          NormalizeByFirst ((problem.x), (problem.x));
+          WriteEigenResults ((problem.lambda), (problem.x), (problem.title), stdout);
 
           if (doplot)
-             PlotModeShapes (x, stdout);
+             PlotModeShapes ((problem.x), stdout);
             
           if (domodal) {
-             FormModalMatrices (x, Mcond, Ccond, Kcond, &Mm, &Cm, &Km, orthonormal);
-             WriteModalResults (stdout, Mm, Cm, Km, lambda);
+             FormModalMatrices ((problem.x), (problem.Mcond), (problem.Ccond), (problem.Kcond),
+		 &(problem.Mm), &(problem.Cm), &(problem.Km), orthonormal);
+             WriteModalResults (stdout, (problem.Mm), (problem.Cm), (problem.Km), (problem.lambda));
           }
            
           break;
@@ -562,54 +589,105 @@ int main (argc, argv)
           if (status) 
              Fatal ("%d Errors found in analysis parameters.", status);
 
-          status = ConstructDynamic (&K, &M, &C);
+          status = ConstructDynamic (&(problem.K), &(problem.M), &(problem.C));
 
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
  
-          ZeroConstrainedDOF (K, NullMatrix, &Kcond, NULL);
-          ZeroConstrainedDOF (M, NullMatrix, &Mcond, NULL);
-          ZeroConstrainedDOF (C, NullMatrix, &Ccond, NULL);
+          ZeroConstrainedDOF ((problem.K), NullMatrix, &(problem.Kcond), NULL);
+          ZeroConstrainedDOF ((problem.M), NullMatrix, &(problem.Mcond), NULL);
+          ZeroConstrainedDOF ((problem.C), NullMatrix, &(problem.Ccond), NULL);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, Mcond, Ccond, Kcond);
+             PrintGlobalMatrices (stdout, (problem.Mcond), (problem.Ccond), (problem.Kcond));
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, Mcond, Ccond, Kcond);
+             MatlabGlobalMatrices (matlab, (problem.Mcond), (problem.Ccond), (problem.Kcond));
 
-          FindForcedDOF (&forced, &numforced);
+          FindForcedDOF (&(problem.forced), &(problem.numforced));
 
-          H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced, numforced);
+          (problem.H) = ComputeTransferFunctions ((problem.Mcond), (problem.Ccond),
+		       (problem.Kcond), (problem.forced), (problem.numforced));
 
           if (dospectra) {
-             S = ComputeOutputSpectra (H, forced, numforced);
-             if (S == NullMatrix)
+             (problem.S) = ComputeOutputSpectra ((problem.H), (problem.forced), (problem.numforced));
+             if ((problem.S) == NullMatrix)
                 break; 
           }
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          if ((problem.old_numbers) != NULL)
+             RestoreNodeNumbers (problem.nodes, (problem.old_numbers), problem.num_nodes);
 
           if (!dospectra) {
              if (dotable)
-                WriteTransferFunctions (H, forced, numforced, stdout);
+                WriteTransferFunctions ((problem.H), (problem.forced), (problem.numforced), stdout);
              if (doplot)
-                PlotTransferFunctions (H, forced, numforced, stdout);
+                PlotTransferFunctions ((problem.H), (problem.forced), (problem.numforced), stdout);
 
              break;
           }
 
           if (dotable)  
-             WriteOutputSpectra (S, stdout);
+             WriteOutputSpectra ((problem.S), stdout);
        
           if (doplot)
-             PlotOutputSpectra (S, stdout);
+             PlotOutputSpectra ((problem.S), stdout);
 
           break;
     }
+
+    if( matlab_all)
+      WriteAllMatlab( matlab_all, &problem);
 
     if (summary)
        WriteMaterialStatistics (stdout);
 
     exit (0);
+}
+
+/* put this here for now so that we don't have to change too much */
+
+void WriteGnuplotTable(dtable, ttable, fp)
+   Matrix	dtable;
+   Matrix	ttable;
+   FILE		*fp;
+{
+   unsigned	i,j,k;
+   static char *labels [] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
+
+      fprintf (fp,"#      time");
+      for (i = 1 ; i <= analysis.numnodes ; i++) {
+         for (j = 1 ; j <= analysis.numdofs ; j++) {
+            fprintf (fp,"        %s(%d)", labels[(int) analysis.dofs[j]],
+                     analysis.nodes[i] -> number);
+            
+         }
+      }
+      fprintf (fp,"\n#------------------------------------------------------------------\n");
+
+	/*
+	 * output the displacement at this time step for each DOF 
+	 *in this table
+	 */
+
+      for (i = 1 ; i <= MatrixRows (dtable) ; i++) {
+
+	  /* print the current time */
+         if (ttable == NullMatrix)
+            fprintf (fp,"%11.5g",(i-1)*analysis.step);
+         else
+            fprintf (fp,"%11.5g",mdata(ttable,i,1));
+
+         for (j = 1 ; j <= analysis.numnodes ; j++) {
+            for (k = 1 ; k <= analysis.numdofs ; k++) {
+               fprintf (fp, "  %11.5g",
+                        MatrixData (dtable)[i][(j-1)*analysis.numdofs + k]);
+            }
+         }
+         fprintf (fp,"\n");
+      }
+    
+   fprintf (fp,"\n");
+
+   return;
 }

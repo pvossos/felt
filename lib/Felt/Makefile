@@ -16,7 +16,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
-LEX	= flex
+LEX	= flex -l
 LFLAGS	= -i
 LIB	= libfelt.a
 OBJS	= Tree.o code.o definition.o detail.o draw.o fe.o file.o initialize.o\

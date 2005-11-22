@@ -464,7 +464,7 @@ static void resolve_names ( )
  ************************************************************************/
 
 int ReadFeltFile (filename)
-    char *filename;
+    const char *filename;
 {
     unsigned i;
     char     buffer [2048];

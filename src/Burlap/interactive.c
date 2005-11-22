@@ -80,7 +80,7 @@ static struct {
 };
 
 # ifndef READLINE
-static FILE *stream = stdin;
+static FILE *stream = NULL; 
 # endif
 
 

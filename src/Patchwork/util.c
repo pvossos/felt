@@ -28,7 +28,7 @@
 # include <math.h>
 # include <stdio.h>
 # include <string.h>
-# include <malloc.h>
+# include <stdlib.h>
 # include "fe.h"
 # include "problem.h"
 # include "objects.h"

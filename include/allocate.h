@@ -25,7 +25,7 @@
 
 # ifndef _ALLOCATE_H
 # define _ALLOCATE_H
-# include "malloc.h"
+# include <stdlib.h>
 
 # define AllocNew(type) \
 	(type *) malloc (sizeof (type))

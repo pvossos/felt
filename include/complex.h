@@ -42,7 +42,7 @@ complex mult PROTO ((complex, complex));
 complex add PROTO ((complex, complex));
 complex cdiv PROTO ((complex, complex));
 complex sub PROTO ((complex, complex));
-complex conj PROTO ((complex));
+complex cnjgt PROTO ((complex));
 complex scale PROTO ((complex, double, double));
 complex csqrt PROTO ((complex));
 complex cexp PROTO ((double));

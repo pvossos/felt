@@ -25,7 +25,7 @@
 
 # include <stdio.h>
 # include <unistd.h>
-# include <malloc.h>
+# include <stdlib.h>
 # include <X11/Intrinsic.h>
 # include "OutputDialog.h"
 # include "fe.h"

@@ -90,7 +90,7 @@ complex cdiv (x, y)
    complex	a;
    double	factor;
 
-   a = mult (x, conj (y)); 
+   a = mult (x, cnjgt (y)); 
    factor = y.r*y.r + y.i*y.i; 
     
    a.r = a.r / factor;
@@ -152,7 +152,7 @@ complex csin (x)
    return y;
 }
 
-complex conj (x)
+complex cnjgt (x)
    complex	x;
 {
    complex	a;

@@ -28,7 +28,7 @@
 
 # ifndef _ALLOCATE_H
 # define _ALLOCATE_H
-# include <malloc.h>
+# include <stdlib.h>
 # include <string.h>
 
 # define New(type) \

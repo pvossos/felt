@@ -24,7 +24,7 @@
 # include <X11/XWDFile.h>
 # include <X11/Intrinsic.h>
 # include <X11/Xaw/AsciiText.h>
-# include "malloc.h"
+# include <stdlib.h>
 # include "error.h"
 
 int Image_Size ( );

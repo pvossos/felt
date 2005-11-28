@@ -1,0 +1,120 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright by Jason Gobat and Darren Atkinson %
+% jgobat@apl.washington.edu, datkinson@engr.scu.edu				%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[twoside,11pt]{report}
+\newif\ifpdf
+\ifx\pdfoutput\undefined \pdffalse
+ \else \pdfoutput=1 \pdftrue \fi
+
+\ifpdf
+  \usepackage[pdftex]{graphicx}
+  \usepackage{pdfpages}
+  \pdfcompresslevel=9
+  \DeclareGraphicsExtensions{.png,.pdf}
+\else
+  \usepackage{graphicx}
+  \DeclareGraphicsExtensions{.eps}
+\fi
+
+\usepackage{epic}
+\usepackage{eepic}
+\usepackage{private}
+\usepackage{linuxdoc}
+\usepackage{bibcontents}
+
+\usepackage{times}
+\usepackage{pslatex}
+
+\ifpdf
+   \usepackage[pdftex,colorlinks=true,bookmarks=true,bookmarksopen=true]{hyperref}
+   \hypersetup{
+        pdfauthor = {J. Gobat and D. Atkison},
+        pdftitle = {FElt: User's Guide and Reference Manual}
+        pdfsubject = {},
+        pdfkeywords = {}
+   }
+\fi
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Set section numbering level to include subsubsection number.  %
+% Though rare, they sometimes occur and look awful without      %
+% numbers.                                                      %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\setcounter{secnumdepth}{3}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This will go away after the text has stabilized...            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\sloppypar
+
+\hyphenation{el-e-ment el-e-ments def-i-ni-tion dis-trib-ut-ed}
+\hyphenation{con-straint a-nal-y-sis pa-ram-e-ter sym-bol-ic}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%                                                             %%
+%%           S T A R T   O F   D O C U M E N T                 %%
+%%                                                             %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\burlap}{{\em burlap}}
+\newcommand{\velvet}{{\em velvet}}
+\newcommand{\dofs}{{\sc dof}s}
+\newcommand{\dof}{{\sc dof}}
+
+\begin{document}
+\bibliographystyle{plain}
+
+%
+% Title, contents, listoffigures                                %
+%
+
+\pagenumbering{roman}
+
+\include{misc/title}
+
+%
+% foreword
+%
+
+\include{misc/foreword}
+
+%
+% body chapters
+%
+
+\pagenumbering{arabic}
+
+\include{text/intro}
+\include{text/analysis}
+\include{text/problem}
+\include{text/elements}
+\include{text/felt_prog}
+% \include{text/xfelt}
+\include{text/winfelt}
+\include{text/velvet}
+\include{text/velvet_solve}
+\include{text/corduroy}
+\include{text/burlap_app}
+\include{text/burlap_syntax}
+\include{text/algorithm}
+\include{text/adding_elts}
+
+% 
+% appendices
+%
+
+\include{misc/appendix}
+
+% 
+% bibliography
+%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+\bibliography{misc/felt}
+\end{document}

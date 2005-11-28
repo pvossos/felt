@@ -1,0 +1,259 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{appendix}
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{Installing and Administering \felt{}}
+\label{appendix.install}
+
+\section{Building the \felt{} system from source}
+
+The \felt{} package is intended to be easily portable.  It should build on most 
+reasonable Un*x systems without any modifications.  To start the build 
+{\tt cd} to the toplevel directory of the \felt{} source tree.  From there 
+do a {\tt ./configure}.
+This will try to automatically determine where to find relevant include files
+and libraries on your system and create a new {\tt etc/Makefile.conf} file.  
+If you feel comfortable with it you can go in and tweak 
+the {\tt Makefile.conf} file by hand if something does not go right.  
+The Geompack library used for element generation is written 
+entirely in Fortran but C versions as produced by f2c are included in the 
+source distribution so there should be no need for you to f2c them yourself.  
+If you have a native Fortran compiler and know how to use it in combination
+with C code then you can go ahead and play around with the build process to
+make this work. The resulting code will probably be faster than if you 
+compile the f2c'd code with a C compiler, but not by much, so unless you 
+really care it's probably not worth messing with.  You don't need to have the 
+f2c libraries 
+to use the converted code and the header file f2c.h is provided in the 
+distribution. After configuring, do a {\tt make clean} followed by a 
+{\tt make all}.  To install the package after it has been successfully 
+built do a {\tt make install}.	
+
+The entire package has been compiled and tested under SunOS (4.x and 5.x), 
+and Linux (the OS under which it was developed).  This version or earlier 
+versions
+compiled under HP-UX 8.0 and 9.0 SystemV386 (R3.2.2), and various SGI, DEC, 
+and IBM workstations (using Irix, OSF/1 and Ultrix, and AIX) with little or
+no problem.  
+The files {\em felt.exe} and {\em feltvu.exe} (a graphing application) 
+are available as pre-compiled executables for the DOS environment.  	
+
+The most recent version of the source code for \felt{} should always be 
+available via anonymous
+ftp at cs.ucsd.edu in the directory {\tt /pub/felt}.  We also try to make 
+pre-compiled binaries available for a wide variety of platforms and operating
+systems; the currently available set of such binaries and how to get to
+them are listed in table~\ref{binary_table}.  
+\begin{table}
+ \begin{center}
+ \begin{tabular}{|l|l|l|}
+ \hline
+Machine type	& operating system	& location \\
+ \hline\hline
+i386/i486	& Linux 1.0.x		& ftp://cs.ucsd.edu/pub/felt \\
+Sun Sparc	& SunOS 4.1.3		& ftp://cs.ucsd.edu/pub/felt \\
+Sun Sparc	& SunOS 5.3 (Solaris 2.3) & ftp://cs.ucsd.edu/pub/felt \\
+HP 700 series   & HP-UX 9.05		& \\
+SGI Indigo	& Irix 5.x		& \\
+IBM RS6000	& AIX x.xx		& \\
+DEC 5000	& Ultrix x.xx		& \\
+DEC Alpha	& OSF/1 x.xx		& \\
+i386/i486	& DOS			& ftp://cs.ucsd.edu/pub/felt \\
+ \hline
+ \end{tabular}
+\end{center}
+\caption{Type and location of pre-compiled binaries of the \felt{} system.}
+\label{binary_table}
+\end{table}
+
+If you want to be
+made aware of each revision of the \felt{} system then we strongly encourage
+you to subscribe to the \felt{} mailing list.  To subscribe send a one line
+email message with ``subscribe felt-l'' (without the quotes) in the body
+of the message to listserv@mecheng.asme.org.
+Only major revisions and changes will be announced broadly (i.e., via Usenet).
+
+\section{Translation files}
+
+The translation files which map non-English terms to the English terms
+which \felt{} expects should be installed in the library directory which
+you specified during the build.  This path will automatically be
+searched when {\em cpp} goes looking for include files (which is really
+what the translation files are).  If they are not in some standard place,
+users need to specify a {\tt -I} flag on the {\em felt} command line to tell
+{\em cpp} where to look for them.  The current filenames are in English,
+you'll obviously want to link them or move them to something reasonable
+on your system and make users aware of what the appropriate file to include
+is called.
+
+The following tables list the currently available translations (that we
+have at least).  You can look at the current {\tt german.trn} and 
+{\tt spanish.trn} files if you want to change something or provide a new
+one.  If you do write a new one, please send it to us.  This is only
+a first cut at internationalization, but as we get more translations
+we will be in a better position to see how we can make it all work a little
+more fluently.  Also, remember that because this is a first cut all you
+can really do is type in a \felt{} file by hand using these translations.
+Anything {\em velvet} saves or even the file that {\em felt} writes with
+the {\tt -debug} command will be in English even if the input file was
+given in another language.  All output is still in English.  Lastly, if
+you use these translations, you have to use them exactly as they are given
+here.  They are not case insensitive, and if there are underscores in the
+place of spaces, you must use the underscores.  Things that are user 
+specifiable to begin with (object names, problem title) can still be 
+whatever you want of course.  If a keyword is not listed in a table below,
+use the original English keyword (the English and non-English were probably
+equivalent).
+
+{\small
+\begin{center}
+\begin{tabular}{p{3in}p{3in}} \hline
+\bf For German, use \dots	& \bf Instead of \dots \\
+\hline 
+problembeschreibung 	& problem description \\
+titel 			& title \\
+knoten 			& nodes \\
+elemente 		& elements \\
+krafte 			& force \\
+kraefte			& forces \\
+zwangsbedingung		& constraint \\
+zwangsbedingungen 	& constraints \\
+materialeigenschaften 	& material properties \\
+richtung 		& direction \\
+senkrecht 		& perpendicular \\
+GlobalesX 		& GlobalX \\
+GlobalesY 		& GlobalY \\
+GlobalesZ 		& GlobalZ \\
+LokalesX 		& LocalX \\
+LokalesY 		& LocalY \\
+LokalesZ 		& LocalZ \\
+werte 			& values \\
+verteilte 		& distributed  \\
+lasten 			& loads \\
+last 			& load \\
+gelenk 			& hinge \\
+ende 			& end \\
+\end{tabular}
+\end{center}}
+
+{\small
+\begin{center}
+\begin{tabular}{p{3in}p{3in}} \hline
+\bf For Spanish, use \dots	& \bf Instead of \dots \\
+\hline 
+descripcion\_del\_problema 	& problem title \\
+titulo 				& title \\
+nodos 				& nodes \\
+elementos 			& elements \\
+fuerza 				& force \\
+fuerzas				& forces \\
+restriccion 			& constraint \\
+restricciones 			& constraints \\
+propriedades\_del\_material     & material properties \\
+direccion 			& direction \\
+paralela 			& parallel \\
+valores 			& values \\
+cargas\_distribuidas 		& distributed loads \\
+carga 				& load \\
+articulacion\_plana 		& hinge \\
+final 				& end \\
+\end{tabular}
+\end{center}}
+
+\section{Defaults and material databases}
+
+Though the defaults files and material databases are not a necessity for 
+{\em velvet}, they are convenient and it might be desirable to install them in 
+a location where all users have easy access to them, probably the same
+library directory as the translation files.  These files too are really
+nothing more than include files which can be included as a convenience for
+the user.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{Geompack Error Codes}
+\label{appendix.geompack}
+
+\section{Basic description}
+
+Error codes from 1 to 99 indicate not enough space in some array.
+Error codes $>=$ 100 mean that the input specification is incorrect,
+there is a program bug, or the tolerance TOL is too small or large
+(try a different TOLIN value).  
+
+{\small
+\begin{tabular}[h]{cp{5.5in}}
+\bf Error Code &	\bf Description of error \\ 
+ \hline
+   1  &  not enough space in EDGE array for routine EDGHT \\
+   2  &  not enough space in HOLV array for routine DSMCPR or DSPGDC \\
+   3  &  not enough space in 2-D VCL array \\
+   4  &  not enough space in HVL array \\
+   5  &  not enough space in PVL, IANG arrays \\
+   6  &  not enough space in IWK array \\
+   7  &  not enough space in WK array \\
+   8  &  not enough space in STACK array for routine SWAPEC, DTRIS2, DTRIW2 \\
+   9  &  not enough space in TIL array \\
+  10  &  not enough space in CWALK array for routine INTTRI \\
+  11  &  not enough space in FC array for 3-D \\
+  12  &  not enough space in BF array for 3-D \\
+  13  &  not enough space in SVCL, SFVL arrays for routine SHRNK3 \\
+  14  &  not enough space in 3-D VCL array \\
+  15  &  not enough space in FVL, EANG arrays for polyhedral decomposition \\
+  16  &  not enough space in FACEP, NRML arrays \\
+  17  &  not enough space in PFL array \\
+  18  &  not enough space in HFL array \\
+  19  &  not enough space in BTL array \\
+  20  &  not enough space in VM array \\
+  21  &  not enough space in HT array \\
+  22  &  not enough space in FC array for K-D \\
+  23  &  not enough space in BF array for K-D \\
+ 100  &  higher primes need to be added to routine PRIME \\
+ 200  &  abnormal return in routine DIAM2 \\
+ 201  &  abnormal return in routine WIDTH2 \\
+ 202  &  parallel lines in routine SHRNK2 \\
+ 205  &  horizontal ray to right does not intersect polygon in routine ROTIPG \\
+ 206  &  out-of-range index when popping points from stack in routine VPRGHT \\
+ 207  &  out-of-range index when scanning vertices in routine VPSCNA \\
+ 208  &  out-of-range index when scanning vertices in routine VPSCNB \\
+ 209  &  out-of-range index when scanning vertices in routine VPSCNC \\
+ 210  &  out-of-range index when scanning vertices in routine VPSCND \\
+ 212  &  singular matrix in routine VORNBR \\
+ 215  &  unmatched separator interface edge determined by routine DSPGDC \\
+ 216  &  all edges of an outer boundary curve are specified as hole 
+	 edges in input to routine DSPGDC \\
+ 218  &  cannot find subregion above top vertex of hole in routine JNHOLE \\
+ 219  &  angle at hole vertex in modified region is too far from PI due 
+	 to use of relative tolerance in routine JNHOLE \\
+ 222  &  separator not found in routine MFDEC2 (not likely to occur if 
+	 ANGSPC $<=$ 30 degrees and ANGTOL $<=$ 20 degrees) \\
+ 224  &  2 vertices with identical coordinates (in floating point arithmetic)
+	 detected in routine DTRIS2 or DTRIW2 \\
+ 225  &  all vertices input to DTRIS2 or DTRIW2 are collinear \\
+ 226  &  cycle detected in walk by routine WALKT2 \\
+ 230  &  invalid (CW-oriented) triangle created in routine TMERGE \\
+ 231  &  unsuccessful search in routine FNDTRI 
+\end{tabular}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The GNU Public License                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The GNU General Public License}
+\label{appendix.gnu-license}
+
+\input{misc/gpl}
+
+\end{appendix}

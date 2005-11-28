@@ -1,0 +1,976 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\adddef}{{\tt add\_definition()}}
+\newcommand{\remdef}{{\tt remove\_definition()}}
+\newcommand{\rl}{{\tt readline}}
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The \burlap\ Application}
+\label{burlap.application}
+
+\section{Introduction to the \burlap\ environment}
+\label{burlap.intro}
+
+\burlap\ is a mathematical environment designed for adding new element
+types to \felt\ and extending the current set of finite element
+analyses.  \burlap\ can best be described as a mathematical software
+package, similar to {\em matlab} or {\em octave}, but with the data
+structures of \felt.  It was designed as an alternative to trying to
+understand and modify the C code of the \felt\ library, which was
+difficult for even us to do, much less engineers with little C
+programming experience.
+
+\burlap\ has its own syntax for manipulating matrices, like that of
+{\em matlab}.  However, \burlap\ also includes all of the \felt\ data
+types as well, such as nodes, elements, constraints, etc., which
+eliminates the need for having large arrays of numbers, where the
+third number is the material thickness and the fourth number is the
+cross-sectional area, etc.
+
+Any analysis that can be performed with {\em felt} can be performed
+with \burlap.  Although the \burlap\ code is slower than the compiled
+C code of the \felt\ library, \burlap's interactive environment makes
+prototyping new element types and new analyses much easier.  At
+present, however, there is no support for executing \burlap\ code from
+\velvet.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Using \burlap}
+\label{burlap.using}
+
+\subsection{Interacting with \burlap}
+\label{burlap.interacting}
+
+The syntax of \burlap\ is designed to be intuitive and is best
+illustrated by examples.  A detailed discussion of the syntax can be
+found in Chapter~\ref{burlap.syntax}.  The simplest way to start
+\burlap\ is to simply type {\tt burlap} on the command line, or {\tt
+burlap foo.b} if you wish to execute the \burlap\ file {\tt foo.b}.
+You can also specify command line options that qualify what you want
+to do.
+
+\begin{dispitems}
+\item [\tt -help | -h]
+	Display a brief help message which lists all of the available
+	command line options and then exits.
+
+\item [\tt -quiet | -q]
+	Do not print the start-up message regarding copyright
+	information.
+
+\item [\tt -alias | -a]
+	Do not define the set of built-in aliases.
+
+\item [\tt -interactive | -i]
+	Enter interactive mode by reading expressions from the
+	terminal after processing the input files.  Normally, \burlap\
+	will simply exit after processing any input files.
+
+\item [\tt -no-interactive | -n]
+	Do not enter interactive mode.  This flag tells \burlap\ to
+	simply exit if no files are given.  It is useful if you have
+	{\tt burlap} aliased to {\tt burlap -i} and wish to override
+	the effect of the {\tt -i} flag.
+
+\item [\tt -source command-file | -s command-file]
+	Read commands from {\tt command-file} on start-up.
+
+\item [\tt -felt felt-file | -f felt-file]
+	Use {\tt felt-file} to define the current \felt\ problem.
+
+\end{dispitems}
+
+Since \burlap\ can load and process a \felt\ file, it also accepts the
+standard {\tt -nocpp}, {\tt -cpp}, {\tt -I}, {\tt -U}, and {\tt -D}
+flags common to {\em felt} and \velvet.  If you simply type {\tt
+burlap}, you will be presented with some copyright information and a
+prompt.
+
+\begin{screen}
+\begin{verbatim}
+This is burlap, copyright 1995 by Jason I. Gobat and Darren C. Atkinson.
+This is free software, and you are welcome to redistribute it under certain
+conditions, but there is absolutely no warranty.  Type help ("copyright")
+for details.  Use the -q option to suppress this message.
+
+[1] _ 
+\end{verbatim}
+\end{screen}
+
+If \burlap\ was compiled with the GNU \rl\ library, then you have
+complete command-line editing and history, as in {\em bash}.  (A
+complete discussion of the editing capabilities can be found in the
+documentation of the \rl\ library.)  At the prompt, you can enter
+expressions to be evaluated.
+
+\begin{screen}
+\begin{verbatim}
+[1] 1 + 2
+[2] write (1 + 2)
+3
+[3] a = 1 + 2
+[4] write (a)
+3
+[5] write ([1, 2, 3])
+
+         1          2          3 
+
+[6] write ([1; 2; 3])
+
+         1 
+         2 
+         3 
+
+[7] write ([1, 2, 3] + [4, 5, 6])
+
+         5          7          9 
+\end{verbatim}
+\end{screen}
+
+As illustrated above, {\tt write()} is used to print results and {\tt
+=} is the assignment operator.  Also notice from the first expression
+that \burlap\ does not print the result of every expression like {\em
+matlab} does.  But, just like {\em matlab}, matrices are delimited by
+square brackets with elements separated by commas and rows separated
+by semicolons.
+
+If you type {\tt alias} you should see the following list.  (If
+\burlap\ is not compiled with the \rl\ library then the list will be
+slightly different.)
+
+\begin{screen}
+\begin{verbatim}
+exit    exit ( )
+h       history (20)
+help    help ("!$")
+ls      system ("ls !*")
+quit    exit ( )
+\end{verbatim}
+\end{screen}
+
+\burlap\ has a very simple syntax with all computations being done
+through either operators, such as {\tt +}, or functions, such as {\tt
+write()}.  But, since {\tt exit()} and {\tt help()} are rather
+non-intuitive, you can alias commands to be whatever you want, just
+like {\em csh}.  So, you can just type {\tt exit} or {\tt quit} to
+leave \burlap.  Typing {\tt help} will present you with a list of all
+the operators and functions that \burlap\ provides.  Typing {\tt help
+foo} will give you detailed help on topic {\tt foo}.
+
+In short, \burlap\ works just like most other interactive programs
+including {\em csh}, {\em gdb}, {\em gnuplot}, {\em matlab}, {\em
+octave}, and {\em gs}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{\burlap\ and \felt}
+\label{burlap.felt}
+
+You can load a \felt\ file into \burlap\ by either specifying the file
+on the command line with the {\tt -felt} flag or by using the {\tt
+felt()} function.
+
+\begin{screen}
+\begin{verbatim}
+[1] felt ("truss.flt")
+\end{verbatim}
+\end{screen}
+
+If everything goes okay, then the function should simply return
+silently.  Several variables are now automatically defined, as
+shown in Table~\ref{burlap.fe.variables}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Variable	& Description			\\
+\hline
+\tt nodes	& array of nodes		\\
+\tt elements	& array of elements		\\
+\tt dofs\_pos	& global \dof\ positions	\\
+\tt dofs\_num	& global \dof\ numbers		\\
+\tt problem	& problem definition structure	\\
+\tt analysis	& analysis parameters structure	\\
+\end{tabular}
+\caption{Finite element related variables.}
+\label{burlap.fe.variables}
+\end{center}
+\end{table}
+
+\felt\ maintains the global \dofs\ in two vectors.  The first vector,
+{\tt dofs\_pos}, is an alias for {\tt problem.dofs\_pos}, and contains
+the position number for each of the six \dofs.  A zero entry in the
+vector indicates that the \dof\ is not active.  An example vector for
+a problem consisting entirely of beam elements would be
+%
+\begin{displaymath}
+\left[ 1\ 2\ 0\ 0\ 0\ 3 \right]
+\end{displaymath}
+%
+since a beam element allows translation along the x-axis and y-axis,
+and rotation about the z-axis.  The {\tt dofs\_pos} vector can be used
+to determine if a given \dof\ is active and which global number it is
+assigned.
+
+The second vector, {\tt dofs\_num}, is an alias for {\tt
+problem.dofs\_num}, and contains the numbers of the active \dofs.  The
+length of the vector is equal to the number of active \dofs.  The {\tt
+dofs\_num} vector corresponding to the {\tt dofs\_pos} vector given
+above would then be
+%
+\begin{displaymath}
+\left[ 1\ 2\ 6 \right]
+\end{displaymath}
+%
+since the first, second, and sixth \dofs\ are active.  \burlap\
+ensures that the two vectors are always kept consistent.
+
+All arrays start at one, so {\tt nodes (1)} designates the first node
+in the problem, and {\tt nodes (1).constraint} designates the
+constraint associated with that node.  A period ({\tt .}) is used to
+access a field of a \felt\ object.  In general the field names are the
+same as the names used in the \felt\ input file.  For example, {\tt
+constraint} is the field name for accessing the constraint object
+assigned to a node with the {\tt constraint=} syntax in the \felt\
+file.
+
+\begin{screen}
+\begin{verbatim}
+[2] write (nodes)
+array of node
+[3] write (elements)
+array of element
+[4] write (nodes (1))
+node (1)
+[5] write (nodes (1).constraint)
+constraint (free)
+[6] write (elements (1).material.A)
+0.0004
+[7] m = elements (1).material
+[8] write ("A = ", m.A, " E = ", m.E)
+A = 0.0004 E = 2.1e+11
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Element objects}
+
+Elements have the same field names as those used in the \felt\ file
+with additional fields for holding the computed matrices and stress
+values, as shown in Table~\ref{burlap.element.fields}.  For example,
+{\tt e.number} will return the element number of the element {\tt e}
+and {\tt e.material.t} will return the thickness of the element's
+material; {\tt e.nodes (1)} will return the first node of the element
+and {\tt e.nodes (1).x} will return the x-coordinate of that node.
+Note that {\tt loads} and {\tt distributed} are synonymous, as are
+{\tt num\_loads} and {\tt num\_distributed}.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name		& Description					\\
+\hline
+\tt number		& element number				\\
+\tt nodes		& array of nodes				\\
+\tt K			& stiffness matrix				\\
+\tt M			& mass matrix					\\
+\tt material		& material object				\\
+\tt definition		& element type definition			\\
+\tt loads		& array of distributed loads			\\
+\tt num\_loads		& number of loads				\\
+\tt stresses		& array of element stresses			\\
+\tt ninteg		& number of integration points			\\
+\tt distributed		& array of distributed loads ({\tt loads})	\\
+\tt num\_distributed	& number of distributed loads ({\tt num\_loads})\\
+\end{tabular}
+\caption{Fields of an element object.}
+\label{burlap.element.fields}
+\end{center}
+\end{table}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Node objects}
+
+Like elements, nodes have some fields that are defined through the
+\felt\ input file with additional fields to contain the result of
+computations, as shown in Table~\ref{burlap.node.fields}.  As an
+example, {\tt n.constraint} will return the constraint assigned to the
+node {\tt n}, and {\tt n.constraint.name} will return the name of that
+constraint; {\tt n.dx} will return the displacement vector and {\tt
+n.dx (1)} will return the first component of that vector.  Note that
+the displacement vector may be accessed either as a vector by using
+{\tt dx}, or as individual components, such as {\tt Tx}.  This is
+simply a shorthand; assigning to an individual component is the same
+as assigning to the result of indexing the displacement vector.  The
+equivalent force vector, {\tt eq\_force}, is used in transforming
+distributed loads on an element into equivalent forces on its nodes.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name	& Description					\\
+\hline
+\tt number	& node number					\\
+\tt constraint	& constraint object				\\
+\tt force	& force object					\\
+\tt eq\_force	& equivalent force vector			\\
+\tt dx		& displacement vector				\\
+\tt x		& x-coordinate					\\
+\tt y		& y-coordinate					\\
+\tt z		& z-coordinate					\\
+\tt m		& lumped mass					\\
+\tt Tx		& translation along x axis ({\tt dx (1)})	\\
+\tt Ty		& translation along y axis ({\tt dx (2)})	\\
+\tt Tz		& translation along z axis ({\tt dx (3)})	\\
+\tt Rx		& rotation about x axis ({\tt dx (4)})		\\
+\tt Ry		& rotation about y axis ({\tt dx (5)})		\\
+\tt Rz		& rotation about z axis ({\tt dx (6)})		\\
+\end{tabular}
+\caption{Fields of a node object.}
+\label{burlap.node.fields}
+\end{center}
+\end{table}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Material objects}
+
+Materials have the fields named by the \felt\ input syntax, as shown
+in Table~\ref{burlap.material.fields}.  For example, {\tt m.rho} will
+return the density of the material {\tt m} and {\tt m.A} will return
+its cross-sectional area.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name	& Description				\\
+\hline
+\tt name	& name of material			\\
+\tt E		& Young's modulus			\\
+\tt Ix		& moment of inertia about x-x axis	\\
+\tt Iy		& moment of inertia about y-y axis	\\
+\tt Iz		& moment of inertia about z-z axis	\\
+\tt A		& cross-sectional area			\\
+\tt J		& polar moment of inertia		\\
+\tt G		& bulk (shear) modulus			\\
+\tt t		& thickness				\\
+\tt rho		& density				\\
+\tt nu		& Poisson's ratio			\\
+\tt kappa	& shear force correction		\\
+\tt Rk		& Rayleigh damping coefficient (K)	\\
+\tt Rm		& Rayleigh damping coefficient (M)	\\
+\tt Kx		& conductivity along x axis		\\
+\tt Ky		& conductivity along y axis		\\
+\tt Kz		& conductivity along z axis		\\
+\tt c		& heat capacity				\\
+\end{tabular}
+\caption{Fields of a material object.}
+\label{burlap.material.fields}
+\end{center}
+\end{table}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Force objects}
+
+Force objects allow the forces and moments to be accessed as
+individual components or as a vector, as shown in
+Table~\ref{burlap.force.fields}.  For example, {\tt f.force} will
+return the force vector of {\tt f} and {\tt f.force (4)} will return
+the moment about the x axis, which is equivalent to {\tt f.force.Mx}.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name	& Description					\\
+\hline
+\tt name	& name of force					\\
+\tt force	& force vector					\\
+\tt spectrum	& input spectra					\\
+\tt Fx		& force along x axis ({\tt force (1)})		\\
+\tt Fy		& force along y axis ({\tt force (2)})		\\
+\tt Fz		& force along z axis ({\tt force (3)})		\\
+\tt Mx		& moment about x axis ({\tt force (4)})		\\
+\tt My		& moment about y axis ({\tt force (5)})		\\
+\tt Mz		& moment about z axis ({\tt force (6)})		\\
+\tt Sfx		& spectra along x axis ({\tt spectrum (1)})	\\
+\tt Sfy		& spectra along y axis ({\tt spectrum (2)})	\\
+\tt Sfz		& spectra along z axis ({\tt spectrum (3)})	\\
+\tt Smx		& spectra about x axis ({\tt spectrum (4)})	\\
+\tt Smy		& spectra about y axis ({\tt spectrum (5)})	\\
+\tt Smz		& spectra about z axis ({\tt spectrum (6)})	\\
+\end{tabular}
+\caption{Fields of a force object.}
+\label{burlap.force.fields}
+\end{center}
+\end{table}}
+
+For transient problems, a force or moment may vary with time.  In {\em
+felt}, this is described by an expression in terms of {\tt t}.  A
+component of a force may be assigned a string value which will be
+interpreted by \burlap\ as an expression.  Note that evaluating the
+component will evaluate the expression at time {\tt t=0}.  There is
+currently no way to determine if a component is assigned a
+time-varying expression.
+
+\begin{screen}
+\begin{verbatim}
+[1] f.Fx = "cos (t)"
+[2] write (f.Fx)
+1
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Constraint objects}
+
+Constraint objects also allow the various information to be accessed
+as vectors or as individual components, as shown in
+Table~\ref{burlap.constraint.fields}.  If {\tt c} is a constraint then
+{\tt c.ix} is its initial displacement vector and {\tt c.ix (1)} or
+{\tt c.iTx} is its initial translation along the x axis.  Components
+may be assigned time-varying expressions, as in the case of forces.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name	& Description						\\
+\hline
+\tt name	& name of constraint					\\
+\tt constraint	& constraint vector					\\
+\tt ix		& initial displacement vector				\\
+\tt vx		& initial velocity vector				\\
+\tt ax		& initial acceleration vector				\\
+\tt dx		& boundary displacement vector				\\
+\tt iTx		& initial displacement along x axis ({\tt ix (1)})	\\
+\tt iTy		& initial displacement along y axis ({\tt ix (2)})	\\
+\tt iTz		& initial displacement along z axis ({\tt ix (3)})	\\
+\tt iRx		& initial rotation about x axis ({\tt ix (4)})		\\
+\tt iRy		& initial rotation about y axis ({\tt ix (5)})		\\
+\tt iRz		& initial rotation about z axis ({\tt ix (6)})		\\
+\tt Vx		& initial velocity along x axis ({\tt vx (1)})		\\
+\tt Vy		& initial velocity along y axis ({\tt vx (2)})		\\
+\tt Vz		& initial velocity along z axis ({\tt vx (3)})		\\
+\tt Ax		& initial acceleration along x axis ({\tt ax (1)})	\\
+\tt Ay		& initial acceleration along y axis ({\tt ax (2)})	\\
+\tt Az		& initial acceleration along z axis ({\tt ax (3)})	\\
+\tt Tx		& translation along x axis ({\tt dx (1)})		\\
+\tt Ty		& translation along y axis ({\tt dx (2)})		\\
+\tt Tz		& translation along z axis ({\tt dx (3)})		\\
+\tt Rx		& translation along x axis ({\tt dx (4)})		\\
+\tt Ry		& translation along y axis ({\tt dx (5)})		\\
+\tt Rz		& translation along z axis ({\tt dx (6)})		\\
+\end{tabular}
+\caption{Fields of a constraint object.}
+\label{burlap.constraint.fields}
+\end{center}
+\end{table}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Distributed load objects}
+
+Distributed loads, or simply loads, have the fields named by the
+\felt\ file syntax, as shown in Table~\ref{burlap.load.fields}.  The
+individual values can be accessed using {\tt node} and {\tt
+magnitude}.  For example, {\tt l.values (1).node} returns the node
+object of the first load point and {\tt l.values (1).magnitude}
+returns its magnitude.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name	& Description						\\
+\hline
+\tt name	& name of distributed load				\\
+\tt direction	& load direction					\\
+\tt num\_values	& number of values					\\
+\tt values	& array of values (({\tt node}, {\tt magnitude}) pairs)	\\
+\end{tabular}
+\caption{Fields of a distributed load object.}
+\label{burlap.load.fields}
+\end{center}
+\end{table}}
+
+The {\tt direction} field is used to indicate the direction of the
+distributed load.  The direction is simply a scalar value as indicated
+in Table~\ref{burlap.load.directions}.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Direction		& Value			\\
+\hline
+\tt LocalX		& \tt \&local\_x	\\
+\tt LocalY		& \tt \&local\_y	\\
+\tt LocalZ		& \tt \&local\_z	\\
+\tt GlobalX		& \tt \&global\_x	\\
+\tt GlobalY		& \tt \&global\_y	\\
+\tt GlobalZ		& \tt \&global\_z	\\
+\tt Parallel		& \tt \&parallel	\\
+\tt Perpendicular	& \tt \&perpendicular	\\
+\end{tabular}
+\caption{Directions of a distributed load.}
+\label{burlap.load.directions}
+\end{center}
+\end{table}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Element definition objects}
+
+An element definition object is one of the few object types not
+defined in a \felt\ file.  An element definition, or simply
+definition, contains all information necessary for a particular
+element type, such as a beam, truss, etc.  The fields given in
+Table~\ref{burlap.definition.fields} are discussed at length in
+Section~\ref{burlap.adding-elements}.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name		& Description					\\
+\hline
+\tt name		& name of definition				\\
+\tt setup		& element set-up function			\\
+\tt stress		& element stress computation function		\\
+\tt num\_nodes		& number of nodes in element			\\
+\tt shape\_nodes	& number of nodes that define shape		\\
+\tt num\_dofs		& number of degrees of freedom			\\
+\tt dofs		& degrees of freedom				\\
+\tt num\_stresses	& number of stresses				\\
+\tt retainK		& flag to retain stiffness matrix after assembly\\
+\end{tabular}
+\caption{Fields of an element definition object.}
+\label{burlap.definition.fields}
+\end{center}
+\end{table}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Problem definition}
+
+The problem definition object contains all information about the
+current \felt\ problem, with the exception of the analysis parameters.
+
+{\scriptsize
+\begin{table}[hpbt]
+\begin{center}
+\begin{tabular}{l|l}
+Field name		& Description			\\
+\hline
+\tt mode		& analysis mode			\\
+\tt title		& problem title			\\
+\tt nodes		& array of node objects		\\
+\tt elements		& array of element object	\\
+\tt dofs\_pos		& global \dof\ positions	\\
+\tt dofs\_num		& global \dof\ numbers		\\
+\tt num\_dofs		& number of active \dofs	\\
+\tt num\_nodes		& number of nodes		\\
+\tt num\_elements	& number of elements		\\
+\end{tabular}
+\caption{Fields of a problem definition object.}
+\label{burlap.problem.fields}
+\end{center}
+\end{table}}
+
+Most fields of the problem definition given in
+Table~\ref{burlap.problem.fields} are read-only.  If you want to
+change the characteristics of a problem, you need to edit the input
+file that defines the problem, and load it with the {\tt felt()}
+function.  The only exceptions are the \dof\ arrays, {\tt dofs\_pos}
+and {\tt dofs\_num}.  Since these arrays must be properly initialized
+before many of the built-in finite element functions may be called,
+\burlap\ ensures that the arrays are kept consistent.  The
+individual components of the arrays are read-only; however, either
+array may be assigned a row vector to change the set of active \dofs.
+When one array is changed, both arrays and the number of active \dofs\
+are updated.  (We don't know why you would want to do this.  Usually,
+{\tt find\_dofs()} should be used to initialize the arrays.  Changing
+the \dofs\ yourself will probably just lead to non-singular matrices.)
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Analysis parameters}
+
+The analysis parameters structure contains information related to
+a specific analysis type.
+
+{\scriptsize
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l}
+Field name	& Description				\\
+\hline
+\tt gamma	& parameter in Newmark integration	\\
+\tt beta	& parameter in Newmark integration	\\
+\tt alpha	& parameter in H-H-T			\\
+\tt mass\_mode	& mass mode				\\
+\tt nodes	& array of node numbers of interest	\\
+\tt dofs	& array of dofs of interest		\\
+\tt start	& starting time or frequency		\\
+\tt stop	& ending time or frequency		\\
+\tt step	& time or frequency increment		\\
+\tt num\_dofs	& number of dofs of interest		\\
+\tt num\_nodes	& number of nodes of interest		\\
+\end{tabular}
+\caption{Fields of an analysis parameters object.}
+\label{burlap.analysis.fields}
+\end{center}
+\end{table}}
+
+Unlike the problem definition structure, most of the fields in the
+analysis parameters structure are changeable.  However, the {\tt dofs}
+and {\tt nodes} fields are similar to the {\tt dofs\_num} and {\tt
+dofs\_pos} fields of the problem definition.  The individual
+components are read-only, but they may be assigned a row vector.  If
+{\tt analysis.dofs} is assigned a valid row vector then {\tt
+analysis.num\_dofs} is updated and is equivalent to {\tt length
+(analysis.dofs)}.  Similarly, if {\tt analysis.nodes} is assigned a
+valid row vector then {\tt analysis.num\_nodes} is updated and is
+equivalent to {\tt length (analysis.nodes)}.  The {\tt length()}
+function returns the number of items in an array, matrix, or string.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adding new element types to \burlap}
+\label{burlap.adding-elements}
+
+Adding a new element type to \felt\ can be very time-consuming and
+error-prone.  \burlap\ allows the user to easily add new element
+definitions that can be quickly tested without having to recompile the
+{\em felt} or \velvet\ applications.  To add a new element to the set
+of existing elements, the \adddef\ function is used.  Similarly, to
+remove an existing element definition, the \remdef\ function is used.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{l|l|l|l}
+Argument	  & Description			      & Type	       & Example	    \\
+\hline
+\tt name	  & name of definition		      & \tt string     & \tt "truss"	    \\
+\tt set\_up	  & set up function ($K$ and $M$)     & \tt function   & \tt truss\_set\_up \\
+\tt stress	  & stress computation function	      & \tt function   & \tt truss\_stress  \\
+\tt shape	  & element shape		      & \tt scalar     & \tt \&linear	    \\
+\tt num\_nodes	  & number of nodes in element	      & \tt scalar     & \tt 2		    \\
+\tt shape\_nodes  & number of nodes that define shape & \tt scalar     & \tt 2		    \\
+\tt num\_stresses & number of stress values	      & \tt scalar     & \tt 1		    \\
+\tt dofs	  & vector of \dofs		      & \tt row vector & \tt [1,2,3,0,0,0]  \\
+\tt retainK	  & retain stiffness matrix indicator & \tt scalar     & \tt \&false	    \\
+\end{tabular}
+\caption{Arguments to the \adddef\ function.}
+\label{burlap.adddef.arguments}
+\end{center}
+\end{table}
+
+The \adddef\ function requires a variety of arguments as shown in
+Table~\ref{burlap.adddef.arguments}.  For the reminder of the
+discussion regarding the arguments to the \adddef\ function, we will
+use the truss element as an example.
+
+The {\tt name} of the element definition is a string by which the
+element type is referred.  Once the element definition has been
+successfully added then new elements of that type can be created.  In
+our example the name is {\tt "truss"}, so a \felt\ file can now be
+loaded that contains {\tt truss} elements.  If an element definition
+of the same name already exists then \adddef\ returns {\tt 1},
+otherwise it returns {\tt 0}.
+
+The {\tt set\_up} function is a \burlap\ function that will compute
+the local stiffness matrix, $K$, and local mass matrix, $M$, for any
+element of the new definition.  Our sample set-up function is shown in
+Figure~\ref{burlap.truss.setup}.  For our simple truss element, we are
+ignoring the mass matrix and the effect of distributed loads.
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{verbatim}
+function truss_set_up (e)
+    L = length (e)
+    AEonL = e.material.A * e.material.E / e.material.L
+    K = [AEonL, -AEonL; -AEonL, AEonL]
+
+    cx = (e.node (2).x - e.node (1).x) / L
+    cy = (e.node (2).y - e.node (1).y) / L
+    cz = (e.node (2).z - e.node (1).z) / L
+
+    T = [cx, cy, cz, 0, 0, 0; 0, 0, 0, cx, cy, cz]
+    e.K = T'*K*T
+
+    return 0
+end
+\end{verbatim}
+\caption{Set-up function for the truss element definition.}
+\label{burlap.truss.setup}
+\end{center}
+\end{figure}
+
+The set-up function will be called with two arguments.  The first
+argument is the element whose stiffness and mass matrices are to be
+computed.  The second argument is the mass mode, which is one of {\tt
+\&false}, {\tt \&lumped}, or {\tt \&consistent}, where {\tt \&false}
+indicates that no mass matrix is required.  In our simple example, we
+have simply omitted the second argument, since we will not be
+considering mass matrices.  Note that the {\tt set\_up} argument is a
+\burlap\ function itself, not the name of the function.  As discussed
+in Section~\ref{burlap.syntax.functions}, functions in \burlap\ are
+simply variables that can be passed as arguments to functions and also
+returned from functions.  Our simple function for truss elements
+computes the length of the element by calling the {\tt length()}
+function, which is discussed in Section~\ref{burlap.fe.functions}.
+
+The set-up function assigns the stiffness and mass matrices to the
+element by assigning to the {\tt K} and {\tt M} fields of the element
+structure.  If the set-up function is successful then it should return
+zero.  Otherwise, it should return a non-zero value.
+
+The {\tt stress} function is a \burlap\ function that will compute the
+stress values for any element of the new definition.  Our sample
+set-up function is shown in Figure~\ref{burlap.truss.stress}.  The
+stress function assigns the stresses by assigning to the {\tt stress}
+field of the element structure.  If the stress function is successful
+then it should return zero.  Otherwise, it should return a non-zero
+value.
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{verbatim}
+function truss_stress (e)
+    L = length (e)
+    EonL = e.material.E / L
+    c = zeros (6, 1)
+
+    c(1) = (e.node (2).x - e.node (1).x) / L
+    c(2) = (e.node (2).y - e.node (1).y) / L
+    c(3) = (e.node (2).z - e.node (1).z) / L
+
+    e.ninteg = 1
+    e.stress (1).x = (e.node(1).x + e.node(2).x) / 2
+    e.stress (1).y = (e.node(1).y + e.node(2).y) / 2
+    e.stress (1).values (1) = EonL * (e.node(2).dx - e.node(1).dx) * c
+
+    return 0
+end
+\end{verbatim}
+\caption{Stress function for the truss element definition.}
+\label{burlap.truss.stress}
+\end{center}
+\end{figure}
+
+
+Our simple truss element has only one integration point and only a
+single stress value at that point.  Since an element may have an
+arbitrary number of integration points, the {\tt ninteg} field of the
+element structure must be set before the {\tt stress} vector can be
+accessed.  The number of stresses and thus the length of the {\tt
+values} vector is determined by the element definition.  In the
+computation of the stress value for the truss element, the two
+displacement row vectors are subtracted and then multiplied by the
+column vector, {\tt c}, to yield a scalar.
+
+The remaining arguments to \adddef\ are easily calculated.  The shape
+of our truss element is linear and has two nodes, both of which are
+required and needed to define the shape of the element.  The truss
+element permits displacements along the X, Y, and Z axes, but does not
+allow for rotation about any of the axes.  Therefore, the first,
+second, and third \dofs\ are active.  The entire call to \adddef\ is:
+
+\begin{center}
+{\tt add\_definition ("truss", truss\_set\_up, truss\_stress, \\
+\&linear, 2, 2, 1, [1, 2, 3, 0, 0, 0])}
+\end{center}
+
+We have neglected to pass a value for the last argument, which
+indicates whether the local stiffness matrix should be retained after
+assembly into the global stiffness matrix.  The default value for this
+argument is {\tt \&false}, which is fine for our purposes.  Only the
+last argument to \adddef\ may be omitted; the remaining argument do
+not have default values.  If we wish to remove the truss element
+definition, then the \remdef\ function must be used.  The \remdef\
+function takes a single argument that is the name of the element to be
+removed.  In our case, the call would be {\tt remove\_definition
+("truss")}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Tips on using interactive mode}
+\label{burlap.interactive-tips}
+
+Most of the time, \burlap\ will be used in interactive mode:
+expressions will be typed in at the prompt and evaluated.  Functions
+are best created with an editor as a file which is then included.
+
+\begin{screen}
+\begin{verbatim}
+[1] system ("vi foo.b")
+[2] include ("foo.b")
+[3] system ("vi foo.b")
+[4] include ("foo.b")
+\end{verbatim}
+\end{screen}
+
+It soon becomes tedious to retype the same expressions.  If \burlap\
+is compiled with the \rl\ library, then you can use the built-in history
+mechanism.
+
+\begin{screen}
+\begin{verbatim}
+[1] system ("vi foo.b")
+[2] include ("foo.b")
+[3] !s
+[4] !i
+\end{verbatim}
+\end{screen}
+
+For those not familiar with {\tt csh} or {\tt bash}, {\tt !s} executes
+the last line that begins with {\tt s}.  Similarly, {\tt !i} executes
+the last line that begins with {\tt i}.  You can save yourself more
+typing by using the word completion abilities of the \rl\ library.
+Pressing the tab key will complete the current word.  If there is not
+a unique completion, then you will hear a bell and pressing the tab
+key again will list the completions.
+
+\begin{screen}
+\begin{verbatim}
+[1] sy <Tab>
+symmetric? system
+[1] system ("vi foo.b")
+[2] in <Tab>
+in                    integrate_hyperbolic  inv
+include               integrate_parabolic   
+[2] include ("foo.b")
+\end{verbatim}
+\end{screen}
+
+The default set of built-in completions includes all keywords such as
+{\tt function} and {\tt return}, intrinsic functions such as {\tt
+include} and {\tt sin}, and enumeration constants such as {\tt
+\&linear} and {\tt \&null}.  Inside a quoted string, the default set
+of completions is not used; instead, file names are completed.
+
+\begin{screen}
+\begin{verbatim}
+[1] include ("Examples/f <Tab>
+fe.b         find-dofs.b  foo.flt      foo_d.flt    
+[1] include ("Examples/f
+\end{verbatim}
+\end{screen}
+
+Using the completion mechanism can save a lot of typing, especially
+when referring to file names.  Another trick is to define your own
+aliases for common lines.
+
+\begin{screen}
+\begin{verbatim}
+[1] alias v system ("vi foo.b")
+[2] alias vi system ("vi !$")
+[3] alias print write (!*)
+[4] vi foo.b
+\end{verbatim}
+\end{screen}
+
+The first alias defines {\tt v} to be {\tt system ("vi foo.b")}.  The
+second is more general and defines {\tt vi} to be {\tt system ("vi
+!\$")}.  The string {\tt !\$} will be replaced with the last word on
+the line.  A complete description of the history expansion can be
+found in the documentation for the \rl library and for {\tt csh}.  The
+final alias, {\tt print}, is simply a convenient wrapper for the {\tt
+write} function.
+
+If \burlap\ is not compiled with the \rl\ library, you still have
+access to a limited form of aliasing.  The only expansion string legal
+in an alias is {\tt \%s} which will expand to the entire line except
+the first word.  A similar alias to {\tt vi} above would be {\tt
+system ("vi \%s")}.
+
+An alternative to writing aliases is to define your own convenience
+functions.  If you wish to be able to both edit and include a file
+then you can write a small function, called {\tt edit}, and place it
+in a file called {\tt edit.b} in your search path, as described in
+Section~\ref{burlap.syntax.function-call}.
+
+\begin{screen}
+\begin{verbatim}
+function edit (s)
+    system (concat ("vi ", s))
+    include (s)
+end
+\end{verbatim}
+\end{screen}
+
+Finally, it is important to realize that the \rl\ library capabilities
+and aliases work on lines, not on expressions.  History substitutions
+apply to the lines entered, not to the individual expressions on a
+line.  Similarly, aliases and history expansion characters are not
+recognized when \burlap\ is reading from a file.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Common error messages}
+\label{burlap.errors}
+
+This section attempts to explain some of the common error messages
+associated with using \burlap.  All error messages are prefixed with
+the name of the file and the number of the line that was found to be
+in error.  An error on a line may not be discovered until several
+lines later, so the line number may not be the line that actually
+contained the error.  If an error occurs in a function, then the
+function call is terminated and the error is propagated back to the
+outermost level.  In this case, the calling sequence is shown to
+assist in tracking down the cause of the error.  In the examples
+given, the file name and line number have been omitted.
+
+\begin{dispitems}
+
+\item[\tt type error in expression: function call to null]
+This error indicates that the function call or array index operators
+were applied to a {\tt null} expression such as {\tt foo ( )}, where
+{\tt foo} is {\tt null}.  This error often results from misspelling a
+variable name or from forgetting to declare a global variable using
+the {\tt global} declaration in a function body.  You can generally
+locate this error by searching for parentheses on the offending line.
+
+\item[\tt type error in expression: \it type \tt has no such field]
+The field index operator was applied to an object of the specified
+{\it type}, but the object has no such field.  You can generally
+locate this error by searching for a period on the given line.
+
+\item[\tt type error in expression: \it type1 operator type2]
+The specified {\it operator} does not allow operands of the specified
+types.  The way to fix this error is to determine what operand types
+are allowed, as discussed in Section~\ref{burlap.syntax.operators},
+and determine why one or more of your operands are of the incorrect
+type.
+
+\item[\tt parse error before \it string]
+At some time at or before {\it string}, the expression syntax was
+illegal.  Often, {\it string} is the cause of the error.  You should
+now be back at the top level prompt, in which case you can correct
+your error and try again.
+
+\item[\tt size mismatch in expression: ({\it a} x {\it b}) {\it operator}
+({\it c} x {\it d})]
+The types of the operands were legal for the specified {\it operator},
+but the sizes of the operands were illegal.  The legal operand sizes
+are discussed in Section~\ref{burlap.syntax.operators}.
+
+\end{dispitems}

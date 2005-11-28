@@ -1,0 +1,92 @@
+\setlength{\unitlength}{0.0125in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(470,390)(0,-10)
+\path(19,230)(184,230)
+\path(32,160)(32,0)
+\path(19,20)(184,20)
+\put(40,155){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = (0, 2000) (1.99, 2000)}}}}}
+\put(60,140){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}(2, 0) (3.99, 0) +}}}}}
+\path(32,230)(60,320)
+\path(60,230)(87,320)
+\path(87,230)(115,320)
+\path(115,230)(142,320)
+\path(142,230)(170,320)
+\dashline{4.000}(60,320)(60,230)
+\dashline{4.000}(87,320)(87,230)
+\dashline{4.000}(115,320)(115,230)
+\dashline{4.000}(142,320)(142,230)
+\dashline{4.000}(170,320)(170,230)
+\path(32,110)(60,110)
+\path(87,110)(115,110)
+\path(142,110)(170,110)
+\dashline{4.000}(60,110)(60,20)
+\dashline{4.000}(87,110)(87,20)
+\dashline{4.000}(142,110)(142,20)
+\dashline{4.000}(115,110)(115,20)
+\dashline{4.000}(170,110)(170,20)
+\path(240,230)(267,310)(295,230)
+	(322,310)(350,230)(377,310)(404,230)
+\path(240,20)(267,90)(322,90)(350,20)
+\path(387,230)(415,230)
+\path(240,160)(240,0)
+\path(226,20)(391,20)
+\path(240,370)(240,210)
+\path(226,230)(391,230)
+\put(177,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}t (s)}}}}}
+\put(177,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}t (s)}}}}}
+\path(32,370)(32,210)
+\put(12,105){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}2000}}}}}
+\put(245,125){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = t $<$ 3 ? 650/3*t : }}}}}
+\put(12,310){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}500}}}}}
+\put(56,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}5}}}}}
+\put(84,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}10}}}}}
+\put(111,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}15}}}}}
+\put(139,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}20}}}}}
+\put(60,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}2}}}}}
+\put(87,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}4}}}}}
+\put(115,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}6}}}}}
+\put(142,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}8}}}}}
+\put(40,125){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = (fmod(t, 4.0) $<$ 2.0 ? 2000 : 0)}}}}}
+\put(387,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}t (s)}}}}}
+\put(216,305){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}1500}}}}}
+\put(264,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}3}}}}}
+\put(326,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}9}}}}}
+\put(346,5){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}12}}}}}
+\put(223,85){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}650}}}}}
+\put(350,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}2}}}}}
+\put(295,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}1}}}}}
+\put(404,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}3}}}}}
+\put(415,215){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}t (s)}}}}}
+\put(260,340){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = (fmod(t, 1.0) $<$ 0.5 ? 3000*fmod(t, 0.5) :}}}}}
+\put(280,330){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}3000*(0.5 - fmod(t, 0.5)))}}}}}
+\put(70,335){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = 100*fmod(t, 5.0)}}}}}
+\put(260,355){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = (0, 0) (0.5, 1500) (1, 0) +}}}}}
+\put(70,350){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = (0, 0.0) (4.99, 500.0) +}}}}}
+\put(0,155){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}F (lbs)}}}}}
+\put(205,155){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}F (lbs)}}}}}
+\put(205,365){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}F (lbs)}}}}}
+\put(0,365){\makebox(0,0)[lb]{\smash{{{\SetFigFont{8}{9.6}{rm}F (lbs)}}}}}
+\put(245,140){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}F = (0, 0) (3, 650) (9, 650) (12, 0) (13, 0)}}}}}
+\put(265,115){\makebox(0,0)[lb]{\smash{{{\SetFigFont{7}{8.4}{sf}(t $<$ 9 ? 650 : (t $<$= 12 ? 650/3*(12 - t) : 0))}}}}}
+\end{picture}

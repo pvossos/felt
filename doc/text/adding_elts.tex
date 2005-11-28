@@ -1,0 +1,1347 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson  %
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{Adding Elements to \felt{}}
+\label{adding_elts}
+
+\section{How to get started}
+
+Adding additional element types to \felt{} is meant to be fairly 
+straightforward.  Coding an element definition is always an excellent way 
+to really understand the ins and outs of finite element analysis.       
+
+A good starting point is probably to look at the source code for the currently 
+available elements, not so much because they are mathematical / algorithmic 
+wonders, but simply because they provide examples of how the analyst has to 
+interface the mathematical code with the system code -- elements take up 
+memory so memory will need to be allocated; the generalized analysis routines 
+will expect that the element routines take certain parameters and return 
+certain values, or perhaps initialize certain arrays.  Besides simply defining 
+an element stiffness matrix, it is the responsibility of the element routines 
+to calculate equivalent nodal forces due to distributed loads and to calculate 
+their own stresses once the general routines have computed the nodal 
+displacements.  If you want to be able to do transient analysis, the same
+element set-up routine that initializes the element stiffness matrix
+must also build the element mass matrix.         
+
+If you're unfamiliar with the C programming language, you should probably
+start there.  You might be able to get away with just hacking something
+together based on existing elements, but efficiency and elegance will
+probably suffer.  The material in \cite{knr} is considered by many to be
+the definitive word on C; you may want to start there.  Other good books
+on C undoubtedly abound.  Another simple starting point for C novices would be
+section~\ref{algorithm.c} on understanding the data structures used in \felt{}.
+
+\section{Necessary definitions and functions}
+
+The general routines will expect three things to be defined.  Aside from 
+these three things the element routines can use whatever local functions 
+and methods 
+that they want.  There must be a definition struct defined for the element 
+type.  This structure contains information that everything else needs to know 
+about elements of a given type: symbolic name, shape, number of nodes, number 
+of nodes which define the shape, number of degrees of freedom per node, the 
+degrees of freedom which this element affects, and what functions to use for
+element setup and stress calculations.  Secondly, there must be a 
+routine to create and define the element stiffness matrix for elements of 
+this type.  The setup function should also calculate and fill-in the 
+equivalent nodal forces if there is a distributed load on an element and
+create the element mass matrix if necessary for the current analysis.  
+Lastly, 
+there has to be a routine which calculates the stress or internal loads on an 
+element.  If no stress information will be computed there must still be a 
+routine which tells the global routines that no stresses will be computed.  
+
+\subsection{The definition structure}
+
+From our previous discussion of the structures in \felt{} you might remember
+that each element had a pointer to a definition structure which looked like
+{\small
+\begin{screen}
+ \begin{verbatim}
+typedef struct definition {
+    char    *name;              /* element name                       */
+    int    (*setup) ( );        /* initialization function            */
+    int    (*stress) ( );       /* stress computation function        */
+    Shape    shape;             /* element dimensional shape          */
+    unsigned numnodes;          /* number of nodes in element         */
+    unsigned shapenodes;        /* number of nodes which define shape */
+    unsigned numstresses;       /* number of computed stress values   */
+    unsigned numdofs;           /* number of degrees of freedom       */
+    unsigned dofs [7];          /* degrees of freedom                 */
+    unsigned retainK;           /* retain element K after assemblage  */
+} *Definition;
+ \end{verbatim}
+\end{screen}}
+For an arbitrary element, foo, the definition structure might be filled out to
+look something like this:
+
+\begin{screen}
+ \begin{verbatim}
+struct definition fooDefinition = {   
+    "foo", fooEltSetup, fooEltStress, 
+    Linear, 2, 2, 3, {0, 1, 2, 3, 0, 0 , 0}, 0
+};
+ \end{verbatim}
+\end{screen}
+
+This defines an element for which the symblic name will be {\tt foo}.  It is
+a linear element with two total nodes, two nodes which define its shape
+and three DOF per node.  The general \felt{} routines will call the functions
+{\tt fooEltSetup} and {\tt fooEltStress} for element setup and stress 
+calculations.  The DOF array always starts with a zero in the
+0th position.  The rest of the array tells the general \felt{} routines that
+foo elements affect global DOF 1, 2, and 3 ({\tt Tx}, {\tt Ty}, and 
+{\tt Tz}) and that {\tt Tx} is its
+first DOF, {\tt Ty} its second and {\tt Tz} its third.  The last member of the
+structure is the flag to retain or destroy \mbox{{\tt element -> K}} after
+it has been assembled.  In this case we don't need it around so we set
+\mbox{{\tt element -> retainK}} to zero (false).  If you don't quite see 
+how this all works yet, it may help you to know that foo elements have the 
+same definition as truss elements in the actual \felt{} library.
+
+A slightly more complicated example is the definition structure for a beam.
+\begin{screen}
+ \begin{verbatim}
+struct definition beamDefinition = {
+    "beam", beamEltSetup, beamEltStress, 
+    Linear, 2, 2, 3, {0, 1, 2, 0, 0, 0, 3}, 1
+};
+ \end{verbatim}
+\end{screen}
+The difference between this definition and that for the foo element is that
+while beams affect three DOF, the third DOF is {\tt Rz} 
+(position six in the DOF array).  Also, we'll want to keep the element
+stiffness matrix around after we assemble it into the global stiffness
+matrix (beams use it for internal force calculations), so we set 
+\mbox{{\tt element -> retainK}} to 1 (true).
+
+For the general four to nine node isoparametric element (for plane stress),
+the definition structure is:
+\begin{screen}
+ \begin{verbatim}
+struct definition iso2d_PlaneStressDefinition = {
+    "iso2d_PlaneStress", iso2d_PlaneStressEltSetup, iso2d_PlaneStressEltStress,
+    Planar, 9, 4, 2, {0, 1, 2, 0, 0, 0, 0}, 0
+};
+ \end{verbatim}
+\end{screen}
+Here, the basic type is planar rather than linear, the total number of nodes
+is nine, the number of nodes which define the element shape is four (i.e.,
+the first four nodes completely define the geometric shape of the element)
+and the number of DOF per node is two.  Two-dimensional isoparametric
+elements only affect translations in the x and y directions (positions one and
+two in the DOFs array).  There is no need to retain the element stiffness
+matrix after assembling so \mbox{{\tt element -> retainK}} is set to 0 (false). 
+
+The definition structure is the only tricky part of setting up a new element.
+Once \felt{} knows how an element interacts and ``looks'' all that remains is
+for you to tell it how to define the element stiffness and
+mass matrices and how to 
+compute element stresses (or internal forces) given nodal displacements.  
+
+\subsection{Inside the element setup functions}
+
+For our mythical foo element the setup routine would look like this.
+\begin{screen}
+ \begin{verbatim}
+int fooEltSetup (element, mass_mode)   
+    Element    element;
+    char       mass_mode;
+{
+}
+ \end{verbatim}
+\end{screen}
+
+The name of the element setup function must match the function name given
+in the element definition structure.  
+The setup function must return an integer (the number of errors encountered
+in performing their respective function, zero on success) and must take
+a single element and a flag indicating the mass matrix to compute as input.
+If this is a static problem that flag will be zero.  If transient analysis
+is being performed then the flag will either be 'c' or 'l' depending on
+whether the setup routine should calculate a consistent or lumped mass
+matrix. If no element mass matrix is required then the mass\_mode will be zero.
+
+Given the element, you have access to the material property, distributed loads,
+and nodes assigned to that element.  The {\tt fooEltSetup}
+ routine's primary
+responsibility is to allocate and fill out the element stiffness matrix
+(and mass matrix if necessary) for this element.  However, if there are 
+distributed loads on this element,
+then this routine must also compute the affects of those loads on the element's
+nodes' equivalent forces.
+
+\subsection{Inside the element stress function}
+
+Like the {\tt fooEltSetup} routine, the {\tt fooEltStress} function
+must also be defined in a standard way:
+\begin{screen}
+ \begin{verbatim}
+int fooEltStress (element)      
+    Element    element;
+{
+}
+ \end{verbatim}
+\end{screen}
+
+The fooEltStress routine's only responsibility is to fill
+a Stress structure for that element.  This will likely involve 
+computations with the nodal displacements (accessible via 
+\mbox{{\tt element -> node[j] -> dx[k]}}) and element geometry.  If necessary,
+element stresses or internal forces can be adjusted for equivalent nodal
+loads.  
+
+There is no pre-allocated space for element stresses because
+the number of stresses and the number of magnitudes for each stress
+structure vary so greatly from element to element.  For this reason,
+you as the element writer are responsible for allocating an array of
+stress structures (basically you will need one structure for each 
+point within the element where you will compute stresses; you should
+also set \mbox{{\tt element -> ninteg}} to this number) and for
+the stress magnitude array within each of these structures.  For example
+for a three-dimensional beam element, six stress components are computed
+at both ends (the six possible internal forces).  In this case then,
+we need to allocate space for two stress structures, set 
+\mbox{{\tt element -> ninteg}} to two, and allocate space for six magnitudes
+in each stress structure.
+
+\section{The \felt{} matrix and memory allocation routines}
+
+When looking through any of the \felt{} code, you will notice that
+we make use of several convenience functions and macros.  The most
+important of these deal with two additional variable types that \felt{} defines.
+Besides the general finite element type data structures, \felt{} makes 
+available a {\tt Matrix} and a {\tt Vector} type.  Because these
+types are really structures, a reliable way to get at the data is 
+\mbox{{\tt MatrixData (a) [1][1]}} or \mbox{{\tt VectorData (a) [7]}}.  These 
+macros simply expand to \mbox{{\tt a -> data[1][1]}} and 
+\mbox{{\tt a -> data[7][1]}}.  The macro method is preferrable simply because
+the actual definition of the types may change as \felt{} develops and the 
+macros will make any such changes transparent.
+
+The following list illustrates how each of the matrix routines can
+be used.  In general, {\tt a}, {\tt b}, and {\tt c} represent variables
+of type {\tt Matrix} or {\tt Vector}, {\tt width} and {\tt height} define 
+dimensions and status is an integer error code. Note that
+the actual operational functions (transpose, multiply, add, etc. as opposed to
+create, delete) can take either matrices or vectors interchangeably.  
+Appropriate dimensions must always match of course.  All matrices that
+go into the matrix routines (both source and destination matrices) must
+be previously created by one of the matrix creation routines.  The operational
+matrix routines (as opposed to create and destroy functions) all return 
+integer status codes with zero indicating a successful operation; non-zero
+return values are defined in {\tt include/status.h}.  
+Finally, {\tt Vector} and {\tt Matrix} types are unit offset.  The create and 
+destroy routines should make this transparent to the developer.
+
+\begin{dispitems}
+\item [\tt a = CreateMatrix (width,height)]
+ Creates matrix of the given width and height.  This function allocates
+ space and initializes fields within the matrix structure.
+
+\item [\tt a = CreateVector (height)]
+ Creates a vector of length {\em height}.
+
+\item [\tt DestroyMatrix (a)]
+ This will free the memory associated with a previously created matrix.
+ Once destroyed a matrix variable should not be used again until it
+ is recreated.
+
+\item [\tt DestroyVector (a)]
+ This will free the memory associated with a previously created vector.
+
+\item [\tt status = MultiplyMatrices (a,b,c)]
+ Multiplies matrices {\tt b} and {\tt c} and stores the result in {\tt a}.
+ This is one of the few functions in which your destination matrix {\tt a} 
+ cannot be one of your source matrices, {\tt b} or {\tt c}.
+
+\item [\tt status = TransposeMatrix (a,b)]
+ Transposes matrix {\tt b} and puts the result into {\tt a}.  
+ Source and destination matrices cannot be the same.
+
+\item [\tt status = MirrorMatrix (a,b)]
+ This function is useful for filling in symmetric matrices.  Given a symmetric
+ matrix {\tt b} with only the diagonal and above diagonal terms filled in,
+ this function will complete all entries below the diagonal.  The result,
+ {\tt a} will be the complete symmetric matrix.
+
+\item [\tt status = ZeroMatrix (a)]
+ Fills all entries in matrix {\tt a} with zeros.
+
+\item [\tt status = ScaleMatrix (a,b,x,y)]
+ Given a matrix {\tt b}, multiplies all terms by the scalar factor
+ {\tt x} and then adds {\tt y}.  The result is stored in {\tt a}.
+
+\item [\tt status = AddMatrices (a,b,c)]
+ Adds matrices {\tt b} and {\tt c} and stores the result in {\tt a}.
+
+\item [\tt status = SubtractMatrices (a,b,c)]
+ Subtracts matrix {\tt c} from matrix {\tt b} and stores the result in {\tt a}.
+\end{dispitems}
+
+In addition to the matrix functions, we often use several convenient macros
+to make memory allocation for non-matrix types a little easier.  Examples of 
+these macros are 
+
+\begin{dispitems}
+\item [\tt ptr = Allocate(type,size)]
+ This is equivalent to \mbox{{\tt ptr = (type *) malloc (sizeof(type)*size)}},
+ i.e., this creates space for {\tt ptr} to hold {\tt size} items each of type
+ {\tt type}. 
+
+\item [\tt UnitOffset (ptr)]
+ The allocation macro creates a matrix or vector that is zero offset.  Since
+ most \felt{} arrays are one offset, we use this macro to make the 
+ change.
+
+\item [\tt ZeroOffset (ptr)]
+ If {\tt ptr} has been previously unit offset, this macro will reset it 
+ zero offset.  You must use this macro before de-allocating a pointer
+ that has previously been unit offset.
+
+\item [\tt Deallocate(ptr)]
+ This frees any memory associated with {\tt ptr}. 
+\end{dispitems}
+
+\section{Element library convenience functions}
+
+The file {\tt lib/Elements/misc.c} contains several functions which 
+are useful across a wide variety of element types.  If you want to use these
+functions you should {\tt \#include "misc.h"} in your source file.
+These functions are
+
+\begin{dispitems}
+\item [\tt D = PlaneStressD (element)]
+ Returns a constitutive matrix suitable for use in plane stress analysis.
+
+\item [\tt D = PlaneStrainD (element)]
+ Returns a constitutive matrix suitable for use in plane strain analysis.
+
+\item [\tt l = ElementLength (element, n)]
+ Given a dimension, {\tt n}, this function returns the length of an 
+ element in {\tt n} dimensions.
+
+\item [\tt GaussPoints (n, points, weights)]
+ Given the number of Gaussian integration points, {\tt n} and the addresses
+ of two pointers to double, {\tt weights} and {\tt points}, this will fill 
+ these two arrays with the appropriate values for use in Gaussian quadrature.  
+ Currently, this function only knows the values for 1, 2, and 3 point
+ Gaussian quadrature. 
+
+\item [\tt ResolveHingeConditions (element)]
+ If you want your element to deal with the possibility of hinged DOFs then
+ you can use this routine to modify the element stiffness matrix 
+ appropriately. Generally, you would call this routine only after completely
+ defining \mbox{{\tt element -> K}}.  The given element's nodes are checked for 
+ hinged DOF; if a DOF is hinged the the coefficients of
+ the element stiffness matrix are adjusted according to the following
+ procedure: given a hinged DOF, $dof$, then for all entries in 
+ $k$ (the element stiffness matrix) not associated with $dof$ (all entries
+ not in row or column $dof$), 
+\begin{equation}
+ k(i,j) = k(i,j) - {k(dof,j) \over k(dof,dof)}k(i,dof).
+\end{equation}
+ The inherent problem in this method of dealing with hinged conditions is
+ that we cannot calculate any displacements associated with the hinged DOF.
+ In general, these displacements will not be zero. 
+
+\item [\tt SetupStressMemory (element)]
+ After settting \mbox{{\tt element -> ninteg}} to determine the number of 
+ points in your element for which you want to calculate stresses, you
+ can call this routine to allocate all of the necessary memory for
+ stress structures and the arrays of stress values in those structures.
+
+\item [\tt SetEquivalentForceMemory (element)]
+ This routine will allocate space for the {\tt eq\_force[]} array on an
+ element's nodes if such an allocation has not already been done from
+ a previous element.
+
+\item [\tt MultiplyAtBA (C, A, B)]
+ Given matrices A, B and a pre-allocated destination matrix C, this routine
+ will form the matrix product of A(transpose)*B*A.  This function is
+ particularly useful for doing the multiplication TtKT without any
+ temporary storage and without ever explicitly forming the transpose.
+\end{dispitems}
+
+Finally, in order to insure a consistent error protocol across the
+different interfaces to \felt{}, there are a few error routines which
+your routines should call when they encounter trouble (either of 
+the recoverable or irrecoverable variety).
+
+\begin{dispitems}
+\item [\tt error (error\_message, var1, var2, ...)]
+ This is the general routine for reporting a non-fatal (recoverable) error.
+ The calling syntax is exactly like that for {\tt printf}.  There is a format
+ string ({\tt error\_message}) and a variable length list of variables which
+ are substituted into the message.
+
+\item [\tt Fatal (error\_message, var1, var2, ...)]
+ This is the routine for non-recoverable errors.  Generally we use this
+ routine when memory allocation fails.  After displaying the message
+ (which again should look like the syntax for {\tt printf}) the
+ program will automatically exit.
+
+\item [\tt AllocationError (element, string)]
+ This is a simple little convenience routine for fatal errors during
+ memory allocation in the element routines.  The message displayed will
+ be {\tt allocation error computing element {\em n string}}
+ where {\tt {\em n}} is the element number and {\tt {\em string}} is some
+ short descriptor of the program location (i.e., {\tt stiffness matrix}).
+\end{dispitems}
+
+\section{Putting it all together}
+
+Once the routines have been written, you'll need to update the Makefile for
+the element library and the initialization routine that tells FElt applications
+what kinds of elements are available by default. Add the filename of your new 
+element to the {\tt OBJS=} line in \mbox{\tt lib/Elements/Makefile}.  You can 
+type {\tt make} in that directory to make sure the code 
+compiles.  Once you think you've got all the bugs worked out and the new
+element library is made, you need to add two lines to the initialization 
+procedures in \mbox{\tt lib/Felt/initialize.c}.  To the list of 
+\mbox{\tt extern struct} declarations in that file add a line that looks like 
+\begin{screen}
+ \begin{verbatim}
+extern struct definition fooDefinition;
+ \end{verbatim}
+\end{screen}
+and to the list of {\tt AddDefinition} function calls in the function
+{\tt add\_all\_definitions} add a line that looks like
+\begin{screen}
+ \begin{verbatim}
+AddDefinition (&fooDefinition);
+ \end{verbatim}
+\end{screen}
+(replace {\tt fooDefinition} with whatever variable name you gave to the
+definition structure for your element of course). Once those changes are 
+made just do a make in \mbox{\tt lib/Felt} and then a make in each application 
+directory (e.g., \mbox{\tt src/Velvet}, \mbox{\tt src/Felt}) to relink the 
+applications with the modified libraries.  Your new element should now be 
+ready for use.  Writing up a simple test file that uses the new element and 
+running this through the command line application {\em felt} is usually the 
+easiest way to check numerical results.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A detailed example}
+
+If everything above is still a bit unclear, fear not; it's really not as 
+bad as it looks.  Let's walk through a step-by-step description of how
+the Timoshenko beam element was added to the \felt{} library.  This is
+a very simple element.  We only consider bending and shear deformation
+(no axial stiffness is taken into account) and we don't allow distributed loads
+applied in the global DOF.  For some basic mathematical details for
+this element refer to section~\ref{elements.timoshenko}.  More details
+are available in \cite{kosmatka:timoshenko,htk:simple,td:hierarchy}.
+
+In general, all the code for a given element type will be contained in one
+source file.  Hopefully the routines in this file will be completely
+specific to that element type.  In a perfect world, common functionality
+would be available as convenience functions.  This is the basic model
+that we will follow here.  All of the following code is taken from
+the file {\tt timoshenko.c} in the directory {\tt lib/Elements}.
+
+We start by including the necessary header
+files, prototyping our local functions (we make them {\tt static} to 
+insure that they will be local to this file), and setting up the 
+{\tt definition} structure.
+
+{\small
+\begin{screen}
+ \begin{verbatim}
+/************************************************************************
+ * File:        timoshenko.c                                            *
+ *                                                                      *
+ * Description: This file contains the definition structure and         *
+ *              set-up functions for a Timoshenko beam element.         *
+ *                                                                      *
+ * History:     V1.4 by Jason Gobat and Darren C. Atkinson              *
+ ************************************************************************/
+
+# include <math.h>
+# include "allocate.h"
+# include "element.h"
+# include "misc.h"
+
+        /*      
+         * Here's the definition structure.  This is a very simple
+         * implementation, 2 nodes, possible effect on 3 global DOF
+         * per node.  We need to prototype the setup and stress functions
+         * first thing so we can use them in the definition declaration.
+         */
+
+int timoshenkoEltSetup ( );
+int timoshenkoEltStress ( );
+
+struct definition timoshenkoDefinition = {
+    "timoshenko",               /* the symbolic name used in input files   */
+    timoshenkoEltSetup,         /* the element setup function              */
+    timoshenkoEltStress,        /* the element stress function             */
+    Linear, 			/* The shape of this element		   */
+    2, 				/* 2 nodes per element			   */
+    2, 				/* 2 nodes define the shape (it's a line!) */
+    2, 				/* 2 magnitudes in each stress structure   */
+    3, 				/* 3 global DOF / node			   */
+   {0, 1, 2, 6, 0, 0, 0},      	/* DOF 1 is Tx, DOF 2 is Ty DOF 3 is Rz .. */
+    1				/* retain stiffness after assembling	   */
+};
+
+        /*
+         * We'll declare these three functions as static because other
+         * people might use these same names for their element.  The
+         * static declaration makes them private to this file.
+         * There is nothing magical about them.  They could be called
+         * anything, your element may not use any local functions,
+         * etc., etc.  It's all a matter of preference and style. 
+         */
+
+static Matrix LocalK ( );
+static Matrix TransformMatrix ( );
+static Matrix LumpedMassMatrix ( );
+static Matrix ConsistentMassMatrix ( );
+static int    EquivNodalForces ( );
+
+ \end{verbatim}
+\end{screen}}
+
+The next thing we want to do is define the element setup routine which
+will define \mbox{{\tt element -> K}} for every Timoshenko beam element.
+All this function really does is set some memory, call a few functions
+and do a few matrix multiplications.  The brute force filling in of
+matrices occurs in our own private routines. 
+
+{\small
+\begin{screen}
+ \begin{verbatim} 
+        /*
+         * The element setup function (the one that the general
+         * routines actually call to define element -> K for
+         * Timoshenko beams).  We'll break it up a little more
+         * for our own internal purposes and call some functions
+         * of our own to actually fill out the guts of the thing.
+         */
+
+int timoshenkoEltSetup (element, mass_mode)
+    Element        element;
+    char           mass_mode;
+{
+    int            count;       /* a count of errors encountered           */
+    Matrix         T;           /* transform matrix                        */
+    Matrix         khat;        /* local coordinate stiffness matrix       */
+    Matrix         mhat;        /* local coordinate mass matrix            */
+    
+        /*
+         * Since we're nice and we like to do as much error checking
+         * as possible, we'll also check to make sure that all necessary
+         * material properties are set for this element
+         */
+
+    count = 0;
+    if (element -> material -> E == 0.0) {
+        error ("timoshenko element %d has 0.0 for Young's modulus (E)",
+               element -> number);
+        count++;
+    }
+    if (element -> material -> Ix == 0.0) {
+        error ("timoshenko element %d has 0.0 for moment of inertia (Ix)",
+               element -> number);
+        count++;
+    }
+    if (element -> material -> G == 0.0) {
+        error ("timoshenko element %d has 0.0 for bulk modulus (G)",
+               element -> number);
+        count++;
+    }
+    if (element -> material -> A == 0.0) {
+        error ("timoshenko element %d has 0.0 for bulk modulus (G)",
+               element -> number);
+        count++;
+    }
+   
+        /*
+         * nu and kappa are somewhat special because we have to have
+         * at least one.  If we have nu we'll use it to estimate
+         * element -> kappa according to Cowper's (1966) approximation.
+         * If we have kappa we will of course always use it.  If
+         * we have neither, it's an error
+         */
+
+    if (element -> material -> kappa == 0.0) {
+        if (element -> material -> nu == 0.0) {
+            error ("timoshenko element %d has 0.0 for Poisson's ratio (nu)",
+                   element -> number);
+            count++;
+        }
+        else {
+            element -> material -> kappa = 
+                 10.0*(1.0 + element -> material -> nu)/
+                 (12.0 + 11.0*element -> material -> nu);
+        }
+    }
+
+        /*
+         * if we've had any errors there is no point in continuing
+         */
+
+    if (count)
+        return count;
+
+        /*
+         * get the local stiffness matrix and the transform matrix.
+         * we never allocated any memory for these two because the
+         * functions that we are calling will do that.
+         */
+
+    khat = LocalK (element);
+    if (khat == NullMatrix)
+       return 1;
+ 
+    T = TransformMatrix (element);
+
+        /*
+         * We can form the element stiffness matrix now through
+         * some simple matrix multiplications.  The special multiply 
+         * function here just saves us having to allocate
+         * some temporary space and actually transposing the transform
+         * matrix, it will simply carry out k = T(trans) * K * T
+         */
+
+    element -> K = CreateMatrix (6,6);
+    if (element -> K == NullMatrix)
+        AllocationError (element, "stiffness matrix");
+
+    MultiplyAtBA (element -> K, T, khat);
+
+        /*
+         * Things can get a little tricky here; we'll check if there
+         * are any distributed loads - if there are we need to resolve
+         * them and modify this element's node's equivalent nodal forces.
+         * If not we're home free.  In this case I have
+         * relegated all the distributed load handling to a separate
+         * little module.
+         */
+
+    if (element -> numdistributed > 0) {
+        count = EquivNodalForces (element, Tt, NULL, 1);
+        if (count);
+            return count;
+    }
+        
+        /* 
+         * there's also the possibility that some of this element's nodes
+         * have a hinged DOF ... that's easy to deal with because we have a
+         * convenience routine to do all the checking and modifying for us.
+         */
+
+    ResolveHingeConditions (element);
+
+	/*
+	 * check to see if we need to form a mass matrix.  If we 
+	 * need to we call a local function just like we did for
+	 * the local stiffness matrix (depending on the mass_mode)
+	 * then use the same multiplication function to transform
+	 * to global coordinates.
+	 */
+
+    if (mass_mode) {
+        if (mass_mode == 'c')
+           mhat = ConsistentMassMatrix (element);
+        else if (mass_mode == 'l')
+           mhat = LumpedMassMatrix (element);
+
+        if (mhat == NullMatrix)
+           return 1;
+
+        element -> M = CreateMatrix (6,6);
+        if (element -> M == NullMatrix)
+            AllocationError (element, "mass matrix");
+
+        MultiplyAtBA (element -> M, T, mhat);
+    }
+
+        /*
+         * we made it here, everything must have worked!
+         */
+
+    return 0;
+}
+ \end{verbatim}
+\end{screen}}
+
+Not bad, right?  Note our use of \mbox{{\tt ResolveHingeConditions}} in the
+above because we want these elements to be able to deal with hinged
+DOF.  For many elements, hinges are meaningless and this check
+would not be necessary.
+
+The next function we need is the element stress routine.  Again, this
+is pretty simple because we do a lot of the work elsewhere in this case.
+In order to retrieve the four internal forces that we are interested
+in, all we need to do is transform the element stiffness matrix back
+to local coordinates, transform the nodal displacements back to local
+coordinates, multiply and subtract any equivalent nodal forces.
+
+{\small
+\begin{screen}
+ \begin{verbatim}
+        /*
+         * The element stress function that actually gets called
+         * to fill in the element's stress structures.  I realize
+         * that a lot of this seems awfully inefficient ... beam type
+         * elements are a bit of an anomaly because they need their
+         * stiffness matrix back and a bunch of local<->global transforms.
+         */
+
+int timoshenkoEltStress (element)
+    Element         element;
+{
+    unsigned        i;                  /* loop index                    */
+    int             count;              /* count of errors               */
+    static Vector   dlocal = NULL;      /* local nodal displacements     */
+    static Vector   d;                  /* global nodal displacements    */
+    static Vector   f;                  /* actual internal forces        */
+    Vector          equiv;              /* equivalent nodal forces       */
+    Matrix          T;                  /* transform matrix              */
+    static Matrix   khat;               /* local stiffness matrix        */
+    static Matrix   Tt;                 /* transpose of transform        */
+    static Matrix   temp;               /* temporary matrix for multiply */
+
+        /*
+         * our usual trick to set-up the matrices and vectors that
+         * we need memory for, but that are really just local to 
+         * this function.
+         */
+
+    if (dlocal == NULL) {
+        dlocal = CreateVector (4);
+        d = CreateVector (6);
+        f = CreateVector (4);
+        khat = CreateMatrix (4,4);
+        Tt = CreateMatrix (6,4);
+        temp = CreateMatrix (4,6);
+
+        if (dlocal == NullMatrix || d == NullMatrix || f == NullMatrix ||
+            khat == NullMatrix || Tt == NullMatrix)
+            AllocationError (element, "stresses");
+    }
+        
+        /*
+         * set the number of points where we will calculate stresses.
+         * In this case it's two (one at each end).
+         */
+
+    element -> ninteg = 2;
+
+        /*
+         * Fill out a vector with the element's nodal displacements.
+         * These are in global coordinates of course.  We need to
+         * do a transformation to get them into local coordinates.
+         */
+
+    VectorData (d) [1] = element -> node[1] -> dx[Tx];
+    VectorData (d) [2] = element -> node[1] -> dx[Ty];
+    VectorData (d) [3] = element -> node[1] -> dx[Rz];
+    VectorData (d) [4] = element -> node[1] -> dx[Tx];
+    VectorData (d) [5] = element -> node[2] -> dx[Ty];
+    VectorData (d) [6] = element -> node[2] -> dx[Rz];
+
+    T = TransformMatrix (element);
+
+    MultiplyMatrices (dlocal, T, d);
+   
+        /*
+         * We already have the element stiffness matrix because we
+         * set element -> retainK = 1 in the definition structure.  This
+         * means that the global stiffness assembly routine didn't
+         * trash element -> K after it was done with it and we can
+         * use it again.  We will have to transform it back to local
+         * coordinates, however.
+         */
+
+    TransposeMatrix (Tt, T);
+    MultiplyMatrices (temp, T, element -> K);
+    MultiplyMatrices (khat, temp, Tt);
+
+        /*
+         * we can get the internal force vector through a simple
+         * matrix multiplication.
+         */
+
+    MultiplyMatrices (f, khat, dlocal);
+
+        /*
+         * Of course, we may need to modify that for equiv nodal forces
+         */
+
+    if (element -> numdistributed > 0) {
+        count = EquivNodalForces (element, NULL, &equiv, 2);
+        if (count)
+            return count;
+
+        for (i = 1; i <= 4; i++)
+            VectorData (f) [i] -= VectorData (equiv) [i];
+    }
+
+        /*
+         * set-up some memory for the stress structure and for the values
+         * in the stress structure.  We'll just use a quicky little
+         * convenience routine to do it for us.  It's important to
+         * set element -> ninteg before we call this function.
+         */
+
+    SetupStressMemory (element);
+
+        /*
+         * establish the location of the stresses and the magnitudes
+         * of the stresses at each point.  This particular loop
+         * only works because there are two stress points and two
+         * stress values at each point.
+         */
+
+
+    for (i = 1; i <= 2; i++) {
+        element -> stress[i] -> x = element -> node[i] -> x;
+        element -> stress[i] -> y = element -> node[i] -> y;
+
+        element -> stress[1] -> values[i] = VectorData (f)[i];
+        element -> stress[2] -> values[i] = VectorData (f)[i+2];
+    }
+    
+    return 0; 
+}
+ \end{verbatim}
+\end{screen}}
+
+Now we get into the few routines that are local to this file (i.e., private
+routines which we would only call when we were defining Timoshenko beam
+elements).  The first of these simply fills in the $4 \times 4$ local stiffness
+matrix.  There is no fancy integration here because we know how it
+all turns out so we save ourselves some computations by plugging straight
+into the entries in the matrix.  The second of these two routines will
+compute a transformation matrix for these elements.
+
+{\small
+\begin{screen}
+ \begin{verbatim}
+        /* 
+         * Our own function to define the stiffness matrix in
+         * local coordinates.
+         */
+
+static Matrix LocalK (element)
+    Element       element;
+{
+    static Matrix k = NULL;     /* the local stiffness matrix          */
+    double        L;            /* the element length                  */
+    double        phi;          /* bending stiffness / shear stiffness */
+    double        factor;       /* common factor in stiffness matrix   */
+
+        /*
+         * We use a trick to make sure we only allocate this memory
+         * once and then use it over and over again each time we need to
+         * create an element of this kind.
+         */
+
+    if (k == NULL) {
+        k = CreateMatrix (4,4);
+
+        if (k == NullMatrix)
+            AllocationError (element, "local stiffness");
+    }
+
+    L = ElementLength (element, 2);
+    if (L <= TINY) {
+        error ("length of element %d is zero to machine precision",
+               element -> number);
+        return NullMatrix;
+    }   
+
+    phi = 12.0/(L*L)*(element -> material -> E*element -> material -> Ix/
+                      (element -> material -> kappa*
+                       element -> material -> G*element -> material -> A));
+
+        /*
+         * We know how the integration works out for the stiffness
+         * matrix so we're just going to fill it out an entry at
+         * a time.  For some element types this wouldn't be possible and
+         * we would do some integrating right here to fill in k.
+         * Also, because this is a symmetric matrix we'll just
+         * fill in everything above the diagonal and then use MirrorMatrix
+         */
+
+   MatrixData (k) [1][1] = 12.0;
+   MatrixData (k) [1][2] = 6.0*L;
+   MatrixData (k) [1][3] = -12.0;
+   MatrixData (k) [1][4] = 6.0*L;
+   MatrixData (k) [2][2] = (4.0 + phi)*L*L;
+   MatrixData (k) [2][3] = -6.0*L;
+   MatrixData (k) [2][4] = (2.0 - phi)*L*L;
+   MatrixData (k) [3][3] = 12.0;
+   MatrixData (k) [3][4] = -6*L;
+   MatrixData (k) [4][4] = (4.0 + phi)*L*L;
+
+   MirrorMatrix (k,k);
+
+        /*
+         * the above numbers aren't quite right, we've got a term out
+         * front of the matrix that we need to scale the entire
+         * matrix by
+         */
+
+   factor = (element -> material -> E*element -> material -> Ix)/
+            ((1.0 +phi)*L*L*L);
+
+   ScaleMatrix (k, k, factor, 0.0);
+
+        /*
+         * that's all for this part
+         */
+
+   return k;
+}
+
+        /*
+         * a simple little function to compute the transform matrix
+         * for a simple 2d beam element with no axial DOF.
+         * This should be a convenience routine, but none of the other
+         * elements actually use this one because they are more complicated.
+         */
+
+static Matrix TransformMatrix (element)
+    Element        element;
+{
+    double         s,c;         /* direction cosines                    */
+    static Matrix  T = NULL;    /* transform matrix to return           */
+    double         L;           /* element length                       */
+
+        /*
+         * no surprise here, we only want to allocate memory for this
+         * guy once!
+         */
+
+    if (T == NULL) {
+       T = CreateMatrix (4,6);
+
+       if (T == NullMatrix) 
+           AllocationError (element, "transform matrix");
+    }
+
+        /*
+         * This is a pretty sparse matrix so we'll just zero it out
+         * then fill in the few relevant entries. 
+         */
+
+    ZeroMatrix (T);
+
+    L = ElementLength (element, 2);
+    c = (element -> node[2] -> x - element -> node[1] -> x) / L;
+    s = (element -> node[2] -> y - element -> node[1] -> y) / L;
+
+    MatrixData (T) [1][1] = -s;
+    MatrixData (T) [1][2] = c;
+    MatrixData (T) [2][3] = 1.0;
+    MatrixData (T) [3][4] = -s;
+    MatrixData (T) [3][5] = c;
+    MatrixData (T) [4][6] = 1.0;
+
+    return T;
+}
+ \end{verbatim}
+\end{screen}}
+
+Now we need two local functions to create the two different kinds of
+mass matrices.  They look an awful lot like the local stiffness matrix
+because once again we don't actually need to do any numerical integration;
+we know how it all turns out so we just have to fill in some matrix entries.
+
+\begin{screen}
+ \begin{verbatim}
+	/* 
+	 * much like the local K function above all we do here is fill in
+	 * the mass matrix - this function fills it out for consistent
+	 * mass, the following function is used if the user wanted a lumped
+	 * mass
+	 */
+
+static Matrix ConsistentMassMatrix (element)
+    Element	   element;
+{
+    static Matrix m = NULL;    /* the local stiffness matrix           */
+    double        L;           /* the element length                   */
+    double        phi;         /* bending stiffness / shear stiffness  */
+    double        phi2;        /* phi squared                          */
+    double        const1;      /* constant term for rotational mass    */
+    double        const2;      /* constant term for translational mass */
+
+    if (m == NULL) {
+        m = CreateMatrix (4, 4);
+
+        if (m == NullMatrix)
+            AllocationError (element, "mass matrix");
+    }
+
+	/*
+	 * the constants that we'll need, including the constant terms
+	 * in front of the rotational (first terms) and translational
+	 * (second terms) portions of the matrix.
+	 */
+
+    L = ElementLength (element, 2);
+    phi = 12.0/(L*L)*(element -> material -> E*element -> material -> Ix/
+                      (element -> material -> kappa*
+                       element -> material -> G*
+                       element -> material -> A));
+    phi2 = phi*phi;
+    const1 = element -> material -> rho * 
+             element -> material -> Ix /
+             (30.0*(1.0 + phi)*(1.0 + phi)*L);
+    const2 = element -> material -> rho * 
+             element -> material -> A * L /
+             (210.0*(1.0 + phi)*(1.0 + phi));
+
+	/*
+	 * fill out the top half of the mass matrix (no need to 
+	 * explicitly integrate of course)
+	 */
+
+   MatrixData (m) [1][1] = 36.0*const1 + 
+                           (70.0*phi2 + 147.0*phi + 78)*const2;
+   MatrixData (m) [1][2] = -L*(15.0*phi - 3.0)*const1 + 
+                           (35.0*phi2 + 77.0*phi + 44.0)*L/4.0*const2;
+   MatrixData (m) [1][3] = -36.0*const1 + 
+                           (35.0*phi2 + 63.0*phi + 27.0)*const2;
+   MatrixData (m) [1][4] = -L*(15.0*phi - 3.0)*const1 - 
+                           (35.0*phi2 + 63.0*phi + 26.0)*L/4.0*const2;
+   MatrixData (m) [2][2] = (10.0*phi2 + 5.0*phi + 4)*L*L*const1 +
+                           (7.0*phi2 + 14.0*phi + 8.0)*L*L/4.0*const2;
+   MatrixData (m) [2][3] = -MatrixData (m) [1][4];
+   MatrixData (m) [2][4] = (5.0*phi2 - 5.0*phi - 1.0)*L*L*const1 -
+                           (7.0*phi2 + 14.0*phi + 6.0)*L*L/4.0*const2;
+   MatrixData (m) [3][3] = 36.0*const1 + (70.0*phi2 + 
+                           147.0*phi + 78.0)*const2;
+   MatrixData (m) [3][4] = -MatrixData (m) [1][2];
+   MatrixData (m) [4][4] = (10.0*phi2 + 5.0*phi + 4.0)*L*L*const1 +
+                           (7.0*phi2 + 14.0*phi + 8.0)*L*L/4.0*const2;
+
+	/*	
+	 * complete it by mirroring
+	 */
+
+   MirrorMatrix (m, m);
+
+	/*
+	 * and we're done;
+	 */
+
+   return m;
+}
+
+static Matrix LumpedMassMatrix (element)
+    Element	   element;
+{
+    static Matrix m = NULL;       /* the local stiffness matrix	 */
+    double        factor;         /* constant term               */
+    double        I_factor;       /* inertia term for rotation   */
+    double        L;              /* element length              */
+
+    if (m == NULL) {
+        m = CreateMatrix (4, 4);
+
+        if (m == NullMatrix)
+            AllocationError (element, "mass matrix");
+
+        ZeroMatrix (m);
+    }
+    
+    L = ElementLength (element, 2);
+    factor = L * element -> material -> rho * element -> material -> A / 2;
+    I_factor = factor*L*L/12;
+
+    MatrixData (m) [1][1] = factor;
+    MatrixData (m) [2][2] = I_factor;
+    MatrixData (m) [3][3] = factor;
+    MatrixData (m) [4][4] = I_factor;
+
+    return m;
+}
+ \end{verbatim}
+\end{screen}
+
+The last local function is the routine to compute equivalent nodal
+loads based on distributed loads which the user has applied to this
+element.  These routines can get kind of tricky because there
+is a lot of error checking and lots of different possibilities
+that we have to deal with (directions, node ordering, etc.).  Furthermore,
+this one needs to take care of two different ways in which it might
+be called.  The stiffness function calls this routine to set the
+equivalent forces on its nodes.  We get these forces by transforming
+our equivalent force vector to global coordinates and then adding the terms
+of this global vector onto the {\tt eq\_force[]} arrays of the element's nodes.
+The stress function calls this routine because it needs to adjust the internal 
+force vector to account for equivalent nodal forces.  It only needs
+the basic vector in local coordinates.
+
+{\small
+\begin{screen}
+ \begin{verbatim}
+        /*
+         * We need to compute the equivalent nodal load
+         * vector here. Just for convenience we are going to call 
+         * this function in two different ways (mode=1 and mode=2).
+         * The first way is for the element stiffness function
+         * which just wants to get the forces applied to the 
+         * element's nodes.  The second is for the stress routine
+         * which actually needs the equiv force vector in local coordinates.
+         * There are lots of ways to handle all these cases;
+         * see the Bernoulli beam elements for example. In mode 1,
+         * eq_stress can be NULL, in mode 2, Tt can be NULL.
+         */
+
+static int EquivNodalForces (element, Tt, eq_stress, mode)
+    Element        element;
+    Matrix         Tt;                  /* passing it in saves a few FLOPs */ 
+    Vector         *eq_stress;          /* vector pointer to set in mode 2 */
+    int            mode;                /* mode of operation               */
+{
+    static Vector  equiv = NULL;        /* the equiv vector in local coord */
+    static Vector  eq_global;           /* equiv in global coordinates     */
+    double         wa, wb;              /* values of load at nodes         */
+    double         L;                   /* the element length              */
+    unsigned       i,j;                 /* some loop conuters              */
+    double         factor;              /* constant factor for sloped load */
+    double         phi;                 /* bending / shear stiffness       */
+    int            count;               /* error count                     */
+
+    if (equiv == NULL) {
+        equiv     = CreateVector (4);
+        eq_global = CreateVector (6);
+  
+        if (equiv == NullMatrix || eq_global == NullMatrix) 
+            AllocationError (element, "equivalent nodal loads");
+    }
+
+    ZeroMatrix (equiv);
+
+    count = 0;
+
+        /*
+         * Again, we want to do as much error checking and descriptive
+         * error reporting as possible.  Seem like overkill?  It probably
+         * is, but it's not hurting anybody either :-)
+         */
+
+    if (element -> numdistributed > 2) {
+       error ("Timoshenko beam element %d has more than 2 distributed loads",
+              element -> number);
+       count++;
+    }
+
+    L = ElementLength (element, 2);
+    if (L <= TINY) {
+        error ("length of element %d is zero to machine precision",
+               element -> number);
+        count++;
+    }   
+
+    for (i = 1; i <= element -> numdistributed; i++) {
+        if (element -> distributed[i] -> nvalues != 2) {
+            error ("Timoshenko beam element %d must have 2 values for load",
+                   element -> number);
+            count++;
+        }
+
+        /*
+         * We only want to deal with loads in the perpendicular (LocalY)
+         * direction ... this is a very simple instantiation of this
+         * element after all.
+         */
+
+        if (element -> distributed[i] -> direction != LocalY &&
+            element -> distributed[i] -> direction != Perpendicular) {
+        
+            error ("invalid direction for element %d distributed load",
+                   element -> number);
+            count++;
+        }
+              
+        /*
+         * make sure that the user isn't try to apply part of this
+         * load to a non-existent node (some local node other than
+         * number 1 or 2)
+         */
+
+        for (j = 1 ;j <= element -> distributed[i] -> nvalues; j++) {
+            if (element -> distributed[i] -> value[j].node < 1 ||
+                element -> distributed[i] -> value[j].node > 2) {
+
+                error ("invalid node numbering for elt %d distrib load %s",
+                       element -> number,element -> distributed[i] -> name);
+                count++;
+            }
+        }
+
+        if (element -> distributed[i] -> value[1].node ==
+            element -> distributed[i] -> value[2].node) {
+
+            error ("incorrect node numbering for elt %d distributed load %s",
+                   element -> number, element -> distributed[i] -> name);
+            count++;
+        }
+    }
+
+        /* 
+         * Have we had any errors? If so bail out.
+         */
+
+    if (count) 
+        return count;
+
+    phi = 12.0/(L*L)*(element -> material -> E*element -> material -> Ix/
+                      (element -> material -> kappa*
+                       element -> material -> G*element -> material -> A));
+
+        /*
+         * loop over all of the applied distributed loads, superposing
+         * the effects of each
+         */
+
+    for (i = 1 ; i <= element -> numdistributed ; i++) {
+
+        /*
+         * First we have to sort out what order the load values
+         * were supplied in.  We need to get it so that wa is
+         * the value on element node 1 and wb is the value on 
+         * element node 2.
+         */
+
+        if (element -> distributed[i] -> value[1].node == 1) {
+            wa = element -> distributed[i] -> value[1].magnitude;
+            wb = element -> distributed[i] -> value[2].magnitude;
+        }
+        else if (element -> distributed[i] -> value[1].node == 2) {
+            wb = element -> distributed[i] -> value[1].magnitude;
+            wa = element -> distributed[i] -> value[2].magnitude;
+        }
+
+        /*
+         * Again, since we know how the integration turns out, we'll
+         * just go head and plug straight into the entries in the equiv
+         * vector.  The order of entries in equiv is Fy1,Mz1,Fy2,Mz2.
+         * There are three cases we need to deal with.  The first is 
+         * a uniform load.  The second two are sloped loads which we'll
+         * treat as the superposition of the uniform case and a case
+         * in which the load can be treated as q(x) = q0*(1 - x/L)
+         * (i.e., a load which goes from q0 to 0)
+         */
+
+        if (wa == wb) {                     /* uniform distributed load   */
+            VectorData (equiv)[1] += -wa*L/2.0;
+            VectorData (equiv)[3] += -wa*L/2.0;
+            VectorData (equiv)[2] += -wa*L*L/12.0;
+            VectorData (equiv)[4] += wa*L*L/12.0;
+        }
+        else if (fabs(wa) > fabs(wb)) {     /* load sloping node 1-node 2 */
+            factor = (wa - wb)*L/120.0/(1.0 + phi);
+            VectorData (equiv)[1] += -wb*L/2.0 - factor*(42.0 + 40.0*phi);
+            VectorData (equiv)[3] += -wb*L/2.0 - factor*(18.0 + 20.0*phi);
+            VectorData (equiv)[2] += -wb*L*L/12.0 - factor*(6.0 + 5.0*phi)*L;
+            VectorData (equiv)[4] += wb*L*L/12.0 + factor*(4.0 + 5.0*phi)*L;
+        }
+        else if (fabs (wa) < fabs (wb)) {   /* load sloping node 2-node 1 */
+            factor = (wb - wa)*L/120.0/(1.0 + phi);
+            VectorData (equiv)[1] += -wa*L/2.0 - factor*(18.0 + 20.0*phi);
+            VectorData (equiv)[3] += -wa*L/2.0 - factor*(42.0 + 40.0*phi);
+            VectorData (equiv)[2] += -wa*L*L/12.0 - factor*(4.0 + 5.0*phi)*L;
+            VectorData (equiv)[4] += wa*L*L/12.0 + factor*(6.0 + 5.0*phi)*L;
+        } 
+    }
+
+        /*
+         * if this is mode 2, we're done, just hand the equiv vector 
+         * back by setting eq_stress.
+         */
+
+    if (mode == 2) {
+        *eq_stress = equiv;
+        return 0;
+    }
+
+        /* 
+         * We have the load vector in local coordinates now.  
+         * All of this is taken care of by a convenience routine.
+         * What it is doing is checking if the eq_force array has been 
+         * allocated for this element's nodes.  If it hasn't it will set
+         * it up.  If it has it will do nothing and simply return
+         * to us.  It has to allocate space for six doubles (even
+         * though we will only ever use two entries for Timoshenko
+         * elements) because other element types may try to insert
+         * something into this array in different locations. Also,
+         * remember that we will access it as a standard array, 
+         * it's not a Vector or Matrix type.
+         */
+
+    SetEquivalentForceMemory (element);
+
+        /*
+         * The equiv vector has four things in it.  We need to transform
+         * these to global coordinate and then add them 
+         * incrementally into the eq_force [] array on the nodes
+         * because some other element may have also already added 
+         * something onto this node.  Note the use of Tx, Ty and Rz
+         * to access the eq_force array.  These are just enumerated
+         * so that they expand to 2 and 6 ... no real magic there, it
+         * is just little more intuitive to look at.
+         */
+
+    MultiplyMatrices (eq_global, Tt, equiv);
+    element -> node[1] -> eq_force[Tx] += VectorData (eq_global) [1];
+    element -> node[1] -> eq_force[Ty] += VectorData (eq_global) [2];
+    element -> node[1] -> eq_force[Rz] += VectorData (eq_global) [3];
+    element -> node[2] -> eq_force[Tx] += VectorData (eq_global) [4];
+    element -> node[2] -> eq_force[Ty] += VectorData (eq_global) [5];
+    element -> node[2] -> eq_force[Rz] += VectorData (eq_global) [6];
+
+    return 0;
+}
+ \end{verbatim}
+\end{screen}}
+
+Now that we have written the source file {\tt timoshenko.c} in the directory
+{\tt lib/Elements} we need to change the {\tt OBJS=} line in {\tt Makefile} 
+in this directory to include our new file.  That line should now read like:
+\begin{screen}
+ \begin{verbatim}
+OBJS    = beam.o beam3d.o cst.o truss.o iso_2d.o iso_quad.o misc.o \
+          timoshenko.o
+ \end{verbatim}
+\end{screen}
+
+All we have to do now is type {\tt make} at the shell prompt and of course
+because we do such good work there are no errors.  On the off chance
+that you're not so lucky and you do have a few errors, all you have to do is 
+fix up your source file and keep trying {\tt make} until they go away.
+Once we have the new element library made, we need to update the initialization
+procedure which will define the default set of elements for a \felt{} 
+application.  We do this by editing \mbox{\tt lib/Felt/initialize.c} and 
+adding {\tt extern struct definition} and {\tt AddDefinition} lines just
+like the lines already in that file.  With that change made do a make
+in \mbox{\tt lib/Felt}.
+
+Now that all of the necessary libraries have been built to be aware of the 
+new element we need to re-link an application with the updated libraries.  
+{\em felt} is the easiest because it is so simple.  Go to the {\tt bin/Felt} 
+directory and do a make.  Then, create a simple test file that uses your 
+new element and run it through {\em felt}. 
+If the numbers don't come out right you can modify the source in 
+{\tt lib/Elements}, do a {\tt make} in that directory and a make in
+{\tt bin/Felt} to re-link your changes.  Repeat this process until
+everything comes out to your satisfaction.  Eventually you should do 
+a make in the directory for each separate application so that your new element
+is accessible from all of the application in the \felt{} system.

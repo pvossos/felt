@@ -1,0 +1,274 @@
+%% This is the Linux documentation style file, designed by
+%% Michael K. Johnson, of St. Olaf college, 11-15-92.  It is to be
+%% distributed freely under the GNU public license, version 2 or any
+%% later version, obtainable as ftp.gnu.ai.mit.edu:/pub/gnu/COPYING
+%% If there are bugs in this style sheet, please report them to
+%% me: johnsonm@stolaf.edu
+%%
+%% Copyright (c) 1992, 1993 Michael K. Johnson
+
+\typeout{Linux Documentation Style `linuxdoc', version 0.30 <17 Apr 93>}
+
+
+%%% GLOBAL LAYOUT THINGS
+
+\marginparwidth 0.0 in
+\topmargin -0.5 in
+\textheight 8.5 in
+\advance\headsep 2 ex
+\advance\textheight -2 ex
+\renewcommand{\baselinestretch}{1.14}
+\addtolength{\parskip}{1.2 ex}
+
+%% Titlepage macros:
+
+% To use the maketitle{} macro, you need to first do the following:
+%  \title{Title of your masterpiece}
+%  \years{1992, 1993} %or whatever year(s) hold for the copyright
+%  \author{Your N. Here\\Other Name Here, if any}
+%  \abstract{This should be an abstract-like thing for the front of
+%   your masterpiece.  It will be set in \sf font, so be aware of
+%   that.  In it you may include any information that ought to be on
+%   the title page.  It is, in a sense, a mini-introduction.  For
+%   drafts, I include instructions here for my proofreaders, but it
+%   will be a real abstract when publically available versions of my
+%   docs come out.}
+
+\gdef\@title{}
+\gdef\title#1{\gdef\@title{#1}}
+\gdef\@years{}
+\gdef\years#1{\gdef\@years{#1}}
+\gdef\@author{}
+\gdef\author#1{\gdef\@author{#1}}
+\gdef\@abstract{}
+\gdef\abstract#1{\gdef\@abstract{#1}}
+
+\def\maketitle{\begin{titlepage}%
+\let\footnotesize\small
+\let\footnoterule\relax
+\setcounter{page}{0}%
+\null
+\vskip 3 in
+\noindent
+{\Large\sf \@title}\\
+\rule{\textwidth}{1mm}\\
+\mbox{} \hfill Copyright \copyright\ \@years\ \begin{tabular}[t]{r}
+                                              \@author\end{tabular}\\
+
+\vspace{.75in}\noindent
+{\sf \@abstract}
+\end{titlepage}%
+\setcounter{footnote}{0}%
+\gdef\@author{}\gdef\@title{}\gdef\@years{}\gdef\@abstract{}
+\let\maketitle\relax}
+
+% I should change the pagination for 3-ring format such that it wraps
+% around every chapter.  This makes it easier to upgrade a manual --
+% you only have to replace one chapter at a time.  I'm not going to do
+% that now, though.
+
+%%% ONE-SIDED/TWO-SIDED DEPENDENCIES
+
+\if@twoside % ``book'' style was chosen
+ \oddsidemargin .5 in
+ \evensidemargin 0 in
+ \textwidth 6 in
+ \def\ps@headings{\let\@mkboth\markboth
+  \def\@oddfoot{}\def\@evenfoot{}%       No feet.
+  \def\@evenhead{\protect\rule[-4pt]{\textwidth}{.5pt}\kern-\textwidth
+                 \rm \thepage\hfil \sl \leftmark}     % Left heading.
+  \def\@oddhead{\protect\rule[-4pt]{\textwidth}{.5pt}\kern-\textwidth
+                {\sl \rightmark}\hfil \rm\thepage}    % Right heading.
+  \def\chaptermark##1{\markboth {\uppercase{\ifnum \c@secnumdepth >\m@ne
+      \@chapapp\ \thechapter. \ \fi ##1}}{}}%
+  \def\sectionmark##1{\markright {\uppercase{\ifnum \c@secnumdepth >\z@
+   \thesection. \ \fi ##1}}}}
+
+\else % if not book style, then
+ \oddsidemargin .5 in
+ \evensidemargin\oddsidemargin
+ \textwidth 6 in
+ \def\ps@headings{\let\@mkboth\markboth
+  \def\@oddfoot{}\def\@evenfoot{}%       No feet.
+  \def\@oddhead{\protect\rule[-4pt]{\textwidth}{.5pt}\kern-\textwidth
+                {\sl \rightmark}\hfil \rm\thepage}    % Right heading.
+  \def\@evenhead\@oddhead
+  \def\chaptermark##1{\markboth {\uppercase{\ifnum \c@secnumdepth >\m@ne
+       \@chapapp\ \thechapter. \ \fi ##1}}{}}%
+  \def\sectionmark##1{\markright {\uppercase{\ifnum \c@secnumdepth >\z@
+   \thesection. \ \fi ##1}}}}
+
+\fi
+
+%% Needs to be here for the previous ps@headings defs to work.
+\pagestyle{headings}
+
+%%% USEFUL MACROS
+
+\newcommand{\linux}{{\rm L}{\sc inux}}  % Always use this when
+				        % refering to the \linux\
+				        % operating system, like that.
+\newcommand{\key}[1]{{\fbox{\sf #1}}}   % Use this to mark keys, like
+				        % \key{del} for the delete key.
+\newcommand{\ret}{\fbox{\sf return}}    % Special case for the return key.
+\newcommand{\st}{\small\tt}             % Small typewriter -- comes in handy.
+\newcommand{\lb}{{\tt\char '173}}       % Left Brace '{'
+\newcommand{\rb}{{\tt\char '175}}       % Right Brace '}'
+\newcommand{\lbr}{$\langle$}		% Left Bracket '<'
+\newcommand{\rbr}{$\rangle$}		% Right Bracket '>'
+% \newcommand{\bs}{{\tt\char '134}}       % BackSlash '\'
+\newcommand{\tm}{${}^{\mbox{\tiny\sf TM}}$}
+\newcommand{\TM}{\tm}                   % TM trademark symbol in
+				        % either case
+\newcommand{\cparam}[1]{{\rm \lbr{\sl #1}\rbr}}
+					% Metavariables.
+
+% The following is for the \blackdiamond command.  \blackdiamond is
+%  used before paragraphs that are intended to be more difficult than
+%  others, or that readers should pay more attention to.  Use more
+%  sparingly than Knuth uses the curvy road, preferably\dots
+\def\strutdepth{\dp\strutbox}
+\def\specialdi{\vtop to \strutdepth{
+    \baselineskip\strutdepth
+    \vss\llap{$\Diamond$\hspace{.2 in}}\null}}
+\newcommand{\blackdiamond}{\strut\vadjust{\kern-\strutdepth\specialdi}}
+
+%%% ENVIRONMENTS
+
+%% The screen environment is a convenience environment.  There is
+%%  little agreement on what it should do, so I have stuck with the
+%%  current definition.  Some want it to do more, but different people
+%%  want different things, and for the sake of later conversion, I am
+%%  reluctant to add 20 versions of this that do similar things.  When
+%%  opinion on this type of thing coalesces, perhaps there will be two
+%%  or three different versions.  I myself prefer to do
+%%    \begin{screen}\begin{verbatim}
+%%    blah blah blah blah
+%%    blah blah blah blah
+%%    \end{verbatim}\end{screen}
+
+\newenvironment{screen}%
+ {\small\begin{quote}}%
+ {\end{quote}\normalsize}
+
+%% the tscreen environment automatically goes into typewriter type,
+%%  but is otherwise like the screen environment
+
+\newenvironment{tscreen}%
+ {\bgroup\small\tt\begin{quote}}%
+ {\end{quote}\egroup}
+
+
+%% The dispitems environment was created for cases where you want the
+%%  output to look something like the following:
+%%    xxxx      jjjjjjjjjjjjjjj
+%%              jjjjjjjjjjjjjjj
+%%              jjjjjjjjjj
+%%
+%%              jjjjjjjjjjjjjjj
+%%              jjjjjjj
+%%
+%%    xxxxxxx   jjjjjjjjjj
+%%
+%%    xx        jjjjjjjjjjjjjjj
+%%              jjjjjjjjjjjjj
+%%
+%%    xxxxxxxxxxxxxxxxx
+%%              jjjjjjjjjjjjjjj
+%%              jjjjjjj
+%%  No such environment is given in LaTeX, but I think it is
+%%  convenient for some things.
+
+%% Re-designed \@item from latex.tex for the dispitems environment.
+%%  If the box is larger than the spot alloted for it, a new line
+%%  should be started instead of pushing the contents over.  Thanks to
+%%  Ulrich Drepper <drepper@karlsruhe.gmd.de> for his help with this.
+
+\def\@makelbl#1{\mbox{#1}}
+
+\def\@itm[#1]{
+\if@noparitem
+ \@donoparitem
+\else \if@inlabel \indent \par \fi \ifhmode \unskip\unskip \par \fi
+ \if@newlist \if@nobreak \@nbitem \else \addpenalty\@beginparpenalty
+ \addvspace\@topsep \addvspace{-\parskip}\fi \else
+ \addpenalty\@itempenalty \addvspace\itemsep \fi \global\@inlabeltrue
+\fi
+\everypar{\global\@minipagefalse\global\@newlistfalse
+         \@tempdima\hsize \advance\@tempdima -\leftmargin
+          \if@inlabel\global\@inlabelfalse \hskip -\parindent
+             \ifdim\wd\@labels>0 pt
+                \hbox to\@tempdima{\unhbox\@labels\hfill}
+             \else
+                \box\@labels \penalty\z@
+             \fi \fi
+          \everypar{}}\global\@nobreakfalse
+\if@noitemarg
+ \@latexerr{Items must have labels in the dispitems environment}\@ehc
+\fi
+\setbox\@tempboxa\hbox{\makelabel{#1}}%
+\global\setbox\@labels
+ \hbox{\unhbox\@labels \hskip \itemindent
+       \hskip -\labelwidth \hskip -\labelsep
+       \ifdim \wd\@tempboxa >\labelwidth
+                \box\@tempboxa
+          \else \hbox to\labelwidth {\unhbox\@tempboxa\hfill}\fi
+       \hskip \labelsep}\ignorespaces}
+
+
+\newenvironment{dispitems}%
+ {\begin{list}%
+  {}% no text if no optional argument to \item
+  {\topsep 1.5 ex
+   \itemsep 1 ex
+   \labelwidth .9 in
+   \labelsep 0.1 in
+   \leftmargin 1 in
+   \rightmargin 0 in
+   \parsep 1 ex
+   \listparindent 0 in
+   \let\makelabel\@makelbl
+   \let\@item\@itm
+   }%
+  }%
+ {\end{list}}
+
+
+\newcommand{\parlabel}[1]{\leavevmode{\parbox[t]{\labelwidth}{#1}}}
+\newenvironment{abib}[5]%
+ {\begin{list}%
+  {}% no text if no optional argument to \item
+  {\topsep 4 ex
+   \itemsep .1 ex
+   \labelwidth 1 in
+   \labelsep 0.2 in
+   \leftmargin 1.2 in
+   \rightmargin 0 in
+   \parsep .5 ex
+   \listparindent 0 in
+   \let\makelabel\parlabel}
+  \item [{\bf Title:}] #1
+  \item [{\bf Author:}] #2
+  \item [{\bf Publisher:}] #3
+  \item [{\bf ISBN:}] #4
+  \item [{\bf Appr.~Price:}] #5
+  \end{list}\begin{quotation}}%
+ {\end{quotation}}
+
+%% abib is an environment for a do-it-yourself annotated bibliography.
+%%  You are under no obligation to use this, but I found it helpful.
+%%  To use it, do this:
+%%    \begin{abib}
+%%     {<title>}
+%%     {<author>}
+%%     {<publisher>, <year>}
+%%     {<ISBN>}
+%%     {\$<price>}
+%%     <abstract>
+%%    \end{abib}
+%%  You much include some text in the abstract, or LaTeX will complain
+%%  about a possible missing \item.  If you aren't going to to an
+%%  annotated bibliography, you might as well just use BibTeX or
+%%  build your own citation list.  I just didn't need the citation
+%%  list, but wanted the annotated bibliography.  It would be OK for
+%%  this annotated bibliography to itself cite a normal bibliography.

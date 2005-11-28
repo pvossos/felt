@@ -1,0 +1,78 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The {\em xfelt} Application}
+\label{xfelt}
+
+\section{Using {\em xfelt}}
+\label{xfelt.using}
+
+{\em xfelt} is a simple X-based text editor much like {\em xedit}
+(they use the same 
+underlying widget after all).  It offers you a way to edit a \felt{} file 
+and, without leaving the application, feed that file into the {\em felt} 
+application, capture the output from the felt application and display that 
+output along with a two- or three-dimensional structural visualization in 
+separate windows.  Both output windows can either be saved or printed simply 
+by clicking on the appropriate button.	
+
+There are three main menus along the menu-bar.  The first is the {\bf file} 
+menu which contains facilities for {\bf open}, {\bf save} and {\bf save as}, 
+and {\bf print}, much like any other file menu in any other text editing 
+application.  The second is the {\bf edit} menu which also contains some very 
+standard, basic editing tools: {\bf cut}, {\bf copy}, {\bf paste}.  The third 
+menu, {\bf setup}, allows for configuration of {\em xfelt} and the way 
+{\em xfelt} tells {\em felt} to solve the problem.	
+
+Under the {\bf configure} option of the {\bf setup} menu, you can change
+the commands that should be used to execute {\em felt} (this should not be
+necessary if {\em felt} is located somewhere in your default search path), 
+print a text file (e.g. {\tt lp}), print a raw graphics file 
+(e.g. {\tt lp -oraw}), 
+and convert an xwd file to a printable file (most sites would use {\em xpr} for 
+this, consult your system administrator as to which {\em xpr} options you 
+should use).  The {\bf felt} options selection under the {\bf configure}
+menu allows 
+you to toggle {\em felt} command-line flags on and off ({\tt -summary}, 
+{\tt -debug}) and specify whether the structure should be visualized in two or 
+three dimensions.  		
+
+\section{Solving a problem}
+
+Problems are solved within {\em xfelt} simply by clicking on the {\bf Execute} 
+button on the main menu bar.  The entire program will pause until the {\em felt} 
+application is done solving the problem (which may be a few minutes depending 
+on the size of your problem and the speed of your hardware).  When the 
+{\em felt} application is done, the output of {\em felt} will pop-up in a 
+separate output window (see section~\ref{felt_prog.output} for information
+on how to interpret these results).  
+
+If either of the draw toggle buttons were on, a 
+drawing output window will also pop-up with the structure drawn in either 2-d 
+or 3-d (if both buttons are on, the structure will be drawn in 2-d).  The 
+output of either output window can be saved or printed with the buttons on the 
+bottom of the window.  The graphics window will be saved as an xwd file (it 
+will prompt for a filename) or printed using the {\em xpr} command and graphics 
+printing command given in the configuration (under the {\bf setup} menu).  The 
+results window will be saved to a text file (it will prompt for a filename) or 
+printed using the printer command given in the configuration.  Clicking 
+{\bf Okay} on either window will dismiss the window until the next time 
+{\em felt} is run.	
+
+\section{Hints and keyboard shortcuts}
+
+The three basic editing functions have keyboard shortcuts: {\bf cut} is 
+\key{alt-w}, {\bf copy} is \key{ctrl-w} and {\bf paste} is \key{alt-y}.  
+\key{shift-bkspc} will delete the current selection (without copying it to the 
+clipboard). \key{alt-r} is equivalent to pressing the {\bf Execute} button.  
+\key{alt-2} and \key{alt-3} toggle two- and three-dimensional structural 
+visualization respectively (same functionality as the toggle buttons under the
+{\bf felt options} selection from the {\bf setup} menu).  Note that sometimes 
+the alt key is referred to as the meta key.

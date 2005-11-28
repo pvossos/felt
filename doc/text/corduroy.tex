@@ -1,0 +1,281 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The {\em corduroy} Application}
+\label{corduroy}
+
+\section{Introduction}
+
+{\em corduroy} is a command line application for automatically generating 
+nodes and elements.  It takes
+a text input file and generates \felt{} format nodes and elements for
+inclusion into a \felt{} problem.  Like {\em felt} then, it is a command line
+interface to some of the same functionality that you can get in
+{\em velvet}.  However, unlike {\em felt} and {\em velvet}, which share their
+file syntax (the standard \felt{} syntax), {\em corduroy} has its own
+special syntax to describe the way elements are generated.
+
+\section{The {\em corduroy} syntax}
+\label{corduroy.syntax}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Specifying basic parameters}
+
+{\em corduroy} allows you to generate elements in five different ways --
+along a single line, as a three-dimensional grid of line elements, as a
+two-dimensional grid of four-node planar elements, as a three-dimensional
+grid of solid elements and as a two-dimensional mesh of triangular elements.  
+Each type of generation is described in its own section; there can be multiple 
+types and multiple sections of a given type in any given file.  Besides these
+descriptive sections there are only a few basic parameters, all of which
+are optional.  Order of specifications does not matter in a {\em corduroy}
+file except for numbering of generated nodes and elements and the 
+{\tt end} statement which must always come at the end of a file (and is not 
+optional).  As in regular \felt{} files, comments can be denoted with 
+{\tt /*} and {\tt */} as in the C programming language and symbolic expressions
+may be substituted for any non-integer value.
+
+You can use {\tt start-node=} and {\tt start-element=} to specify the number
+for the first things that get generated.  Normally, {\em corduroy} starts
+the numbering at one and then numbers sequentially as it moves from section
+to section of your input file.  These two specifications allow you to override
+these starting points in situations where you may already have a few elements
+and nodes defined and you are going to attach the things that get generated
+after {\em corduroy} has done its work.
+
+{\tt constraint=} and {\tt material=} will assign a constraint or material
+name to the initial node and element.  This is simply a convenience; you will
+need to be sure to go back and actually define these objects after everything
+is generated and you are putting the finishing touches on the problem 
+definition.
+
+\subsection{Generating elements along a line}
+
+The simplest case of element generation is a line which is divided up into
+an arbitrary number of elements.  You might use something like this if you
+were examining the accuracy of a cantilever beam model and wanted to use
+successively higher numbers of elements from one case to the next.  The
+{\em corduroy} specification for a {\tt line} section looks like this
+\begin{screen}
+ \begin{verbatim}
+line
+element-type = beam
+start        = (0,0,0)    
+end          = (5,5,5)    
+number       = 20
+ \end{verbatim}
+\end{screen}
+This example would generate twenty beam elements all lying along the line from
+the origin to a point at x=5, y=5, z=5 in rectangular Cartesian coordinates.
+The default element type for both line and grid generation is truss.  Valid
+type names are the same as in a standard \felt{} file (see 
+chapter~\ref{problem}).
+
+\subsection{Generating a grid of line elements}
+
+Another relatively simple case is when you want to generate a three-dimensional
+grid of line elements. An excellent example of when this might be useful is
+for a model of a steel frame structure. The specification for a grid is
+\begin{screen}
+ \begin{verbatim}
+grid
+element-type = beam
+start        = (0,0,0)   end      = (100,500,100)
+x-number     = 4         y-number = 20              z-number = 4
+ \end{verbatim}
+\end{screen}
+This example would generate a three-dimensional frame structure with four
+bays along both the x and z axes and 20 bays along y axis.
+
+\subsection{Generating a grid of quadrilateral planar elements}
+
+The case of a simple grid of planar four-node elements is almost identical
+to the grid of line elements described above.  The only difference is that
+there are no specifications along the z direction for quadrilateral grids.
+An example of a mesh for a long rectangular plate using {\tt htk} plate
+bending elements (the default element type for quadrilateral grids is
+quad\_PlaneStress) might look like:
+\begin{screen}
+ \begin{verbatim}
+quadrilateral grid
+element-type = htk
+start        = (0,0)      end      = (10,3)
+x-number     = 20         y-number = 6
+ \end{verbatim}
+\end{screen}
+The result would be a rectangular region meshed with 120 equi-sized square
+elements.
+
+\subsection{Generating a grid of solid brick elements}
+
+The case of a grid of solid eight-node elements is also very similar to
+grids of line and planar elements described in the preceding two sections.
+An example of a mesh for a long rectangular plate using {\tt brick} 
+elements (the default type for grids of solid elements) might look like:
+\begin{screen}
+ \begin{verbatim}
+brick grid
+start        = (0,0,0)      end      = (8,12,6)
+x-number     = 4            y-number = 6            z-number=3           
+ \end{verbatim}
+\end{screen}
+The result would be a three-dimensional solid region three elements deep,
+four elements wide, and six elements tall.
+
+\subsection{Grid spacing rules}
+\label{grid_spacing_rules}
+
+For all of the line and grid generation examples given above, we
+could also have directed that {\em corduroy} generate the elements
+with non-linear spacing rules.  Such spacings are common when we
+know that we want a higher mesh density at one corner of the grid
+or only at the end of the line.  The rules available are 
+{\tt linear} (this is the default, equi-spaced), {\tt sinusoidal},
+{\tt cosinusoidal}, {\tt logarithmic}, {\tt parabolic}, 
+{\tt reverse-parabolic}, and {\tt reverser-logarithmic}.
+If we are placing the sides of $n$ elements along a line, then we
+need to locate $n + 1$ nodes on the line.  The coordinate $x_i$ of
+each node is defined as follows for each of the spacing rules
+\begin{eqnarray}
+  {\rm linear:}              & x_i = & L \beta \\
+  {\rm cosinusoidal:}        & x_i = & L - L\cos\left({\pi \over 2} \beta \right)  \\
+  {\rm sinusoidal:}          & x_i = & L \sin\left( {\pi \over 2}  \beta \right)  \\
+  {\rm logarithmic:}         & x_i = & L \log_{10} \left( 1 + 9\beta \right) \\
+  {\rm parabolic:}           & x_i = & L \beta^2 \\
+  {\rm reverse-logarithmic:} & x_i = & L - L \log_{10} \left( 10 - 9\beta \right) \\
+  {\rm reverse-parabolic:}   & x_i = & L\sqrt{ \beta } \\
+\end{eqnarray}
+where $\beta = (i - 1)/n$.  
+
+\subsection{Generating a triangular mesh}
+
+The triangular mesh generation capabilities of {\em corduroy} use
+Jonathan Shewchuk's Triangle routine.  In addition to specifications
+that describe the boundary and the holes of your two-dimensional region,
+you must also define the approximate number of elements to generate
+and a constraint on the maximum area of any one generated element.
+The number of elements is specified with {\tt target=}.  The area
+constraint is given using {\tt alpha=}, where $\alpha$ is
+defined such that 
+\begin{equation}
+A_{\rm elt} \leq {\alpha A_{\rm total} \over {\rm total}}.
+\end{equation}
+The entire {\em corduroy} input file to generate the nodes and elements for the
+wrench model pictured in Figure~\ref{velvet.main} would look like this.
+\begin{screen}
+ \begin{verbatim}
+start-node    = 1        /* unnecessary as this is the default */
+start-element = 1
+
+triangular mesh
+element-type = CSTPlaneStress
+angtol = 20    dmin = 0.5     min = 100		/* except for min and max */
+angspc = 30    kappa = 0.25   max = 300		/* these are defaults     */
+
+boundary = [
+   (0,50)
+   (20,10)
+   (40,0)
+   (40,50)
+   (55,70)
+   (95,70)
+   (115,50)
+   (115,0)
+   (135,10)
+   (155,50)
+   (155,90)
+   (115,160)
+   (170,404)
+   (122,404)
+   (67,160)
+   (0,90)
+]
+
+end
+ \end{verbatim}
+\end{screen}
+
+To generate a mesh in a rectangular plate with two side by side rectangular 
+holes in it, the input file could look like
+\begin{screen}
+ \begin{verbatim}
+triangular mesh          /* use all defaults, including CSTPlaneStress */
+boundary = [
+   (0,0)
+   (20,0)
+   (20,10)
+   (0,10)
+]
+
+hole = [
+   (6,3)
+   (8,3)
+   (8,7)
+   (6,7)
+]
+
+hole = [
+   (12,3)
+   (14,3)
+   (14,7)
+   (12,7)
+]
+
+end
+ \end{verbatim}
+\end{screen}
+Note that the hole definitions do not need to come before the boundary, but
+that points must always be specified in a counter-clockwise order.
+
+\section{Using {\em corduroy}}
+\label{corduroy.using}
+
+The only options to {\em corduroy} are the standard {\em cpp} options
+as in both {\em felt} and {\em velvet} (like those two programs, 
+{\em corduroy} runs all of its input through the pre-processor before
+actually operating on it) and a {\tt -debug} flag which causes
+{\em corduroy} to reproduce as output what it thinks it received for
+input.  To generate, all you need to do is create
+an input file with a text editor and then run {\em corduroy} with the
+name of this file as the last argument on the command line.  Output
+will be directed to standard out.  So if you had a generation description
+in a file {\tt foo.crd}, you could turn it into the basics of a \felt{}
+file called {\tt foo.flt} with the following command
+\begin{screen}
+ \begin{verbatim}
+% corduroy foo.crd > foo.flt
+ \end{verbatim}
+\end{screen}
+
+\section{Incorporating output into a \felt{} file}
+\label{corduroy.incorporating}
+
+Because {\em corduroy} only generates the node and element sections of
+a \felt{} file, you still have some editing to do before you can call the
+problem completely defined and actually try to solve it with {\em felt}
+or {\em velvet}. In general, you will have to define forces and constraints
+to assign to nodes and material properties (and possibly distributed
+loads) to assign to elements.  Remember, the {\tt material=} and 
+{\tt constraint=} specification are only a convenience.  These two names
+will simply be assigned to the first element and node, respectively (and
+all the following elements and nodes by default).  You still need to 
+actually define those objects and assign any different objects to
+appropriate nodes and elements.  To do all this defining and assigning you 
+can either use your favorite text editor or you can load 
+the problem into {\em velvet} and do it all from there.  
+
+One thing to keep in mind whenever you use {\em corduroy} to generate
+a problem for you is that {\em corduroy} is not very good at node numbering.
+Using the renumbering
+features of either {\em felt} or {\em velvet} is highly recommended with
+{\em corduroy} generated problems.  In general the problems that you will
+use {\em corduroy} for will be quite large and thus the reduction in memory
+and solution time would be significant even if node numbering had been
+intelligent to start with; the reductions for large problem with initially
+very bad numbering can be remarkable.

@@ -1,0 +1,90 @@
+\setlength{\unitlength}{0.0125in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(400,194)(0,-10)
+\path(173,14)(227,14)
+\path(173,14)(159,0)
+\path(186,14)(173,0)
+\path(200,14)(186,0)
+\path(214,14)(200,0)
+\path(227,14)(214,0)
+\path(180,14)(166,0)
+\path(193,14)(180,0)
+\path(207,14)(193,0)
+\path(221,14)(207,0)
+\path(344,110)(400,110)
+\path(344,110)(331,96)
+\path(359,110)(344,96)
+\path(373,110)(359,96)
+\path(386,110)(373,96)
+\path(400,110)(386,96)
+\path(352,110)(338,96)
+\path(366,110)(352,96)
+\path(379,110)(366,96)
+\path(393,110)(379,96)
+\path(14,109)(69,109)
+\path(14,109)(0,95)
+\path(27,109)(14,95)
+\path(41,109)(27,95)
+\path(56,109)(41,95)
+\path(69,109)(56,95)
+\path(20,109)(7,95)
+\path(34,109)(20,95)
+\path(48,109)(34,95)
+\path(62,109)(48,95)
+\put(365,116){\ellipse{14}{14}}
+\put(182,75){\ellipse{14}{14}}
+\put(272,115){\ellipse{14}{14}}
+\put(97,115){\ellipse{14}{14}}
+\path(34,124)(366,124)
+\path(34,179)(200,124)(366,179)
+\path(34,179)(34,124)
+\path(32.000,132.000)(34.000,124.000)(36.000,132.000)
+\path(76,165)(76,124)
+\path(74.000,132.000)(76.000,124.000)(78.000,132.000)
+\path(117,152)(117,124)
+\path(115.000,132.000)(117.000,124.000)(119.000,132.000)
+\path(159,138)(159,124)
+\path(157.000,132.000)(159.000,124.000)(161.000,132.000)
+\path(283,152)(283,124)
+\path(281.000,132.000)(283.000,124.000)(285.000,132.000)
+\path(324,165)(324,124)
+\path(322.000,132.000)(324.000,124.000)(326.000,132.000)
+\path(366,179)(366,124)
+\path(364.000,132.000)(366.000,124.000)(368.000,132.000)
+\path(200,124)(200,117)(200,113)
+\path(200,24)(200,14)
+\path(200,113)(186,110)(214,96)
+	(186,83)(214,69)(186,55)
+	(214,41)(186,27)(200,24)
+\path(34,124)(21,110)(49,110)(34,124)
+\path(241,138)(241,124)
+\path(239.000,132.000)(241.000,124.000)(243.000,132.000)
+\put(20,120){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}1}}}}}
+\put(380,115){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}3}}}}}
+\put(210,20){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}4}}}}}
+\put(95,110){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}1}}}}}
+\put(270,110){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}2}}}}}
+\put(180,70){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}3}}}}}
+\put(200,130){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}2}}}}}
+\end{picture}

@@ -1,0 +1,62 @@
+\setlength{\unitlength}{0.0125in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(226,83)(0,-10)
+\path(39,33)(43,33)(46,33)
+\path(107,33)(114,33)
+\path(46,33)(48,24)(58,43)
+	(67,24)(76,43)(86,24)
+	(95,43)(105,24)(107,33)
+\path(109,33)(113,33)(116,33)
+\path(177,33)(184,33)
+\path(116,33)(118,24)(128,43)
+	(137,24)(146,43)(156,24)
+	(165,43)(175,24)(177,33)
+\path(0,33)(35,33)
+\path(0,33)(35,33)
+\path(27.000,31.000)(35.000,33.000)(27.000,35.000)
+\path(112,40)(112,50)(132,50)
+\path(124.000,48.000)(132.000,50.000)(124.000,52.000)
+\path(40,39)(40,49)(60,49)
+\path(52.000,47.000)(60.000,49.000)(52.000,51.000)
+\path(189,33)(224,33)
+\path(189,33)(224,33)
+\path(216.000,31.000)(224.000,33.000)(216.000,35.000)
+\path(112,20)(112,11)
+\path(112,11)(147,11)
+\path(112,11)(147,11)
+\path(139.000,9.000)(147.000,11.000)(139.000,13.000)
+\path(184,39)(184,49)(204,49)
+\path(196.000,47.000)(204.000,49.000)(196.000,51.000)
+\put(35,23){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}a}}}}}
+\put(6,35){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$F_a$}}}}}
+\put(41,52){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$x_a$}}}}}
+\put(113,53){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$x_b$}}}}}
+\put(121,0){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$F_b$}}}}}
+\put(179,22){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}c}}}}}
+\put(141,19){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$k_2$}}}}}
+\put(72,19){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$k_1$}}}}}
+\put(109,22){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}b}}}}}
+\put(210,37){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$F_c$}}}}}
+\put(187,52){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$x_c$}}}}}
+\end{picture}

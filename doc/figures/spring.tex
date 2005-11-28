@@ -1,0 +1,47 @@
+\setlength{\unitlength}{0.0125in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(152,73)(0,-10)
+\path(39,16)(43,16)(46,16)
+\path(107,16)(114,16)
+\path(46,16)(48,7)(58,26)
+	(67,7)(76,26)(86,7)
+	(95,26)(105,7)(107,16)
+\path(37,31)(37,41)(57,41)
+\path(49.000,39.000)(57.000,41.000)(49.000,43.000)
+\path(117,31)(117,41)(137,41)
+\path(129.000,39.000)(137.000,41.000)(129.000,43.000)
+\path(0,16)(35,16)
+\path(0,16)(35,16)
+\path(27.000,14.000)(35.000,16.000)(27.000,18.000)
+\path(117,16)(152,16)
+\path(117,16)(152,16)
+\path(144.000,14.000)(152.000,16.000)(144.000,18.000)
+\put(135,43){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$x_b$}}}}}
+\put(55,43){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$x_a$}}}}}
+\put(75,0){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$k$}}}}}
+\put(112,6){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}b}}}}}
+\put(35,6){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}a}}}}}
+\put(129,18){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$F_b$}}}}}
+\put(6,18){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}$F_a$}}}}}
+\end{picture}

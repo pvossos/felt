@@ -1,0 +1,58 @@
+\setlength{\unitlength}{0.012500in}%
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(125,100)(20,720)
+\thinlines
+\put( 43,800){\line( 1, 0){ 54}}
+\put( 97,800){\line( 0, 1){  0}}
+\multiput( 97,800)(-0.55000,0.18333){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put(100,743){\line( 0, 1){ 54}}
+\put(100,797){\line( 0, 1){  0}}
+\multiput(100,797)(0.18333,-0.55000){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 97,740){\line(-1, 0){ 54}}
+\put( 43,740){\line( 0, 1){  0}}
+\multiput( 43,740)(0.55000,-0.18333){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 40,797){\line( 0,-1){ 54}}
+\put( 40,743){\line( 0, 1){  0}}
+\multiput( 40,743)(-0.18333,0.55000){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\multiput( 67,810)(0.18333,0.55000){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 70,820){\line( 0,-1){ 20}}
+\multiput( 73,810)(-0.18333,0.55000){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 70,820){\line( 0,-1){ 20}}
+\multiput( 67,730)(0.18333,-0.55000){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 70,720){\line( 0, 1){ 20}}
+\multiput( 73,730)(-0.18333,-0.55000){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 70,720){\line( 0, 1){ 20}}
+\multiput( 30,767)(-0.55000,0.18333){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 20,770){\line( 1, 0){ 20}}
+\multiput( 30,773)(-0.55000,-0.18333){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put( 20,770){\line( 1, 0){ 20}}
+\multiput(110,767)(0.55000,0.18333){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put(120,770){\line(-1, 0){ 20}}
+\multiput(110,773)(0.55000,-0.18333){19}{\makebox(0.1111,0.7778){\SetFigFont{5}{6}{rm}.}}
+\put(120,770){\line(-1, 0){ 20}}
+\put( 60,760){\framebox(20,20){}}
+\put( 43,743){\framebox(54,54){}}
+\put(150,745){\makebox(0,0)[lb]{\smash{\Large\rm User's Guide and Reference Manual}}}
+\put(145,775){\makebox(0,0)[lb]{\smash{\Huge\rm The FElt System:}}}
+\end{picture}

@@ -1,0 +1,157 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{appendix}
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{Installing and Administering \felt{}}
+\label{appendix.install}
+
+\section{Building the \felt{} system from source}
+
+The \felt{} package is intended to be easily portable.  It should build on most 
+reasonable Un*x systems without any modifications.  To start the build 
+{\tt cd} to the toplevel directory of the \felt{} source tree.  From there 
+do a {\tt ./configure}.
+This will try to automatically determine where to find relevant include files
+and libraries on your system and create a new {\tt etc/Makefile.conf} file.  
+If you feel comfortable with it you can go in and tweak 
+the {\tt Makefile.conf} file by hand if something does not go right.  
+After configuring, do a {\tt make clean} followed by a 
+{\tt make all}.  To install the package after it has been successfully 
+built do a {\tt make install}.	
+
+The entire package has been compiled and tested under SunOS (4.x and 5.x), 
+and Linux (the OS under which it was developed).  This version or earlier 
+versions
+compiled under HP-UX 8.0 and 9.0 SystemV386 (R3.2.2), and various SGI, DEC, 
+and IBM workstations (using Irix, OSF/1 and Ultrix, and AIX) with little or
+no problem.  
+The files {\em felt.exe} and {\em feltvu.exe} (a graphing application) 
+are available as pre-compiled executables for the DOS environment.  	
+
+The most recent version of the source code for \felt{} should always be 
+available via anonymous ftp at felt.sourceforge.net in the directory 
+{\tt /pub/FElt}.  We also try to make 
+pre-compiled binaries available for a wide variety of platforms and operating
+systems.  If you want to be made aware of each revision of the \felt{} system 
+then we strongly encourage you to subscribe to the \felt{} mailing list.  
+To subscribe visit the list information page at 
+\mbox{\tt http://lists.sourceforce.net/mailman/listinfo/felt-announce}.
+Only major revisions and changes will be announced broadly via Usenet.
+
+\section{Translation files}
+
+The translation files which map non-English terms to the English terms
+which \felt{} expects should be installed in the library directory which
+you specified during the build.  This path will automatically be
+searched when {\em cpp} goes looking for include files (which is really
+what the translation files are).  If they are not in some standard place,
+users need to specify a {\tt -I} flag on the {\em felt} command line to tell
+{\em cpp} where to look for them.  The current filenames are in English,
+you'll obviously want to link them or move them to something reasonable
+on your system and make users aware of what the appropriate file to include
+is called.
+
+The following tables list the currently available translations (that we
+have at least).  You can look at the current {\tt german.trn} and 
+{\tt spanish.trn} files if you want to change something or provide a new
+one.  If you do write a new one, please send it to us.  This is only
+a first cut at internationalization, but as we get more translations
+we will be in a better position to see how we can make it all work a little
+more fluently.  Also, remember that because this is a first cut all you
+can really do is type in a \felt{} file by hand using these translations.
+Anything {\em velvet} saves or even the file that {\em felt} writes with
+the {\tt -debug} command will be in English even if the input file was
+given in another language.  All output is still in English.  Lastly, if
+you use these translations, you have to use them exactly as they are given
+here.  They are not case insensitive, and if there are underscores in the
+place of spaces, you must use the underscores.  Things that are user 
+specifiable to begin with (object names, problem title) can still be 
+whatever you want of course.  If a keyword is not listed in a table below,
+use the original English keyword (the English and non-English were probably
+equivalent).
+
+{\small
+\begin{center}
+\begin{tabular}{p{3in}p{3in}} \hline
+\bf For German, use \dots	& \bf Instead of \dots \\
+\hline 
+problembeschreibung 	& problem description \\
+titel 			& title \\
+knoten 			& nodes \\
+elemente 		& elements \\
+krafte 			& force \\
+kraefte			& forces \\
+zwangsbedingung		& constraint \\
+zwangsbedingungen 	& constraints \\
+materialeigenschaften 	& material properties \\
+richtung 		& direction \\
+senkrecht 		& perpendicular \\
+GlobalesX 		& GlobalX \\
+GlobalesY 		& GlobalY \\
+GlobalesZ 		& GlobalZ \\
+LokalesX 		& LocalX \\
+LokalesY 		& LocalY \\
+LokalesZ 		& LocalZ \\
+werte 			& values \\
+verteilte 		& distributed  \\
+lasten 			& loads \\
+last 			& load \\
+gelenk 			& hinge \\
+ende 			& end \\
+\end{tabular}
+\end{center}}
+
+{\small
+\begin{center}
+\begin{tabular}{p{3in}p{3in}} \hline
+\bf For Spanish, use \dots	& \bf Instead of \dots \\
+\hline 
+descripcion\_del\_problema 	& problem title \\
+titulo 				& title \\
+nodos 				& nodes \\
+elementos 			& elements \\
+fuerza 				& force \\
+fuerzas				& forces \\
+restriccion 			& constraint \\
+restricciones 			& constraints \\
+propriedades\_del\_material     & material properties \\
+direccion 			& direction \\
+paralela 			& parallel \\
+valores 			& values \\
+cargas\_distribuidas 		& distributed loads \\
+carga 				& load \\
+articulacion\_plana 		& hinge \\
+final 				& end \\
+\end{tabular}
+\end{center}}
+
+\section{Defaults and material databases}
+
+Though the defaults files and material databases are not a necessity for 
+{\em velvet}, they are convenient and it might be desirable to install them in 
+a location where all users have easy access to them, probably the same
+library directory as the translation files.  These files too are really
+nothing more than include files which can be included as a convenience for
+the user.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The GNU Public License                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The GNU General Public License}
+\label{appendix.gnu-license}
+
+\input{misc/gpl}
+
+\end{appendix}

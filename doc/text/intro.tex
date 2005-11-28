@@ -1,0 +1,127 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{Introduction to the \felt{} System}
+\label{intro}
+
+\section{Intentions}
+\label{intro.intentions}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\felt{} is a package for introductory level Finite ELemenT analysis.  It is
+centered around a mathematical engine designed to simply, effectively,
+accurately, and flexibly solve most types of structural / mechanical problems
+that would be encountered in an introductory course in finite element
+analysis.  It was developed in an overzealous fit of ``we can do better
+than that'' based on some antiquated Fortran code that we had been using for 
+just such a course. 
+
+Our intention was to design a system capable of doing everything that 
+code could do in the mathematical sense, but bring it into the 90's (or at 
+least the late 80's) in terms of input syntax (including error checking, 
+problem debugging, etc.), flexibility, and most importantly, a graphical user
+interface.  We hope we've succeeded, or at the least, are on the right
+track; \felt{} is a work-in-progress and chances are that if a 
+feature isn't there now, there are at least pipe dreams of it somewhere
+in the backs of our minds.   
+
+Of course all our good intentions are for nought if no one uses \felt{}.  If
+you find something wrong, let us know (our email addresses are in the
+legal notice).  Alternatively (and an even better option) you can subscribe to
+the \felt{} mailing list by sending a one line email message that says
+``subscribe felt-l'' (without the quotes) to listserv@mecheng.fullfeed.com.
+If something is not there that you think should be, let us know.
+We make no promises, but we do try to respond and gear development toward 
+user feedback.  If you're happily using \felt{} and have no complaints, let 
+us know that too.  At least then we know that we're on the right track.
+
+\section{\felt{}: What it can do for you}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\felt{} currently has support for the following element types:
+three-dimensional truss or bar, one-dimensional spring, two- and 
+three-dimensional Euler 
+beam, two-dimensional Timoshenko beam, constant strain
+triangles (CSTs) for both plane stress and plane strain analysis, planar 
+isoparametric elements (four to nine node and a separate type for simple
+four node quadrilaterals), again for both plane stress or plane strain
+analysis, a linear axisymmetric triangular element, an HTK plate bending 
+element, an isoparametric eight-node brick
+element, and a rod and a constant temperature gradient triangle for thermal
+analysis.  \felt{} allows for an arbitrary mixing of element types within a
+problem.  The syntax
+for the \felt{} input file is based on a high-level grammar which frees 
+you from comma-delimited lists of numbers and hours of debugging due to
+not having the right number after the right comma; both the parser and the
+mathematical routines do extensive error checking and report what we hope
+are informative and useful error messages.
+
+\felt{} offers several user interface options.  The basic {\em felt}
+application gives you the capability to define an input file in a
+favorite editor and then solve the problem from the shell command line.
+Graphics for the {\em felt} applications can be handled by any number of
+graphing packages.   Under Windows, {\em WinFElt} provides a text
+editor and encapsulator environment with some post-processing capability.
+{\em velvet} is the full-featured graphical user interface to the 
+\felt{} system.  {\em velvet} (which is
+smoother than {\em felt}) knows most of what there is to know about the
+\felt{} system and provides a consistent, CAD-like interface for drawing,
+defining, solving, and visualizing everything about a problem.  Though it's
+probably not always the best way to set-up a problem (it's hard to beat
+{\em vi} for quick-and-dirty problems), a user working strictly with 
+two-dimensional problems (three-dimensional graphics are only partially
+supported in {\em velvet}) need never actually see the internals of a
+\felt{} file or run the {\em felt} application from the shell command line;
+{\em velvet} provides access to all of the two-dimensional functionality of
+\felt{} in one completely stand-alone application.  {\em velvet's} current
+post-processing capabilities include plotting the displaced shape,
+two-dimensional color contours of stress and displacement for planar elements,
+animation of dynamic structural simulations, line plots of for 
+time and frequency domain results, and graphical presentation of mode shapes.
+
+Automated element generation for a \felt{} problem is provided for both
+simple grids of line, quadrilateral and brick elements and arbitrary meshes
+of triangular planar elements.  The latter capability is derived
+from J.R. Shewchuk's Triangle mesh generation routine.
+You can interface this functionality either graphically through {\em velvet}
+or through a separate command line application called {\em corduroy} that
+has its own input file syntax much like the regular syntax for \felt{}
+problems.
+
+Support applications are provided for file format conversion and unit 
+conversion and problem scaling.  {\em patchwork} can translate between
+the standard \felt{} syntax and several other common graphical description
+formats.  {\em yardstick} can be used to scale numerical quantities within
+a \felt{} file, including special options for conversion between different
+types of units.
+
+\felt{} should be able to handle most types of linear static and dynamic 
+problems that
+you throw at it, but there are no guarantees.  Most elements allow
+arbitrary oriented distributed line loads.  Displacement (e.g., settlement of 
+support) and force (e.g., nodal hinge) boundary conditions are also
+allowed.  Time varying force and boundary conditions can be expressed either
+as continuous or discrete functions.
+
+\section{\felt{}: What it cannot do for you}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+As of this release, \felt{} can only handle linear static and dynamic problems.  
+We realize the shortcomings that this presents for some people and we have 
+some vague plans for non-linear analysis, but nothing is here yet.
+{\em velvet} can't really draw in 3-d (at least in the problem definition 
+stage) and thus isn't a terribly good way to define 3-d problems; it will 
+always assume that it should work in the x-y plane (z = 0).  This is probably 
+going to stay this way for a long time.  
+
+There are certainly other shortcoming as well, depending on just what you 
+would like the package to do.  What it really comes down to is that \felt{}
+was never intended to solve everybody's real-world or cutting-edge research
+problems, so we're probably never going to incorporate lots of different
+analysis types, etc.  If you want to take a crack at modifying \felt{} for your
+own local needs, however,  then we encourage you to do so; we'll even help 
+out where possible.

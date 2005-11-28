@@ -1,0 +1,2020 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\op}{\mbox{\rm\ op }}
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The \burlap\ Syntax}
+\label{burlap.syntax}
+
+\burlap\ has a rich variety of operators and functions for
+manipulating matrices, scalars, strings, and \felt\ objects.  Matrices
+are denoted by square brackets with matrix elements separated by
+commas and matrix rows separated by semicolons.  Scalars are
+floating-point numbers such as {\tt 3.14159} or {\tt 123}.  Any scalar
+can also be converted to a matrix with one row and one column.
+Strings are enclosed in double quotation marks.  Special enumeration
+constants begin with an ampersand, as in {\tt\&local\_x}.  Variable
+names are a sequence of letters, digits, and the underscore character.
+Finally, comments are enclosed within {\tt /* */}; a pound sign ({\tt
+\#}) may also be used to indicate a comment until the end of the
+current line.
+
+\begin{screen}
+\begin{verbatim}
+[1] a = 3.14159
+[2] b = "hello"
+[3] c = [1, 2, 3; 4, 5, 6]
+[4] write (a)
+3.14159
+[5] write (b)
+hello
+[6] write (c)
+
+         1          2          3 
+         4          5          6 
+\end{verbatim}
+\end{screen}
+
+The following sections discuss the operators and functions of \burlap\
+in detail.  They are intended to be the definitive word on the
+semantics of the operators, functions, matrix formers, etc.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Literals}
+\label{burlap.syntax.literals}
+
+It seems appropriate to begin the discussion with the literals since
+they are the building blocks of the \burlap\ syntax.  As previously
+mentioned, floating-point literals are numbers such as {\tt 123} or
+{\tt 3.14159}.  Specifically, a numeric literal consists of a {\em
+base} followed by an optional {\em exponent}.  The base consists of a
+series of digits with an optional decimal point.  The exponent
+consists of the letter {\tt E} or {\tt e} followed by the digits of
+the base-10 exponent.  The digits in the exponent may be preceded by a
+{\tt +} or {\tt -} to indicate a positive or negative exponent,
+respectively.  String literals are enclosed within double quotation
+marks, as in {\tt "hello"}.  The following {\em escapes} may be used
+to introduce special characters within a string literal.
+
+\begin{center}
+\begin{tabular}{ll@{\hspace{.5in}}ll}
+audible alert	& \verb$\a$	& carriage return	& \verb$\r$	\\
+backspace	& \verb$\b$	& horizontal tab	& \verb$\t$	\\
+formfeed	& \verb$\f$	& vertical tab		& \verb$\v$	\\
+newline		& \verb$\n$	& quote			& \verb$\"$	\\
+\end{tabular}
+\end{center}
+
+Matrices are delimited by square brackets with rows separated by
+semicolons and elements within a row separated by commas.  An
+important thing to realize when writing matrices is that \burlap\ may
+automatically insert a semicolon at the end of line.  In particular, a
+semicolon is inserted at the end of a line in {\em interactive mode}
+when the last literal or operator on the line can end an expression.
+
+\begin{screen}
+\begin{verbatim}
+[1] a = [1, 2, 3
+[2] 4, 5, 6]
+[3] write (a)
+
+         1          2          3 
+         4          5          6 
+
+[4] a = [1, 2, 3 +  
+ 4> 4, 5, 6]
+[5] write (a)
+
+         1          2          7          5          6 
+\end{verbatim}
+\end{screen}
+
+Note that since an expression cannot end with {\tt +}, the next line
+is taken to be a continuation of the previous line.  A matrix element
+may be an arbitrary expression; however, all expressions on the same
+row must have the same height.  Additionally, all rows must have the
+same number of columns.
+
+\begin{screen}
+\begin{verbatim}
+[1] x = 1
+[2] a = [0, x, 2]
+[3] write (a)
+
+         0          1          2 
+
+[4] b = [a; 3, 4, 5]  
+[5] write (b)
+
+         0          1          2 
+         3          4          5 
+
+[6] write ([b, b])
+
+         0          1          2          0          1          2 
+         3          4          5          3          4          5 
+
+[7] write ([b, a])
+stdin:7: inconsistent number of rows
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Variables}
+\label{burlap.syntax.variables}
+
+Variables are named by a sequence of letters, digits, the underscore
+character, and the question mark symbol.  A variable must begin with a
+letter or the underscore character.  The question mark may only appear
+as the last character in a variable name.  There is no limit on the
+length of a variable name.
+
+Variables are assigned values either through the assignment operator,
+parameter passing, or function definitions.  A variable is either {\em
+local} or {\em global}.  Local variables are those variables
+referenced within a function body.  Global variables are those
+variables referenced outside a function body.  To explicitly reference
+a global variable inside a function body, it must be declared as
+global using the {\tt global} declaration.
+
+\begin{screen}
+\begin{verbatim}
+function foo (x)
+    global y, z
+    return x + y + z
+end
+\end{verbatim}
+\end{screen}
+
+The function {\tt foo} references two global variables, {\tt y} and
+{\tt z}.  If the function did not use the {\tt global} declaration
+then {\tt y} and {\tt z} would be local variables.  The only
+exception to this rule is a function call, as discussed in
+Section~\ref{burlap.syntax.function-call}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Constants}
+\label{burlap.syntax.constants}
+
+There are several predefined enumeration constants in \burlap.  Most
+of the constants correspond to keywords used in the \felt\ input file
+to define properties such as the direction of a load.  The enumeration
+constants are listed in Table~\ref{burlap.constants.table}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{ll}
+analysis types:
+& \verb$&static$, \verb$&transient$, \verb$&modal$, \verb$&static_thermal$, \\
+& \verb$&transient_thermal$, \verb$&spectral$ \\
+
+load directions:
+& \verb$&local_x$, \verb$&local_y$, \verb$&local_z$, \verb$&global_x$, \\
+& \verb$&global_y$, \verb$&global_z$, \verb$&parallel$, \verb$&perpendicular$ \\
+
+degrees of freedom:
+& \verb$&tx$, \verb$&ty$, \verb$&tz$, \verb$&rx$, \verb$&ry$, \verb$&rz$, \\
+& \verb$&fx$, \verb$&fy$, \verb$&fz$, \verb$&mx$, \verb$&my$, \verb$&mz$ \\
+
+element shapes:
+& \verb$&linear$, \verb$&planar$, \verb$&solid$ \\
+
+miscellaneous:
+&\verb$&constrained$, \verb$&unconstrained$, \verb$&hinged$, \\
+&\verb$&lumped$, \verb$&consistent$, \verb$&null$, \verb$&true$, \verb$&false$\\
+\end{tabular}
+\caption{Enumeration constants in \burlap.}
+\label{burlap.constants.table}
+\end{center}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Operators}
+\label{burlap.syntax.operators}
+
+This section discusses the various operators available in \burlap.
+The operators are discussed in order of precedence, with the lowest
+precedence first.  In general, uppercase letters denote matrices and
+lowercase letters denote scalars.  For many operators, a precise
+definition of the operator is given, along with a table specifying the
+legal types of the operands, and example \burlap\ output.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Expression separators}
+\label{burlap.op.separators}
+
+\begin{quote}
+\begin{verbatim}
+X ; Y
+X , Y
+\end{verbatim}
+\end{quote}
+
+A semicolon is used to separate multiple expressions to be evaluated
+and to separate the rows of a matrix.  A comma is used to separate the
+arguments to a function and to separate the elements within a single
+row of a matrix.
+
+Since an expression usually ends at the end of a line, typing a
+semicolon at the end of every line to separate one expression from the
+next would be extremely tedious.  Instead, \burlap\ will automatically
+insert a semicolon for you at the end of a line {\em under certain
+conditions}.  When reading from a terminal in interactive mode, if the
+last token on the line may end an expression then a semicolon is
+inserted.  When reading from a file, if the last token on the line may
+end an expression {\em and} the first token on the next line may begin
+an expression then a semicolon will be inserted.  A line can be
+explicitly continued by ending the line with a backslash character.
+
+\begin{screen}
+\begin{verbatim}
+[1] write ("hello"); write ("there")
+hello
+there
+[2] a = 1 +   
+ 2> 2 + 3
+[3] write (a)
+6
+[4] b = 1 \
+ 4> + 2
+[5] write (b)
+3
+[6] x = [1, 2, 3
+[7]      4, 5, 6]
+[8] write (x)
+
+         1          2          3 
+         4          5          6 
+\end{verbatim}
+\end{screen}
+
+Although these semantics may sound complicated, they are designed so
+that 99.9\% of the time you don't need to worry about when to add a
+semicolon.  However, if you find yourself with a nasty bug, you might
+want to review the rules for inserting semicolons or try putting in an
+explicit semicolon or backslash.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Assignment expressions}
+\label{burlap.op.assignment}
+
+\begin{quote}
+\begin{verbatim}
+X = Y; X := Y
+\end{verbatim}
+\end{quote}
+
+The assignment operator has two equivalent forms and groups from
+right-to-left.  An assignment expression assigns $Y$ to $X$ and
+returns $X$.  $X$ must be a variable name, a submatrix, a field
+reference, or the result of a function call returning a global
+variable.
+
+Generally, any expression can be assigned to a variable.  However, in
+certain cases the expression on the right-hand side is restricted.
+For example, if $X$ is a submatrix, created as the result of indexing
+a matrix, then the dimensions (number of rows and columns) of $X$ and
+$Y$ must agree.
+
+If $X$ is the result of a field reference of a \felt\ structure then
+there may be type constraints on $Y$.  For example, a matrix cannot be
+assigned to the component of a force.  Some fields are also read-only,
+such as the name of a constraint or the number of a node or element.
+
+\begin{screen}
+\begin{verbatim}
+[1] a = [1, 2, 3]
+[2] write (a)
+
+         1          2          3 
+
+[3] a = b = 0
+[4] write (a, " ", b)
+0 0
+[5] a = (b = 2) + 1
+[6] write (a, " ", b)
+3 2
+[7] nodes (1).number = 3
+stdin:7: type error in expression: changing a read-only variable
+[8] nodes (1).force.Fx = 4
+[9] nodes (1).force.Fy = [1, 2, 3]
+stdin:9: type error in expression: scalar = matrix
+[10] a = [1, 2, 3; 4, 5, 6]
+[11] write (a)
+
+         1          2          3 
+         4          5          6 
+
+[12] a (1, 2) = 0
+[13] write (a)
+
+         1          0          3 
+         4          5          6 
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Logical {\sc or} operator}
+\label{burlap.op.or}
+
+\begin{quote}
+\begin{verbatim}
+x or y; x || y
+\end{verbatim}
+\end{quote}
+
+The logical {\sc or} operator has two equivalent forms and groups from
+left-to-right.  It returns {\tt 1} if either of its operands compares
+unequal to zero, and {\tt 0} otherwise.  The {\sc or} operator
+guarantees left-to-right evaluation: $x$ is first evaluated; if it is
+unequal to {\tt 0}, the value of the expression is {\tt 1}.
+Otherwise, $y$ is evaluated, and if it is unequal to {\tt 0}, the
+result of the {\sc or} expression is {\tt 1}, otherwise the result is
+{\tt 0}.
+
+\begin{displaymath}
+x \mbox{ or } y \stackrel{\rm def}{=} \left\{
+\begin{array}{ll}
+1 & \mbox{if $x \neq 0$ or $y \neq 0$} \\
+0 & \mbox{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+Both $x$ and $y$ must be scalar expressions, as shown in
+Table~\ref{burlap.or.types}.  It makes little sense to compare a
+matrix or string with zero, for example.  There are, however, common
+ways of mapping a matrix to a scalar.  Two such ways are provided by
+the {\tt any?()} and {\tt every?()} functions discussed in
+Section~\ref{burlap.predicate.functions}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt Z = X or Y \\
+\hline
+scalar & scalar & scalar & $z = x \mbox{ or } y$ \\
+\end{tabular}
+\caption{Type table for the logical {\sc or} operator.}
+\label{burlap.or.types}
+\end{center}
+\end{table}
+
+\begin{screen}
+\begin{verbatim}
+[1] write (1 < 2 or 5 > 6)
+1
+[2] write (1 > 2 or 5 > 6)
+0
+[3] write (1 or 1 / 0)
+1
+[4] write (0 or 1 / 0)
+stdin:4: exception in expression: right division by zero
+[5] a = [1, 2, 3]
+[6] write (a or 1)
+stdin:6: type error in expression: matrix in conditional context
+[7] write (any? (a) or 1)
+1
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Logical {\sc and} operator}
+\label{burlap.op.and}
+
+\begin{quote}
+\begin{verbatim}
+x and y; x && y
+\end{verbatim}
+\end{quote}
+
+The logical {\sc and} operator has two equivalent forms and groups
+from left-to-right.  It returns {\tt 1} if both of its operands
+compare unequal to zero, and {\tt 0} otherwise.  The {\sc and}
+operator guarantees left-to-right evaluation: $x$ is first evaluated;
+if it is equal to {\tt 0}, the value of the expression is {\tt 0}.
+Otherwise, $y$ is evaluated, and if it is equal to {\tt 0}, the result
+of the {\sc and} expression is {\tt 0}, otherwise the result is {\tt
+1}.
+
+\begin{displaymath}
+x \mbox{ and } y \stackrel{\rm def}{=} \left\{
+\begin{array}{ll}
+1 & \mbox{if $x \neq 0$ and $y \neq 0$} \\
+0 & \mbox{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+Both $x$ and $y$ must be scalar expressions, as shown in
+Table~\ref{burlap.and.types}.  It makes little sense to compare a
+matrix or string with zero, for example.  There are, however, common
+ways of mapping a matrix to a scalar.  Two such ways are provided by
+the {\tt any?()} and {\tt every?()} functions discussed in
+Section~\ref{burlap.predicate.functions}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt Z = X and Y \\
+\hline
+scalar & scalar & scalar & $z = x \mbox{ and } y$ \\
+\end{tabular}
+\caption{Type table for the logical {\sc and} operator.}
+\label{burlap.and.types}
+\end{center}
+\end{table}
+
+\begin{screen}
+\begin{verbatim}
+[1] write (1 < 2 and 3 < 4)
+1
+[2] write (1 < 2 and 3 > 4)
+0
+[3] write (0 and 1 / 0)
+0
+[4] write (1 and 1 / 0)
+stdin:4: exception in expression: right division by zero
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Equality operators}
+\label{burlap.op.equality}
+
+\begin{quote}
+\begin{verbatim}
+X == Y
+X != Y; X <> Y
+\end{verbatim}
+\end{quote}
+
+The equality ({\tt ==}) and inequality ({\tt !=} or {\tt <>})
+operators associate from left-to-right.  The result of the expression
+is {\tt 1} if true, and {\tt 0} if false.
+
+\begin{displaymath}
+x \mbox{ = } y \stackrel{\rm def}{=} \left\{
+\begin{array}{ll}
+1 & \mbox{if $x = y$} \\
+0 & \mbox{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+\begin{displaymath}
+x \mbox{ != } y \stackrel{\rm def}{=} \left\{
+\begin{array}{ll}
+1 & \mbox{if $x \neq y$} \\
+0 & \mbox{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+Unlike the previously discussed operators, these operators, like most
+of the operators in \burlap, accept a variety of types as operands, as
+shown in Table~\ref{burlap.equality.types}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt Z = X\op Y				    \\
+\hline
+matrix & matrix	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \op Y_{i,j}$ \\
+matrix & scalar	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \op y$	    \\
+scalar & matrix	& matrix & $\forall i,j \mid Z_{i,j} = x \op Y_{i,j}$	    \\
+scalar & scalar & scalar & $z = x \op y$ (scalar comparison)		    \\
+string & string & scalar & $z = x \op y$ (lexicographic comparison)	    \\
+object & object & scalar & $z = x \op y$ (object identity comparison)	    \\
+\end{tabular}
+\caption{Type table for the equality operators.}
+\label{burlap.equality.types}
+\end{center}
+\end{table}
+
+Although the table might look confusing, it provides a precise
+semantics for all possible type operands.  Essentially, \burlap\ does
+element-by-element comparison for matrices and scalars, string (i.e.,
+lexicographic) comparison for strings, and identity (i.e., pointer)
+comparison on all other type objects.  When comparing two matrices,
+their dimensions must be identical.
+
+\begin{screen}
+\begin{verbatim}
+[1]  write ([1, 2, 3] == 2)
+
+         0          1          0 
+
+[2] write (2 != [1, 2, 3])
+
+         1          0          1 
+
+[3] write ([1, 2, 3] == [3, 2, 3])
+
+         0          1          1 
+
+[4] write ("hello" == "hello")
+1
+[5] write ("hello" == "there")
+0
+[6] write (nodes (1) == nodes (1))
+1
+[7] write (nodes (1) == elements (1))
+stdin:7: type error in expression: node == element
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Relational operators}
+\label{burlap.op.relational}
+
+\begin{quote}
+\begin{verbatim}
+X < Y
+X > Y
+X <= Y
+X >= Y
+\end{verbatim}
+\end{quote}
+
+The relational operators are similar to the equality operators, with
+the only difference being that they do not allow an arbitrary object
+type as an operand for comparison
+(Table~\ref{burlap.relational.types}).
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt Z = X\op Y				    \\
+\hline
+matrix & matrix	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \op Y_{i,j}$ \\
+matrix & scalar	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \op y$	    \\
+scalar & matrix	& matrix & $\forall i,j \mid Z_{i,j} = x \op Y_{i,j}$	    \\
+scalar & scalar & scalar & $z = x \op y$ (scalar comparison)		    \\
+string & string & scalar & $z = x \op y$ (lexicographic comparison)	    \\
+\end{tabular}
+\caption{Type table for the relational operators.}
+\label{burlap.relational.types}
+\end{center}
+\end{table}
+
+The result of the expression is {\tt 1} if the expression is true, and
+{\tt 0} if the expression is false.  If two matrices are compared,
+then their dimensions must be identical.
+
+\begin{screen}
+\begin{verbatim}
+[1] write ([1, 2, 3] < 3)
+
+         1          1          0 
+
+[2] write ([1, 2, 3] >= [3, 2, 1])
+
+         0          1          1 
+
+[3] write ("aardvark" < "aardwolf")
+1
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Range operator}
+\label{burlap.op.range}
+
+\begin{quote}
+\begin{verbatim}
+x : z
+x : y : z
+\end{verbatim}
+\end{quote}
+
+The range operator produces a row vector starting at $x$ and ending at
+$z$, with $y$ used as the step between successive elements.
+
+\begin{displaymath}
+x \mbox{ : } y \mbox{ : } z \stackrel{\rm def}{=} \left\{
+\begin{array}{cl}
+\!\left[ x \; x + y \;\cdots\; x + \left\lfloor \frac{z - x}{y}
+\right\rfloor y \right] &
+\mbox{if ($x \leq z$ and $y > 0$) or ($x \geq z$ and $y < 0$)} \\
+\!\mbox{null} & \mbox{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+If $y$ is not specified then {\tt 1} is used as the step value.  Each
+of $x$, $y$, and $z$ must be scalar expressions, as shown in
+Table~\ref{burlap.range.types}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt W  & \tt W = X : Y : Z	      \\
+\hline
+scalar & scalar & scalar & matrix & \mbox{(as defined above)} \\
+\end{tabular}
+\caption{Type table for the range operator.}
+\label{burlap.range.types}
+\end{center}
+\end{table}
+
+\begin{screen}
+\begin{verbatim}
+[1] write (1:3) 
+
+         1          2          3 
+
+[2] write (3:1)
+null
+[3] write (1:2:10)
+
+         1          3          5          7          9 
+
+[4] write (10:-2:1)
+
+        10          8          6          4          2 
+\end{verbatim}
+\end{screen}
+
+As illustrated above, if the range is improperly specified then a {\tt
+null} value is returned.  The {\tt null} value is illegal in most
+operations and is used to indicate an uninitialized value.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Additive operators}
+\label{burlap.op.additive}
+
+\begin{quote}
+\begin{verbatim}
+X + Y
+X - Y
+\end{verbatim}
+\end{quote}
+
+The type semantics of the additive operators are quite similar to the
+semantics of the relational and equality operators, except that only
+scalars and matrices are allowed.  As shown in
+Table~\ref{burlap.additive.types}, adding two scalars produces a
+scalar, as expected; adding a matrix to a scalar simply adds the
+scalar to each element of the matrix; adding two matrices results in
+standard matrix addition, again as expected.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt Z = X\op Y				    \\
+\hline
+scalar & scalar & scalar & $z = x \op y$				    \\
+scalar & matrix	& matrix & $\forall i,j \mid Z_{i,j} = x \op Y_{i,j}$	    \\
+matrix & scalar	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \op y$	    \\
+matrix & matrix	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \op Y_{i,j}$ \\
+\end{tabular}
+\caption{Type table for the additive operators.}
+\label{burlap.additive.types}
+\end{center}
+\end{table}
+
+Like the equality and relational operators, the additive operators
+associate from left-to-right.  Also, two matrices must have identical
+dimensions for addition or subtraction.
+
+\begin{screen}
+\begin{verbatim}
+[1] write (1 + 2)
+3
+[2] write (1 + [2, 3, 4])
+
+         3          4          5 
+
+[3] write ([3, 4, 5] - 1)
+
+         2          3          4 
+
+[4] write ([1, 2] + [3, 4])
+
+         4          6 
+
+[5] write ([1, 2, 3] + [4, 5])
+stdin:5: size mismatch in expression: (1 x 3) + (1 x 2)
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Multiplicative operators}
+\label{burlap.op.multiplicative}
+
+\begin{quote}
+\begin{verbatim}
+X * Y
+X / Y
+X \ Y
+X % Y
+\end{verbatim}
+\end{quote}
+
+The multiplicative operators, which associate from left-to-right, are
+distinct from the other operators in that the results are not computed
+on an element-by-element basis.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y  & \tt Z  & \tt Z = X * Y				 \\
+\hline
+scalar & scalar & scalar & $z = x \times y$				 \\
+scalar & matrix & matrix & $\forall i,j \mid Z_{i,j} = x \times Y_{i,j}$ \\
+matrix & scalar & matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \times y$ \\
+matrix & matrix & matrix & $\forall i,j \mid Z_{i,j} = \sum_{k=1}^{n} X_{i,k} \times Y_{k,j}$ \\
+\end{tabular}
+\caption{Type table for the multiplication operator.}
+\label{burlap.multiplication.types}
+\end{center}
+\end{table}
+
+As illustrated in Table~\ref{burlap.multiplication.types}, multiplying
+two scalars results in scalar multiplication, multiplying a matrix by
+a scalar is equivalent to scaling the matrix by the scalar, and
+multiplying two matrices results in standard matrix multiplication.
+In matrix multiplication the inner dimensions must agree.
+
+\begin{screen}
+\begin{verbatim}
+[1] write (2 * 3)
+6
+[2] write (2 * [1, 2, 3])
+
+         2          4          6 
+
+[3] write ([1, 2, 3] * [1; 2; 3])
+14
+[4] write ([1; 2; 3] * [1, 2, 3])
+
+         1          2          3 
+         2          4          6 
+         3          6          9 
+
+[5] write ([1, 2] * [3, 4])
+stdin:5: size mismatch in expression: (1 x 2) * (1 x 2)
+\end{verbatim}
+\end{screen}
+
+\burlap\ supports two forms of division: left division and right
+division.  The right division of $X$ and $Y$ is (approximately)
+equivalent to multiplying $X$ by the inverse of $Y$.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z	 & \tt Z = X / Y				      \\
+\hline
+scalar & scalar & scalar & $z = x / y$					      \\
+scalar & matrix & matrix & $\forall i,j \mid Z_{i,j} = x \times Y^{-1}_{i,j}$ \\
+matrix & scalar & matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} / y$	      \\
+matrix & matrix & matrix & $Z \mid Z Y = X$				      \\
+\end{tabular}
+\caption{Type table for the right division operator.}
+\label{burlap.right-division.types}
+\end{center}
+\end{table}
+
+The first three cases in Table~\ref{burlap.right-division.types} are
+as expected.  Note that in the second case, where $Y$ is a matrix, its
+inverse must be explicitly computed, which may result in numeric
+instability and thus should be avoided.  In the fourth case, where two
+matrices are ``divided'', then an LU-factorization, combined with
+transposition, is used to compute the ``inverse'' without introducing
+numeric instability, as shown in
+Equation~\ref{burlap.right-division.equation}.  In all cases, the
+number of rows of $X$ must equal the number of columns of $Y$.
+
+\begin{eqnarray}
+Z = X / Y & \equiv & Z = X Y^{-1} \nonumber \\
+	  & \equiv & Z Y = X \label{burlap.right-division.equation} \\
+	  & \equiv & (Y^T Z^T)^T = (X^T)^T \nonumber
+\end{eqnarray}
+
+\begin{screen}
+\begin{verbatim}
+[1] write (1 / 2)
+0.5
+[2] write (1 / 0)
+stdin:2: exception in expression: right division by zero
+[3] write ([1, 2, 3] / 10)
+
+       0.1        0.2        0.3 
+\end{verbatim}
+\end{screen}
+
+The left division of $X$ and $Y$ is (approximately) equivalent to the
+inverse of $X$ multiplied by $Y$.  Left division is most often used to
+solve equations of the form $A x = b$.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y  & \tt Z  & \tt Z = X \char '134\ Y			      \\
+\hline
+scalar & scalar & scalar & $z = y / x$					      \\
+scalar & matrix & matrix & $\forall i,j \mid Z_{i,j} = Y_{i,j} / x$	      \\
+matrix & scalar & matrix & $\forall i,j \mid Z_{i,j} = X^{-1}_{i,j} \times y$ \\
+matrix & matrix & matrix & $Z \mid X Z = Y$				      \\
+\end{tabular}
+\caption{Type table for the left division operator.}
+\label{burlap.left-division.types}
+\end{center}
+\end{table}
+
+As shown in Table~\ref{burlap.left-division.types}, the third case
+involves the explicit computation of the matrix inverse, and thus
+should be avoided.  Left division is also known as a {\em backsolve},
+since if performed on two matrices, an LU-decomposition (or Crout
+factorization for compact matrices) is computed followed by a
+backsolve operation.  (This is easy to remember since the {\em
+back\/}slash is used to perform a {\em back\/}solve).  The number of
+columns of $X$ must equal the number of rows of $Y$.
+
+\begin{screen}
+\begin{verbatim}
+[1] write (2 \ 1)
+0.5
+[2] write (0 \ 1)
+stdin:2: exception in expression: left division by zero
+[3] write (10 \ [1, 2, 3])
+
+       0.1        0.2        0.3 
+
+[4] write ([1, 2; 3, 4] \ [5, 6])
+stdin:4: size mismatch in expression: (2 x 2) \ (1 x 2)
+[5] write ([1, 2; 3, 4] \ [5; 6])
+
+        -4 
+       4.5 
+\end{verbatim}
+\end{screen}
+
+Finally, \burlap\ also supports a remainder operation as shown in
+Table~\ref{burlap.remainder.types}.  In the left division, right
+division, and remainder operators, a division by zero will cause a
+mathematical exception.
+
+\begin{displaymath}
+x \bmod y \stackrel{\rm def}{=}
+x - \lfloor x / y \rfloor y
+\end{displaymath}
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt X  & \tt Y	& \tt Z  & \tt Z = X \% Y				      \\
+\hline
+scalar & scalar & scalar & $z = x \bmod y$				      \\
+scalar & matrix	& matrix & $\forall i,j \mid Z_{i,j} = x \bmod Y_{i,j}$	      \\
+matrix & scalar	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \bmod y$	      \\
+matrix & matrix	& matrix & $\forall i,j \mid Z_{i,j} = X_{i,j} \bmod Y_{i,j}$ \\
+\end{tabular}
+\caption{Type table for the remainder operator.}
+\label{burlap.remainder.types}
+\end{center}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Exponentiation operator}
+\label{burlap.op.exponentiation}
+
+\begin{quote}
+\begin{verbatim}
+x ** y; x ^ y
+\end{verbatim}
+\end{quote}
+
+The exponentiation operator has two equivalent forms as associated from
+right-to-left.  Both $x$ and $y$ must be scalar expressions, as shown
+in Table~\ref{burlap.exponentiation.types}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|c|l}
+\tt x  & \tt y  & \tt z  & \tt z = x ** y	\\
+\hline
+scalar & scalar & scalar & $z = x^y$		\\
+\end{tabular}
+\caption{Type table for the exponentiation operator.}
+\label{burlap.exponentiation.types}
+\end{center}
+\end{table}
+
+Additionally, $x$ must be non-negative or $y$ must be an integer;
+otherwise a mathematical exception will result.
+
+\begin{screen}
+\begin{verbatim}
+[1] write (2 ** 3)
+8
+[2] write (2 ** .5)
+1.41421
+[3] write (-2 ** .5)
+stdin:3: exception in expression: illegal base and exponent
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Transposition operator}
+\label{burlap.op.transposition}
+
+\begin{quote}
+\begin{verbatim}
+X'
+\end{verbatim}
+\end{quote}
+
+The transposition operator returns the transpose of its operand and
+associates from left-to-right.  The transpose of a scalar is defined
+to be itself, as shown in Table~\ref{burlap.transposition.types}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|l}
+\tt X  & \tt Y  & \tt Y = X'	\\
+\hline
+scalar & scalar & $y = x$	\\
+matrix & matrix & $Y = X^T$	\\
+\end{tabular}
+\caption{Type table for the transposition operator.}
+\label{burlap.transposition.types}
+\end{center}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Unary operators}
+\label{burlap.op.unary}
+
+\begin{quote}
+\begin{verbatim}
+- X
++ X
+not X; ! X
+\end{verbatim}
+\end{quote}
+
+The prefix unary operators associate from right-to-left.  The unary
+minus operator simply returns the negative of $X$.  The unary plus
+operator simply returns $X$, which must be a matrix or scalar
+expression.  The logical negation operator ({\tt not} or \verb$!$)
+logically negates each element of $X$.
+
+\begin{displaymath}
+\mbox{not } x \stackrel{\rm def}{=} \left\{
+\begin{array}{ll}
+1 & \mbox{if $x = 0$} \\
+0 & \mbox{otherwise}
+\end{array} \right.
+\end{displaymath}
+
+The type tables for the unary operators are shown in
+Table~\ref{burlap.unary.types}.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{c|c|l}
+\tt X  & \tt Y  & \tt X =\op Y				   \\
+\hline
+scalar & scalar & $x = \op y$				   \\
+matrix & matrix & $\forall i,j \mid X_{i,j} = \op Y_{i,j}$ \\
+\end{tabular}
+\caption{Type table for the unary operators.}
+\label{burlap.unary.types}
+\end{center}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Index expressions}
+\label{burlap.op.index}
+
+\begin{quote}
+\begin{verbatim}
+X (I)
+X (I,J)
+\end{verbatim}
+\end{quote}
+
+An index expression is used to access the components of matrices.
+Each index must be an expression that is either a scalar, a vector
+whose elements are {\em contiguous and increasing}, or the special
+vector {\tt :}, which is used to specify all rows or columns of a
+matrix and should not be confused with the range operator.  If $I$ or
+$J$ is a vector then it specifies a range of indices that are to be
+used.  Thus, \verb$:$ is a shorthand for writing \verb$1 : rows (X)$
+for $I$ or \verb$1 : cols (X)$ for $J$.
+
+If $X$ is a matrix then {\tt X(i)} is its $i$th column and {\tt
+X(i,j)} is the value of the element of its $i$th row and $j$th column.
+However, if $X$ is a vector then {\tt X(i)} is its $i$th element.
+Since a scalar is a matrix with one row and one column, it may also be
+indexed.
+
+\begin{screen}
+\begin{verbatim}
+[1] A = [1, 2, 3; 4, 5, 6] 
+[2] x = [1; 2; 3]
+[3] y = [1, 2, 3]
+[4] write (A)
+
+         1          2          3 
+         4          5          6 
+
+[5] write (A(2))
+
+         2 
+         5 
+
+[6] write (A(2,3))
+6
+[7] write (x)
+
+         1 
+         2 
+         3 
+
+[8] write (x(2))
+2
+[9] write (y)
+
+         1          2          3 
+
+[10] write (y(1))
+1
+[11] write (A(:,[2,3]))
+
+         2          3
+         5          6
+\end{verbatim}
+\end{screen}
+
+Thus, there is some ambiguity in using {\tt X(i)} since if $X$ is a
+column vector then the result will be its $i$th element and if $X$ is
+a matrix then the result will be its $i$th column.  Therefore, caution
+should be used; {\em octave} does not support indexing a matrix with a
+single index.  However, the single index notation can be useful and is
+consistent with the semantics of the {\tt for} expression of
+Section~\ref{burlap.flow.for}.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Function expressions}
+\label{burlap.syntax.function-call}
+
+\begin{quote}
+\begin{verbatim}
+F (...)
+\end{verbatim}
+\end{quote}
+
+A function call is an expression, $F$, followed by parentheses
+containing a possibly empty, comma-separated list of arguments, which
+may be arbitrary expressions.  The argument list is evaluated in order
+from left to right.  The result of the expression is the return value
+of the function named by $F$.  If more arguments are specified than
+required by the function, the extra arguments are simply discarded.
+If too few arguments are specified, then {\tt null} values are
+appended to the argument list.  Thus, it is impossible to distinguish
+a {\tt null} value due to an uninitialized variable from a missing
+argument.
+
+If $F$ evaluates to {\tt null} and is an identifier, such as {\tt
+write}, then the global scope is searched for a function called {\tt
+F}.  If a function exists then it is executed.  Otherwise, the
+directories named by the environment variable {\tt BURLAP\_PATH} are
+searched in order for a file named first {\tt F} and then {\tt F.b}.
+If a file is found then it is processed just as if {\tt include()}
+were called.  After the file is processed the global scope is searched
+again.  If the function still cannot be found then a type error
+results.  This is the only case in which a global variable used inside
+a function does not need to be explicitly declared in a {\tt global}
+declaration.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Intrinsic functions}
+\label{burlap.syntax.intrinsics}
+
+The {\em intrinsic} functions are those functions that are \burlap\
+provides by default.  They are, however, just variables and their
+values can be reassigned, although this is not typically done.  The
+functions can be grouped into five basic categories:
+
+\begin{itemize}
+\item{\bf mathematical functions:}
+{\tt sin()}, {\tt sqrt()}, {\tt floor()}, etc.
+(Section~\ref{burlap.math.functions})
+
+\item{\bf matrix functions:}
+{\tt lu()}, {\tt qr()}, {\tt eig()}, etc.
+(Section~\ref{burlap.matrix.functions})
+
+\item{\bf predicate functions:}
+{\tt null?()}, {\tt any?()}, {\tt matrix?()}, etc.
+(Section~\ref{burlap.predicate.functions})
+
+\item{\bf finite element functions:}
+{\tt assemble()}, {\tt area()}, etc.
+(Section~\ref{burlap.fe.functions})
+
+\item{\bf miscellaneous functions:}
+{\tt concat()}, {\tt write()}, {\tt exit()}, etc.
+(Section~\ref{burlap.misc.functions})
+\end{itemize}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Mathematical functions}
+\label{burlap.math.functions}
+
+\burlap\ supports most of the functions available in the C math
+library, as shown in Table~\ref{burlap.math.table}.  Each of the
+functions can take either a scalar or a matrix as an argument.  If a
+matrix is passed as an argument, then the result is also a matrix with
+the function applied to each element individually.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{ll@{\hspace{.5in}}ll}
+\tt abs	(x)    & $| x |$	     & \tt hypot (x,y) & $\sqrt{x^2 + y^2}$ \\
+\tt ceil (x)   & $\lceil x \rceil$   & \tt log (x)     & $\ln x$		   \\
+\tt cos	 (x)   & $\cos x$	     & \tt log10 (x)   & $\log x$	   \\
+\tt exp	 (x)   & $e^x$		     & \tt pow (x,y)   & $x^y$		   \\
+\tt fabs (x)   & $| x |$	     & \tt sin (x)     & $\sin x$	   \\
+\tt floor (x)  & $\lfloor x \rfloor$ & \tt sqrt (x)    & $\sqrt{x}$	   \\
+\tt fmod (x,y) & $x \bmod y$	     & \tt tan (x)     & $\tan x$	   \\
+\end{tabular}
+\caption{Intrinsic functions from the math library.}
+\label{burlap.math.table}
+\end{center}
+\end{table}
+
+In the case of the {\tt hypot()} function which requires two
+arguments, the type semantics are the same as that of the addition
+operator.  The {\tt fmod()} function is equivalent to the remainder
+operator (\verb$%$); the {\tt pow()} function is equivalent to the
+exponentiation operator ({\tt **}).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Matrix functions}
+\label{burlap.matrix.functions}
+
+\burlap\ provides a variety of functions for manipulating and
+factoring matrices.  All of these functions, with the exception of
+{\tt rows()} and {\tt cols()} functions, could be written in \burlap\
+itself; however, the built-in versions will execute faster.  Detailed
+explanations of the various factorizations can be found in any basic
+linear algebra text.
+
+\begin{dispitems}
+\item[\tt chol (X)]
+Returns the cholesky factorization of $X$.  The cholesky decomposition
+of a matrix $X$ is a matrix $B$ such that $BB^T=X$, provided that $X$
+is symmetric and positive definite.  The cholesky decomposition of a
+scalar is simply its square root.
+
+\item[\tt cols (X)]
+Returns the number of columns of the matrix $X$.  A scalar is defined
+to have a single column.  A synonym for this function is {\tt
+columns()}.
+
+\item[\tt compact (X)]
+Returns a {\em compact-column} matrix whose elements are identical to
+those of $X$, provided that $X$ is a symmetric matrix.  Matrices are
+normally {\em full} matrices, with the size of an $m \times n$ full
+matrix requiring $O(mn)$ space.  The space required by a
+compact-column matrix is approximately equal to the number of non-zero
+entries.  Most of the \felt\ functions expect compact-column matrices.
+The compact representation of a scalar is itself.
+
+\item[\tt det (X)]
+Returns the determinant of $X$, $|X|$, provided that $X$
+is a nonsingular matrix.  The determinant of a scalar is itself.
+
+\item[\tt eig (X, V)]
+Returns a column vector, $\Lambda$, containing the eigenvalues of $X$,
+provided that $X$ is a square matrix. Therefore, $\forall i\ \exists y
+\mid Xy=\Lambda_{i}y$.  If a variable $V$ is specified {\em and} $X$
+is a symmetric matrix then $V$ will contain the matrix of eigenvectors
+on return.  Each column of $V$ will contain a single eigenvector.
+Therefore, $\forall i \mid XV_i=\Lambda_{i}V_i$.  If $V$ is missing or
+$X$ is not a symmetric matrix then only the eigenvalues are returned.
+
+\item[\tt eye (m, n)]
+Returns an identity matrix of size $m \times n$, $I_{mn}$.  If $n$ is
+omitted then an $m \times m$ matrix is returned.  Both $m$ and $n$ must
+be scalar expressions that are greater than zero.
+
+\item[\tt inv (X)]
+Returns the inverse of $X$ ($X^{-1}$), which must be either a
+nonsingular matrix or a non-zero scalar.
+
+\item[\tt lu (X, L, U, P)]
+
+Computes the LU decomposition of $X$, which must be a nonsingular
+matrix.  The return value is a row permuted superposition of $L$ and
+$U$, with the diagonal of $L$ not being stored since $L$ is unit lower
+triangular.  Thus, the result is not very useful.  However, if $L$ is
+specified as an argument, it will contain the unit lower triangular
+matrix on return.  Similarly, $U$ will contain the upper triangular
+matrix and $P$ will contain the permutation matrix, such that $PLU=X$.
+
+\item[\tt norm (X, s)]
+Returns the norm of $X$, $\| X \|$.  The type of the norm depends upon
+the type of $X$ and the value of $s$, which must be a string, as shown
+in Table~\ref{burlap.norm.table}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{c|l|l|l|l}
+& \multicolumn{4}{c}{$s$} \\ \cline{2-5}
+$X$ & \multicolumn{1}{c|}{\tt null} & \multicolumn{1}{c|}{\tt "1"}
+& \multicolumn{1}{c|}{\tt "2"} & \multicolumn{1}{c}{\tt "fro"} \\
+\hline
+scalar & $| X |$     & $| X |$	   & $| X |$	 & $| X |$     \\
+vector & $\| X \|_2$ & $\| X \|_1$ & $\| X \|_2$ & $\| X \|_F$ \\
+matrix & $\| X \|_F$ & $\| X \|_1$ & illegal	 & $\| X \|_F$ \\
+\end{tabular}
+\caption{Argument table for the {\tt norm()} function.}
+\label{burlap.norm.table}
+\end{table}
+
+The notation $\| X \|_F$ indicates the {\em Frobenius} norm of $X$;
+the Frobenius norm of a vector $X$ is equivalent to its 2-norm, $\| X
+\|_2$.  Since a scalar value can always be converted to a string
+value, it is legal to use {\tt norm (X, 1)} or {\tt norm (X, 2)}, but
+not {\tt norm (X, fro)} unless {\tt fro} evaluates to {\tt "1"}, {\tt
+"2"} or {\tt "fro"}.
+
+\item[\tt ones (m, n)]
+Returns an $m \times n$ matrix whose elements are all {\tt 1}.  If $n$
+is not specified then an $m \times m$ matrix is returned.  Both $m$
+and $n$ must evaluate to scalars greater than zero.
+
+\item[\tt qr (X, Q, R)]
+Computes the QR factorization of $X$ such that $Q^TX = R$ and $QQ^T =
+I$.  The result is a right upper triangular matrix, $R$.  The
+orthogonal matrix, $Q$, may be retrieved by specifying it as the
+second parameter; $R$ may also be retrieved in this manner if desired.
+The matrix $X$ must be overdetermined (i.e., tall and thin).
+
+\item[\tt rand (m, n, s)]
+Returns an $m \times n$ matrix whose elements are randomly distributed
+in $[0, 1)$.  If $n$ is not specified then an $m \times m$ matrix is
+returned.  If both $m$ and $n$ are not specified then a scalar is
+returned.  The third argument, $s$, will be used to seed the random
+number generator if it is specified and is a non-zero scalar.
+\burlap\ initially seeds the generator with the current time.
+
+\item[\tt rows (X)]
+Returns the number of rows of the matrix $X$.  A scalar is defined to
+have a single row.
+
+\item[\tt zeros (m, n)]
+Returns an $m \times n$ matrix whose elements are all {\tt 0}.  If $n$
+is not specified then an $m \times m$ matrix is returned.  A synonym
+for this function is {\tt zeroes()}.
+\end{dispitems}
+
+The {\tt eye()}, {\tt ones()}, {\tt rand()}, and {\tt zeros()}
+functions provide alternative ways of creating a matrix without using
+the matrix formers.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Predicate functions}
+\label{burlap.predicate.functions}
+
+Predicate functions (Table~\ref{burlap.predicate.table}) return {\tt
+1} if the predicate is true and {\tt 0} otherwise.  The names of all
+predicate functions in \burlap\ end with a question mark, {\tt ?}, but
+this is simply a convention and is not required should you write your
+own functions.
+
+\begin{table}[htbp]
+\begin{center}
+\begin{tabular}{ll}
+\tt any?\ (X)	    & Is any element of $X$ non-zero?	\\
+\tt compact?\ (X)   & Is $X$ a compact-column matrix?	\\
+\tt every?\ (X)	    & Is every element of $X$ non-zero?	\\
+\tt null?\ (X)	    & Is $X$ null?			\\
+\tt matrix?\ (X)    & Is $X$ a matrix?			\\
+\tt scalar?\ (X)    & Is $X$ a scalar?			\\
+\tt symmetric?\ (X) & Is $X$ a symmetric matrix?	\\
+\end{tabular}
+\caption{Predicate functions available in \burlap.}
+\label{burlap.predicate.table}
+\end{center}
+\end{table}
+
+The {\tt any?()}, {\tt compact?()}, {\tt every?()}, and {\tt
+symmetric?()} functions require $X$ to be either a scalar or a matrix.
+The remaining functions will accept any type of object as an argument.
+
+\begin{screen}
+\begin{verbatim}
+[1] x = [1, 2, 3]
+[2] y = 4      
+[3] write (scalar? (x), " ", scalar? (y))
+0 1
+[4] write (matrix? (x), " ", matrix? (y))
+1 0
+[5] z = x'*x   
+[6] write (symmetric? (z), " ", compact? (z))
+1 0
+[7] write (compact? (compact (z)))
+1
+\end{verbatim}
+\end{screen}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Finite element functions}
+\label{burlap.fe.functions}
+
+The finite element functions provide an interface to the functions in
+the \felt\ library.  The functions can all be written in \burlap\
+itself, but the built-in functions will execute faster.
+
+\begin{dispitems}
+\item[\tt add\_definition (...)]
+Adds a new element definition.  After the definition is added,
+elements of that particular type can be loaded using the {\tt felt()}
+function.  The types of the arguments are given in order in
+Table~\ref{burlap.add-def.args}.  Examples and a more in-depth discussion
+of the arguments can be found in Section~\ref{burlap.adding-elements}.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{ll}
+name of definition		  & \tt string	   \\
+set up function ($K$ and $M$)	  & \tt function   \\
+stress computation function	  & \tt function   \\
+element shape			  & \tt scalar	   \\
+number of nodes in element	  & \tt scalar	   \\
+number of nodes that define shape & \tt scalar	   \\
+number of stress values		  & \tt scalar	   \\
+vector of \dofs			  & \tt row vector \\
+retain stiffness matrix indicator & \tt scalar	   \\
+\end{tabular}
+\caption{Arguments to the {\tt add\_definition()} function.}
+\label{burlap.add-def.args}
+\end{table}
+
+\item[\tt area (e)]
+Returns the area of the element $e$.  The element must be a planar
+element (i.e., {\tt e.definition.shape} should be {\tt \&planar}).
+
+\item[\tt assemble (M, C)]
+Computes and returns the global stiffness matrix, $K$, for the
+currently defined \felt\ problem by computing the local stiffness
+matrices and assembling them into the global matrix.  For transient
+problems, if $M$ is specified then it will contain the global mass
+matrix on return.  Similarly, $C$ will contain the global damping
+matrix.  All matrices are compact-column matrices.  The \dof-related
+fields of the {\tt problem} structure must be initialized, as by
+calling the {\tt find\_dofs()} function.
+
+\item[\tt clear\_nodes ( )]
+Clears the displacements and equivalent nodal force vectors for all
+nodes defined in the current \felt\ problem.  The return value is {\tt
+null}.
+
+\item[\tt compute\_modes (K, M, X)]
+Computes the modes for given stiffness matrix, $K$, and mass matrix,
+$M$.  The result is the vector of eigenvalues, $\Lambda$.  If $X$ is
+specified then it will contain the matrix of eigenvectors upon return
+(see {\tt eig()} in Section~\ref{burlap.matrix.functions}).  The
+\dof-related fields of the {\tt problem} structure must be
+initialized, as by calling {\tt find\_dofs()}.
+
+\item[\tt compute\_stresses (e)]
+Computes the stresses for the element $e$.  The return value is the
+return value of the element's stress function.  The {\tt stress} field
+of the element is initialized by this function.  This function is
+merely a shorthand for {\tt e.definition.stress (e)}.
+
+\item[\tt construct\_forces (t)]
+Constructs and returns the global nodal force vector, $f$, for the
+current \felt\ problem.  The vector is constructed based on all nodal
+forces and the global \dofs\ at those nodes.  For transient problems,
+$t$ may be a scalar expression used to specify the current time.  If
+$t$ is missing then it is assumed to be {\tt 0}.  The \dof-related
+fields of the {\tt problem} structure must be initialized, as by
+calling {\tt find\_dofs()}.
+
+\item[\tt felt (s)]
+Reads the \felt\ file named by $s$ to define the current \felt\
+problem.  If $s$ does not name an absolute path (i.e., starts with
+{\tt /} or \verb$~$) then the environment variable {\tt FELT\_PATH} is
+used to search for the file named by $s$.  The variable should be a
+colon-separated list of directories.  The directories are searched
+from left-to-right for a file first named $s$ and then $s${\tt .flt}.
+If the variable {\tt FELT\_PATH} is not set, then only the current
+directory is searched.  If $s$ is {\tt null} then an empty problem is
+defined.
+
+\item[\tt find\_dofs ( )]
+Computes the set of active \dofs\ for the current problem.  As a
+result, the \dof-related fields of the {\tt problem} structure are
+initialized.  The number of active \dofs\ is returned.  This function
+must be called before most of the other finite element related
+functions can be called.
+
+\item[\tt global\_dof (n, d)]
+Returns the global \dof\ corresponding to a local \dof.  The local
+\dof\ is specified by its node, $n$, and its \dof, $d$.  The node,
+$n$, may be specified as either a node object or a node number.  The
+\dof, $d$, should be one of {\tt \&tx}, {\tt \&ty}, {\tt \&tz}, {\tt
+\&rx}, {\tt \&ry}, or {\tt \&rz}.  The \dof-related fields of the {\tt
+problem} structure must be initialized, as by calling {\tt
+find\_dofs()}.
+
+\item[\tt integrate\_hyperbolic (K, M, C, p)]
+Solve the discrete equation of motion, $Ma + Cv + Kd = f$, using
+Newmark's method with the Hilbert-Hughes-Taylor $\alpha$-correction
+for improved accuracy with numerical damping.  The return value is a
+matrix, $D$, of nodal displacements, with each column of $D$
+corresponding to a single time step.  If the nodes of the \felt\
+problem have been renumbered then $p$ should be used to specify the
+permutation vector, as returned by the {\tt renumber\_nodes()}
+function.  The sizes of the matrices must be consistent with the
+definition of the current problem.  Compact-column matrices are
+expected, but full symmetric matrices will be accepted by coercing
+them to compact-column matrices.  The \dof-related fields of the {\tt
+problem} structure must be initialized, as by calling {\tt
+find\_dofs()}.
+
+\item[\tt integrate\_parabolic (K, M, p)]
+Solves the discrete parabolic differential equation $Mv + Kd = f$
+using a generalized trapezoidal method.  If the nodes have been
+renumbered then $p$ should be used to specify the permutation vector.
+The sizes of the matrices must be consistent with the definition of
+the current problem.  Compact-column matrices are expected, but full
+symmetric matrices will be accepted by coercing them to compact-column
+matrices.  The \dof-related fields of the {\tt problem} structure must
+be initialized, as by calling {\tt find\_dofs()}.
+
+\item[\tt length (e)]
+Returns the length of the element $e$.  The element must be a linear
+element (i.e., {\tt e.definition.shape} should be {\tt \&linear}).
+
+\item[\tt local\_dof (g, l)]
+Returns the number of the node corresponding to the global \dof, $g$.
+If $l$, is specified then it will contain the local \dof\ on return.
+The number of the node is returned rather than the node object itself
+since the nodes of the problem may have been renumbered.  The
+\dof-related fields of the {\tt problem} structure must be
+initialized, as by calling {\tt find\_dofs()}.
+
+\item[\tt remove\_constrained (K)]
+Removes the rows and columns of $K$ at all \dofs\ with a fixed
+boundary condition and returns the new matrix.  $K$ itself is not
+modified.  $K$ should be either a symmetric matrix or a column vector;
+the size of $K$ must be consistent with the definition of the current
+problem.  The \dof-related fields of the {\tt problem} structure must
+be initialized, as by calling {\tt find\_dofs()}.
+
+\item[\tt remove\_definition (n)]
+Removes the element definition named by $n$.  If the definition is
+successfully removed then {\tt 0} is returned.  Otherwise, {\tt 1} is
+returned.  The definition must not be in use by any elements.
+
+\item[\tt renumber\_nodes ( )]
+Renumbers the nodes of the current problem using the
+Gibbs-Poole-Stockmeyer and Gibbs-King node renumbering algorithms for
+bandwidth and profile reduction.  The result is a permutation vector,
+$p$, of the node numbers.
+
+\item[\tt restore\_numbers (p)]
+Restores the original node numbers of the current problem.  The
+permutation vector, as returned by the {\tt renumber\_nodes()}
+function, is specified by $p$.  The return value is {\tt null}.
+
+\item[\tt set\_up (e, s)]
+Calls the set-up function for element $e$.  The argument $s$ may be
+used to specify the mass mode and should be either {\tt \&lumped} or
+{\tt \&consistent}.  If $s$ is not specified then no mass matrix will
+be computed for $e$.  This function is merely a shorthand for
+{\tt e.definition.set\_up (e, s)}.
+
+\item[\tt solve\_displacements (K, f)]
+Solves the linear system $Kd = f$ for the vector of global nodal
+displacements, $d$.  The sizes of the inputs must be consistent with
+the definition of the problem.  Additionally, $K$ and $f$ should both
+be condensed; $K$ is expected to be compact.  The \dof-related fields
+of the {\tt problem} structure must be initialized, as by calling {\tt
+find\_dofs()}.
+
+\item[\tt volume (e)]
+Returns the volume of the element $e$.  The element must be a solid
+element (i.e., {\tt e.definition.shape} should be {\tt \&solid}).
+
+\item[\tt zero\_constrained (K)]
+Zeroes the rows and columns of $K$ at all \dofs\ with a fixed boundary
+condition and returns the new matrix, $K_{cond}$.  $K$ itself is not
+modified.  $K$ should be either a symmetric matrix or a column vector.
+If $K$ is a symmetric matrix then a {\tt 1} is placed on the diagonal
+of each zeroed row/column.  The size of $K$ must be consistent with
+the definition of the problem.  The \dof-related fields of the {\tt
+problem} structure must be initialized, as by calling {\tt
+find\_dofs()}.
+
+\end{dispitems}
+
+These functions alone are sufficient to solve all static and transient
+problems that {\em felt} or \velvet\ can solve.  As shown in
+Figure~\ref{burlap.solving}, it is relatively simple to solve a \felt\
+problem using the finite element intrinsic functions of \burlap.
+
+\begin{figure}[htbp]
+\begin{center}
+\begin{verbatim}
+find_dofs ( )
+
+if problem.mode == &static then
+    K = assemble ( )
+    F = construct_forces ( )
+    Kc = zero_constrained (K)
+    Fc = zero_constrained (F)
+    d = solve_displacements (Kc, Fc)
+
+else if problem.mode == &transient then
+    K = assemble (M, C)
+    D = integrate_hyperbolic (K, M, C)
+
+else if problem.mode == &modal then
+    K = assemble (M, C)
+    Kc = remove_constrained (K)
+    Mc = remove_constrained (M)
+    Cc = remove_constrained (C)
+    l = compute_modes (K, M, X)
+
+else if problem.mode == &static_thermal then
+    K = assemble ( )
+    F = construct_forces ( )
+    Kc = zero_constrained (K)
+    Fc = zero_constrained (F)
+    d = solve_displacements (Kc, Fc)
+
+else if problem.mode == &transient_thermal then
+    K = assemble (M)
+    D = integrate_parabolic (K, M)
+end
+\end{verbatim}
+\caption{Solving problems with the finite element intrinsic functions.}
+\label{burlap.solving}
+\end{center}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Miscellaneous functions}
+\label{burlap.misc.functions}
+
+The remaining intrinsic functions are concerned with a variety of
+topics, including file access, input/output, and the user-interface.
+
+\begin{dispitems}
+\item[\tt concat (s, t)]
+Returns the concatenation of $s$ and $t$, both of which must be
+strings.
+
+\item[\tt eval (s)]
+Evaluates the string $s$ as a \burlap\ expression.  The return value
+of the function is the return value of the evaluated expression.
+
+\item[\tt exit (n)]
+Exits \burlap\ with exit code $n$.  Normally, an exit code of {\tt 0}
+indicates success and a non-zero exit code indicates an error.  If $n$
+is missing then {\tt 0} is used.  Note that the built-in aliases
+define {\tt exit} as {\tt exit (!*)}, so from the prompt, typing {\tt
+exit} will exit \burlap\ with exit code {\tt 0}.  There is no return
+value from the function.
+
+\item[\tt help (s)]
+Requests help on topic $s$.  If $s$ is not specified or is the empty
+string (\verb$""$) then a list of help topics is printed.  If $s$ is
+the name of an intrinsic function then the help topic for that
+function is printed.  Note that the built-in aliases define {\tt help}
+as \verb1help ("!$")1, so from the prompt you need to type {\tt help
+foo} rather than {\tt help "foo"} to retrieve information on topic
+{\tt foo}; in fact, {\tt help ("foo")} will not work since it will
+expand to {\tt help ("(")}.
+
+\item[\tt history (n)]
+Prints the command history list.  If $n$ is given then only the last
+$n$ events are printed.  The built-in set of aliases define {\tt h} as
+{\tt history (20)}.
+
+\item[\tt include (s)]
+Includes the file named by $s$.  The file is interpreted just as if it
+it were specified on the command line.  Therefore, it is executed in
+the global scope and {\em not} within a function body, even if the
+{\tt include()} should be inside a function body.  If $s$ does not
+name an absolute path (i.e., starts with {\tt /} or \verb$~$) then the
+environment variable {\tt BURLAP\_PATH} is used to search for the file
+named by $s$.  The variable should be a colon-separated list of
+directories.  The directories are searched from left-to-right for a
+file first named $s$ and then $s${\tt .b}.  If the variable {\tt
+BURLAP\_PATH} is not set, then only the current directory is searched.
+
+\item[\tt length (X)]
+Returns the length of the object $X$.  If $X$ is a matrix then it
+returns the number of elements in $X$.  If $X$ is a string then it
+returns the number of characters in $X$.
+
+\item[\tt load (s)]
+Loads a file, $s$, of saved variables created with the {\tt save()}
+function.  At present, this function is not implemented.
+
+\item[\tt read ( )]
+Reads a line from standard input and returns it as a string.  Any
+newline character is discarded.  The function returns {\tt null} upon
+end of file.
+
+\item[\tt reads ( )]
+Reads a string (i.e., a sequence of characters separated by spaces)
+from standard input and returns it as a string.  A {\tt null} value is
+returned upon end of file.
+
+\item[\tt save (s)]
+Saves the current set of global variables in the file named by $s$.
+At present, this function is not implemented.
+
+\item[\tt system (s)]
+Executes the {\sc unix} command named by $s$.  The command is executed
+in its own subshell.  The return value of the function is the return
+status of the command.
+
+\item[\tt type (X)]
+Returns a string containing the type of $X$, which may be of any type.
+
+\item[\tt write (...)]
+Writes its arguments to standard output with no intervening spaces but
+{\em with} a newline at the end of the output.  The arguments may be
+of any type.  A matrix is always written on a series of separate lines.
+The return value is always {\tt 0}.
+
+\item[\tt writes (...)]
+Writes its arguments to standard output with no intervening spaces and
+{\em without} a newline at the end of the output.  The arguments may be
+of any type.  A matrix is always written on a series of separate lines.
+The return value is always {\tt 0}.
+
+\end{dispitems}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{User-defined functions}
+\label{burlap.syntax.functions}
+
+\begin{quote}
+\begin{tabbing}
+\tt XX \= \kill
+\tt function \it name \tt ( \rm [\it argument \rm [\tt,\it argument\rm] ...]
+\tt ) \\
+\> \it expression-list \\
+\tt end
+\end{tabbing}
+\end{quote}
+
+\burlap\ provides a simple syntax for allowing users to define their
+own functions.  A function definition creates a new function with the
+specified {\it name}, overwriting any previously assigned value.
+Function names are simply variables just as in any of the previous
+examples.  Functions can be passed as parameters to other functions or
+returned from functions, just like ordinary scalar variables.
+
+The {\it expression-list} is a semicolon separated list of expressions
+that comprise the body of the function.  The return value of the
+function is the value of the last {\it expression}, although usually a
+{\sc return} expression is used to explicitly return a value from the
+function (Section~\ref{burlap.flow.break}).
+
+Each {\it argument} specifies the name of a formal parameter to the
+function (Section~\ref{burlap.syntax.function-call}).  By default, all
+arguments are passed {\em by value}; the actual parameter is evaluated
+and a copy is passed to the function with assignment to the formal
+parameter having no effect on the caller of the function.  If the
+keyword {\tt shared} is placed before the name of the formal parameter
+(e.g., {\tt shared foo}) then the data associated with the formal is
+shared with the data of the actual.  An assignment to one is
+implicitly an assignment to both.  \burlap\ uses this ability in
+several intrinsic functions (e.g., {\tt lu()}, {\tt eig()}) to
+``return'' more than one value from a function.
+
+\begin{screen}
+\begin{verbatim}
+function swap (x, y)
+    t = x; x = y; y = t
+end
+
+[1] a = 1; b = 2
+[2] swap (a, b)
+[3] write (a, " ", b)
+1 2
+\end{verbatim}
+\end{screen}
+
+The values are not swapped as desired since they are passed by value.
+For the {\tt swap()} function to work correctly the data of the formal
+and actual parameters must be shared.
+
+\begin{screen}
+\begin{verbatim}
+function swap (shared x, shared y)
+    t = x; x = y; y = t
+end
+
+[1] a = 1; b = 2
+[2] swap (a, b)
+[3] write (a, " ", b)
+2 1
+\end{verbatim}
+\end{screen}
+
+This type of parameter passing is also known as {\em
+call-by-reference} or {\em var-parameters}.  Fortran passes all
+parameters by reference; C passes all parameters by value.  \burlap\
+adopts the term {\em shared parameters} to illustrate that the space
+associated with the formal and actual parameters is shared.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Control-flow constructs}
+\label{burlap.syntax.control-flow}
+
+\burlap\ supports the standard control-flow constructs found in most
+programming languages.  The principal difference is that control-flow
+constructs in \burlap\ are expressions, not statements, so they can be
+used anywhere.
+
+\subsection{{\sc if} expressions}
+\label{burlap.flow.if}
+
+\begin{quote}
+\begin{tabbing}
+\rm [ \= \tt XX \= \kill
+\> \tt if \> \it expression \tt then \\
+\> \> \it expression-list \\
+\rm [ \> \tt else if \it expression \tt then \\
+\> \> \it expression-list \rm ] \ldots \\
+\rm [ \> \tt else \\
+\> \> \it expression-list \rm ] \\
+\> \tt end
+\end{tabbing}
+\end{quote}
+
+First, the {\tt if} {\it expression} is evaluated.  If the result is
+non-zero, the {\tt then} {\it expression-list} is executed.  Otherwise
+each successive {\tt if} {\it expression} is evaluated in turn, and if
+its result is non-zero, the corresponding {\tt then} {\it
+expression-list} is executed.  If none of the {\tt if} {\it
+expressions} evaluates to non-zero, the {\tt else} {\it
+expression-list} is executed.  Each {\tt if} {\it expression} must
+evaluate to a scalar.  The {\sc if} expression has the highest
+precedence, so {\tt x := if y < z then y else z} works as expected.
+
+The {\it expression-list} is a semicolon separated list of
+expressions.  The result of the {\it expression-list} is the result of
+the last expression in the list.  The {\tt else if} and {\tt else}
+constructs are optional.  The {\tt else if} syntax is combined into
+one keyword that allows the entire {\sc if} expression to end with a
+single {\tt end} keyword.  To have {\tt else if} treated as two
+keywords, thus requiring multiple {\tt end} keywords, place a
+semicolon or other expression between the {\tt else} and the {\tt if}.
+
+If an {\it expression-list} is missing then it evaluates to {\tt
+null}.  Similarly, if the final {\tt else} is missing and none of the
+{\tt if} {\it expressions} evaluated to non-zero, the result of the
+entire {\sc if} expression will be {\tt null}.
+
+\begin{screen}
+\begin{verbatim}
+function max (x, y)
+    if x > y then x else y end
+end
+
+[1] write (max (1, 2))
+2
+\end{verbatim}
+\end{screen}
+
+In this example, the {\sc if} expression returns $x$ if $x > y$ and
+returns $y$ if $x \le y$.  Since the return value of a function is the
+value of the last expression, the function {\tt max()} returns the
+result of the {\sc if} expression.
+
+\begin{screen}
+\begin{verbatim}
+function max (x, y)
+    if x > y then return x
+    else return y
+    end
+end
+\end{verbatim}
+\end{screen}
+
+This function illustrates a more conventional way of writing the {\tt
+max()} function.  The result is the same regardless of which
+function is used.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\sc while} expressions}
+\label{burlap.flow.while}
+
+\begin{quote}
+\begin{tabbing}
+\tt XX \= \kill
+\tt while \it expression \tt do \\
+\> \it expression-list \\
+\tt end
+\end{tabbing}
+\end{quote}
+
+As long as the {\tt while} {\it expression} evaluates to non-zero, the
+{\it expression-list} is evaluated.  The {\it expression-list} is a
+semicolon separated list of expressions.  If the {\tt while} {\it
+expression} evaluates to zero, then {\sc while} construct terminates
+and the result is a {\tt null} value.  The {\sc break} expression of
+Section~\ref{burlap.flow.break} may be used to alter the result of the
+{\sc while}.  The {\tt while} {\it expression} must evaluate to a
+scalar.
+
+\begin{screen}
+\begin{verbatim}
+function sum_of_first (n)
+    i = 0
+    s = 0
+    while i <= n do
+        s = s + i
+        i = i + 1
+    end
+    return s
+end
+
+[1] write (sum_of_first (3))
+6
+[2] write (sum_of_first (10))
+55
+[3] write (while 0 do end)
+null
+\end{verbatim}
+\end{screen}
+
+This example uses a {\sc while} expression to compute the sum of the
+first $n$ integers.  The last {\tt write()} function illustrates the
+result of the {\sc while} loop.  The {\sc while} expression has the
+highest precedence, although this rarely matters.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\sc for} expressions}
+\label{burlap.flow.for}
+
+\begin{quote}
+\begin{tabbing}
+\tt XX \= \kill
+\tt for \it expression \tt in \it expression \tt do \\
+\> \it expression-list \\
+\tt end
+\end{tabbing}
+\end{quote}
+
+The {\sc for} construct first evaluates the {\tt for} {\it expression}
+and then the {\tt in} {\it expression}.  For each element in the {\tt
+in} {\it expression}, the element is assigned to the {\tt for} {\it
+expression} and the {\it expression-list} is executed.  The {\it
+expression-list} is a semicolon separated list of expressions.  The
+result of the {\sc for} expression is a {\tt null} value unless a {\sc
+break} expression (Section~\ref{burlap.flow.break}) is used to
+explicitly produce a result.  The {\sc for} expression has the highest
+precedence, although this rarely matters.
+
+The {\tt for} {\it expression} must be an expression that can be
+assigned a value (i.e., can appear on the left-hand side of an
+assignment expression).  The {\tt in} {\it expression} must be a
+matrix, vector, scalar, or the {\tt null} value.  If it is a matrix
+then each column of the matrix is assigned to the {\tt for} {\it
+expression}.  If it is a vector then each element is assigned.  If it
+is scalar then the scalar is assigned, and the {\it expression-list}
+is evaluated only once.  If the {\tt in} {\it expression} is {\tt
+null}, then the {\it expression-list} is not executed.
+
+\begin{screen}
+\begin{verbatim}
+function sum_of_first (n)
+    s = 0
+    for i in 1 : n do
+        s = s + i
+    end
+    return s
+end
+
+[1] write (sum_of_first (3))
+6
+[2] write (sum_of_first (10))
+55
+[3] write (sum_of_first (-1))
+0
+\end{verbatim}
+\end{screen}
+
+This last {\tt write()} expression works correctly since the range
+{\tt 1 :\ -1} produces a {\tt null} value and thus the body of the
+{\sc for} expression is not executed.
+
+\begin{screen}
+\begin{verbatim}
+function sum (x)
+    s = 0
+    for v in x do
+        for i in v do
+            s = s + i
+        end
+    end
+    return s
+end
+\end{verbatim}
+\end{screen}
+
+This example correctly computes the sum of all elements of $x$ for
+scalars, vectors, and matrices.  If $x$ is simply {\tt 3} then $v$ is
+simply {\tt 3} and $i$ is also {\tt 3}.  If $x$ is the vector {\tt [1,
+2, 3]} then $v$ is successively assigned {\tt 1}, {\tt 2}, and {\tt 3}
+and $i$ is simply assigned each value of $v$.  If $x$ is the matrix
+{\tt [1, 2, 3; 4, 5, 6]} then $v$ is successively assigned the
+column vectors {\tt [1; 4]}, {\tt [2; 5]}, and {\tt [3; 6]} and $i$
+is assigned the values {\tt 1}, {\tt 4}, {\tt 2}, {\tt 5}, {\tt 3},
+and {\tt 6} in that order.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{{\sc break}, {\sc next}, and {\sc return} expressions}
+\label{burlap.flow.break}
+
+\begin{screen}
+{\tt return} [ {\it expression} ] \\
+{\tt break} [ {\it expression} ] \\
+{\tt next} 
+\end{screen}
+
+The {\sc return} expression may be used to return a value from a
+function.  If the {\it expression} is absent then a {\tt null} value
+is returned.  A {\sc return} expression may only occur inside a
+function body and has the lowest possible precedence.
+
+The {\sc break} expression may be used to explicitly exit and return a
+value from a {\sc for} or {\sc while} loop.  If the {\it expression}
+is absent then a {\tt null} value is returned.  A {\sc break}
+expression is executed by first evaluating the {\it expression} if it
+is present, and then transferring control out of the nearest enclosing
+{\sc for} or {\sc while} loop.  The {\sc break} expression has the
+lowest possible precedence.
+
+\begin{screen}
+\begin{verbatim}
+function search (x, a)
+    found = 0
+    for v in x do
+        if v == a then
+            found = 1
+            break
+        end
+    end
+    write ("found = ", found)
+end
+\end{verbatim}
+\end{screen}
+
+If the value $a$ is found within the vector $x$ then there is no point
+in continuing with the search after setting the {\tt found} indicator.
+
+The {\sc next} expression may be used to skip to the next iteration
+of the nearest enclosing {\sc for} or {\sc while} loop, and has the
+highest possible precedence.

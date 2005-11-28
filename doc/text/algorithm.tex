@@ -1,0 +1,502 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\chapter{The Algorithms Behind \felt{}}
+\label{algorithm}
+
+\section{Some background}
+In general, there is a massive base of experience in the numerical analysis 
+community that relates to programming the finite element method.
+Any time you see the method implemented, chances are that the implementation
+is in some piece of software. So why is it that good books on computational
+techniques are hard to come by and good books on the underlying theory
+and mathematics abound?  Go figure.  
+As we mentioned in chapter~\ref{analysis},
+if you need some references to the latter we like Hughes' \cite{hughes:fem}
+and Zienkiewicz and Taylor's \cite{zienk:taylor:fem} ``classic'' textbooks.
+Logan's \cite{logan:fem} book is a good introductory text.  He
+approaches the method from the same direction that many of us come to finite
+elements, through classical matrix structural analysis.  He's a bit lean
+on the mathematical basis and theory, but that's probably why it makes a
+good introductory text.  It is probably our ignorance, but we are not aware of 
+any definitive texts on the algorithmic implementation of the finite element 
+method.  Texts that have been recommended, but that we have not really
+worked with include Segerlind \cite{segerlind:fea}, a very 
+well-recommended introductory text by Burnett \cite{burnett:fea} and a book by
+Hinton and Owen \cite{hinton:fep}.  
+
+\section{Elementary C programming}
+\label{algorithm.c}
+
+The advantages to coding \felt{} entirely in C rather than the more traditional 
+(at least for finite element analysis) choice of Fortran are: 1.~keeping the 
+package consistent -- the system and graphical interface stuff required working 
+in C, having all of the mathematics in C made interfacing the two aspects a 
+lot easier. 2.~C's flexibility in working with data structures makes it really 
+easy to implement some of the concepts of finite element analysis in the 
+code -- elements have pointers to materials and loads, nodes have pointers to 
+forces and constraints.  There is no need to keep track of lots of separate 
+arrays of things; generally speaking, passing the node and element arrays 
+around is all the information that a routine will need (or even just passing 
+the elements around as they contain pointers into the nodes array).  	
+
+For those unfamiliar with C, here's a quick and dirty lesson that might help 
+you read the code with a little more comprehension.  Basically, in C you can 
+declare new types of variables, including entire data structures.  What this 
+means is that we can define a structure called an Element which has several 
+different members (think of each member as a different field or record in a 
+database).  When we declare a variable to be of type Element, that variable 
+then contains all these different fields and we can get at all the information 
+for that element through that one variable.  For instance, in \felt{} an 
+element structure contains all of the following:
+
+{\small
+\begin{screen}
+ \begin{verbatim}
+Element {	
+    unsigned    number;          /* this element's global number           */
+    Node        node [ ];        /* array of pointers to element's nodes   */
+    Matrix      K;               /* element stiffness matrix               */
+    Definition  definition;      /* definition structure (type) of element */ 
+    Material    material;        /* pointer to material property           */	
+    Distributed	distributed [4]; /* array of distributed loads             */ 	
+    unsigned    numdistributed;  /* number of distributed loads assigned   */
+    Stress      stress [ ];      /* element stresses                       */
+    unsigned    ninteg;          /* number of integration points           */
+}
+ \end{verbatim}
+\end{screen}}
+
+Several of these members are structures themselves: {\tt Node}, {\tt Matrix}, 
+{\tt Distributed}, {\tt Definition}, {\tt Material} and {\tt Stress} are 
+other structures used in \felt{}.	
+
+Because most of the \felt{} routines access the structures as pointers (that is 
+usually when the code references a structure it is actually referencing the 
+address of that structure in memory ... this is something you shouldn't need 
+to worry about to simply read and understand the mathematics), the usual way 
+that you will see code that refers to elements is like this: 
+\mbox{{\tt element -> node[1] -> x}}, or \mbox{{\tt element -> material -> E}}. 
+The first of these 
+examples gets the value of the x-coordinate of the element's first node 
+(not necessarily globally numbered node 1).  The second gets the value of the 
+Young's modulus of the material assigned to this element.  If the array of 
+elements is under consideration, you might seem something like this: 
+\mbox{{\tt element[3] -> stress[1] -> values[1] }}.  This will be the value of 
+the first stress component at the first integration point on element 3.  The 
+other common data structures in \felt{} are:
+
+{\small
+\begin{screen}
+ \begin{verbatim}
+/* A reaction force */
+
+typedef struct reaction {
+    double   force;                     /* reaction force             */
+    unsigned node;                      /* node number                */
+    unsigned dof;                       /* affected degree of freedom */
+} *Reaction;
+
+/* Element stress */
+
+typedef struct stress {
+    double  x;                          /* x coordinate           */
+    double  y;                          /* y coordinate           */
+    double  z;                          /* z coordinate           */
+    double  values [ ];                 /* computed stress values */
+} *Stress;
+
+/* An element definition */
+
+typedef struct definition {
+    char      *name;             /* element symbolic name              */
+    int      (*setup) ( );       /* element initialization function    */ 
+    int      (*stress) ( );      /* stress computation function        */
+    Shape     shape;             /* element dimensional shape          */
+    unsigned  numnodes;          /* number of nodes in element         */
+    unsigned  shapenodes;        /* number of nodes which define shape */
+    unsigned  numstresses;       /* number of computed stress values   */
+    unsigned  numdofs;           /* number of degrees of freedom       */
+    unsigned  dofs [7];          /* degrees of freedom                 */
+    unsigned  retainK;           /* retain element K after assemblage  */
+} *Definition;
+
+/* A distributed load */
+
+typedef struct distributed {
+    char     *name;             /* name of distributed load */
+    Direction direction;        /* direction of load        */
+    unsigned  nvalues;          /* number of values         */
+    Pair      value [ ];        /* nodes and magnitudes     */
+} *Distributed;
+
+/* A force */
+
+typedef struct force {
+    char     *name;                /* name of force           */
+    VarExpr   force [7];           /* force vector            */
+    VarExpr   spectrum [7];        /* vector of input spectra */ 
+} *Force;
+
+/* A constraint */
+
+typedef struct constraint {
+    char   *name;                /* name of constraint            */
+    char    constraint [7];      /* constraint vector             */
+    double  ix [7];              /* initial displacement vector   */
+    double  ax [4];              /* initial acceleration vector   */
+    double  vx [4];              /* initial velocity vector       */
+    VarExpr dx [7];              /* boundary displacement vector  */
+} *Constraint;
+
+/* A material */
+
+typedef struct material {
+    char  *name;                /* name of material                       */
+    double E;                   /* Young's modulus                        */
+    double Ix;                  /* moment of inertia about x-x axis       */
+    double Iy;                  /* moment of inertia about y-y axis       */
+    double Iz;                  /* moment of inertia about z-z axis       */
+    double A;                   /* cross-sectional area                   */
+    double J;                   /* polar moment of inertia                */
+    double G;                   /* bulk (shear) modulus                   */
+    double t;                   /* thickness                              */
+    double rho;                 /* density                                */
+    double nu;                  /* Poisson's ratio                        */
+    double kappa;               /* shear force correction                 */
+    double Rk;                  /* Rayleigh stiffness damping coefficient */
+    double Rm;                  /* Rayleigh mass damping coefficient      */ 
+    double Kx;                  /* conductivity in x direction            */
+    double Ky;                  /* conductivity in y direction            */
+    double Kz;                  /* conductivity in z direction            */
+    double c;                   /* heat capacity                          */
+} *Material;
+
+/* A node */
+
+typedef struct node {
+    unsigned   number;          /* node number                    */
+    Constraint constraint;      /* constrained degrees of freedom */
+    Force      force;           /* force acting on node           */
+    double     m;               /* lumped mass at this node       */
+    double     eq_force [ ];    /* equivalent force               */
+    double     dx [7];          /* displacement                   */
+    double     x;               /* x coordinate                   */
+    double     y;               /* y coordinate                   */
+    double     z;               /* z coordinate                   */
+} *Node;
+ \end{verbatim}
+\end{screen}}
+
+Hopefully the organization of the data structures is intuitive enough to 
+someone familiar with finite elements that a detailed understanding of the 
+mechanics of the C language will not be necessary.  		
+
+\section{Introduction to the general \felt{} routines}
+
+Throughout \felt{}, simplicity and readability have generally won out over 
+speed and efficiency (at least where the mathematics are concerned ... the 
+system and GUI code are another story entirely).
+What this means is that \felt{} does not make use of many of the algorithmic 
+tricks that have been developed over the years for working with finite 
+elements.  The most glaring example of this is probably the fact that the 
+\felt{} matrix manipulation library is fairly simple and does not make use of 
+symmetry in most cases.  
+
+\section{Details of a few general \felt{} routines}
+
+\subsection{Finding the active DOF}
+The first step in the solution of a \felt{} problem is to 
+find all the degrees of freedom that the different types of elements in 
+the problem use.  This information gets stored in two different six-element 
+arrays.  In the {\tt dofs\_pos} array a non-zero value 
+in the {\em i}th position indicates that the {\em i}th DOF is 
+active.  The actual number in the {\em i}th position indicates which DOF this 
+is for the current problem (i.e. in a problem consisting solely of beams, a 3 
+in the sixth position indicates that rotation about the z-axis is the third 
+DOF in the current problem).  The second array is {\tt dofs\_num}.  In
+this array, the entries from one through the number of active DOF
+are all non-zero.  A value of {\em j} in the {\em i}th position indicates
+that the standard DOF {\em i} is the {\em j}th DOF for this problem (i.e.,
+for our example problem consisting of beams only, a 6 in the third
+position indicates that the third active DOF for this problem is rotation
+about the z-axis).  Both of these arrays are available globally through the 
+{\tt analysis} structure. 
+
+\subsection{Node renumbering}
+We all know that the profile and bandwidth of a global stiffness or mass
+matrix -- critical factors in determing memory requirements and ultimate
+solution speed -- are a function of the global node numbering.  The 
+contribution from each element is assembled into the global matrices
+based on the global numbers of the elements' nodes.  Better node numbering
+schemes take this into account and try to keep the contribution from each
+element as near to the diagonal of the global matrix as possible.  Given
+the compact column storage scheme described below, a matrix with most
+entries very near the diagonal can use significantly less storage than
+a very full matrix. The linear equation solver can also make use of this
+reduced matrix and operate a lot faster by not having to operate on a lot
+of zero entries. 
+
+There are numerous algorithms available to try to optimize node numbering
+with just such a goal in mind.  The one that we use in \felt{} is popularly
+known as
+Gibbs-King \cite{gk:renumbering}, the profile reduction variant of the
+Gibbs-Poole-Stockmeyer algorithm \cite{gps:renumbering} which primarily
+tries to minimize bandwidth.  Other popular algorithms include 
+Cuthill-Mckee \cite{cm:renumbering} and 
+Reverse Cuthill-McKee \cite{rcm:renumbering}.
+
+\subsection{Assembling the global stiffness matrix}
+This step of the process in FElt actually accomplishes three things.
+For each element, this routine calls an element setup routine
+based on element type.  Besides filling out \mbox{{\tt element -> K}} most
+element setup routines will also calculate the equivalent
+nodal forces on the element's nodes if appropriate (i.e., if there is
+a distributed load on the element).  
+
+Assembling the stiffness and mass matrices in a transient analysis problem
+works the same way.  For transient analysis, the element setup routines
+calculate a mass matrix according to the the mass-mode set in the analysis
+parameters section.  The global stiffness and mass matrices are formed
+exactly as in the static case.  Nodal lumped masses are superposed after
+the element mass matrices have been assembled.  
+
+The damping matrix can be formed in either of two ways -- both of them
+based on a Rayleigh damping model.   In the first method, the damping
+matrix is assembled at the same time as the stiffness and mass matrices
+by creating and assembling element damping matrices based on the 
+Rayleigh damping coefficient for each element's material, 
+\begin{equation}
+{C_{e}} = {{R_{k}}^{e} K_{e} + {R_{m}}^{e} M_{e}}.
+\end{equation}
+Where ${R_k}^e$ and ${R_m}^e$ are the Rayleigh damping coefficients for 
+the given material.  Alternatively, if non-zero $R_k$ and $R_m$ values are
+given in the analysis parameters of the \felt{} file, then these coefficients
+will be applied to form a global damping matrix only after the global
+mass and stiffness matrices have been completely assembled,
+\begin{equation}
+{C} = {R_{k} K + R_{m} M}.
+\end{equation}
+
+\subsection{Compact column representation}
+All of the global matrices are assembled directly into a compact 
+column representation.  This representation tries to minimize storage
+requirements by taking each column of the matrix and only storing the
+entries from the first non-zero entry to the diagonal.  In this scheme
+the following $6\times6$ would require a vector of length 14 to store
+as opposed to a matrix with 36 entries,
+$$
+\def\tempa{\multicolumn{1}{c|}{0}}
+\def\tempb{\multicolumn{1}{c|}{1}}
+\left[
+\begin{array}{cccccc}
+\cline{1-2} 
+x & \tempb & 0 & 0 & 0 & 0 \\ \cline{3-3} \cline{5-5}
+  & x & \tempb & \tempa & \tempb & 0 \\ \cline{4-4}
+  &   & x & x & \tempb & 0 \\ \cline{6-6}
+  &   &   & x & 0 & 1 \\
+  &   &   &   & x & x \\
+  &   &   &   &   & x 
+\end{array}
+\right].
+$$
+
+Assembly is done in two passes through
+the elements.  The first pass is used to optimize the storage scheme
+by finding out just how tall each column needs to be. Given this information,
+vectors are actually allocated to hold the global matrices.  This
+first pass is also used to construct a vector of diagonal addresses. For each
+row of what would be the full matrix, this vector contains the position
+in the compact form of the diagonal of that row.  For our above example,
+that vector would be 
+$$
+\left[ 
+\begin{array}{cccccc}
+1 & 3 & 5 & 7 & 11 & 14 
+\end{array}
+\right].
+$$
+The second pass of the assembly process actually inserts the appropriate 
+contribution from each element into these vectors.  
+
+Any routine that needs to access the global stiffness or mass matrices
+can behave just as if they were full two-dimensional matrix representations.
+We achieve this transparency through calls to a function which uses the
+information in the diagonal addresses array (which is attached as a member 
+of the standard matrix data structure) to convert
+from a row-column location to a single address in the global vector
+representations.  
+
+\subsection{Dealing with boundary conditions}
+
+\felt{} can handle several types of boundary conditions.  The simplest
+is a fixed DOF at a given node.  In this case, the row and column of the
+global stiffness matrix corresponding to the fixed DOF are simply filled with 
+zeros and a one is placed on the diagonal at that location; a zero is placed
+in the appropriate DOF of the global force vector just for clarity.  
+
+The second type of condition is a displacement condition such as might
+be found in a settlement of support problem.  In this case, before we 
+eliminate the rows and columns of the stiffness matrix, we need to adjust
+the force vector to account for the displacement.  Given a globally
+numbered DOF, $n$, which has a displacement condition, $dx$, global force 
+vector, $F$, and global stiffness matrix, $K$, then for each DOF, $i$, in 
+the problem, 
+\begin{equation}
+F(i) = F(i) - K(i,n)dx.
+\end{equation}
+After this adjustment, the rows and columns of $K$ associated with DOF $n$
+can be zeroed out as in the ordinary fixed case.  The magnitude of the
+displacement condition, $dx$, is placed in the $F(n)$ to insure that
+$dx$ will re-appear exactly in the final solution for nodal displacements.
+
+The final type of condition is a hinge and because the primary adjustments
+that this condition requires were made in the element stiffness matrix 
+routines, all we do here is zero out rows and columns of the stiffness matrix
+and force vector as in the fixed case.
+
+\subsection{Solving for nodal displacements}
+The \felt{} routine to solve for nodal displacements (or to solve
+any linear system of equations) takes the
+compact column representation and solves $Kd=F$ for the global displacement 
+vector using a skyline solver. This procedure basically involves 
+a Crout factorization and forward and backward substitution on the compact
+column representation of the global stiffness matrix.  	
+
+\subsection{Time integrating in transient structural analysis}
+\label{algorithms.analysis}
+
+Time-stepping in a transient structural analysis problem is done with the
+Hilbert-Hughes-Taylor alpha variant of Newmark integration.  There are
+three critical parameters in this algorithm.  The first two, $\beta$
+and $\gamma$, are the standard parameters of Newmark integration.
+Depending on the values for these two parameters we can implement
+several well-known algorithms.  Setting $\beta = {1 \over 4}$ and 
+$\gamma = {1 \over 2}$ results in an unconditionally stable average
+acceleration (trapezoidal rule) implementation.  $\beta = {1 \over 6}$ and 
+$\gamma = {1 \over 2}$ results in a linear acceleration algorithm.
+
+The HHT-$\alpha$ algorithm adds a third parameter, $\alpha$, to account for the 
+decrease in order of accuracy that results when you introduce numerical
+damping into the Newmark method.  Setting $\alpha = 0$ reduces the
+problem to a standard Newmark method.  Choosing $\alpha \in {[-{1 \over 3}, 0]}$,
+$\gamma = (1 - 2\alpha)/2$ and $\beta = (1 - \alpha)^2/4$ results in 
+an unconditionally stable, second-order accurate algorithm \cite{hughes:fem}.
+
+With these three parameters, the time-discrete equation of motion in the 
+HHT-$\alpha$ method is written as
+\begin{equation}
+\label{discrete_motion}
+Ma_{i+1} + (1 + \alpha) C v_{i+1} - \alpha C v_{i} + 
+(1 + \alpha) K d_{i+1} - \alpha K d_{i} = F \left( t_{i+1} + {\alpha}{\Delta}t \right).
+\end{equation}
+The standard Newmark finite difference formulas are used as approximations
+for $d_{i+1}$ and $v_{i+1}$,
+\begin{eqnarray}
+d_{i+1} & = & {\tilde d}_{i+1} + \beta \Delta t^{2} a_{i+1}, \label{newmark_d} \\
+v_{i+1} & = & {\tilde v}_{i+1} + \gamma \Delta t a_{i+1}, \label{newmark_v}
+\end{eqnarray}
+where the predictor variables, ${\tilde d}_{i+1}$ and ${\tilde v}_{i+1}$
+are defined as
+\begin{eqnarray}
+{\tilde d}_{i+1} & = & d_{i} + \Delta t v_{i} + 
+                       \Delta t^{2} \left({1 \over 2} - \beta \right) a_{i}, \\
+{\tilde v}_{i+1} & = & v_{i} + \left(1 - \gamma \right) \Delta t a_{i}.
+\end{eqnarray}
+We can form an implicit update equation with $d_{i+1}$ as the only unknown
+by rearranging equation~\ref{newmark_d} and substituting the result along
+with equation~\ref{newmark_v} into the equation of motion 
+(equation~\ref{discrete_motion}).  If we denote the left hand coefficient
+matrix as $K'$ and the right hand contributions not due to the force vector
+as $F'$ then the update equation is
+\begin{equation}
+{K'} d_{i+1} = {F'}_{i+1} + F \left( t_{i+1} + \alpha \Delta t \right).
+\end{equation}
+where
+\begin{equation}
+K' = M + \gamma \Delta t C + (1 + \alpha) \beta \Delta t^{2} K,
+\end{equation}
+and
+\begin{equation}
+{F'}_{i+1} = \left[ M + \gamma \Delta t C \right] {\tilde d}_{i+1} 
+     - (1 + \alpha) \beta \Delta t^{2} C {\tilde v}_{i+1} 
+     + \alpha \beta \Delta t^{2} \left[ C v_{i} + K d_{i} \right].
+\end{equation}
+
+\subsection{Time integrating in transient thermal analysis} 
+
+As in transient structural analysis, the time-stepping in a transient
+thermal analysis problem is done using an approach similar to Newmark integration.
+In this case, however, there is only one integration parameter, $\alpha$,
+because of the simpler nature of the governing ODE in the thermal
+analysis case.  Using a generalized trapezoidal rule we express the 
+temperature vector update equation as
+\begin{equation}
+{T_{i+1}} = {T_{i} + \Delta t \left[{\left(1 - \alpha \right) {\dot T}_{i} + \alpha {\dot T}_{i+1}}\right]}.
+\label{temperature_update}
+\end{equation}
+Through some algebraic manipulations of the governing equation at time
+steps $i$ and $i+1$ and subsitution of equation~\ref{temperature_update}
+to eliminate time derivative terms, we can write the implicit update 
+equation for $T$ as
+\begin{equation}
+{K' T_{i+1}} = {\left[M - \Delta t \left(1 - \alpha \right) K \right] T_{i} + 
+               \left(1 - \alpha \right) \Delta t F_{i} + 
+               \alpha \Delta t F_{i+1}},
+\end{equation}
+where 
+\begin{equation}
+{K'} = {M + \alpha \Delta t K},
+\end{equation}
+and everything on the right-hand side is known.
+
+Logan~\cite{logan:fem} gives the following summary of the methods that
+result from various choices of $\alpha$:
+$\alpha = 0$, simple forward difference scheme which is only conditionally 
+stable;  $\alpha = {1 \over 2}$ Crank-Nicolson or trapezoidal rule which is 
+unconditionally stable; $\alpha = {2 \over 3}$, Galerkin which is also 
+unconditionally stable; $\alpha = 1$, backward difference which is 
+unconditionally stable.
+
+\subsection{Solving the eigenvalue problem}
+
+\felt{} uses a relatively unsophisticated procedure to solve for the 
+eigenvalues and eigenvectors in a modal analysis problem.  The first step is
+to actually remove constrained DOF from the global stiffness and mass
+matrices.  This procedure is less efficient than the simple zeroing out of
+constrained DOF used in transient and static analysis, but it is necessary
+for the actual numerical algorithm used to solve the eigenvalue problem.
+
+In terms of the reduced mass, $M$, and stiffness, $K$, matrices, the 
+generalized eigenvalue problem can be written
+\begin{equation}
+\label{general_eigenvalue}
+K x = \lambda M,
+\end{equation}
+where $\lambda$ and $x$ are the eigenvalue and eigenvector in a given mode.
+We can transform this to standard form, 
+\begin{equation}
+\left( A - \lambda I \right) x = 0,
+\end{equation}
+by forming the Cholesky factorization of the mass matrix, $M = QQ^{T}$,
+and realizing that $Q^{-T} M Q^{-1} = I$.  With this factorization, we just 
+need to make the substitution $x = Q^{-1} {\hat x}$ and pre-multiply both sides
+of equation~\ref{general_eigenvalue} by $Q^{-T}$; the problem then becomes
+\begin{equation}
+Q^{-T} K Q^{-1} {\hat x} = \lambda I {\hat x}
+\end{equation}
+which is now in standard form.  \felt{} solves this standard eigenvalue problem
+by applying the QL method to the tridiagonal form of the transformed 
+coefficient matrix.
+
+Note that this procedure will not work if there are zeros on the diagonal
+of the mass matrix (the global mass matrix must be positive-definite for the
+Cholesky factorization to be non-singular).  This kind of condition often 
+occurs in problems with lumped mass formulations of the element mass matrices.  

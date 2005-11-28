@@ -1,0 +1,44 @@
+\setlength{\unitlength}{0.00083333in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(5988,1709)(0,-10)
+\thicklines
+\path(398,1296)(1298,1296)(1298,396)
+	(398,396)(398,1296)
+\path(698,996)(998,996)(998,696)
+	(698,696)(698,996)
+\path(397,1372)(1222,1372)(1072,1447)
+\path(1372,397)(1372,1222)(1372,1222)(1447,1072)
+\path(1297,322)(472,322)(622,247)
+\path(322,1297)(322,472)(247,622)
+\path(847,1372)(847,1672)(772,1522)
+	(847,1672)(922,1522)
+\path(322,847)(22,847)(172,772)
+	(22,847)(172,922)
+\path(1372,847)(1672,847)(1522,922)
+	(1672,847)(1522,772)
+\path(847,322)(847,22)(772,172)
+	(847,22)(922,172)
+\put(1896,473){\makebox(0,0)[lb]{\smash{{{\SetFigFont{17}{20.4}{rm}User's Guide and Reference Manual}}}}}
+\put(1896,923){\makebox(0,0)[lb]{\smash{{{\SetFigFont{34}{40.8}{rm}The FElt System:}}}}}
+\end{picture}

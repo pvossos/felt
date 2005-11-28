@@ -1,0 +1,56 @@
+\setlength{\unitlength}{0.0125in}
+%
+\begingroup\makeatletter\ifx\SetFigFont\undefined
+% extract first six characters in \fmtname
+\def\x#1#2#3#4#5#6#7\relax{\def\x{#1#2#3#4#5#6}}%
+\expandafter\x\fmtname xxxxxx\relax \def\y{splain}%
+\ifx\x\y   % LaTeX or SliTeX?
+\gdef\SetFigFont#1#2#3{%
+  \ifnum #1<17\tiny\else \ifnum #1<20\small\else
+  \ifnum #1<24\normalsize\else \ifnum #1<29\large\else
+  \ifnum #1<34\Large\else \ifnum #1<41\LARGE\else
+     \huge\fi\fi\fi\fi\fi\fi
+  \csname #3\endcsname}%
+\else
+\gdef\SetFigFont#1#2#3{\begingroup
+  \count@#1\relax \ifnum 25<\count@\count@25\fi
+  \def\x{\endgroup\@setsize\SetFigFont{#2pt}}%
+  \expandafter\x
+    \csname \romannumeral\the\count@ pt\expandafter\endcsname
+    \csname @\romannumeral\the\count@ pt\endcsname
+  \csname #3\endcsname}%
+\fi
+\fi\endgroup
+\begin{picture}(166,195)(0,-10)
+\put(20,45){\blacken\ellipse{10}{10}}
+\put(20,45){\ellipse{10}{10}}
+\put(135,60){\blacken\ellipse{10}{10}}
+\put(135,60){\ellipse{10}{10}}
+\put(150,125){\blacken\ellipse{10}{10}}
+\put(150,125){\ellipse{10}{10}}
+\put(115,95){\blacken\ellipse{10}{10}}
+\put(115,95){\ellipse{10}{10}}
+\put(45,155){\blacken\ellipse{10}{10}}
+\put(45,155){\ellipse{10}{10}}
+\put(55,90){\blacken\ellipse{10}{10}}
+\put(55,90){\ellipse{10}{10}}
+\put(105,20){\blacken\ellipse{10}{10}}
+\put(105,20){\ellipse{10}{10}}
+\put(10,115){\blacken\ellipse{10}{10}}
+\put(10,115){\ellipse{10}{10}}
+\path(20,45)(105,20)(135,60)
+\dashline{4.000}(20,45)(55,90)(135,60)
+\path(20,45)(10,115)(115,95)(105,20)
+\path(115,95)(150,125)(135,60)
+\path(10,115)(45,155)(150,125)
+\drawline(45,155)(45,155)
+\dashline{4.000}(45,155)(55,90)
+\put(55,70){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}1}}}}}
+\put(15,20){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}2}}}}}
+\put(105,0){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}3}}}}}
+\put(140,45){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}4}}}}}
+\put(160,135){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}8}}}}}
+\put(110,105){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}7}}}}}
+\put(40,165){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}5}}}}}
+\put(0,125){\makebox(0,0)[lb]{\smash{{{\SetFigFont{12}{14.4}{rm}6}}}}}
+\end{picture}

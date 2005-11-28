@@ -1,0 +1,157 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                               %
+%                       Legal Notice                            %
+%                                                               %
+% This document is copyright (C) Jason Gobat & Darren Atkinson	%
+%                                                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage{\pagestyle{empty}\cleardoublepage}
+
+\prechapter{Foreword}
+\label{foreword.intro}
+
+\felt{} is intended as a tool for teaching finite element analysis methods.
+There are better tools, there are bigger tools, there are tools that
+can do many, many things that \felt{} cannot do.  Those tools are for the
+most part not free and if they are, they're usually 20 years old.  
+\felt{} is a new, continually evolving system that tries to provide
+lots of modern workstation type features and of course, it's completely free.  
+ 
+\presection{About this Manual}
+
+This manual documents {\bf version 3.05} of \felt{}.  It is part of a futile 
+attempt to provide comprehensive, accurate documentation for the
+\felt{} system.  We do our best to try to keep it up-to-date with the latest 
+version of the software; we make no guarantees however, and chances are good
+that there are things wrong in here.  If you find something that behaves
+differently than the way this document says it should behave then please
+let us know.
+
+\presection{Organization of this Manual}
+
+\label{foreword.overview}
+This manual is organized in the following way:
+
+{\em Chapter~\ref{intro}} gives you an introduction to the types of problems that
+\felt{} can solve.
+
+{\em Chapter~\ref{analysis}} details some of the underlying mathematics for each
+of the analysis types supported by \felt{}.
+
+{\em Chapter~\ref{problem}} discusses the basic structure of a \felt{} input file
+and how a general finite element problem is translated into the \felt{}
+language.
+
+{\em Chapter~\ref{elements}} describes the currently available elements within \felt{}.
+
+{\em Chapter~\ref{felt_prog}} introduces you to the simplest user interface to the \felt{}
+system, the command line application {\em felt}.
+
+{\em Chapter~\ref{winfelt}} covers the {\em WinFElt} graphical encapsulator for the 
+MS-Windows based environments.
+
+{\em Chapter~\ref{velvet}} introduces {\em velvet}, a full-featured graphical 
+environment for the \felt{} system.
+
+{\em Chapter~\ref{velvet.solve}} covers problem solutions and post-processing options within
+{\em velvet}
+
+{\em Chapter~\ref{corduroy}} discusses the syntax and usage of {\em corduroy}, the 
+command line mesh generator program for \felt{}.
+
+{\em Chapter~\ref{burlap.application}} introduces the powerful and flexible interactive environment 
+{\em burlap}.
+
+{\em Chapter~\ref{burlap.syntax}} describes the syntax of {\em burlap} in detail.
+
+{\em Chapter~\ref{algorithm}} describes some of the algorithms that \felt{} uses in solving
+an arbitrary problem.
+
+{\em Chapter~\ref{adding_elts}} is an attempt at teaching you how to add elements
+to the \felt{} library.
+
+{\em Appendix A} discusses building, installing and administering the \felt{}
+system.  A must for potential administrators.
+
+{\em Appendix B} provides a list of Geompack error codes.  You'll want to keep 
+this handy if you find yourself doing a lot of mesh generation.
+
+{\em Appendix C} contains a copy of the GNU General Public License, the terms
+under which \felt{} is distributed.
+
+\presection{Typographical Conventions}
+\label{foreword.convention}
+
+In writing this guide, a number of typographical conventions were employed
+to mark buttons, command names, menu options, screen interaction, etc.
+
+\begin{dispitems}
+\item [\bf Bold Font]
+	Used to mark {\bf buttons}, and {\bf menu options} in graphical
+	environments.
+
+\item [\em Italics Font]
+	Used to indicate an application program name, e.g. {\em felt}.
+
+\item [\tt Typewriter Font]
+	Used to represent screen interaction, either with the {\em velvet} 
+        command line, or the shell prompt.
+	Also used for example input files, keywords that belong in input
+	files and code examples.
+
+\item [\key{Key}]
+	Represents a key (or key combination) to press, as in press
+        \key{Return} to continue.
+
+\end{dispitems}
+
+\presection{Acknowledgements}
+\label{foreword.acknowledgements}
+
+We would like to acknowledge the work of the following people or groups.
+Different bits and pieces of their work have either made it possible for us
+to develop \felt{} or have contributed to making \felt{} a more functional
+and powerful system.
+
+\begin{itemize}
+\item
+Everyone who has ever worked on the Linux, GNU, X11, and XFree86 projects.
+We worked almost exclusively under Linux using gcc as a compiler.  The
+X11 project provided a powerful and flexible graphical environment and the
+folks at XFree86 made it possible for us to use X11 on our Linux boxes.
+\item
+Barry Joe developed the Geompack code for triangular mesh generation that
+we used in earlier versions of the program.  The new triangular mesh
+generator is Triangle by Jonathan Shewchuk.
+\item
+Some of the ideas for 3d structure plots are based on the way {\it gnuplot}
+(by Thomas Williams and Colin Kelley) does it.
+\item
+The code to generate PostScript graphics files is based on the code
+from {\it xmgr} by Paul J. Turner.  The basic look of time-displacement
+plots is also based on the way that {\it xmgr} would have drawn them 
+because we've always liked the way results from {\it xmgr} looked.
+\item
+XWD dumps are produced using the same code as in the actual {\it xwd}
+application.  The man page says it was authored by Tony Della Fera and
+William F. Wyatt.
+% \item 
+% GIF files are created using code from gifencod.c which was originally 
+% written by David Rowley and which I hacked out of {\it ppmtogif} by Jef Poskanzer.  
+% The Graphics Interchange Format is copyright CompuServe Inc. and GIF is 
+% a service mark of CompuServe Inc.  
+\item 
+Encapsulated PostScript image files are created using code from {\it pnmtops}
+which is part of Jef Poskanzer's fabulous PBMPLUS image format toolkit.
+\item
+The bivariate interpolation routines are hand translations into C of 
+Fortran code originally written by Hiroshi Akima.  The Fortran version
+is readily available as one of the ACM-TOMS algorithms.
+\item
+The routines to do Gibbs-Poole-Stockmeyer/Gibbs-King node renumbering
+are also hand translations of Fortran code that was originally published
+in ACM-TOMS.
+\end{itemize}
+
+\newpage{\pagestyle{empty}\cleardoublepage}

@@ -1,0 +1,92 @@
+\begin{thebibliography}{10}
+
+\bibitem{burnett:fea}
+David~S. Burnett.
+\newblock {\em Finite Element Analysis: From Concepts to Applications}.
+\newblock Addison-Wesley, Reading, MA, 1987.
+
+\bibitem{cowper:kappa}
+G.R. Cowper.
+\newblock The shear coefficient in {T}imoshenko's beam theory.
+\newblock {\em ASME Journal of Applied Mechanics}, 33:335--340, 1966.
+
+\bibitem{cm:renumbering}
+E.~Cuthill and J.~McKee.
+\newblock Reducing the bandwidth of sparse symmetric matrices.
+\newblock In {\em Proceedings of the 24th National Conference of the ACM}, ACM
+  Publ P-69, pages 157--172, New York, 1969. Association for Computing
+  Machinery.
+
+\bibitem{kosmatka:timoshenko}
+Z.~Friedman and John~B. Kosmatka.
+\newblock An improved two-node {T}imoshenko beam finite element.
+\newblock {\em Computers and Structures}, 47:473--481, 1993.
+
+\bibitem{rcm:renumbering}
+J.A. George.
+\newblock Computer implementation of the finite element method.
+\newblock Technical Report Tech. Rep. STAN-CS-71-208, Computer Science
+  Department, Stanford University, Stanford, CA, 1971.
+
+\bibitem{gk:renumbering}
+Norman~E. Gibbs.
+\newblock A hybrid profile reduction algorithm.
+\newblock {\em Assoc. for Computing Machinery Trans. on Math. Software},
+  2:378--387, 1976.
+
+\bibitem{gps:renumbering}
+Norman~E. Gibbs, William~G. Poole, and Paul~K. Stockmeyer.
+\newblock An algorithm for reducing the bandwidth and profile of a sparse
+  matrix.
+\newblock {\em SIAM Journal of Numerical Analysis}, 13:236--249, 1976.
+
+\bibitem{hinton:fep}
+Ernest Hinton and D.~R.~J. Owen.
+\newblock {\em Finite Element Programming}.
+\newblock Academic Press, 1977.
+
+\bibitem{hughes:fem}
+Thomas J.~R. Hughes.
+\newblock {\em The Finite Element Method: Linear Static and Dynamic Finite
+  Element Analysis}.
+\newblock Prentice-Hall, Englewood Cliffs, NJ, 1987.
+
+\bibitem{htk:simple}
+Thomas~J.R. Hughes, Robert~L. Taylor, and Worsak Kanoknukulchai.
+\newblock A simple and efficient finite element for plate bending.
+\newblock {\em International Journal for Numerical Methods in Enginerring},
+  11:1529--1543, 1977.
+
+\bibitem{joe:sim:86}
+Barry Joe and R.~B. Simpson.
+\newblock Triangular meshes for regions of complicated shape.
+\newblock {\em International Journal for Numerical Methods in Enginerring},
+  23:751--778, 1986.
+
+\bibitem{knr}
+Brian~W. Kernhigan and Dennis~M. Ritchie.
+\newblock {\em The C Programming Language}.
+\newblock Prentice-Hall, Englewood Cliffs, second edition, 1989.
+
+\bibitem{logan:fem}
+Daryl~L. Logan.
+\newblock {\em A First Course in the Finite Element Method}.
+\newblock PWS-Kent, Boston, second edition, 1992.
+
+\bibitem{segerlind:fea}
+Larry~J. Segerlind.
+\newblock {\em Applied Finite Element Analysis}.
+\newblock Wiley, New York, second edition, 1986.
+
+\bibitem{td:hierarchy}
+A.~Tessler and S.B. Dong.
+\newblock On a hierarchy of conforming {T}imoshenko beam elements.
+\newblock {\em Computers and Structures}, 14:335--344, 1981.
+
+\bibitem{zienk:taylor:fem}
+O.~C. Zienkiewicz and Robert~L. Taylor.
+\newblock {\em The Finite Element Method: Basic Formulations and Linear
+  Problems}, volume~1.
+\newblock McGraw-Hill, London, fourth edition, 1988.
+
+\end{thebibliography}

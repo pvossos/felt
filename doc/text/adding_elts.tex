@@ -112,14 +112,13 @@ A slightly more complicated example is the definition structure for a beam.
  \begin{verbatim}
 struct definition beamDefinition = {
     "beam", beamEltSetup, beamEltStress, 
-    Linear, 2, 2, 3, {0, 1, 2, 0, 0, 0, 3}, 1
+    Linear, 2, 2, 3, {0, 1, 2, 6, 0, 0, 0}, 1
 };
  \end{verbatim}
 \end{screen}
 The difference between this definition and that for the foo element is that
-while beams affect three DOF, the third DOF is {\tt Rz} 
-(position six in the DOF array).  Also, we'll want to keep the element
-stiffness matrix around after we assemble it into the global stiffness
+while beams affect three DOF, the third DOF (position three in the DOF array) is {\tt Rz}  (the sixth degree of freedom).
+Also, we'll want to keep the element stiffness matrix around after we assemble it into the global stiffness
 matrix (beams use it for internal force calculations), so we set 
 \mbox{{\tt element -> retainK}} to 1 (true).
 
@@ -137,8 +136,8 @@ Here, the basic type is planar rather than linear, the total number of nodes
 is nine, the number of nodes which define the element shape is four (i.e.,
 the first four nodes completely define the geometric shape of the element)
 and the number of DOF per node is two.  Two-dimensional isoparametric
-elements only affect translations in the x and y directions (positions one and
-two in the DOFs array).  There is no need to retain the element stiffness
+elements only affect translations in the x and y directions (DOFS 1 and 2,
+respectively).  There is no need to retain the element stiffness
 matrix after assembling so \mbox{{\tt element -> retainK}} is set to 0 (false). 
 
 The definition structure is the only tricky part of setting up a new element.

@@ -26,10 +26,10 @@
 # include <stdio.h>
 # include <string.h>
 # include <ctype.h>
+# include <X11/Xutil.h>
 # include "fe.h"
 # include "allocate.h"
 # include "error.h"
-# include "region.h"
 
 # include "colormap.h"
 

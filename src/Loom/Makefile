@@ -18,9 +18,9 @@
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
 LDFLAGS	= $(LDOPTS)
 LFLAGS	= -i
-LIBS	= $(LIBFELT) $(LIBELT) $(LIBMTX) -lm
+LIBS	= $(LIBFELT) $(LIBELT) $(LIBMTX) -lm -lX11
 OBJS	= error.o loom.o options.o graph.o wireframe.o draw.o draw3d.o \
-          contour.o bivar.o Region.o PolyReg.o bmp.o
+          contour.o bivar.o bmp.o
 PROG	= loom
 
 CURDIR	= ./src/Loom

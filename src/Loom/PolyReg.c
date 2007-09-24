@@ -51,6 +51,7 @@ SOFTWARE.
 #define SMALL_COORDINATE -LARGE_COORDINATE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "region.h"
 #include "poly.h"
 

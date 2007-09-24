@@ -25,6 +25,7 @@
  *		corresponding virtual machine instruction.		*
  ************************************************************************/
 
+# include <stdlib.h>
 # include "debug.h"
 # include "error.h"
 # include "field.h"

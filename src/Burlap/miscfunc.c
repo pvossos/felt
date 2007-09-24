@@ -26,6 +26,7 @@
 
 # include <errno.h>
 # include <string.h>
+# include <stdlib.h>
 # include "debug.h"
 # include "error.h"
 # include "lexer.h"

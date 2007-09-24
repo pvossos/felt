@@ -25,17 +25,10 @@
    along with Readline; see the file COPYING.  If not, write to the Free
    Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA. */
 
+#include <stdlib.h>
 #if defined (ALREADY_HAVE_XMALLOC)
 #else
 #include <stdio.h>
-
-#if defined (HAVE_STDLIB_H)
-#  include <stdlib.h>
-#else
-/*#  include "ansi_stdlib.h"*/
-extern char *malloc ();		/* changed for FElt */
-extern char *realloc ();	/* changed for FElt */
-#endif /* HAVE_STDLIB_H */
 
 static void memory_error_and_abort ();
 

@@ -25,6 +25,7 @@
  *		up element definitions.					*
  ************************************************************************/
 
+# include <string.h>
 # include "problem.h"
 # include "definition.h"
 

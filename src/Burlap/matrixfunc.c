@@ -26,6 +26,7 @@
 
 # include <math.h>
 # include <time.h>
+# include <string.h>
 # include "debug.h"
 # include "error.h"
 # include "coerce.h"

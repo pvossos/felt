@@ -73,6 +73,8 @@ SOFTWARE.
  */
 
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 #include "region.h"
 #include "poly.h"
 

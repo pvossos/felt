@@ -27,9 +27,9 @@
  ************************************************************************/
 
 # include <stdlib.h>
+# include <stddef.h>
 # include "Tree.h"
 # define NIL (&sentinel)
-# define NULL 0
 
 typedef enum {
     Red, Black

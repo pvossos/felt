@@ -26,6 +26,7 @@
 
 # include <stdio.h>
 # include <unistd.h>
+# include <stdlib.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
 # include <X11/Xresource.h>

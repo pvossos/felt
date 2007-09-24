@@ -25,6 +25,7 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <string.h>
 # include "fe.h"
 # include "error.h"
 # include "problem.h"

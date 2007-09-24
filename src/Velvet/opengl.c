@@ -29,13 +29,13 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <ctype.h>
 #include <X11/X.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #include <X11/Xaw/Command.h>
 #include <X11/Xaw/Toggle.h>
-// #include <GL/xmesa.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/GLwDrawA.h> 

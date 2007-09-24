@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
 #include "version.h"
 
 #define MAX_BUF_LEN 128

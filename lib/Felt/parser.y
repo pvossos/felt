@@ -26,6 +26,7 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <string.h>
 # include "code.h"
 # include "error.h"
 # include "objects.h"

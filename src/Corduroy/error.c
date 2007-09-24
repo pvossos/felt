@@ -25,6 +25,7 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <stdlib.h>
 # include "error.h"
 # include "generator.h"
 # include VAR_ARGS_INCLUDE

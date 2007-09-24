@@ -190,7 +190,7 @@ static int element_set_up (element, mass_mode)
 	    D_Type    (arg1) = T_Element;
 	    D_Temp    (arg1) = F_False;
 	    D_Trapped (arg1) = F_False;
-	    D_Element (arg1) = &element;
+	    arg1->u.ptr      = &element;
 
 	    D_Type    (arg2) = T_Int;
 	    D_Temp    (arg2) = F_False;
@@ -247,7 +247,7 @@ static int element_stress (element)
 	    D_Type    (arg1) = T_Element;
 	    D_Temp    (arg1) = F_False;
 	    D_Trapped (arg1) = F_False;
-	    D_Element (arg1) = &element;
+	    arg1->u.ptr      = &element;
 
 	    if (!function_call (function, 1)) {
 		result = top ( );

@@ -307,7 +307,7 @@ int AssignData (dest, srcp)
 	    D_Type     (dest) = T_External;
 	    D_Temp     (dest) = F_False;
 	    D_Trapped  (dest) = F_False;
-	    D_External (dest) = D_External (src);
+	    dest->u.ptr       = D_External (src);
 	    break;
 
 

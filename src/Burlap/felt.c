@@ -1780,7 +1780,7 @@ int init_felt (argc, argv)
     D_Type    (d) = T_Problem;
     D_Temp    (d) = F_False;
     D_Trapped (d) = F_False;
-    D_Problem (d) = &problem;
+    d->u.ptr      = &problem;
 
 
     s = add_literal (&var_st, "analysis", GlblOp);
@@ -1789,7 +1789,7 @@ int init_felt (argc, argv)
     D_Type     (d) = T_Analysis;
     D_Temp     (d) = F_False;
     D_Trapped  (d) = F_False;
-    D_Analysis (d) = &analysis;
+    d->u.ptr       = &analysis;
 
     return 0;
 }

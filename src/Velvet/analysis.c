@@ -964,7 +964,7 @@ static void ExternalCallback (w, client_data, call_data)
  ************************************************************************/
 
 # if defined(__STDC__)
-void AnalysisDialogUpdate (AnalysisDialog analysisd, int force)
+void AnalysisDialogUpdate (AnalysisDialog analysisd, Boolean force)
 # else
 void AnalysisDialogUpdate (analysisd,force)
     AnalysisDialog	analysisd;

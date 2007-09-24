@@ -347,40 +347,6 @@ extern void     RestoreNodeNumbers	  PROTO ((Node *, unsigned *,
 						  unsigned));
 
 	/*
-	 * prototypes for routines in results.c
-	 */
-
-extern int      WriteGraphicsFile	  PROTO ((char *, double));
-extern int      WriteMaterialStatistics   PROTO ((FILE *));
-extern void     WriteStructuralResults	  PROTO ((FILE *, char *, Reaction *, unsigned));
-extern void     WriteLoadCaseTable	  PROTO ((Matrix, FILE *));
-extern void	PlotLoadCaseTable	  PROTO ((Matrix, FILE *));
-extern void     WriteLoadRangeTable	  PROTO ((Matrix, FILE *));
-extern void	PlotLoadRangeTable	  PROTO ((Matrix, FILE *));
-extern void     WriteTemperatureResults   PROTO ((FILE *, char *));
-extern void	WriteEigenResults	  PROTO ((Matrix, Matrix, 
-						  char *, FILE *));
-extern void     WriteModalResults         PROTO ((FILE*, Matrix, Matrix, 
-                                                  Matrix, Matrix));
-extern void	PlotModeShapes		  PROTO ((Matrix, FILE *));
-extern void     WriteTransientTable	  PROTO ((Matrix, Matrix, FILE *));
-extern void     PlotTransientTable	  PROTO ((Matrix, Matrix, double, FILE *));
-extern void     WriteOutputSpectra	  PROTO ((Matrix, FILE *));
-extern void     PlotOutputSpectra	  PROTO ((Matrix, FILE *));
-extern void 	WriteTransferFunctions	  PROTO ((Matrix *,  NodeDOF *, 
-                                                  unsigned, FILE *));
-extern void     PlotTransferFunctions	  PROTO ((Matrix *, NodeDOF *,
-                                                  unsigned, FILE *));
-extern void     PrintGlobalMatrices       PROTO ((FILE *, Matrix, Matrix, Matrix));
-extern int      MatlabGlobalMatrices      PROTO ((char *, Matrix, Matrix, Matrix));
-
-	/*
-	 * prototypes for routines in draw.c
-	 */
-
-extern void 	DrawStructureASCII	  PROTO ((FILE *, unsigned, unsigned));
-
-	/*
 	 * prototypes of routines in transient.c
 	 */
 

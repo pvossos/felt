@@ -45,6 +45,11 @@
 #include "fe.h"
 #include "colormap.h"
 #include "globals.h"
+#include "util.h"
+#include "eps.h"
+#include "ppm.h"
+#include "xwd.h"
+#include "opengl.h"
 
 #define WEDGEWIDTH 100
 
@@ -735,14 +740,8 @@ static void Action (w, event, params, num_params)
    XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-void CreateOpenGLShell(name, title, stress, comp, element, numelts, contour)
-   String	 name;
-   String	 title;
-   Boolean	 stress;
-   int		 comp;
-   Element	*element;
-   unsigned      numelts;	         
-   Boolean	 contour;
+void CreateOpenGLShell(String name, String title, Boolean stress,
+                       int comp, Element *element, unsigned numelts, Boolean contour)
 {
    static XVisualInfo  *vi = NULL;
    Widget	        group [3];

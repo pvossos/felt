@@ -26,17 +26,14 @@
 
 # include <stdio.h>
 # include <string.h>
+# include "graph.h"
 # include "fe.h"
 # include "error.h"
 # include "problem.h"
 # include "allocate.h"
 
-void WriteLineGraph (d, alt_title, xlabel, ylabel, output)
-   Matrix	d;
-   char		*alt_title;
-   char		*xlabel;
-   char		*ylabel;
-   char		*output;
+void WriteLineGraph (Matrix d, char *alt_title,
+                     char *xlabel, char *ylabel, char *output)
 {
    static char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    unsigned	i,j;
@@ -78,11 +75,7 @@ void WriteLineGraph (d, alt_title, xlabel, ylabel, output)
    return;
 }
 
-void WriteLineGraphTransferFunctions (H, forced, numforced, output)
-   Matrix	*H;
-   unsigned	*forced;
-   unsigned	numforced;
-   char		*output;
+void WriteLineGraphTransferFunctions (Matrix *H, unsigned *forced, unsigned numforced, char *output)
 {
    static char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    unsigned	i,j,l;

@@ -34,6 +34,8 @@
 # include <X11/Intrinsic.h>
 # include "proto.h"
 # include "error.h"
+# include "ppm.h"
+# include "xwd.h"
 
 #define RAWBITS	1
 
@@ -103,9 +105,7 @@ static void ClosePPM (fp, rawbits)
    return;
 }
 
-void WidgetToPPM (filename, w)
-   char		*filename;
-   Widget	 w;
+void WidgetToPPM (char *filename, Widget w)
 {
    XImage	*img;
    XColor	*colors;

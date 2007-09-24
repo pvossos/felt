@@ -33,6 +33,8 @@
 # include "vfe.h"
 # include "procedures.h"
 # include "error.h"
+# include "opengl.h"
+# include "results.h"
 
 extern ElementDialog element_d;
 extern NodeDialog    node_d;

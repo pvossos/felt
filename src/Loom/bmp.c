@@ -26,6 +26,7 @@
  *****************************************************************************/
 
 # include <stdio.h>
+# include "bmp.h"
 # include "error.h"
 
 static int architecture ( )
@@ -70,14 +71,8 @@ static long SwapLong (x)
    return *((int *) ptr);
 }
 
-void ImageDataToBMP(out, image, rows, cols, red, green, blue)
-   char	 *out;
-   unsigned char **image;
-   int	  rows;
-   int	  cols;
-   unsigned char  *red;
-   unsigned char  *green;
-   unsigned char  *blue;
+void ImageDataToBMP(char *out, unsigned char **image, int rows, int cols,
+                    unsigned char *red, unsigned char *green, unsigned char *blue)
 {
    FILE		*fp;
    int 		i;

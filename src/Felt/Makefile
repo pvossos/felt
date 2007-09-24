@@ -15,7 +15,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
+CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include -I$(TOPDIR)
 LDFLAGS	= $(LDOPTS)
 LFLAGS	= -i
 LIBS	= $(LIBFELT) $(LIBELT) $(LIBMTX) -lm

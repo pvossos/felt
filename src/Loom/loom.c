@@ -46,6 +46,10 @@
 # include "allocate.h"
 # include "definition.h"
 # include "options.h"
+# include "wireframe.h"
+# include "graph.h"
+# include "contour.h"
+# include "results.h"
 
 typedef int	Boolean;
 

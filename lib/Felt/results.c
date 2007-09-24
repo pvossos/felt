@@ -28,6 +28,7 @@
 
 # include <stdio.h>
 # include <math.h>
+# include "results.h"
 # include "allocate.h"
 # include "problem.h"
 # include "fe.h"
@@ -62,11 +63,8 @@ extern double ElementArea ( );
  *
  ***************************************************************************/
 
-void WriteStructuralResults (output, title, R, numreactions)
-    FILE       *output;
-    char       *title;
-    Reaction   *R;
-    unsigned	numreactions;
+void WriteStructuralResults (FILE *output, char *title,
+                             Reaction *R, unsigned numreactions)
 {
     FILE       *fd;
     Element    *element;
@@ -156,9 +154,7 @@ void WriteStructuralResults (output, title, R, numreactions)
  *
  ***************************************************************************/
 
-void WriteTemperatureResults (fp, title)
-   FILE		*fp;
-   char		*title;
+void WriteTemperatureResults (FILE *fp, char *title)
 {
    Node		*node;
    unsigned	numnodes;
@@ -189,11 +185,7 @@ void WriteTemperatureResults (fp, title)
  *
  ***************************************************************************/
 
-void WriteEigenResults (lambda, x, title, output)
-   Matrix	lambda;
-   Matrix	x;
-   char		*title;
-   FILE		*output;
+void WriteEigenResults (Matrix lambda, Matrix x, char *title, FILE *output)
 {
    unsigned	n;
    unsigned	i,j;
@@ -243,9 +235,7 @@ void WriteEigenResults (lambda, x, title, output)
  *
  ***************************************************************************/
 
-void PlotModeShapes (x, output)
-   Matrix 	x;
-   FILE		*output;
+void PlotModeShapes (Matrix x, FILE *output)
 {
    error ("mode shape plots are not implemented yet - sorry.");
    return;
@@ -268,10 +258,7 @@ static char *labels [] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
  *	
  ******************************************************************************/
 
-void WriteTransientTable (dtable, ttable, fp)
-   Matrix	dtable;
-   Matrix	ttable;
-   FILE		*fp;
+void WriteTransientTable (Matrix dtable, Matrix ttable, FILE *fp)
 {
    unsigned	i,j,k,m,n;
    unsigned	table;
@@ -355,11 +342,7 @@ void WriteTransientTable (dtable, ttable, fp)
  *	
  ******************************************************************************/
 
-void PlotTransientTable (dtable, ttable, dt, fp)
-   Matrix	dtable;
-   Matrix	ttable;
-   double	dt;
-   FILE		*fp;
+void PlotTransientTable (Matrix dtable, Matrix ttable, double dt, FILE *fp)
 {
    unsigned	i,j,k;
    unsigned	m,n;
@@ -491,9 +474,7 @@ static char *spectra_labels [] = {"","S_Tx","S_Ty","S_Tz","S_Rx","S_Ry","S_Rz"};
  *	
  *****************************************************************************/
 
-void WriteOutputSpectra (P, fp)
-   Matrix	P;
-   FILE		*fp;
+void WriteOutputSpectra (Matrix P, FILE *fp)
 {
    unsigned	i,j,k,m,n;
    unsigned	table;
@@ -569,9 +550,7 @@ void WriteOutputSpectra (P, fp)
  *	
  ******************************************************************************/
 
-void PlotOutputSpectra (P, fp)
-   Matrix	P;
-   FILE		*fp;
+void PlotOutputSpectra (Matrix P, FILE *fp)
 {
    unsigned	i,j,k;
    unsigned	m,n;
@@ -701,11 +680,7 @@ void PlotOutputSpectra (P, fp)
  *	
  *****************************************************************************/
 
-void WriteTransferFunctions (H, forced, numforced, fp)
-   Matrix	*H;
-   NodeDOF	*forced;
-   unsigned	numforced;
-   FILE		*fp;
+void WriteTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
 {
    double	w;
    unsigned	i,j,k,l,m,n;
@@ -794,11 +769,7 @@ void WriteTransferFunctions (H, forced, numforced, fp)
    return;
 }
 
-void PlotTransferFunctions (H, forced, numforced, fp)
-   Matrix	*H;
-   NodeDOF	*forced;
-   unsigned	numforced;
-   FILE		*fp;
+void PlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
 {
    unsigned	i,j,k,l;
    unsigned	m,n,o;
@@ -954,8 +925,7 @@ void PlotTransferFunctions (H, forced, numforced, fp)
  *
  ***************************************************************************/
 
-int WriteMaterialStatistics (output)
-   FILE		*output;
+int WriteMaterialStatistics (FILE *output)
 {
    Element	*element;
    unsigned	numelts;
@@ -1084,9 +1054,7 @@ int WriteMaterialStatistics (output)
  *
  ***************************************************************************/
 
-int WriteGraphicsFile (filename, mag)
-   char		*filename;
-   double	 mag;
+int WriteGraphicsFile (char *filename, double mag)
 {
    Element	*element;
    unsigned	numelts;
@@ -1122,11 +1090,7 @@ int WriteGraphicsFile (filename, mag)
    return 0;
 }
 
-void PrintGlobalMatrices (fp, M, C, K)
-   FILE         *fp;
-   Matrix       M;
-   Matrix       C;
-   Matrix       K;
+void PrintGlobalMatrices (FILE *fp, Matrix M, Matrix C, Matrix K)
 {
 
    if (M != NullMatrix) {
@@ -1157,11 +1121,7 @@ void PrintGlobalMatrices (fp, M, C, K)
    }
 }
 
-int MatlabGlobalMatrices (filename, M, C, K)
-   char	    *filename;
-   Matrix    M;
-   Matrix    C;
-   Matrix    K;
+int MatlabGlobalMatrices (char *filename, Matrix M, Matrix C, Matrix K)
 {
    FILE	    *fp;
 
@@ -1189,9 +1149,7 @@ int MatlabGlobalMatrices (filename, M, C, K)
    return 0;
 }
 
-int WriteAllMatlab( filename, data)
-    char        *filename;
-    Problem     *data;
+int WriteAllMatlab(char *filename, Problem *data)
 {
     FILE *fp;
 # ifdef DOS
@@ -1261,12 +1219,7 @@ int WriteAllMatlab( filename, data)
 }
 
 
-void WriteModalResults (fp, M, C, K, lambda)
-   FILE		*fp;
-   Matrix	M;
-   Matrix	C;
-   Matrix	K;
-   Matrix	lambda;
+void WriteModalResults (FILE *fp, Matrix M, Matrix C, Matrix K, Matrix lambda)
 {
    unsigned	i;
 
@@ -1312,9 +1265,7 @@ void WriteModalResults (fp, M, C, K, lambda)
  *
  ******************************************************************************/
 
-void WriteLoadCaseTable (dtable, fp)
-   Matrix	dtable;
-   FILE		*fp;
+void WriteLoadCaseTable (Matrix dtable, FILE *fp)
 {
    unsigned	i,j,k,m,n;
    unsigned	table;
@@ -1388,9 +1339,7 @@ void WriteLoadCaseTable (dtable, fp)
  *
  ******************************************************************************/
 
-void PlotLoadCaseTable (dtable, fp)
-   Matrix	dtable;
-   FILE		*fp;
+void PlotLoadCaseTable (Matrix dtable, FILE *fp)
 {
    unsigned	i,j,k;
    unsigned	m,n;
@@ -1515,9 +1464,7 @@ void PlotLoadCaseTable (dtable, fp)
  *
  ******************************************************************************/
 
-void WriteLoadRangeTable (dtable, fp)
-   Matrix	dtable;
-   FILE		*fp;
+void WriteLoadRangeTable (Matrix dtable, FILE *fp)
 {
    unsigned	i,j,k,m,n;
    unsigned	table;
@@ -1592,9 +1539,7 @@ void WriteLoadRangeTable (dtable, fp)
  *
  ******************************************************************************/
 
-void PlotLoadRangeTable (dtable, fp)
-   Matrix	dtable;
-   FILE		*fp;
+void PlotLoadRangeTable (Matrix dtable, FILE *fp)
 {
    unsigned	i,j,k;
    unsigned	m,n;

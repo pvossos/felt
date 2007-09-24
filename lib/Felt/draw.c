@@ -28,6 +28,7 @@
 
 # include <stdio.h>
 # include <math.h>
+# include "draw.h"
 # include "allocate.h"
 # include "problem.h"
 # include "fe.h"
@@ -123,10 +124,7 @@ static void Line (b, xs, ys, xe, ye)
  *
  ***************************************************************************/
 
-void DrawStructureASCII (fp, cols, rows)
-    FILE       *fp;
-    unsigned	cols;
-    unsigned	rows;
+void DrawStructureASCII (FILE *fp, unsigned cols, unsigned rows)
 {
     char	**b;
     unsigned	  i, j;

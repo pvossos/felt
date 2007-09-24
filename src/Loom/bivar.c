@@ -33,6 +33,7 @@
 
 # include <math.h>
 # include <stdio.h>
+# include "bivar.h"
 # include "allocate.h"
 # include "error.h"
 
@@ -89,11 +90,10 @@ int    idxchg();
  *
  ***************************************************************************/
 
-int BivariateInterp (ndp,xd,yd,zd,nxi,nyi,xi,yi,zi,mask)
-   float	*xd,*yd,*zd;
-   int		ndp,nxi,nyi;
-   float	*xi,*yi,**zi;		/* zi should be ZERO offset! */
-   char		**mask;
+/* zi should be ZERO offset! */
+int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
+                     int nxi, int nyi, float *xi, float *yi, float **zi,
+                     char **mask)
 {
    float	*wk;
    int		*iwk;

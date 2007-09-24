@@ -25,6 +25,7 @@
 # include <X11/Intrinsic.h>
 # include <X11/Xaw/AsciiText.h>
 # include <stdlib.h>
+# include "xwd.h"
 # include "error.h"
 
 int Image_Size ( );
@@ -35,9 +36,7 @@ void _swapshort ( );
 Display *dpy;
 int screen;
 
-int DumpWidget(widget, out)
-     Widget	widget;
-     FILE       *out;
+int DumpWidget(Widget widget, FILE *out)
 {
     unsigned long swaptest = 1;
     XColor *colors;
@@ -198,10 +197,7 @@ int DumpWidget(widget, out)
     return 0;
 }
 
-XImage *WidgetToXImage(widget, colors, ncolors)
-     Widget	 widget;
-     XColor    **colors;
-     int	*ncolors;
+XImage *WidgetToXImage(Widget widget, XColor **colors, int *ncolors)
 {
     unsigned long swaptest = 1;
     unsigned buffer_size;
@@ -288,11 +284,7 @@ XImage *WidgetToXImage(widget, colors, ncolors)
     return image;
 }
 
-int XImageCellXY(img, x, y, colors, ncolors)
-   XImage	*img;
-   int		 x, y;
-   XColor	*colors;
-   int		 ncolors; 
+int XImageCellXY(XImage *img, int x, int y, XColor *colors, int ncolors)
 {
    int		 i;
    unsigned long point;

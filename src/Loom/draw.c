@@ -32,17 +32,14 @@
 # include <stdio.h>
 # include <string.h>
 # include <math.h>
+# include "draw.h"
 # include "problem.h"
 # include "error.h"
 
 # define WindowWidth 400
 # define WindowHeight 400
 
-void WriteWireframe2D (fp, table, n, mag)
-   FILE		*fp;
-   Node        **table;
-   unsigned	 n;
-   double	 mag;
+void WriteWireframe2D (FILE *fp, Node **table, unsigned n, double mag)
 {
    int		i, j;
    double	maxX, minX, maxY, minY, Xscale, Yscale;

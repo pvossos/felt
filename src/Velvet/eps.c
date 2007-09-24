@@ -20,9 +20,11 @@
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <X11/Intrinsic.h>
+# include "eps.h"
 # include "proto.h"
 # include "error.h"
 # include "version.h"
+# include "xwd.h"
 
 #define MARGIN 0.95
 
@@ -41,9 +43,7 @@ static void rleputrest PROTO(( void ));
 
 static FILE 	*output;
 
-void WidgetToEPS (filename, w)
-    char	*filename;
-    Widget	 w;
+void WidgetToEPS (char *filename, Widget w)
 {
     XImage   *img;
     int       turnflag, turnokflag, rleflag;

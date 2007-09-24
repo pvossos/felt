@@ -27,11 +27,13 @@
 # include <string.h>
 # include <ctype.h>
 # include <X11/Xutil.h>
+# include "contour.h"
 # include "fe.h"
 # include "allocate.h"
 # include "error.h"
-
+# include "bivar.h"
 # include "colormap.h"
+# include "bmp.h"
 
 # define HORIZ	1
 # define VERT	2
@@ -526,16 +528,8 @@ static void PlotContourField (filename, node, numnodes, element,
    return;
 }  
 
-void PlotStressField (out, element, numelts, comp, equalize, plot_elt,
-                      width, height)
-   char		*out;
-   Element	*element;
-   unsigned	numelts;
-   int		comp;
-   int		equalize;
-   int 		plot_elt;
-   int		width;
-   int		height;
+void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
+                      int equalize, int plot_elt, int width, int height)
 {
    int		nd;
    int		i, j;
@@ -576,18 +570,9 @@ void PlotStressField (out, element, numelts, comp, equalize, plot_elt,
                      equalize, plot_elt, width, height);
 }
 
-void PlotDisplacementField (out, node, numnodes, element, numelts, comp, 
-                            equalize, plot_elt, width, height)
-   char		*out;
-   Node		*node;
-   unsigned	numnodes;
-   Element	*element;
-   unsigned	numelts;
-   int		comp;
-   int		equalize;
-   int 		plot_elt;
-   int		width;
-   int		height;
+void PlotDisplacementField (char *out, Node *node, unsigned numnodes,
+                            Element *element, unsigned numelts, int comp, 
+                            int equalize, int plot_elt, int width, int height)
 {
    int		i;
    int		flag;

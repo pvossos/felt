@@ -28,6 +28,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <math.h>
+# include "draw.h"
 # include "problem.h"
 # include "error.h"
 
@@ -209,15 +210,8 @@ static void Setup3D (min_x, max_x, min_y, max_y, min_z, max_z, xrot, yrot, zrot,
    return;
 }
 
-void WriteWireframe3D (fp, table, n, mag, xrot, yrot, zrot, zsc)
-   FILE	        *fp;
-   Node	       **table;
-   unsigned	 n;
-   double	 mag;
-   double	 xrot;
-   double  	 yrot;
-   double  	 zrot;
-   double	 zsc;
+void WriteWireframe3D (FILE *fp, Node **table, unsigned n, double mag, 
+                       double xrot, double yrot, double zrot, double zsc)
 {
    int		i, j;
    double	maxX, minX, maxY, minY, maxZ, minZ;

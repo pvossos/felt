@@ -34,6 +34,8 @@
 # include "allocate.h"
 # include "version.h"
 # include "definition.h"
+# include "results.h"
+# include "draw.h"
 
 # define streq(a,b)	!strcmp(a,b)
 

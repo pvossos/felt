@@ -99,7 +99,7 @@ complex cdiv (x, y)
    return a;
 }
 
-complex csqrt (x)
+complex felt_csqrt (x)
    complex	x;
 {
    complex	y;
@@ -114,7 +114,7 @@ complex csqrt (x)
    return y;
 }
  
-complex cexp (x)
+complex felt_cexp (x)
    double	x;
 {
    complex	y;
@@ -125,18 +125,18 @@ complex cexp (x)
    return y;
 }
 
-complex ccos (x)
+complex felt_ccos (x)
    complex	x;
 {
    complex	y;
 
-   y = scale(cexp(x.r), exp(-x.i)*0.5, 0.0);
-   y = add(y, scale(cexp(-x.r), exp(x.i)*0.5, 0.0));
+   y = scale(felt_cexp(x.r), exp(-x.i)*0.5, 0.0);
+   y = add(y, scale(felt_cexp(-x.r), exp(x.i)*0.5, 0.0));
 
    return y;
 }
 
-complex csin (x)
+complex felt_csin (x)
    complex	x;
 {
    complex	y;
@@ -145,8 +145,8 @@ complex csin (x)
    i2.r = 0.0;
    i2.i = 2;
 
-   y = scale(cexp(x.r), exp(-x.i), 0.0);
-   y = sub(y, scale(cexp(-x.r), exp(x.i), 0.0));
+   y = scale(felt_cexp(x.r), exp(-x.i), 0.0);
+   y = sub(y, scale(felt_cexp(-x.r), exp(x.i), 0.0));
    y = cdiv(y, i2);
 
    return y;

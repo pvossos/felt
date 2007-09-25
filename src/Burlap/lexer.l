@@ -91,6 +91,7 @@ alpha		[a-zA-Z_]
 
 %x		quit
 %x		comment
+%option 	noyywrap
 %%
 %{
     /* If a saved token exists then return it to the parser.  This code
@@ -465,8 +466,10 @@ int yyinclude (file)
  * Description:	Return nonzero, indicating the end of input.		*
  ************************************************************************/
 
+#if 0
 int yywrap ( )
 {
     if (0) unput (0);
     return 1;
 }
+#endif

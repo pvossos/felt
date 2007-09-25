@@ -75,6 +75,7 @@ id	{letter}({letter}|{digit})*
 eq	[ \t]*=
 
 %x	comment
+%option noyywrap
 %%
 
 
@@ -441,9 +442,11 @@ char *copy_input (flag)
     return copied_text;
 }
 
+#if 0
 # undef yywrap
 int yywrap ( )
 {
     if (0) unput (0);
     return 1;
 }
+#endif

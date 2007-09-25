@@ -542,6 +542,7 @@ and
 if
 	: IF
 	    {emitloc ($1);}
+	;
 
 
 else

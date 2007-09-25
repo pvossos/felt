@@ -135,10 +135,13 @@ place_number(FILE *output, int direct, double scale,
  ******************************************************/
 
 static int
-dcomp(double *a, double *b)
+dcomp(const void *aa, const void *bb)
  {
-   if (*a > *b) 	return(1);
-   else if (*a < *b) 	return(-1);
+      double a = *((const double *) aa);
+      double b = *((const double *) bb);
+
+   if (a > b) 	return(1);
+   else if (a < b) 	return(-1);
    else 	 	return(0);
    
  }

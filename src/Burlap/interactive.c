@@ -52,7 +52,6 @@ static struct alias {
 
 static int num_aliases;
 
-static int   compare_aliases PROTO ((void *, void *));
 static void  sort_aliases    PROTO ((void));
 static int   parse_alias     PROTO ((char *));
 static char *expand_alias    PROTO ((char *));
@@ -174,9 +173,8 @@ static char *completion_generator (text, state)
  * Description:	Compares two aliases.					*
  ************************************************************************/
 
-static int compare_aliases (p1, p2)
-    void *p1;
-    void *p2;
+static int 
+compare_aliases(const void *p1, const void *p2)
 {
     struct alias *a1;
     struct alias *a2;

@@ -35,6 +35,7 @@
 # include "Canvas.h"
 # include "Tree.h"
 # include "pslib.h"
+# include "procedures.h"
 
 static double		Xscale, Yscale;
 static double		Xmin, Ymin;

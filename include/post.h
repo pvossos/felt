@@ -27,10 +27,6 @@
 # ifndef _post_h
 # define _post_h
 
-extern void AddPostMenuActions (
-# if NeedFunctionPrototypes
-    Widget	/* menu */
-# endif
-);
+void AddPostMenuActions(Widget w);
 
 # endif /* _post_h */

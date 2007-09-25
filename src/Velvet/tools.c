@@ -70,9 +70,8 @@ void ToolsDeleteFigure ()
 }
 
 
-void DeleteFigureGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+DeleteFigureGroup(Figure *figures, unsigned nfigures)
 {
     unsigned         i;
     Figure           fig;
@@ -766,10 +765,8 @@ void AbortMoveTool ( )
     QuitMoveTool ( );
 }
 
-void WalkToolCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void
+WalkToolCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport 	*report;
     Figure	  	figure;
@@ -809,8 +806,8 @@ void WalkToolCB (w, client_data, call_data)
     }
 }
 
-void DoMoveTool (figure)
-    Figure    figure;
+static void
+DoMoveTool(Figure figure)
 {
     SetEditMode ( );
     ChangeStatusLine ("- Select new location for figure -", False);
@@ -828,10 +825,8 @@ void DoMoveTool (figure)
     return;
 }
 
-void MoveToolCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void
+MoveToolCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;

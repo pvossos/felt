@@ -25,6 +25,9 @@
  *
  ****************************************************************************/
 
+#ifndef DXF_H
+#define DXF_H
+
 # define STRING		0
 # define HEADER		2
 # define LAYER		8
@@ -79,3 +82,7 @@ int WriteDXFPolyHeader ( );
 int WriteDXFVertex ( );
 int WriteDXF3dMeshHeader ( );
 unsigned CheckValidity ( );
+
+int WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output);
+
+#endif

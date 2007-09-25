@@ -62,10 +62,10 @@ complex cmdata (A, row, col)
    return zero();
 }
 
-ComplexMatrix CreateSubsectionComplexMatrix (a, sr, sc, er, ec)
-   ComplexMatrix	a;
-   unsigned	sr, sc;
-   unsigned	er, ec;
+static ComplexMatrix
+CreateSubsectionComplexMatrix(ComplexMatrix a, 
+                              unsigned sr, unsigned sc,
+                              unsigned er, unsigned ec)
 {
    ComplexMatrix	b;
    unsigned	i;

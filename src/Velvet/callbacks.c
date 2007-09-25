@@ -41,6 +41,7 @@
 # include "util.h"
 # include "error.h"
 # include "procedures.h"
+# include "callbacks.h"
 
 extern ColorsDialog	colors_d;
 

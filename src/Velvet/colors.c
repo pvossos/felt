@@ -470,9 +470,8 @@ static void Dismiss (w, client_data, call_data)
  *		if it is not already there				*
  ************************************************************************/
 
-void InsertColor (colorsd, color)
-   ColorsDialog	colorsd;
-   String	color;
+static void
+InsertColor(ColorsDialog colorsd, String color)
 {
    int		index;
 

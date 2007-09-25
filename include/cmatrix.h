@@ -209,5 +209,7 @@ int IsSymmetricComplexMatrix PROTO ((
    ComplexMatrix
 ));
 
+int DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p);
+
 # endif	/* _CMATRIX_H */
 

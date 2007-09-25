@@ -187,9 +187,8 @@ void DoWalkNode (node)
 }
 
 
-void DeleteNodeGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+DeleteNodeGroup(Figure *figures, unsigned nfigures)
 {
     unsigned         i;
     Figure           fig;
@@ -253,8 +252,8 @@ void DeleteNodeGroup (figures, nfigures)
 }
 
 
-void DoDeleteNode (node)
-    Node node;
+static void
+DoDeleteNode(Node node)
 {
     static char message [80];
     Drawn drawn = (Drawn) node -> aux;
@@ -692,9 +691,8 @@ void MoveNodeNumber ( )
 
 static double mass_value = 0.0;
 
-void AssignMassGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+AssignMassGroup(Figure *figures, unsigned nfigures)
 {
     unsigned         i;
     Figure           fig;

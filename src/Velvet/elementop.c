@@ -43,9 +43,8 @@ extern ElementDialog element_d;
 extern MaterialDialog material_d;
 extern ElementList element_l;
 
-void DeleteElementGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+DeleteElementGroup(Figure *figures, unsigned nfigures)
 {
     unsigned         i;
     unsigned         j;
@@ -104,8 +103,8 @@ void DeleteElementGroup (figures, nfigures)
 }
 
 
-void DoDeleteElt (element)
-    Element element;
+static void
+DoDeleteElt(Element element)
 {
     unsigned i;
     Element newelement;

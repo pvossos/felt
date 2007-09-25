@@ -54,10 +54,8 @@ struct cs {
  *		to another starting address if necessary.		*
  ************************************************************************/
 
-int emit_instr (addr, op, ap)
-    Address addr;
-    Opcode  op;
-    va_list ap;
+static int
+emit_instr(Address addr, Opcode op, va_list ap)
 {
     if (cs -> count + 2 >= cs -> size)
 	Reallocate (cs -> memory, Word, cs -> size <<= 1);

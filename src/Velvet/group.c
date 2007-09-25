@@ -44,9 +44,8 @@
 static void    (*function) ( );
 
 
-void DoSelectGroup (box, x1, y1, x2, y2)
-    Figure box;
-    float  x1, y1, x2, y2;
+static void
+DoSelectGroup(Figure box, float x1, float y1, float x2, float y2)
 {
     Point    points [4];
     Figure  *figures;
@@ -69,10 +68,8 @@ void DoSelectGroup (box, x1, y1, x2, y2)
 }
 
 
-void SelectGroupCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void
+SelectGroupCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     static Point     corner;
     static Figure    box;

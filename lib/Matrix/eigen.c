@@ -494,12 +494,9 @@ static int CholeskyReduction (a, b, ar, br)
    return 1;
 }
 
-int SymmetricMatrixGeneralEigenModes (a, b, lambda, x, maxit)
-   Matrix	a;
-   Matrix	b;
-   Matrix	lambda;
-   Matrix	x;
-   unsigned	maxit;
+static int
+SymmetricMatrixGeneralEigenModes(Matrix a, Matrix b, Matrix lambda,
+                                 Matrix x, unsigned maxit)
 {
    Matrix	diag;
    Matrix	sub_diag;

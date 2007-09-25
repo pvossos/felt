@@ -340,10 +340,8 @@ int WriteDXFVertex (x, y, z, layer, output)
    return 0;
 }
 
-int WriteDXF3dMeshVertex (x,y,z, layer, output)
-   double	x,y,z;
-   char		*layer;
-   FILE		*output;
+int
+WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output)
 {
    WriteDXFVertex (x, y, z, layer, output);
    fprintf (output,"   %d\n%d\n",POLYCODE2,MESHCODE2);

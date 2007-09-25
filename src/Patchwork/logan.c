@@ -31,13 +31,14 @@
 # include "fe.h"
 # include "error.h"
 # include "problem.h"
+# include "patchwork.h"
 
 Material *SetupMaterialArray    ( );
 int      CountSurfaceTractions  ( );
 int	 GetKode                ( );
 
-int WriteLoganFile (name)
-    char	*name;
+int
+WriteLoganFile(char *name)
 {
     FILE	*fp;			/* output file pointer		*/
     unsigned	 i,			/* loop variable		*/

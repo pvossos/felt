@@ -28,13 +28,20 @@
 # ifndef _PATCHWORK_H
 # define _PATCHWORK_H
 
-Node	AddNode ( );
-Element AddElement ( );
+int InitializeProblem(void);
+
+Node AddNode(double x, double y, double z, Constraint constraint, Force force);
+
+Element AddElement(Definition defn, Node *nodes, Material material, 
+                   Distributed *distributed, unsigned numdistributed);
+
 int ReadDXFFile ( );
 int WriteDXFFile ( );
 int ReadGraphFile ( );
 int WriteGraphFile ( );
-int WriteLoganFile ( );
+
+int WriteLoganFile(char *name);
+
 int WriteOoglFile ( );
 
 # endif /* _PATCHWORK_H */

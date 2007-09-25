@@ -338,7 +338,8 @@ void DoAddCurvePoint (x,y)
    ChangeStatusLine (message, True);
 }
 
-void DoTriMeshGeneration ()
+static void
+DoTriMeshGeneration(void)
 {
    Element	*element;
    Node		*node;

@@ -39,14 +39,9 @@ extern int InitializeProblem ( );
  *
  ******************************************************/
  
-void place_symbol(output,direct,scale,x,y,z,symbol)
-   FILE		*output;
-   double	scale,
-   		x,
-   		y,
-   		z;
-   char		*symbol;
-   int		direct;
+static void
+place_symbol(FILE *output, int direct, double scale, 
+             double x, double y, double z, char *symbol)
 {
   double	s;
   
@@ -77,14 +72,9 @@ void place_symbol(output,direct,scale,x,y,z,symbol)
 
 }
 
-void place_number(output,direct,scale,x,y,z,number)
-   FILE		*output;
-   double	scale,
-   		x,
-   		y,
-   		z;
-   int		direct,
-   		number;
+static void
+place_number(FILE *output, int direct, double scale,
+             double x, double y, double z, int number)
 {
    int		anzahl=1,
    		digit=0,
@@ -144,9 +134,8 @@ void place_number(output,direct,scale,x,y,z,number)
  *
  ******************************************************/
 
-int dcomp(a,b)
-  double 	*a,
-  		*b;
+static int
+dcomp(double *a, double *b)
  {
    if (*a > *b) 	return(1);
    else if (*a < *b) 	return(-1);

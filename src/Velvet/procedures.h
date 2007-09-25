@@ -244,7 +244,17 @@ void SetupModeShapes ();
 void VisualizeStructure ();
 void VisualizeStructure3D ();
 void AnimateStructure3D ();
-void InitializeDrawingShell ();
+
+Widget
+CreateDrawingShell(String name, String title,
+                   XtCallbackProc callback, Widget *dw);
+
+void
+InitializeDrawingShell(Widget shell, Widget dw, 
+                       float minX, float maxX, float minY, float maxY,
+                       float *x_scale, float *y_scale,
+                       Dimension *wx, Dimension *hy);
+
 int  WritePostscriptFigures ();
 
 # endif /* _PROCEDURES_H */

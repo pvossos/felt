@@ -69,8 +69,8 @@ typedef struct _grid {
    Rule		zrule;		/* scale rule for z-axis		*/
 } *Grid;
 
-extern Node    *CoalesceNodes     PROTO ((Node *, Element *, 
-                                          unsigned *, unsigned));
+Node *CoalesceNodes(Node *, Element *, unsigned *, unsigned);
+
 extern unsigned GenerateLine	  PROTO ((Line, Element **, Node **,
                                           unsigned *, unsigned *,
                                           unsigned, unsigned));

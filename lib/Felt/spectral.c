@@ -80,10 +80,8 @@ static int RoundToPowerOf2 (n, exponent)
  *
  ***************************************************************************/
 
-double *ZeroPadData(x, length, length2)
-   Vector	x;
-   int		*length;
-   int		*length2;
+static double*
+ZeroPadData(Vector x, int *length, int *length2)
 {
    int		n;
    int		i;
@@ -229,9 +227,8 @@ int FastFourierTransform(Xr, Xi, n, n2, direction)
    return 0;
 }
 
-double *WindowFunction(win, n)
-   unsigned	win;
-   unsigned	n;
+static double*
+WindowFunction(unsigned win, unsigned n)
 {
    unsigned	i;
    double	*w;
@@ -500,11 +497,8 @@ Matrix *ComputeTransferFunctions (M, C, K, forced, numforced)
    return H; 
 }
 
-/* removed static */
-/*static*/ void AlignSpectra (S1, S2, freq2)
-   Matrix	S1;
-   Matrix	S2;
-   Matrix	freq2;
+static void
+AlignSpectra(Matrix S1, Matrix S2, Matrix freq2)
 {
    unsigned	i, j, k;
    double	df;

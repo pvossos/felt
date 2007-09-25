@@ -421,10 +421,8 @@ PrintBox (box, level)
     }
 }
 
-ExprPtr
-LookupVariable (child, quark)
-    BoxPtr	child;
-    XrmQuark	quark;
+static ExprPtr
+LookupVariable(BoxPtr child, XrmQuark quark)
 {
     BoxPtr	parent, box;
 

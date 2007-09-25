@@ -28,6 +28,7 @@
 
 # include "problem.h"
 # include "error.h"
+# include "yardstick.h"
 
 static double	length;
 static double	force;

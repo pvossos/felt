@@ -51,9 +51,8 @@ extern NodeDialog	node_d;
 	 * applying forces
 	 */
 
-void ApplyForceGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+ApplyForceGroup(Figure *figures, unsigned nfigures)
 {
     unsigned		i;
     Figure		fig;
@@ -88,8 +87,8 @@ void ApplyForceGroup (figures, nfigures)
 }
 
 
-void DoApplyForce (node)
-    Node node;
+static void
+DoApplyForce(Node node)
 {
     static char message [40];
 
@@ -191,9 +190,8 @@ void EditApplyForce ( )
 	 * applying constraints
 	 */
 
-void ApplyConstraintGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+ApplyConstraintGroup(Figure *figures, unsigned nfigures)
 {
     unsigned		i;
     Figure		fig;
@@ -228,8 +226,8 @@ void ApplyConstraintGroup (figures, nfigures)
 }
 
 
-void DoApplyConstraint (node)
-    Node node;
+static void
+DoApplyConstraint(Node node)
 {
     static char message [40];
 
@@ -333,9 +331,8 @@ void EditApplyConstraint ( )
 	 * applying loads
 	 */
 
-void ApplyLoadGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+ApplyLoadGroup(Figure *figures, unsigned nfigures)
 {
     unsigned		i;
     Figure		fig;
@@ -377,8 +374,8 @@ void ApplyLoadGroup (figures, nfigures)
 
 
 
-void DoApplyLoad (element)
-    Element element;
+static void
+DoApplyLoad(Element element)
 {
     static char message [80];
 
@@ -486,9 +483,8 @@ void EditApplyLoad ( )
 	 * applying materials
 	 */
 
-void ApplyMaterialGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+ApplyMaterialGroup(Figure *figures, unsigned nfigures)
 {
     unsigned		i;
     Figure		fig;
@@ -523,8 +519,8 @@ void ApplyMaterialGroup (figures, nfigures)
 }
 
 
-void DoApplyMaterial (element)
-    Element element;
+static void
+DoApplyMaterial(Element element)
 {
     static char message [80];
 

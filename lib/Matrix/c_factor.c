@@ -228,10 +228,12 @@ int LUBackSolveComplexMatrix (c, a, b, p) /* solve Ax=b, store result in c  */
    return 0;
 }
 
-int DeterminantComplexMatrix (result, a, p)  /* result = |a|		   */
-   complex	  *result;	     	     /* pointer to result location */
-   ComplexMatrix   a;		     	     /* factorized source matrix   */
-   Matrix	   p;		     	     /* pivot vector		   */
+/* returns: |a|		   */
+/* result: pointer to result location */
+/* a: factorized source matrix   */
+/* p: pivot vector		   */
+int 
+DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p)
 {
    unsigned	i;
    complex	x;

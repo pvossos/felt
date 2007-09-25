@@ -27,6 +27,7 @@
 # include "Drawing.h"
 # include "Canvas.h"
 # include "util.h"
+# include "procedures.h"
 
 extern XtAppContext	app_context;
 extern Widget		toplevel;
@@ -76,11 +77,9 @@ static void Action (w, event, params, num_params)
    XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-Widget CreateDrawingShell (name, title, callback, dw)
-   String		name;
-   String		title;
-   XtCallbackProc	callback;
-   Widget		*dw;
+Widget
+CreateDrawingShell(String name, String title,
+                   XtCallbackProc callback, Widget *dw)
 {
    Widget		group [2];
    Widget		shell;
@@ -167,13 +166,11 @@ static void ClearToDraw (w, client_data, call_data)
    ready = 1;
 }
  
-void InitializeDrawingShell (shell, dw, minX, maxX, minY, maxY,
-                             x_scale, y_scale, wx, hy)
-   Widget	shell, dw;
-   float	maxX, minX,
-		minY, maxY;	
-   float	*x_scale, *y_scale;
-   Dimension	*wx, *hy;
+void
+InitializeDrawingShell(Widget shell, Widget dw, 
+                       float minX, float maxX, float minY, float maxY,
+                       float *x_scale, float *y_scale,
+                       Dimension *wx, Dimension *hy)
 {
    static String	buffer = "resize window then click to plot";
    float		label_width;

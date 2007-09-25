@@ -31,11 +31,11 @@
 # include <X11/StringDefs.h>
 # include <X11/Xaw/MenuButton.h>
 # include <X11/Xaw/SimpleMenu.h>
-
+# include "post.h"
 
 #define printf do_nothing
 
-void do_nothing ( ) { }
+static void do_nothing ( ) { }
 
 
 static Position	x1;
@@ -374,11 +374,8 @@ static void nop (w, event, params, num_params)
  *		postable menu.						*
  ************************************************************************/
 
-void action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void
+action(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     Time      now;
     KeySym    keysym;
@@ -504,8 +501,8 @@ void action (w, event, params, num_params)
  * Description:	Adds the postable menu actions to the specified widget.	*
  ************************************************************************/
 
-void AddPostMenuActions (w)
-    Widget w;
+void
+AddPostMenuActions(Widget w)
 {
     static XtAppContext	app_context = NULL;
     static XtActionsRec	actions [ ] = {{"PostMenu", action}, {"no-op", nop}};

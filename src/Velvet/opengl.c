@@ -264,7 +264,8 @@ static Boolean RotateZNeg (XtPointer client_data)
    return False;
 }
 
-void InputFunction (Widget w, XtPointer client_data, XtPointer call_data)
+static void
+InputFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
    info				*inf = (info *) client_data;
    static int           	 prev_x, prev_y;

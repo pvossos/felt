@@ -59,9 +59,8 @@ static ItemIterator   iterator;
 static int            error_flag;
 
 
-static void TreeDestroy_ (tree, node)
-    Tree tree;
-    Node node;
+static void
+TreeDestroy_(Tree tree, Node node)
 {
     if (!error_flag && node != NIL) {
 	TreeDestroy_ (tree, node -> left);
@@ -77,8 +76,8 @@ static void TreeDestroy_ (tree, node)
 }
 
 
-static void preorder (node)
-    Node node;
+static void
+preorder(Node node)
 {
     if (!error_flag && node != NIL) {
 	error_flag = iterator (node -> key);
@@ -90,8 +89,8 @@ static void preorder (node)
 }
 
 
-static void inorder (node)
-    Node node;
+static void
+inorder(Node node)
 {
     if (!error_flag && node != NIL) {
 	inorder (node -> left);
@@ -103,8 +102,8 @@ static void inorder (node)
 }
 
 
-static void postorder (node)
-    Node node;
+static void
+postorder(Node node)
 {
     if (!error_flag && node != NIL) {
 	postorder (node -> left);
@@ -116,9 +115,8 @@ static void postorder (node)
 }
 
 
-static void LeftRotate (tree, x)
-    Tree tree;
-    Node x;
+static void 
+LeftRotate(Tree tree, Node x)
 {
     Node y;
 
@@ -141,9 +139,8 @@ static void LeftRotate (tree, x)
 }
 
 
-static void RightRotate (tree, x)
-    Tree tree;
-    Node x;
+static void
+RightRotate(Tree tree, Node x)
 {
     Node y;
 
@@ -166,8 +163,8 @@ static void RightRotate (tree, x)
 }
 
 
-static Node TreeMinimum_ (x)
-    Node x;
+static Node
+TreeMinimum_(Node x)
 {
     /* Tree-Minimum from CLR p. 248 */
 
@@ -178,8 +175,8 @@ static Node TreeMinimum_ (x)
 }
 
 
-static Node TreeMaximum_ (x)
-    Node x;
+static Node 
+TreeMaximum_(Node x)
 {
     /* Tree-Maximum from CLR p. 248 */
 
@@ -190,8 +187,8 @@ static Node TreeMaximum_ (x)
 }
 
 
-static Node TreePredecessor_ (x)
-    Node x;
+static Node
+TreePredecessor_(Node x)
 {
     Node y;
 
@@ -211,8 +208,8 @@ static Node TreePredecessor_ (x)
 }
 
 
-static Node TreeSuccessor_ (x)
-    Node x;
+static Node
+TreeSuccessor_(Node x)
 {
     Node y;
 
@@ -232,9 +229,8 @@ static Node TreeSuccessor_ (x)
 }
 
 
-static Node TreeSearch_ (tree, item)
-    Tree tree;
-    Item item;
+static Node
+TreeSearch_(Tree tree, Item item)
 {
     int  cmp;
     Node x;
@@ -250,8 +246,8 @@ static Node TreeSearch_ (tree, item)
 }
 
 
-Tree TreeCreate (compare)
-    ItemComparator compare;
+Tree
+TreeCreate(ItemComparator compare)
 {
     Tree tree;
 
@@ -270,8 +266,8 @@ Tree TreeCreate (compare)
 }
 
 
-int TreeDestroy (tree)
-    Tree tree;
+int
+TreeDestroy(Tree tree)
 {
     if (tree == NULL)
 	return -1;
@@ -287,22 +283,22 @@ int TreeDestroy (tree)
 }
 
 
-int TreeSize (tree)
-    Tree tree;
+int
+TreeSize(Tree tree)
 {
     return tree == NULL ? -1 : tree -> count;
 }
 
 
-int TreeIterate (tree)
-    Tree tree;
+int
+TreeIterate(Tree tree)
 {
     return TreeInorder (tree);
 }
 
 
-int TreePreorder (tree)
-    Tree tree;
+int
+TreePreorder(Tree tree)
 {
     if (tree == NULL || tree -> iterate == NULL)
 	return -1;
@@ -315,8 +311,8 @@ int TreePreorder (tree)
 }
 
 
-int TreeInorder (tree)
-    Tree tree;
+int
+TreeInorder(Tree tree)
 {
     if (tree == NULL || tree -> iterate == NULL)
 	return -1;
@@ -329,8 +325,8 @@ int TreeInorder (tree)
 }
 
 
-int TreePostorder (tree)
-    Tree tree;
+int
+TreePostorder(Tree tree)
 {
     if (tree == NULL || tree -> iterate == NULL)
 	return -1;
@@ -343,9 +339,8 @@ int TreePostorder (tree)
 }
 
 
-Item TreeInsert (tree, item)
-    Tree tree;
-    Item item;
+Item
+TreeInsert(Tree tree, Item item)
 {
     int  cmp;
     Node x, y, z;
@@ -429,9 +424,8 @@ Item TreeInsert (tree, item)
 }
 
 
-Item TreeDelete (tree, item)
-    Tree tree;
-    Item item;
+Item
+TreeDelete(Tree tree, Item item)
 {
     Node w, x, y, z;
 
@@ -525,9 +519,8 @@ Item TreeDelete (tree, item)
 }
 
 
-Item TreeSearch (tree, item)
-    Tree tree;
-    Item item;
+Item
+TreeSearch(Tree tree, Item item)
 {
     Node x;
 
@@ -537,8 +530,8 @@ Item TreeSearch (tree, item)
 }
 
 
-Item TreeMinimum (tree)
-    Tree tree;
+Item
+TreeMinimum(Tree tree)
 {
     if (tree == NULL || tree -> root == NIL)
 	return NULL;
@@ -547,8 +540,8 @@ Item TreeMinimum (tree)
 }
 
 
-Item TreeMaximum (tree)
-    Tree tree;
+Item 
+TreeMaximum(Tree tree)
 {
     if (tree == NULL || tree -> root == NIL)
 	return NULL;
@@ -557,9 +550,8 @@ Item TreeMaximum (tree)
 }
 
 
-Item TreePredecessor (tree, item)
-    Tree tree;
-    Item item;
+Item 
+TreePredecessor(Tree tree, Item item)
 {
     Node x;
 
@@ -575,9 +567,8 @@ Item TreePredecessor (tree, item)
 }
 
 
-Item TreeSuccessor (tree, item)
-    Tree tree;
-    Item item;
+Item
+TreeSuccessor(Tree tree, Item item)
 {
     Node x;
 
@@ -593,9 +584,8 @@ Item TreeSuccessor (tree, item)
 }
 
 
-int TreeSetIterator (tree, iterate)
-    Tree         tree;
-    ItemIterator iterate;
+int
+TreeSetIterator(Tree tree, ItemIterator iterate)
 {
     if (tree == NULL)
 	return -1;
@@ -605,9 +595,8 @@ int TreeSetIterator (tree, iterate)
 }
 
 
-int TreeSetDestructor (tree, destroy)
-    Tree           tree;
-    ItemDestructor destroy;
+int
+TreeSetDestructor(Tree tree, ItemDestructor destroy)
 {
     if (tree == NULL)
 	return -1;
@@ -617,9 +606,8 @@ int TreeSetDestructor (tree, destroy)
 }
 
 
-int TreeSetDuplicator (tree, copy)
-    Tree           tree;
-    ItemDuplicator copy;
+int 
+TreeSetDuplicator(Tree tree, ItemDuplicator copy)
 {
     if (tree == NULL)
 	return -1;

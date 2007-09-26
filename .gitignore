@@ -1,6 +1,7 @@
 *.o
 *.a
 *~
+*.save
 lexer.c
 parser.c
 y.tab.h

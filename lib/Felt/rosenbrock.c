@@ -42,8 +42,9 @@
  * numerical appr. of dp/dt                   * 
  *--------------------------------------------*/
 
-static void ConstructTFD(double t, double h, Vector dp)
-  {
+static void
+ConstructTFD(double t, double h, Vector dp)
+{
   static Vector  temp = NullMatrix;
   static int     size;
   int            i;
@@ -83,11 +84,8 @@ static void ConstructTFD(double t, double h, Vector dp)
  *
  *****************************************************************************/
 
-Matrix RosenbrockHyperbolicDE(k0, m, c0, ttable)
-   Matrix	k0;
-   Matrix	m;
-   Matrix	c0;
-   Matrix	*ttable;
+Matrix
+RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
 {
   Node          *node;
   unsigned      numnodes;

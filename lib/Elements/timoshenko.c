@@ -37,8 +37,8 @@
          * thing so we can use them in the definition declaration.
 	 */
 
-int timoshenkoEltSetup ( );
-int timoshenkoEltStress ( );
+static int timoshenkoEltSetup (Element element, char mass_mode, int tangent);
+static int timoshenkoEltStress (Element element);
 
 struct definition timoshenkoDefinition = {
     "timoshenko",
@@ -62,11 +62,11 @@ struct definition timoshenkoDefinition = {
 	 * etc., etc.  It's all a matter of preference and style. 
 	 */
 
-static Matrix LocalK ( );
-static Matrix TransformMatrix ( );
-static Matrix LumpedMassMatrix ( );
-static Matrix ConsistentMassMatrix ( );
-static int    EquivNodalForces ( );
+static Matrix LocalK (Element element);
+static Matrix TransformMatrix (Element element);
+static Matrix LumpedMassMatrix (Element element);
+static Matrix ConsistentMassMatrix (Element element);
+static int    EquivNodalForces (Element element, Matrix T, Vector *eq_stress, int mode);
 
 	/*
 	 * The element setup function (the one that the general
@@ -76,10 +76,8 @@ static int    EquivNodalForces ( );
 	 * of our own to actually fill out the guts of the thing.
 	 */
 
-int timoshenkoEltSetup (element, mass_mode, tangent)
-    Element	   element;
-    char	   mass_mode;
-    int	           tangent;
+static int
+timoshenkoEltSetup(Element element, char mass_mode, int tangent)
 {
     int 	   count;	/* a count of errors encountered	   */
     Matrix	   T;		/* transform matrix			   */
@@ -229,8 +227,8 @@ int timoshenkoEltSetup (element, mass_mode, tangent)
 	 * stiffness matrix back and a bunch of local<->global transforms.
 	 */
 
-int timoshenkoEltStress (element)
-    Element	    element;
+static int
+timoshenkoEltStress(Element element)
 {
     unsigned	    i;			/* loop index			 */
     int		    count;		/* count of errors		 */
@@ -345,8 +343,8 @@ int timoshenkoEltStress (element)
 	 * local coordinates.
 	 */
 
-static Matrix LocalK (element)
-    Element	  element;
+static Matrix
+LocalK(Element element)
 {
     static Matrix k = NULL;	/* the local stiffness matrix	       */
     double	  L;		/* the element length		       */
@@ -420,8 +418,8 @@ static Matrix LocalK (element)
 	 * mass
 	 */
 
-static Matrix ConsistentMassMatrix (element)
-    Element	   element;
+static Matrix
+ConsistentMassMatrix(Element element)
 {
     static Matrix m = NULL;       /* the local stiffness matrix	          */
     double	  L;		  /* the element length		          */
@@ -483,8 +481,8 @@ static Matrix ConsistentMassMatrix (element)
    return m;
 }
 
-static Matrix LumpedMassMatrix (element)
-    Element	   element;
+static Matrix
+LumpedMassMatrix(Element element)
 {
     static Matrix m = NULL;       /* the local stiffness matrix	 */
     double	  factor ;	  /* constant term		 */
@@ -515,8 +513,8 @@ static Matrix LumpedMassMatrix (element)
 	 * elements actually use this one because they are more complicated.
 	 */
 
-static Matrix TransformMatrix (element)
-    Element	   element;
+static Matrix
+TransformMatrix(Element element)
 {
     double         s,c; 	/* direction cosines			*/
     static Matrix  T = NULL; 	/* transform matrix to return		*/
@@ -564,11 +562,12 @@ static Matrix TransformMatrix (element)
 	 * eq_stress can be NULL, in mode 2, T can be NULL.
 	 */
 
-static int EquivNodalForces (element, T, eq_stress, mode)
-    Element	   element;
-    Matrix	   T;			/* passing it in saves a few FLOPs */ 
-    Vector	   *eq_stress;		/* vector pointer to set in mode 2 */
-    int		   mode;		/* mode of operation		   */
+/* passing it in saves a few FLOPs */ 
+/* vector pointer to set in mode 2 */
+/* mode of operation		   */
+
+static int
+EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
 {
     static Vector  equiv = NULL;	/* the equiv vector in local coord */
     static Vector  eq_global;		/* equiv in global coordinates     */

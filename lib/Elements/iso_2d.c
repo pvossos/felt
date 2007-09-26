@@ -36,8 +36,10 @@
 # define PLANESTRAIN 2
 
 
-extern int iso2d_PlaneStressEltSetup ( ), iso2d_PlaneStressEltStress ( );
-extern int iso2d_PlaneStrainEltSetup ( ), iso2d_PlaneStrainEltStress ( );
+static int iso2d_PlaneStressEltSetup (Element element, char mass_mode, int tangent);
+static int iso2d_PlaneStressEltStress (Element element);
+static int iso2d_PlaneStrainEltSetup (Element element, char mass_mode, int tangent);
+static int iso2d_PlaneStrainEltStress (Element element);
 
 struct definition iso2d_PlaneStressDefinition = {
    "iso2d_PlaneStress", 
@@ -51,45 +53,38 @@ struct definition iso2d_PlaneStrainDefinition = {
    Planar, 9, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
-unsigned LocalIsoShapeFunctions   ( );
-Vector   GlobalIsoShapeFunctions  ( );
-Matrix   Iso2dLocalB ( );
-int      iso2dElementSetup ( );
-int  	 iso2dElementStress    ( );
+static unsigned LocalIsoShapeFunctions   (Element element, Matrix N, Matrix dNdx, Matrix dNde, Vector weights);
+static Vector   GlobalIsoShapeFunctions  (Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes);
+static Matrix   Iso2dLocalB (Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point);
+static int      iso2dElementSetup (Element element, char mass_mode, int tangent, unsigned int type);
+static int  	 iso2dElementStress    (Element element, unsigned int type);
 
-int iso2d_PlaneStressEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+iso2d_PlaneStressEltSetup(Element element, char mass_mode, int tangent)
 {
    return iso2dElementSetup (element, mass_mode, tangent, PLANESTRESS);
 }
 
-int iso2d_PlaneStrainEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+iso2d_PlaneStrainEltSetup(Element element, char mass_mode, int tangent)
 {
    return iso2dElementSetup (element, mass_mode, tangent, PLANESTRAIN);
 }
 
-int iso2d_PlaneStressEltStress (element)
-   Element	element;
+static int
+iso2d_PlaneStressEltStress(Element element)
 {
    return iso2dElementStress (element, PLANESTRESS);
 }
 
-int iso2d_PlaneStrainEltStress (element)
-   Element	element;
+static int
+iso2d_PlaneStrainEltStress(Element element)
 {
    return iso2dElementStress (element,  PLANESTRAIN);
 }
 
-int iso2dElementSetup (element, mass_mode, tangent, type)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
-   unsigned	type;
+static int
+iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 {
    unsigned		numnodes;
    unsigned		i,j;
@@ -226,20 +221,16 @@ int iso2dElementSetup (element, mass_mode, tangent, type)
    return 0;
 } 
 
-int iso2dElementStress (element, type)
-   Element	element;
-   unsigned	type;
+static int
+iso2dElementStress(Element element, unsigned int type)
 {
    element -> ninteg = 0;
 
    return 0;
 } 
 
-Matrix Iso2dLocalB (element, numnodes, dNdx, dNdy, point)
-   Element	element;
-   unsigned	numnodes;
-   Matrix	dNdx, dNdy;
-   unsigned	point;
+static Matrix
+Iso2dLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point)
 {
    unsigned		i;
    static Matrix	B = NullMatrix;
@@ -261,14 +252,8 @@ Matrix Iso2dLocalB (element, numnodes, dNdx, dNdy, point)
    return B;
 }
     
-Vector GlobalIsoShapeFunctions (element, N, dNdxi, dNde, dNdx, dNdy, 
-                                ninteg,nodes)
-   Element	element;
-   int		ninteg;
-   Matrix	N, 
-		dNdxi, dNde,
-		dNdx, dNdy;
-   unsigned	nodes;
+static Vector
+GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes)
 {
    unsigned		i,j;
    static Vector	jac,
@@ -347,12 +332,8 @@ Vector GlobalIsoShapeFunctions (element, N, dNdxi, dNde, dNdx, dNdy,
 *
 ******************************************************************************/
 
-unsigned LocalIsoShapeFunctions (element, N, dNdx, dNde, weights)
-   Element	element;
-   Matrix	N,
-		dNdx,
-		dNde;
-   Vector	weights;
+static unsigned
+LocalIsoShapeFunctions(Element element, Matrix N, Matrix dNdx, Matrix dNde, Vector weights)
 {
    unsigned		i,j,k;
    int			ninteg;

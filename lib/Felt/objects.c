@@ -43,8 +43,8 @@ extern char *strdup ( );
  *		 set to NULL.						*
  ************************************************************************/
 
-Node CreateNode (number)
-    unsigned number;
+Node
+CreateNode(unsigned int number)
 {
     Node     node;
     unsigned i;
@@ -77,8 +77,8 @@ Node CreateNode (number)
  *		 deallocated.						*
  ************************************************************************/
 
-void DestroyNode (node)
-    Node node;
+void
+DestroyNode(Node node)
 {
     if (node) {
 	Deallocate (node -> aux);
@@ -98,9 +98,8 @@ void DestroyNode (node)
  *		 fields are initialized to NULL.			*
  ************************************************************************/
 
-Element CreateElement (number, defn)
-    unsigned   number;
-    Definition defn;
+Element
+CreateElement(unsigned int number, Definition defn)
 {
     unsigned i;
     Element  element;
@@ -149,8 +148,8 @@ Element CreateElement (number, defn)
  *		 deallocated.						*
  ************************************************************************/
 
-void DestroyElement (element)
-    Element element;
+void
+DestroyElement(Element element)
 {
     unsigned i;
 
@@ -179,8 +178,8 @@ void DestroyElement (element)
  *		 force components are initialized to zero.		*
  ************************************************************************/
 
-Force CreateForce (name)
-    char *name;
+Force
+CreateForce(char *name)
 {
     int   i;
     Force force;
@@ -212,8 +211,8 @@ Force CreateForce (name)
  *		 and auxillary pointer are also deallocated.		*
  ************************************************************************/
 
-void DestroyForce (force)
-    Force force;
+void
+DestroyForce(Force force)
 {
     int i;
 
@@ -239,8 +238,8 @@ void DestroyForce (force)
  *		 fields are initialized to zero.			*
  ************************************************************************/
 
-Material CreateMaterial (name)
-    char *name;
+Material
+CreateMaterial(char *name)
 {
     Material material;
 
@@ -280,8 +279,8 @@ Material CreateMaterial (name)
  *		 name and auxillary structure are also deallocated.	*
  ************************************************************************/
 
-void DestroyMaterial (material)
-    Material material;
+void
+DestroyMaterial(Material material)
 {
     if (material) {
 	Deallocate (material -> name);
@@ -300,8 +299,8 @@ void DestroyMaterial (material)
  *		 copied) and the fields are initialized to zero.	*
  ************************************************************************/
 
-Constraint CreateConstraint (name)
-    char *name;
+Constraint
+CreateConstraint(char *name)
 {
     int        i;
     Constraint constraint;
@@ -337,8 +336,8 @@ Constraint CreateConstraint (name)
  *		 The name and auxillary structure are also deallocated.	*
  ************************************************************************/
 
-void DestroyConstraint (constraint)
-    Constraint constraint;
+void
+DestroyConstraint(Constraint constraint)
 {
     int i;
 
@@ -364,9 +363,8 @@ void DestroyConstraint (constraint)
  *		 copied) and the array of values allocated.		*
  ************************************************************************/
 
-Distributed CreateDistributed (name, nvalues)
-    char    *name;
-    unsigned nvalues;
+Distributed
+CreateDistributed(char *name, unsigned int nvalues)
 {
     Distributed distributed;
 
@@ -397,8 +395,8 @@ Distributed CreateDistributed (name, nvalues)
  *		 structure are deallocated.				*
  ************************************************************************/
 
-void DestroyDistributed (distributed)
-    Distributed distributed;
+void
+DestroyDistributed(Distributed distributed)
 {
     if (distributed) {
 	ZeroOffset (distributed -> value);
@@ -419,8 +417,8 @@ void DestroyDistributed (distributed)
  *		 copied) and the array of values allocated.		*
  ************************************************************************/
 
-LoadCase CreateLoadCase (name)
-    char    *name;
+LoadCase
+CreateLoadCase(char *name)
 {
     LoadCase	loadcase;
 
@@ -448,8 +446,8 @@ LoadCase CreateLoadCase (name)
  *		 structure.                                           	* 
  ************************************************************************/
 
-void DestroyLoadCase (loadcase)
-    LoadCase	loadcase;
+void
+DestroyLoadCase(LoadCase loadcase)
 {
     if (loadcase) {
         if (loadcase -> forces) {
@@ -479,11 +477,8 @@ void DestroyLoadCase (loadcase)
  *		structure.						*
  ************************************************************************/
 
-void AssignForce (force, dof, expr, text)
-    Force force;
-    DOF   dof;
-    Code  expr;
-    char *text;
+void
+AssignForce(Force force, DOF dof, Code expr, char *text)
 {
     Deallocate (force -> force [dof].text);
     FreeCode (force -> force [dof].expr);
@@ -500,11 +495,8 @@ void AssignForce (force, dof, expr, text)
  *		structure.						*
  ************************************************************************/
 
-void AssignSpectrum (force, dof, expr, text)
-    Force force;
-    DOF   dof;
-    Code  expr;
-    char *text;
+void
+AssignSpectrum(Force force, DOF dof, Code expr, char *text)
 {
     Deallocate (force -> spectrum [dof].text);
     FreeCode (force -> spectrum [dof].expr);
@@ -522,12 +514,8 @@ void AssignSpectrum (force, dof, expr, text)
  *              (Tx=, Ty=, Tz=, Rx=, Ry=, Rz=)				*
  ************************************************************************/
 
-void AssignConstraint (constraint, dof, expr, text, symbol)
-    Constraint	constraint;
-    DOF   	dof;
-    Code  	expr;
-    char       *text;
-    int  	symbol;
+void
+AssignConstraint(Constraint constraint, DOF dof, Code expr, char *text, int symbol)
 {
     Deallocate (constraint -> dx [dof].text);
     FreeCode (constraint -> dx [dof].expr);

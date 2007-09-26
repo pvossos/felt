@@ -35,7 +35,8 @@
 # include "misc.h"
 
 
-int springEltSetup ( ), springEltStress ( );
+static int springEltSetup (Element element, char mass_mode, int tangent);
+static int springEltStress (Element element);
 
 struct definition springDefinition = {
     "spring", springEltSetup, springEltStress, 
@@ -43,10 +44,8 @@ struct definition springDefinition = {
 };
 
 
-int springEltSetup (element, mass_mode, tangent)
-   Element 	element;
-   char		mass_mode;
-   int		tangent;
+static int
+springEltSetup(Element element, char mass_mode, int tangent)
 {
    double		factor, L;
 
@@ -101,8 +100,8 @@ int springEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int springEltStress (element)
-   Element	element;
+static int
+springEltStress(Element element)
 {
    double	cx, dx1, dx2;
    double	L, EonL,

@@ -136,13 +136,14 @@ typedef struct {
     char  *text;		/* text of expression */
 } VarExpr;
 
+struct element;
 
 /* An element definition */
 
 typedef struct definition {
     char    *name;		/* element name			      */
-    int    (*setup) ( );	/* initialization function	      */
-    int    (*stress) ( );	/* stress resultant function	      */
+    int    (*setup) (struct element*, char, int);	/* initialization function	      */
+    int    (*stress) (struct element*);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
     unsigned numnodes;		/* number of nodes in element         */
     unsigned shapenodes;	/* number of nodes which define shape */
@@ -341,10 +342,8 @@ extern int	CheckAnalysisParameters   PROTO ((AnalysisType));
 	 * routines for automatic node renumbering in renumber.c
 	 */
 
-extern unsigned *RenumberNodes		  PROTO ((Node *, Element *, unsigned,
-						  unsigned));
-extern void     RestoreNodeNumbers	  PROTO ((Node *, unsigned *,
-						  unsigned));
+unsigned *RenumberNodes	(Node *, Element *, unsigned, unsigned);
+void RestoreNodeNumbers (Node *, unsigned *, unsigned);
 
 	/*
 	 * prototypes of routines in transient.c

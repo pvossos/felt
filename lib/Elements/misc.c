@@ -41,10 +41,8 @@
  *
  ******************************************************************************/
 
-unsigned GaussPoints (npoints, xpoints, weights)
-   unsigned	npoints;
-   double	**xpoints,
-		**weights;
+unsigned
+GaussPoints(unsigned int npoints, double **xpoints, double **weights)
 {
    static double  x[3][3] = {{0.0,0.0,0.0},
                              {-0.57735026918962,0.57735026918962,0.0},
@@ -71,8 +69,8 @@ unsigned GaussPoints (npoints, xpoints, weights)
  *
  *****************************************************************************/
 
-Matrix PlaneStrainD (element)
-   Element	element;
+Matrix 
+PlaneStrainD(Element element)
 {
    static Matrix	D = NullMatrix;
    static double	prev_nu = -99;
@@ -117,8 +115,8 @@ Matrix PlaneStrainD (element)
  *
  *****************************************************************************/
 
-Matrix PlaneStressD (element)
-   Element	element;
+Matrix
+PlaneStressD(Element element)
 {
    static Matrix	D = NullMatrix;
    static double	prev_nu = -99;
@@ -157,8 +155,8 @@ Matrix PlaneStressD (element)
    return D;
 }
 
-Matrix AxisymmetricD (element)
-   Element	element;
+Matrix
+AxisymmetricD(Element element)
 {
    static Matrix	D = NullMatrix;
    static double	prev_nu = -99;
@@ -205,8 +203,8 @@ Matrix AxisymmetricD (element)
    return D;
 }
 
-Matrix IsotropicD (element)
-   Element	element;
+Matrix
+IsotropicD(Element element)
 {
    static Matrix	D = NullMatrix;
    static double	prev_nu = -99;
@@ -255,9 +253,8 @@ Matrix IsotropicD (element)
    return D;
 }
 
-double ElementLength (element, coords)
-   Element	element;
-   unsigned 	coords;
+double
+ElementLength(Element element, unsigned int coords)
 {
    if (coords == 1)
       return fabs (element -> node[2] -> x - element -> node[1] -> x);
@@ -285,9 +282,8 @@ double ElementLength (element, coords)
  *
  ******************************************************************************/
 
-double ElementArea (e, n)
-   Element	e;
-   unsigned	n;
+double
+ElementArea(Element e, unsigned int n)
 {
    unsigned	i;
    double	sum;
@@ -326,8 +322,8 @@ double ElementArea (e, n)
  *		
  ****************************************************************************/
 
-void ResolveHingeConditions (element)
-   Element	element;
+void
+ResolveHingeConditions(Element element)
 {
    unsigned	nodes, ndofs;
    unsigned	i,j;
@@ -368,8 +364,8 @@ void ResolveHingeConditions (element)
  *
  *****************************************************************************/
 
-void SetEquivalentForceMemory (element)    
-    Element	element;
+void
+SetEquivalentForceMemory(Element element)
 {
     unsigned	i,j;
 
@@ -410,8 +406,8 @@ void SetEquivalentForceMemory (element)
  *
  *****************************************************************************/
 
-void MultiplyAtBA (C, A, B)
-    Matrix	A,B,C;
+void
+MultiplyAtBA(Matrix C, Matrix A, Matrix B)
 {
     double	temp [100];
     double	result;
@@ -444,9 +440,8 @@ void MultiplyAtBA (C, A, B)
  *
  ****************************************************************************/
 
-Matrix ZeroRowCol (K,dof)
-   Matrix	K;
-   unsigned	dof;
+Matrix
+ZeroRowCol(Matrix K, unsigned int dof)
 {
    unsigned	i,
 		size;
@@ -469,9 +464,8 @@ Matrix ZeroRowCol (K,dof)
  *
  ****************************************************************************/
 
-void AllocationError (e, msg)
-   Element	e;
-   char		*msg;
+void
+AllocationError(Element e, char *msg)
 {
    Fatal ("allocation error computing element %d %s\n", e -> number, msg);
 }

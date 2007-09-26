@@ -47,7 +47,8 @@ extern struct definition axisymmetricDefinition;
 extern struct definition PLTGZ4Definition;
 # endif
 
-void add_all_definitions ( )
+void
+add_all_definitions(void)
 {
     AddDefinition (&trussDefinition);
     AddDefinition (&beamDefinition);

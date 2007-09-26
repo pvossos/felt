@@ -52,7 +52,8 @@ extern Matrix ZeroRowCol ( );
  *	
  *****************************************************************************/
 
-int FindDOFS ( )
+int
+FindDOFS(void)
 {
    Element	*e;
    unsigned	ne;
@@ -121,8 +122,8 @@ int FindDOFS ( )
  *
  ****************************************************************************/
 
-Matrix ConstructStiffness (status)
-   int		*status;
+Matrix
+ConstructStiffness(int *status)
 {
    Element	*element;
    unsigned	numelts,
@@ -326,13 +327,8 @@ Matrix ConstructStiffness (status)
  *
  ****************************************************************************/
 
-void RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond)
-   Matrix	K;
-   Matrix	M;
-   Matrix	C;
-   Matrix	*Kcond;
-   Matrix	*Mcond;
-   Matrix	*Ccond;
+void
+RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond, Matrix *Ccond)
 {
    Node		*node;
    unsigned	numnodes,
@@ -500,11 +496,8 @@ void RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond)
  *
  ****************************************************************************/
 
-void ZeroConstrainedDOF (K, F, Kc, Fc)
-   Vector	K;
-   Vector	F;
-   Vector	*Kc;
-   Vector	*Fc; 
+void
+ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
 {
    Node		*node;
    unsigned	active;
@@ -581,11 +574,8 @@ void ZeroConstrainedDOF (K, F, Kc, Fc)
  *		
  ****************************************************************************/
 
-void AdjustForceVector (Fcond, Kcond, affected_dof, dx)
-    Vector	Fcond;
-    Vector	Kcond;
-    unsigned	affected_dof;
-    double	dx;
+void
+AdjustForceVector(Vector Fcond, Vector Kcond, unsigned int affected_dof, double dx)
 {
     unsigned	i;
     unsigned	address;
@@ -611,9 +601,8 @@ void AdjustForceVector (Fcond, Kcond, affected_dof, dx)
  *
  ****************************************************************************/
 
-Vector ZeroCompactRowCol (K, dof)
-   Vector	K;
-   unsigned	dof;
+Vector
+ZeroCompactRowCol(Vector K, unsigned int dof)
 {
    unsigned	i;
    unsigned	address;
@@ -647,7 +636,8 @@ Vector ZeroCompactRowCol (K, dof)
  *
  ****************************************************************************/
  
-Vector ConstructForceVector ( )
+Vector
+ConstructForceVector(void)
 {
    Node		*node;
    unsigned	active;
@@ -704,7 +694,8 @@ Vector ConstructForceVector ( )
  *
  ****************************************************************************/
 
-void ClearNodes ( )
+void
+ClearNodes(void)
 {
    unsigned	i,j;
 
@@ -727,8 +718,8 @@ void ClearNodes ( )
  *
  ****************************************************************************/
 
-int FactorStiffnessMatrix (K)
-   Vector	K;
+int
+FactorStiffnessMatrix(Vector K)
 {
    Node		*node;
    unsigned      numnodes;
@@ -770,9 +761,8 @@ int FactorStiffnessMatrix (K)
  *
  ****************************************************************************/
 
-Vector SolveForDisplacements (K, F)
-   Vector	K;
-   Vector	F;
+Vector
+SolveForDisplacements(Vector K, Vector F)
 {
    if (FactorStiffnessMatrix (K))
       return NullVector;
@@ -796,9 +786,8 @@ Vector SolveForDisplacements (K, F)
  *
  ****************************************************************************/
 
-Matrix SolveStaticLoadCases (K, Fbase)
-   Matrix	 K;
-   Matrix 	 Fbase;
+Matrix
+SolveStaticLoadCases(Matrix K, Matrix Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -863,9 +852,8 @@ Matrix SolveStaticLoadCases (K, Fbase)
  *
  ****************************************************************************/
 
-Matrix SolveStaticLoadRange (K, Fbase)
-   Matrix	 K;
-   Matrix 	 Fbase;
+Matrix
+SolveStaticLoadRange(Matrix K, Matrix Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -924,9 +912,8 @@ Matrix SolveStaticLoadRange (K, Fbase)
  *
  ****************************************************************************/
 
-void AssembleLoadCaseForce (F, lc)
-   Matrix	F;
-   LoadCase	lc;
+void
+AssembleLoadCaseForce(Matrix F, LoadCase lc)
 {
    unsigned	 active;
    unsigned	*dofs;
@@ -965,8 +952,8 @@ void AssembleLoadCaseForce (F, lc)
  *
  ****************************************************************************/
 
-void ApplyNodalDisplacements (d)
-   Matrix	 d;
+void
+ApplyNodalDisplacements(Matrix d)
 {
    unsigned	i, j; 
    unsigned	base_dof;
@@ -1009,11 +996,8 @@ void ApplyNodalDisplacements (d)
  *
  ****************************************************************************/
 
-unsigned SolveForReactions (K, d, old_numbers, reac)
-   Vector	K;
-   Vector	d;
-   unsigned	*old_numbers;
-   Reaction	**reac;
+unsigned
+SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac)
 {
    Node		*node;
    unsigned	numnodes,
@@ -1106,17 +1090,8 @@ unsigned SolveForReactions (K, d, old_numbers, reac)
  *
  ****************************************************************************/
 
-# if defined (__STDC__)
-
-int ElementSetup (Element element, char mass_mode)
-
-# else
-
-int ElementSetup (element, mass_mode)
-    Element	element; 
-    char 	mass_mode;
-
-# endif
+int
+ElementSetup(Element element, char mass_mode)
 {
     int		status;
   
@@ -1133,7 +1108,8 @@ int ElementSetup (element, mass_mode)
  *
  ****************************************************************************/
 
-int ElementStresses ( )
+int
+ElementStresses(void)
 {
     Element	*e;
     Node	*n;
@@ -1175,8 +1151,8 @@ int ElementStresses ( )
  *
  ***************************************************************************/
 
-int CheckAnalysisParameters (mode)
-   AnalysisType	mode; 
+int
+CheckAnalysisParameters(AnalysisType mode)
 {
    unsigned	count;
 
@@ -1370,9 +1346,8 @@ int CheckAnalysisParameters (mode)
  *
  ***************************************************************************/
 
-int GlobalDOF (node, dx)
-   unsigned     node;
-   unsigned     dx;
+int
+GlobalDOF(unsigned int node, unsigned int dx)
 {
    if (!problem.dofs_pos [dx]) 
       return 0;
@@ -1388,10 +1363,8 @@ int GlobalDOF (node, dx)
  *
  ***************************************************************************/
 
-void LocalDOF (global_dof, node, local_dof)
-   unsigned	global_dof;
-   unsigned	*node;
-   unsigned	*local_dof;
+void 
+LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_dof)
 {
    unsigned	i;
    unsigned	active;
@@ -1416,9 +1389,8 @@ void LocalDOF (global_dof, node, local_dof)
  *
  ***************************************************************************/
 
-void FindForcedDOF (forced, numforced)
-   NodeDOF	**forced;
-   unsigned	*numforced;
+void
+FindForcedDOF(NodeDOF **forced, unsigned int *numforced)
 {
    Node		*node;
    unsigned	numnodes;
@@ -1492,8 +1464,8 @@ void FindForcedDOF (forced, numforced)
  *
  ****************************************************************************/
 
-Matrix RemoveConstrainedMatrixDOF (a)
-   Matrix	a;
+Matrix
+RemoveConstrainedMatrixDOF(Matrix a)
 {
    Node		*node;
    unsigned	numnodes,
@@ -1648,9 +1620,8 @@ Matrix RemoveConstrainedMatrixDOF (a)
  *
  ****************************************************************************/
 
-int ZeroConstrainedMatrixDOF (b, a)
-   Matrix	b;
-   Matrix	a;
+int
+ZeroConstrainedMatrixDOF(Matrix b, Matrix a)
 {
    Node		*node;
    unsigned	active;

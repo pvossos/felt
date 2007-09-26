@@ -40,16 +40,16 @@
 # define FORCE	 1
 # define NOFORCE 0
 
-void     QuadLumpedMassMatrix ( );
-unsigned LocalQuadShapeFunctions   ( );
-Vector   GlobalQuadShapeFunctions  ( );
-Matrix   IsoQuadLocalB ( );
-Vector	 IsoQuadEquivNodalForces ( );
-int      QuadElementSetup ( );
-int  	 QuadElementStress    ( );
+static void     QuadLumpedMassMatrix (Element element, unsigned int numnodes);
+static unsigned LocalQuadShapeFunctions   (Element element, unsigned int ninteg, Matrix N, Matrix dNdx, Matrix dNde, Vector weights, unsigned int force_init);
+static Vector   GlobalQuadShapeFunctions  (Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes);
+static Matrix   IsoQuadLocalB (Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point);
+static Vector	 IsoQuadEquivNodalForces (Element element, int *err_count);
+static int      QuadElementSetup (Element element, char mass_mode, int tangent, unsigned int type);
+static int  	 QuadElementStress    (Element element, unsigned int type);
 
-int quad_PlaneStrainEltSetup ( ), quad_PlaneStrainEltStress ( );
-int quad_PlaneStressEltSetup ( ), quad_PlaneStressEltStress ( );
+static int quad_PlaneStrainEltSetup (Element element, char mass_mode, int tangent), quad_PlaneStrainEltStress (Element element);
+static int quad_PlaneStressEltSetup (Element element, char mass_mode, int tangent), quad_PlaneStressEltStress (Element element);
 
 struct definition quad_PlaneStrainDefinition = {
    "quad_PlaneStrain", 
@@ -63,39 +63,32 @@ struct definition quad_PlaneStressDefinition = {
    Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
-int quad_PlaneStrainEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+quad_PlaneStrainEltSetup(Element element, char mass_mode, int tangent)
 {
    return QuadElementSetup (element, mass_mode, tangent, PLANESTRAIN);
 }
 
-int quad_PlaneStrainEltStress (element)
-   Element	element;
+static int
+quad_PlaneStrainEltStress(Element element)
 {
    return QuadElementStress (element, PLANESTRAIN);
 }
 
-int quad_PlaneStressEltStress (element)
-   Element	element;
+static int
+quad_PlaneStressEltStress(Element element)
 {
    return QuadElementStress (element, PLANESTRESS);
 }
 
-int quad_PlaneStressEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+quad_PlaneStressEltSetup(Element element, char mass_mode, int tangent)
 {
    return QuadElementSetup (element, mass_mode, tangent, PLANESTRESS);
 }
 
-int QuadElementSetup (element, mass_mode, tangent, type)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
-   unsigned	type;
+static int
+QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 {
    unsigned		numnodes;
    unsigned		i,j;
@@ -235,9 +228,8 @@ int QuadElementSetup (element, mass_mode, tangent, type)
    return 0;
 } 
 
-int QuadElementStress (element, type)
-   Element	element;
-   unsigned	 type;
+static int
+QuadElementStress(Element element, unsigned int type)
 {
    static Vector	stress = NullMatrix,
 			d;
@@ -352,9 +344,8 @@ int QuadElementStress (element, type)
    return 0;
 } 
 
-void QuadLumpedMassMatrix (element, numnodes)
-   Element	element;
-   unsigned	numnodes;
+static void
+QuadLumpedMassMatrix(Element element, unsigned int numnodes)
 {
    double	area, mass;
    unsigned	i;
@@ -373,11 +364,8 @@ void QuadLumpedMassMatrix (element, numnodes)
    return;
 }
  
-Matrix IsoQuadLocalB (element, numnodes, dNdx, dNdy, point)
-   Element	element;
-   unsigned	numnodes;
-   Matrix	dNdx, dNdy;
-   unsigned	point;
+static Matrix
+IsoQuadLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point)
 {
    unsigned		i;
    static Matrix	B = NullMatrix;
@@ -399,13 +387,8 @@ Matrix IsoQuadLocalB (element, numnodes, dNdx, dNdy, point)
    return B;
 }
     
-Vector GlobalQuadShapeFunctions (element, dNdxi, dNde, dNdx, dNdy, 
-                                 ninteg,nodes)
-   Element	element;
-   int		ninteg;
-   Matrix	dNdxi, dNde,
-		dNdx, dNdy;
-   unsigned	nodes;
+static Vector
+GlobalQuadShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes)
 {
    unsigned		i,j;
    static Vector	jac,
@@ -477,15 +460,8 @@ Vector GlobalQuadShapeFunctions (element, dNdxi, dNde, dNdx, dNdy,
 *
 ******************************************************************************/
 
-unsigned LocalQuadShapeFunctions (element, ninteg, N, 
-                                  dNdx, dNde, weights, force_init)
-   Element	element;
-   unsigned	ninteg;
-   Matrix	N,
-		dNdx,
-		dNde;
-   unsigned	force_init;
-   Vector	weights;
+static unsigned
+LocalQuadShapeFunctions(Element element, unsigned int ninteg, Matrix N, Matrix dNdx, Matrix dNde, Vector weights, unsigned int force_init)
 {
    unsigned		i,j,k;
    double		eta,xi;
@@ -547,9 +523,8 @@ unsigned LocalQuadShapeFunctions (element, ninteg, N,
    return numnodes;
 }
 
-Vector IsoQuadEquivNodalForces (element, err_count)
-   Element	element;
-   int		*err_count;
+static Vector
+IsoQuadEquivNodalForces(Element element, int *err_count)
 {
    double		L;
    double		wa,wb;

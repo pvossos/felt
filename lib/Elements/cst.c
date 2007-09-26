@@ -35,8 +35,10 @@
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
 
-int CSTPlaneStrainEltSetup ( ), CSTPlaneStrainEltStress ( );
-int CSTPlaneStressEltSetup ( ), CSTPlaneStressEltStress ( );
+static int CSTPlaneStrainEltSetup (Element element, char mass_mode, int tangent);
+static int CSTPlaneStrainEltStress (Element element);
+static int CSTPlaneStressEltSetup (Element element, char mass_mode, int tangent);
+static int CSTPlaneStressEltStress (Element element);
 
 struct definition CSTPlaneStrainDefinition = {
     "CSTPlaneStrain", CSTPlaneStrainEltSetup, CSTPlaneStrainEltStress, 
@@ -48,45 +50,38 @@ struct definition CSTPlaneStressDefinition = {
     Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
-void    CSTLumpedMassMatrix ( );
-Matrix  CSTLocalB 	    ( );
-Vector	CSTEquivNodalForces ( );
-int	CSTElementSetup ( );
-int	CSTElementStress    ( );
+static void    CSTLumpedMassMatrix (Element element, double area);
+static Matrix  CSTLocalB 	    (Element element, double *area);
+static Vector	CSTEquivNodalForces (Element element, int *err_count);
+static int	CSTElementSetup (Element element, char mass_mode, int tangent, unsigned int type);
+static int	CSTElementStress    (Element element, unsigned int type);
 
-int CSTPlaneStrainEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+CSTPlaneStrainEltSetup(Element element, char mass_mode, int tangent)
 {
    return CSTElementSetup (element, mass_mode, tangent, PLANESTRAIN);
 }
 
-int CSTPlaneStressEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+CSTPlaneStressEltSetup(Element element, char mass_mode, int tangent)
 {
    return CSTElementSetup (element, mass_mode, tangent, PLANESTRESS);
 }
 
-int CSTPlaneStressEltStress (element)
-   Element	element;
+static int
+CSTPlaneStressEltStress(Element element)
 {
    return CSTElementStress (element, PLANESTRESS);
 }
 
-int CSTPlaneStrainEltStress (element)
-   Element	element;
+static int 
+CSTPlaneStrainEltStress(Element element)
 {
    return CSTElementStress (element,  PLANESTRAIN);
 }
 
-int CSTElementSetup (element, mass_mode, tangent, type)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
-   unsigned	type;
+static int
+CSTElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 {
    unsigned		i;
    Vector		equiv;
@@ -161,9 +156,8 @@ int CSTElementSetup (element, mass_mode, tangent, type)
    return 0;
 }
 
-int CSTElementStress (element, type)
-   Element	element;
-   unsigned	type;
+static int
+CSTElementStress(Element element, unsigned int type)
 {
    static Vector	stress = NullMatrix,
 			d;
@@ -241,9 +235,8 @@ int CSTElementStress (element, type)
    return 0;
 } 
 
-Matrix CSTLocalB (element, area)
-   Element	element;
-   double	*area;
+static Matrix
+CSTLocalB(Element element, double *area)
 {
    static Matrix 	B = NullMatrix;
    double		xc1,yc1,
@@ -302,9 +295,8 @@ Matrix CSTLocalB (element, area)
    return B;
 }
 
-void CSTLumpedMassMatrix (element, area)
-   Element	element;
-   double	area;
+static void
+CSTLumpedMassMatrix(Element element, double area)
 {
    double	factor;
    unsigned	i;
@@ -319,9 +311,8 @@ void CSTLumpedMassMatrix (element, area)
    return;
 }
 
-Vector CSTEquivNodalForces (element, err_count)
-   Element	element;
-   int		*err_count;
+static Vector
+CSTEquivNodalForces(Element element, int *err_count)
 {
    double		L;
    double		wa,wb;

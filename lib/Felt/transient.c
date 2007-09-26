@@ -53,8 +53,8 @@
 *
 ****************************************************************************/
 
-int ConstructDynamic (Kr, Mr, Cr)
-   Vector	*Kr, *Mr, *Cr;
+int
+ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 {
    Node		*node;
    Element	*element;
@@ -307,9 +307,8 @@ int ConstructDynamic (Kr, Mr, Cr)
  *
  ****************************************************************************/
 
-void AssembleTransientForce (t, F)
-   double	t;
-   Vector	F;
+void
+AssembleTransientForce(double t, Vector F)
 {
    Node		*node;
    unsigned	numnodes,
@@ -375,10 +374,8 @@ void AssembleTransientForce (t, F)
  *
  *****************************************************************************/
 
-Matrix IntegrateHyperbolicDE (K, M, C)
-   Vector	K;
-   Vector	M;
-   Vector	C;
+Matrix
+IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 {
    Node		*node;
    unsigned	numnodes;
@@ -624,9 +621,8 @@ Matrix IntegrateHyperbolicDE (K, M, C)
  *
  *****************************************************************************/
 
-Matrix IntegrateParabolicDE (K, M)
-   Vector	K;
-   Vector	M;
+Matrix
+IntegrateParabolicDE(Vector K, Vector M)
 {
    Node		*node;
    unsigned	numnodes;
@@ -801,8 +797,8 @@ Matrix IntegrateParabolicDE (K, M)
  *		
  ****************************************************************************/
  
-int BuildHyperbolicIC (d, v, a)
-   Vector	d, v, a;
+int
+BuildHyperbolicIC(Vector d, Vector v, Vector a)
 {
    Node		*node;
    unsigned	numnodes;
@@ -861,8 +857,8 @@ int BuildHyperbolicIC (d, v, a)
  *		
  ****************************************************************************/
 
-void BuildParabolicIC (d)
-   Vector	d;
+void
+BuildParabolicIC(Vector d)
 {
    unsigned	*dofs;
    Node		*node;
@@ -889,7 +885,8 @@ void BuildParabolicIC (d)
    return;
 }
 
-int *BuildConstraintMask ( )
+int*
+BuildConstraintMask(void)
 {
    Node		*node;
    unsigned	numnodes;
@@ -936,10 +933,8 @@ int *BuildConstraintMask ( )
  *		
  ****************************************************************************/
 
-void ResolveBC (t, K, F)
-   double	t;
-   Vector	K;
-   Vector	F; 
+void
+ResolveBC(double t, Vector K, Vector F)
 {
    Node		*node;
    unsigned	*dofs;

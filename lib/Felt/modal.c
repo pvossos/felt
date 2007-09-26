@@ -39,10 +39,8 @@
  *
  ***************************************************************************/
 
-static void MultiplyQtKQ (x, Q, K)
-   Matrix	x;
-   Matrix	K;
-   Matrix	Q;
+static void
+MultiplyQtKQ(Matrix x, Matrix Q, Matrix K)
 {
    Matrix	temp;
    double	result;
@@ -78,11 +76,8 @@ static void MultiplyQtKQ (x, Q, K)
  *
  ****************************************************************************/
 
-int ComputeEigenModes (K, M, lambda_r, x_r)
-   Matrix	K;
-   Matrix	M;
-   Matrix	*lambda_r;
-   Matrix	*x_r;
+int
+ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
 {
    int		status;
    Matrix	Q;
@@ -177,8 +172,8 @@ int ComputeEigenModes (K, M, lambda_r, x_r)
  *
  ***************************************************************************/
 
-Matrix ModalNodalDisplacements (x)
-   Matrix	x;
+Matrix
+ModalNodalDisplacements(Matrix x)
 {
    Node		*node;
    unsigned	numnodes;
@@ -242,10 +237,8 @@ Matrix ModalNodalDisplacements (x)
  *
  ***************************************************************************/
 
-static void MultiplyUTmU (M, u, m)
-   Matrix	M;
-   Matrix	u;
-   Matrix	m;
+static void
+MultiplyUTmU(Matrix M, Matrix u, Matrix m)
 {
    Matrix	temp;
    double	result;
@@ -274,11 +267,8 @@ static void MultiplyUTmU (M, u, m)
    DestroyMatrix (temp);
 }
 
-int FormModalMatrices (u, m, c, k, Mr, Cr, Kr, ortho)
-   Matrix	u;
-   Matrix	m, c, k;
-   Matrix 	*Mr, *Cr, *Kr;
-   int		ortho;
+int
+FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, Matrix *Mr, Matrix *Cr, Matrix *Kr, int ortho)
 {
    unsigned	n;
    unsigned	i, j;

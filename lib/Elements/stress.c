@@ -32,9 +32,8 @@
 # include "error.h"
 # include "allocate.h"
 
-static int cubic(a, b, c, d, x)
-   double	 a, b, c, d;
-   double	*x;
+static int
+cubic(double a, double b, double c, double d, double *x)
 {
   int	   nsol;
   double   a1 = b/a, a2 = c/a, a3 = d/a;
@@ -61,8 +60,8 @@ static int cubic(a, b, c, d, x)
   return nsol;
 }
 
-void PrincipalStresses3D(stress)
-   double	*stress;
+void
+PrincipalStresses3D(double *stress)
 {
    double	I1, I2, I3;
    double	sx, sy, sz, txy, tyz, txz;
@@ -108,8 +107,8 @@ void PrincipalStresses3D(stress)
    return;
 }
 
-void PrincipalStresses2D(stress)
-   double *stress;
+void
+PrincipalStresses2D(double *stress)
 {
    double	sx, sy, txy;
    double 	s1, s2, s3;
@@ -157,8 +156,8 @@ void PrincipalStresses2D(stress)
  *
  *****************************************************************************/
 
-void SetupStressMemory (element)
-    Element	element;
+void
+SetupStressMemory(Element element)
 {
     unsigned	i;
 
@@ -195,8 +194,8 @@ void SetupStressMemory (element)
 }
 
 
-void AllocateNodalStress(node)
-   Node		node;
+void
+AllocateNodalStress(Node node)
 {
    int		j;
 

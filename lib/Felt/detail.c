@@ -40,13 +40,14 @@ static FILE	*detail_fp = NULL;
  *		detail messages off, set the stream to NULL        	*
  ************************************************************************/
 
-void SetDetailStream (fp)
-    FILE    *fp;
+void
+SetDetailStream(FILE *fp)
 {
     detail_fp = fp;
 }
 
-FILE *GetDetailStream ( )
+FILE*
+GetDetailStream(void)
 {
    return detail_fp;
 }
@@ -58,13 +59,8 @@ FILE *GetDetailStream ( )
  *		is on, prints a message to the current detail stream	*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
-void detail (char *format, ...)
-# else
-void detail (format, va_alist)
-    char *format;
-    va_dcl
-# endif
+void
+detail(char *format, ...)
 {
     va_list ap;
 

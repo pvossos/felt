@@ -46,9 +46,8 @@
 # define TRIANGULAR	6
 # define WELCH		7
 
-static int RoundToPowerOf2 (n, exponent)
-   int	 n;
-   int	*exponent;
+static int
+RoundToPowerOf2(int n, int *exponent)
 {
    int	i;
    int	n1;
@@ -113,8 +112,8 @@ ZeroPadData(Vector x, int *length, int *length2)
  *
  ****************************************************************************/
 
-static int bit_swap(i, nu)
-   int i, nu;
+static int
+bit_swap(int i, int nu)
 {
    int ib, i1, i2;
 
@@ -129,8 +128,8 @@ static int bit_swap(i, nu)
    return (ib);
 }
 
-static void sswap(x1, x2)
-   double *x1, *x2;
+static void
+sswap(double *x1, double *x2)
 {
    double 	temp_x;
 
@@ -151,13 +150,14 @@ static void sswap(x1, x2)
  *		not either. 
  *
  ****************************************************************************/
- 
-int FastFourierTransform(Xr, Xi, n, n2, direction)
-   double	*Xr;			/* real part of signal		*/
-   double	*Xi;			/* imaginary part of signal	*/
-   int		n;			/* length of signal		*/
-   int		n2;			/* log base 2 of n		*/
-   int		direction;		/* 1 = forward, -1 = reverse	*/
+
+/* real part of signal		*/
+/* imaginary part of signal	*/
+/* length of signal		*/
+/* log base 2 of n		*/
+/* 1 = forward, -1 = reverse	*/
+int
+FastFourierTransform(double *Xr, double *Xi, int n, int n2, int direction)
 {
    int 		nhalf; 
    int		j, l, i, ib, k, k1, k2;
@@ -270,12 +270,8 @@ WindowFunction(unsigned win, unsigned n)
    return w;
 }
 
-int Spectrum (x, P, F, delta_t, nfft)
-   Vector	x;
-   Vector	*P;
-   Vector	*F;
-   double	delta_t;
-   int		nfft;
+int 
+Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
 {
    double	*Xr;
    double	*p;
@@ -382,11 +378,8 @@ int Spectrum (x, P, F, delta_t, nfft)
  *
  ***************************************************************************/
 
-int ComputeOutputSpectraFFT (dtable, Pr, Fr, nfft)
-   Matrix	dtable;
-   Matrix	*Pr;
-   Vector	*Fr;
-   int		nfft;
+int
+ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
 {
    Matrix	Pm;
    Vector	P;
@@ -432,12 +425,8 @@ int ComputeOutputSpectraFFT (dtable, Pr, Fr, nfft)
  *
  ***************************************************************************/
 
-Matrix *ComputeTransferFunctions (M, C, K, forced, numforced)
-   Matrix	M;
-   Matrix	C;
-   Matrix	K;
-   NodeDOF	*forced;
-   unsigned	numforced;
+Matrix*
+ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced)
 {
    ComplexMatrix	Z;
    Matrix		*H;
@@ -538,10 +527,8 @@ AlignSpectra(Matrix S1, Matrix S2, Matrix freq2)
    return; 
 }
 
-Matrix ComputeOutputSpectra (H, forced, numforced)
-   Matrix	*H;
-   NodeDOF	*forced;
-   unsigned	numforced;
+Matrix
+ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced)
 {
    Matrix	So;
    Matrix	Si;

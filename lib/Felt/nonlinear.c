@@ -51,8 +51,8 @@
  *		
  ****************************************************************************/
 
-Matrix CreateNonlinearStiffness (status)
-   int		*status;
+Matrix
+CreateNonlinearStiffness(int *status)
 {
    Element	*e;
    unsigned	 ne,
@@ -176,10 +176,8 @@ Matrix CreateNonlinearStiffness (status)
  *
  ****************************************************************************/
 
-int AssembleCurrentState (K, F, tangent)
-   Matrix	K;
-   Matrix	F;
-   int		tangent;
+int
+AssembleCurrentState(Matrix K, Matrix F, int tangent)
 {
    Element	*element;
    Element	e;
@@ -255,9 +253,8 @@ int AssembleCurrentState (K, F, tangent)
  *
  ****************************************************************************/
  
-int AssembleCurrentForce (F, Fnodal)
-   Matrix	F;
-   Matrix	Fnodal;
+int
+AssembleCurrentForce(Matrix F, Matrix Fnodal)
 {
    Node		*node;
    unsigned	active;
@@ -289,8 +286,8 @@ int AssembleCurrentForce (F, Fnodal)
    return 0;
 }
 
-int RestoreCoordinates (d)
-   Matrix	d;
+int
+RestoreCoordinates(Matrix d)
 {
    int		i, j;
    int		base_dof;
@@ -345,8 +342,8 @@ int RestoreCoordinates (d)
    return 0;
 }
 
-int UpdateCoordinates (d)
-   Matrix	d;
+int
+UpdateCoordinates(Matrix d)
 {
    int		i;
    int		base_dof;
@@ -393,10 +390,8 @@ int UpdateCoordinates (d)
  *		
  ****************************************************************************/
 
-Matrix StaticNonlinearDisplacements (K, Fnodal, tangent)
-   Matrix	K;
-   Matrix	Fnodal;
-   int		tangent;
+Matrix
+StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
 {
    Matrix	  residual;
    Matrix	  Felement;
@@ -481,10 +476,8 @@ Matrix StaticNonlinearDisplacements (K, Fnodal, tangent)
  *
  ****************************************************************************/
 
-Matrix SolveNonlinearLoadRange (K, Fnodal, tangent)
-   Matrix     K;
-   Matrix     Fnodal;
-   int	      tangent;
+Matrix
+SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
 {
    unsigned	  num_cases;
    Matrix	  dtable;

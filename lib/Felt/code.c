@@ -118,13 +118,8 @@ Code InCore = in_core;
  * Description:	Adds an instruction to the current piece of code.	*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
-void EmitCode (Opcode op, ...)
-# else
-void EmitCode (op, va_alist)
-    Opcode op;
-    va_dcl
-# endif
+void
+EmitCode(Opcode op, ...)
 {
     va_list ap;
     int     i;
@@ -165,8 +160,8 @@ void EmitCode (op, va_alist)
  * Description:	Copies a piece of code.					*
  ************************************************************************/
 
-Code CopyCode (code)
-    Code code;
+Code
+CopyCode(Code code)
 {
     Code     pc;
     Code     ptr;
@@ -212,8 +207,8 @@ Code CopyCode (code)
  * Description:	Deallocates a copied program.				*
  ************************************************************************/
 
-void FreeCode (code)
-    Code code;
+void
+FreeCode(Code code)
 {
     if (code != InCore)
 	Deallocate (code);
@@ -226,8 +221,8 @@ void FreeCode (code)
  * Description:	Sets the address of the instruction pointer.		*
  ************************************************************************/
 
-void SetIP (new_ip)
-    int new_ip;
+void
+SetIP(int new_ip)
 {
     ip = InCore + new_ip;
 }
@@ -239,7 +234,8 @@ void SetIP (new_ip)
  * Description:	Returns the address of the instruction pointer.		*
  ************************************************************************/
 
-int GetIP ( )
+int
+GetIP(void)
 {
     return ip - InCore;
 }
@@ -251,11 +247,8 @@ int GetIP ( )
  * Description:	Evaluates a table or cycle opcode.			*
  ************************************************************************/
 
-static double EvalTable (array, length, time, flag)
-    double *array;
-    int     length;
-    double  time;
-    int     flag;
+static double
+EvalTable(double *array, int length, double time, int flag)
 {
     int    i1;
     int    i2;
@@ -303,9 +296,8 @@ static double EvalTable (array, length, time, flag)
  * Description:	Evaluates a piece of code.				*
  ************************************************************************/
 
-double EvalCode (code, time)
-    Code code;
-    double time;
+double
+EvalCode(Code code, double time)
 {
     int    x;
     int    y;
@@ -562,8 +554,8 @@ double EvalCode (code, time)
  * Description:	Print a piece of stack code as instructions.		*
  ************************************************************************/
 
-void DebugCode (code)
-    Code code;
+void
+DebugCode(Code code)
 {
     int     i;
     int     x;
@@ -612,8 +604,8 @@ void DebugCode (code)
  * Description:	Determines if a piece of code is constant.		*
  ************************************************************************/
 
-int IsConstant (code)
-    Code code;
+int
+IsConstant(Code code)
 {
     Opcode op;
     Code   pc;

@@ -3,10 +3,6 @@
 # include <string.h>
 # include "complex.h"
 
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
-
 double re(x)
    complex	x;
 {

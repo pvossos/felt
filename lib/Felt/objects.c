@@ -31,10 +31,6 @@
 # include "objects.h"
 # include "allocate.h"
 
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
-
 /************************************************************************
  * Function:	 CreateNode						*
  *									*

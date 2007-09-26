@@ -32,10 +32,6 @@
 # include "allocate.h"
 # include "definition.h"
 
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
-
 # define streq(a,b)	!strcmp(a,b)
 # define strneq(a,b)	strcmp(a,b)
 

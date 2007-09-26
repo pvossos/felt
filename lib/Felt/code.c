@@ -248,7 +248,7 @@ GetIP(void)
  ************************************************************************/
 
 static double
-EvalTable(double *array, int length, double time, int flag)
+EvalTable(Code array, int length, double time, int flag)
 {
     int    i1;
     int    i2;
@@ -260,16 +260,16 @@ EvalTable(double *array, int length, double time, int flag)
 
 
     if (length == 2)
-	return time == array [0] ? array [1] : 0;
+	return time == array[0].arg ? array[1].arg : 0;
 
     if (flag) {
-	max = array [length - 2];
+	max = array[length - 2].arg;
 	while (time > max)
 	    time -= max;
     }
 
     for (i1 = 0; i1 < length; i1 += 2)
-	if (time <= array [i1])
+	if (time <= array[i1].arg)
 	    break;
 
     if (i1 == length) {
@@ -280,10 +280,10 @@ EvalTable(double *array, int length, double time, int flag)
     else
 	i2 = i1 + 2;
 
-    t1 = array [i1];
-    t2 = array [i2];
-    x1 = array [i1 + 1];
-    x2 = array [i2 + 1];
+    t1 = array[i1].arg;
+    t2 = array[i2].arg;
+    x1 = array[i1 + 1].arg;
+    x2 = array[i2 + 1].arg;
 
     /*printf ("(%g,%g) %g (%g,%g)\n", t1, x1, time, t2, x2);*/
     return t1 != t2 ? (x2 - x1) / (t2 - t1) * (time - t1) + x1 : x2;

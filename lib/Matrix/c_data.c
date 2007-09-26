@@ -17,13 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	data.c	
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
@@ -31,10 +24,7 @@
 # include "cmatrix.h"
 # include "error.h"
 
-complex cmdata (A, row, col)
-   ComplexMatrix	A;
-   unsigned		row;
-   unsigned		col;
+complex cmdata (ComplexMatrix A, unsigned int row, unsigned int col)
 {
    unsigned	height;
    unsigned	temp;
@@ -105,9 +95,7 @@ CreateSubsectionComplexMatrix(ComplexMatrix a,
    return b;
 }
 
-ComplexMatrix CreateFullComplexMatrix (rows, cols)
-   unsigned	rows;
-   unsigned	cols;
+ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
    ComplexMatrix	m;
@@ -137,20 +125,17 @@ ComplexMatrix CreateFullComplexMatrix (rows, cols)
    return m;
 }
 
-ComplexMatrix CreateComplexRowVector (size)
-   unsigned	size;
+ComplexMatrix CreateComplexRowVector (unsigned int size)
 {
    return CreateFullComplexMatrix (1, size);
 }
 
-ComplexMatrix CreateComplexColumnVector (size)
-   unsigned	size;
+ComplexMatrix CreateComplexColumnVector (unsigned int size)
 {
    return CreateFullComplexMatrix (size, 1);
 }
 
-void DestroyComplexMatrix (m)
-   ComplexMatrix	m;
+void DestroyComplexMatrix (ComplexMatrix m)
 {
    if (m -> parent != NULL) {
       m -> parent -> refcount --;
@@ -181,11 +166,7 @@ void DestroyComplexMatrix (m)
    free (m);
 }
 
-ComplexMatrix CreateCompactComplexMatrix (rows, cols, size, diag)
-   unsigned	rows;
-   unsigned 	cols;
-   unsigned	size;
-   unsigned	*diag;
+ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols, unsigned int size, unsigned int *diag)
 {
    ComplexMatrix	A;
 
@@ -210,8 +191,7 @@ ComplexMatrix CreateCompactComplexMatrix (rows, cols, size, diag)
    return A;
 }
 
-ComplexMatrix CreateCopyComplexMatrix (a)
-   ComplexMatrix	a;
+ComplexMatrix CreateCopyComplexMatrix (ComplexMatrix a)
 {
    ComplexMatrix	b;
    unsigned	size;
@@ -240,8 +220,7 @@ ComplexMatrix CreateCopyComplexMatrix (a)
    return b;
 }
 
-ComplexMatrix MakeFullFromCompactComplex (A)
-   ComplexMatrix	A;
+ComplexMatrix MakeFullFromCompactComplex (ComplexMatrix A)
 {
    unsigned 		i,j;
    ComplexMatrix	B;
@@ -255,8 +234,7 @@ ComplexMatrix MakeFullFromCompactComplex (A)
    return B; 
 }
 
-ComplexMatrix MakeCompactFromFullComplex (A)
-   ComplexMatrix	A;
+ComplexMatrix MakeCompactFromFullComplex (ComplexMatrix A)
 {
    unsigned	*diag;
    ComplexMatrix	compA;

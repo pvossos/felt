@@ -17,13 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File: 	factor.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <math.h>
 # include <stdlib.h>
@@ -31,10 +24,7 @@
 # include "cmatrix.h"
 # include "error.h"
 
-int InvertComplexMatrix (b, a, p) /* compute b = inv(a) where a is LU factored */
-   ComplexMatrix	b;	  /* destination matrix			       */
-   ComplexMatrix	a;	  /* factored source matrix  		       */
-   Matrix		p;	  /* pivot vector			       */
+int InvertComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p)
 {
    unsigned		i, j;
    unsigned		n;
@@ -71,11 +61,7 @@ int InvertComplexMatrix (b, a, p) /* compute b = inv(a) where a is LU factored *
    return 0;
 }
 
-int LUFactorComplexMatrix (b, a, p, info)   /* factor a into LU and store in b 	*/
-   ComplexMatrix	b;		    /* destination matrix		*/
-   ComplexMatrix 	a;	  	    /* source matrix			*/
-   Matrix 		p; 		    /* permutation vector		*/
-   int		       *info;		    /* singularity code			*/
+int LUFactorComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p, int *info)
 {
    complex	t;
    unsigned	i, j, k;
@@ -160,11 +146,7 @@ int LUFactorComplexMatrix (b, a, p, info)   /* factor a into LU and store in b 	
    return 0; 
 }
 
-int LUBackSolveComplexMatrix (c, a, b, p) /* solve Ax=b, store result in c  */	
-   ComplexMatrix	c;		  /* destination vector		    */
-   ComplexMatrix	a;		  /* factorized source matrix       */	
-   ComplexMatrix	b;		  /* right hand side vector 	    */
-   Matrix		p;		  /* pivot vector		    */
+int LUBackSolveComplexMatrix (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b, Matrix p)
 {
    unsigned	i, k;
    unsigned	n;
@@ -228,12 +210,7 @@ int LUBackSolveComplexMatrix (c, a, b, p) /* solve Ax=b, store result in c  */
    return 0;
 }
 
-/* returns: |a|		   */
-/* result: pointer to result location */
-/* a: factorized source matrix   */
-/* p: pivot vector		   */
-int 
-DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p)
+int DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p)
 {
    unsigned	i;
    complex	x;
@@ -260,10 +237,7 @@ DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p)
    return 0;
 }
 
-int InvertCroutComplexMatrix (b, a, col) /* compute one column of inv(a) */
-   ComplexMatrix	b;	   	 /* destination matrix	         */
-   ComplexMatrix	a;	  	 /* factored source matrix       */
-   unsigned		col;
+int InvertCroutComplexMatrix (ComplexMatrix b, ComplexMatrix a, unsigned int col)
 {
    static complex	one = {1.0, 0.0};
 
@@ -283,8 +257,7 @@ int InvertCroutComplexMatrix (b, a, col) /* compute one column of inv(a) */
    return 0;
 }
 
-int CroutFactorComplexMatrix (A)	/* crout factorize A and store in A	*/
-   ComplexMatrix	A;		/* source and destination matrix	*/
+int CroutFactorComplexMatrix (ComplexMatrix A)
 {
    unsigned     j,jj,jjlast,jcolht,
           	istart,ij,ii,i,
@@ -360,9 +333,7 @@ int CroutFactorComplexMatrix (A)	/* crout factorize A and store in A	*/
    return 0;
 }
 
-int CroutBackSolveComplexMatrix (A, b)	/* solve Ax=b and store x in b	*/
-   ComplexMatrix   	 A;		/* Crout factored LHS matrix	*/
-   ComplexMatrix   	 b;		/* RHS (and dest) vector	*/
+int CroutBackSolveComplexMatrix (ComplexMatrix A, ComplexMatrix b)
 {
    unsigned	 jj,j,jjlast,
 		 jcolht,jjnext,

@@ -17,19 +17,11 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	property.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include "matrix.h"
 # include "cmatrix.h"
 
-int IsSymmetricComplexMatrix (a)	/* Aij == Aji ? 1 : 0		*/
-   ComplexMatrix	a;		/* matrix to check for symmetry */
+int IsSymmetricComplexMatrix (ComplexMatrix a)
 {
    unsigned	i, j;
    int		status;

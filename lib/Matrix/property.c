@@ -17,18 +17,10 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	property.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include "matrix.h"
 
-int IsSymmetricMatrix (a)	/* Aij == Aji ? 1 : 0		*/
-   Matrix	a;		/* matrix to check for symmetry */
+int IsSymmetricMatrix (Matrix a)
 {
    unsigned	i, j;
    int		status;
@@ -51,8 +43,7 @@ int IsSymmetricMatrix (a)	/* Aij == Aji ? 1 : 0		*/
    return status;
 }
 
-int IsZeroMatrix (a)		/* Aij == 0 ? 1 : 0		*/
-   Matrix	a;		/* matrix to check for symmetry */
+int IsZeroMatrix (Matrix a)
 {
    unsigned	i, j;
    int		status;

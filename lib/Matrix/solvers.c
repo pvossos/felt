@@ -17,23 +17,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- *
- * File:	solvers.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <math.h>
 # include <string.h>
 # include "matrix.h"
 
-int GaussSeidel(x, A, b)
-   Matrix	x;
-   Matrix	A;
-   Matrix	b;
+int GaussSeidel(Matrix x, Matrix A, Matrix b)
 {
    static int	   maxits = 5000;
    static double   tol = 0.0001;

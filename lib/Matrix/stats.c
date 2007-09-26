@@ -17,21 +17,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	stats.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <math.h>
 # include <string.h>
 # include "matrix.h"
 
-int MaximumMatrix (a, x)
-   Matrix	a;
-   double	*x;
+int MaximumMatrix (Matrix a, double *x)
 {
    double	max;
    unsigned	m, n;
@@ -51,9 +42,7 @@ int MaximumMatrix (a, x)
    return 0;
 }
 
-int MinimumMatrix (a, x)
-   Matrix	a;
-   double	*x;
+int MinimumMatrix (Matrix a, double *x)
 {
    double	min;
    unsigned	m, n;
@@ -73,9 +62,7 @@ int MinimumMatrix (a, x)
    return 0;
 }
 
-int SumMatrix (a, x)
-   Matrix	a;
-   double	*x;
+int SumMatrix (Matrix a, double *x)
 {
    double	sum;
    unsigned	m, n;
@@ -94,9 +81,7 @@ int SumMatrix (a, x)
    return 0;
 }
 
-int MeanMatrix (a, x)
-   Matrix	a;
-   double	*x;
+int MeanMatrix (Matrix a, double *x)
 {
    double	mean;
 
@@ -106,9 +91,7 @@ int MeanMatrix (a, x)
    return 0;
 }
 
-int StddevMatrix (a, x)
-   Matrix	a;
-   double	*x;
+int StddevMatrix (Matrix a, double *x)
 {
    double	sum, sum2;
    unsigned	m, n;

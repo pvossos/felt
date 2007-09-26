@@ -17,23 +17,13 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	data.c	
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <stdlib.h>
 # include <string.h>
 # include "matrix.h"
 # include "error.h"
 
-double mdata (A, row, col)
-   Matrix	A;
-   unsigned	row;
-   unsigned	col;
+double mdata (Matrix A, unsigned int row, unsigned int col)
 {
    unsigned	height;
    unsigned	temp;
@@ -61,10 +51,7 @@ double mdata (A, row, col)
    return 0;
 }
 
-Matrix CreateSubsectionMatrix (a, sr, sc, er, ec)
-   Matrix	a;
-   unsigned	sr, sc;
-   unsigned	er, ec;
+Matrix CreateSubsectionMatrix (Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec)
 {
    Matrix	b;
    unsigned	i;
@@ -104,9 +91,7 @@ Matrix CreateSubsectionMatrix (a, sr, sc, er, ec)
    return b;
 }
 
-Matrix CreateFullMatrix (rows, cols)
-   unsigned	rows;
-   unsigned	cols;
+Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
    Matrix	m;
@@ -144,20 +129,17 @@ Matrix CreateFullMatrix (rows, cols)
    return m;
 }
 
-Matrix CreateRowVector (size)
-   unsigned	size;
+Matrix CreateRowVector (unsigned int size)
 {
    return CreateFullMatrix (1, size);
 }
 
-Matrix CreateColumnVector (size)
-   unsigned	size;
+Matrix CreateColumnVector (unsigned int size)
 {
    return CreateFullMatrix (size, 1);
 }
 
-void DestroyMatrix (m)
-   Matrix	m;
+void DestroyMatrix (Matrix m)
 {
    if (m -> parent != NULL) {
       m -> parent -> refcount --;
@@ -188,11 +170,7 @@ void DestroyMatrix (m)
    free (m);
 }
 
-Matrix CreateCompactMatrix (rows, cols, size, diag)
-   unsigned	rows;
-   unsigned 	cols;
-   unsigned	size;
-   unsigned	*diag;
+Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int size, unsigned int *diag)
 {
    Matrix	A;
 
@@ -217,8 +195,7 @@ Matrix CreateCompactMatrix (rows, cols, size, diag)
    return A;
 }
 
-Matrix CreateCopyMatrix (a)
-   Matrix	a;
+Matrix CreateCopyMatrix (Matrix a)
 {
    Matrix	b;
    unsigned	size;
@@ -247,8 +224,7 @@ Matrix CreateCopyMatrix (a)
    return b;
 }
 
-Matrix MakeFullFromCompact (A)
-   Matrix	A;
+Matrix MakeFullFromCompact (Matrix A)
 {
    unsigned 	i,j;
    Matrix	B;
@@ -262,8 +238,7 @@ Matrix MakeFullFromCompact (A)
    return B; 
 }
 
-Matrix MakeCompactFromFull (A)
-   Matrix	A;
+Matrix MakeCompactFromFull (Matrix A)
 {
    unsigned	*diag;
    Matrix	compA;
@@ -337,26 +312,7 @@ Matrix MakeCompactFromFull (A)
    return compA;
 } 
 
-/**************************************************************************
- * Function:	ConvertRowColumn
- *
- * Parameters:	row		the row of what would be the full matrix
- *		col		the column of what would be the full matrix
- *		a		matrix with array of diagonal address
- *
- * Return value: a valid address if there is one, 0 if there's no
- *		 need to worry about what would be in that spot of
- *		 the full matrix.
- *
- * Description: given a compact column storage scheme described by diag
- *		and convert row and column into an address into
- *		a compact column matrix representation
- *
- **************************************************************************/
-
-int ConvertRowColumn (row, col, a)
-    unsigned	row, col;
-    Matrix	a;
+int ConvertRowColumn (unsigned int row, unsigned int col, Matrix a)
 {
     unsigned	blanks, address;
     unsigned	height;

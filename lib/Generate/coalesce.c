@@ -17,12 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	coalesce.c
- *
- ***************************************************************************/
-
 # include <math.h>
 # include "allocate.h"
 # include "error.h"
@@ -34,14 +28,6 @@
 # define DIST(a,b)	(sqrt(((a) -> x - (b) -> x)*((a) -> x - (b) -> x) + \
                               ((a) -> y - (b) -> y)*((a) -> y - (b) -> y) + \
                               ((a) -> z - (b) -> z)*((a) -> z - (b) -> z)))
-
-/****************************************************************************
- *
- * Function:	
- *
- * Description:	
- *
- ****************************************************************************/
 
 static int
 CheckConnections(Node n1, Node n2, Element *element, unsigned numelts)

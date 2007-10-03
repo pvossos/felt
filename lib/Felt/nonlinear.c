@@ -33,24 +33,6 @@
 # include "error.h"
 # include "problem.h"
 
-
-
-/****************************************************************************
- *
- * Function:	CreateNonlinearStiffness
- *
- * Description:	For a given set of elements (possibly of varying types)
- *		this will create compact column storage for the global
- *		stiffness matrix in a nonlinear problem.  We can't really
- *		base this one simply on the non-zero entries in the 
- *		element stiffness matrices, because as the element
- *		stiffness matrices change with geometry we're not
- *		sure where the zeros might be.  Instead we make sure
- *		that we have at least enough room for all possible 
- *		element DOF.	
- *		
- ****************************************************************************/
-
 Matrix
 CreateNonlinearStiffness(int *status)
 {
@@ -168,14 +150,6 @@ CreateNonlinearStiffness(int *status)
    return K;
 }
 
-/****************************************************************************
- *
- * Function:	
- *
- * Description:	
- *
- ****************************************************************************/
-
 int
 AssembleCurrentState(Matrix K, Matrix F, int tangent)
 {
@@ -245,14 +219,6 @@ AssembleCurrentState(Matrix K, Matrix F, int tangent)
    return 0;
 }
 
-/****************************************************************************
- *
- * Function:	
- *
- * Description:	
- *
- ****************************************************************************/
- 
 int
 AssembleCurrentForce(Matrix F, Matrix Fnodal)
 {
@@ -376,20 +342,6 @@ UpdateCoordinates(Matrix d)
    return 0;
 }
 
-/****************************************************************************
- *
- * Function:	StaticNonlinearDisplacements 
- *
- * Description:	solves a geometrically nonlinear, large deformation
- *		problem by iteratively solving Kd = F where K
- *		is updated at every iteration according to the 
- *		displacements from the previous iteration - the
- *		value of tangent determines what kind of stiffness
- *		matrix is formed (simple linear or nonlinear tangent)
- *		and how the force residuals are calculated
- *		
- ****************************************************************************/
-
 Matrix
 StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
 {
@@ -468,13 +420,6 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
 
    return d;
 }
-
-
-/****************************************************************************
- *
- * Function:	SolveNonlinearLoadRange
- *
- ****************************************************************************/
 
 Matrix
 SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)

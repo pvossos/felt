@@ -365,19 +365,6 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
    return 0;
 }
 
-/*****************************************************************************
- *
- * Function:	ComputeOutputSpectraFFT
- *
- * Description:	computes the spectrum for each DOF in the time series 
- *		results matrix, dtable.  This isn't very efficient 
- *		because we end up creating and destroying the PSD and
- *		frequency vectors for each DOF that we do, but oh well,
- *		we probably won't be doing this all that much (i.e., just
- *		at the end of a run and only for a few selected DOFs).
- *
- ***************************************************************************/
-
 int
 ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
 {
@@ -414,16 +401,6 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
 
    return 0; 
 }
-
-/****************************************************************************
- *
- * Function:	ComputeTransferFunctions
- * 
- * Description:	computes the frequency domain transfer function between
- *		inputs at forced DOF and the output at the DOF
- *		described by nodes= and dofs= in the analysis parameters
- *
- ***************************************************************************/
 
 Matrix*
 ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced)

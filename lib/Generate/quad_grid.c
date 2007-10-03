@@ -17,12 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	quad_grid.c
- *
- ***************************************************************************/
-
 # include <math.h>
 # include "allocate.h"
 # include "error.h"
@@ -31,24 +25,10 @@
 # include "mesh.h"
 # include "rules.h"
 
-/****************************************************************************
- *
- * Function:	GenerateQuadGrid	
- *
- * Description:	a simple procedure to generate a 2-d grid of quadrilateral
- *		(four shape nodes) elements with all the elements running 
- *		parallel to one of the axes.
- *
- ****************************************************************************/
-
-unsigned GenerateQuadGrid (grid, element, node, numelts, numnodes, bnode, belement)
-   Grid		grid;
-   Element	**element;
-   Node		**node;
-   unsigned	*numelts;
-   unsigned	*numnodes;
-   unsigned	bnode;
-   unsigned	belement;
+unsigned
+GenerateQuadGrid(Grid grid, Element **element, Node **node,
+                 unsigned int *numelts, unsigned int *numnodes, 
+                 unsigned int bnode, unsigned int belement)
 {
    double	(*xrule_func) ();
    double	(*yrule_func) ();

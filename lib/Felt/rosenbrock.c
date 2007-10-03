@@ -73,17 +73,6 @@ ConstructTFD(double t, double h, Vector dp)
 
   } /* eo ConstructTFD() */ 
 
-/*****************************************************************************
- *
- * Function:    IntegrateHyperbolicDE2
- *
- * Description: Solves the discrete equation of motion, Ma + Cv + Ky = F(t)
- *              starting from initial values v(0) and y(0). Uses modified  
- *              L-stable, single-step, three-stage Rosenbrock method with 
- *              adaptive step-size control and error estimation 
- *
- *****************************************************************************/
-
 Matrix
 RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
 {

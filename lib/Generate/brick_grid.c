@@ -31,24 +31,10 @@
 # include "mesh.h"
 # include "rules.h"
 
-/****************************************************************************
- *
- * Function:	GenerateBrickGrid	
- *
- * Description:	a simple procedure to generate a 3-d grid of solid brick
- *		(eight shape nodes) elements with all the elements running 
- *		parallel to one of the axes.
- *
- ****************************************************************************/
-
-unsigned GenerateBrickGrid (grid, element, node, numelts, numnodes, bnode, belement)
-   Grid		grid;
-   Element	**element;
-   Node		**node;
-   unsigned	*numelts;
-   unsigned	*numnodes;
-   unsigned	bnode;
-   unsigned	belement;
+unsigned 
+GenerateBrickGrid(Grid grid, Element **element, Node **node, 
+                  unsigned int *numelts, unsigned int *numnodes, 
+                  unsigned int bnode, unsigned int belement)
 {
    double	(*xrule_func) ();
    double	(*yrule_func) ();

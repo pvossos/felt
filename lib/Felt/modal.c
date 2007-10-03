@@ -68,14 +68,6 @@ MultiplyQtKQ(Matrix x, Matrix Q, Matrix K)
    DestroyMatrix (temp);
 }
 
-/****************************************************************************
- *
- * Function:	 ComputeEigenModes 
- *
- * Description: 
- *
- ****************************************************************************/
-
 int
 ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
 {
@@ -159,19 +151,6 @@ ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
    return 0;
 }
 
-/***************************************************************************
- *
- * Function:	ModalNodalDisplacements
- *
- * Description:	Given a table of mode shapes and a list of nodes and active
- *		dofs, put together a table of nodal displacements at each
- *		node (including constrained nodes) for translational DOFs
- *		in each separate mode of vibration.  The resulting table
- *		should be semi-analogous to the displacement table in transient
- *		analysis. 
- *
- ***************************************************************************/
-
 Matrix
 ModalNodalDisplacements(Matrix x)
 {
@@ -230,12 +209,6 @@ ModalNodalDisplacements(Matrix x)
 
    return d;
 }
-
-/****************************************************************************
- *
- * Function:	MultiplyUtMU
- *
- ***************************************************************************/
 
 static void
 MultiplyUTmU(Matrix M, Matrix u, Matrix m)

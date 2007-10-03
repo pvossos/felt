@@ -17,39 +17,31 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	complex.h    
- *	
- * Description:	
- ************************************************************************/
-
 # ifndef _COMPLEX_H
 # define _COMPLEX_H
-
-# include "proto.h"
 
 typedef struct {
    double	r;
    double	i;
 } complex;
 
-double	re PROTO ((complex));
-double 	im PROTO ((complex));
-double  modulus PROTO ((complex));
-complex negate PROTO ((complex));
-complex recip PROTO ((complex));
-complex mult PROTO ((complex, complex));
-complex add PROTO ((complex, complex));
-complex cdiv PROTO ((complex, complex));
-complex sub PROTO ((complex, complex));
-complex cnjgt PROTO ((complex));
-complex scale PROTO ((complex, double, double));
-complex felt_csqrt PROTO ((complex));
-complex felt_cexp PROTO ((double));
-complex felt_ccos PROTO ((complex));
-complex felt_csin PROTO ((complex));
-char *cprint PROTO ((complex));
-unsigned is_zero PROTO ((complex));
-complex zero PROTO (( ));
+double re(complex x);
+double im(complex x);
+double modulus(complex x);
+complex negate(complex x);
+complex recip(complex x);
+complex mult(complex x, complex y);
+complex add(complex x, complex y);
+complex cdiv(complex x, complex y);
+complex sub(complex x, complex y);
+complex cnjgt (complex x);
+complex scale(complex x, double factor, double offset);
+complex felt_csqrt(complex x);
+complex felt_cexp(double x);
+complex felt_ccos(complex x);
+complex felt_csin(complex x);
+char *cprint (complex x);
+unsigned is_zero(complex x);
+complex zero(void);
 
 # endif /* _COMPLEX_H */

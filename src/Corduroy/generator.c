@@ -48,18 +48,7 @@ Generator generator;
 static char *cpp;
 static char  cpp_command [2048];
 
-/************************************************************************
- * Function:	ReadCorduroyFile					*
- *									*
- * Description:	Reads a corduroy file using the preprocessor if		*
- *		desired.  A filename of "-" indicates standard input	*
- *		(can only be used initially) and a NULL filename	*
- *		indicates no file (an empty generation instance is	*
- *		created).						*
- ************************************************************************/
-
-int ReadCorduroyFile (input_name)
-    char *input_name;
+int ReadCorduroyFile (char *input_name)
 {
     char  buffer [2048];
     char *plural;
@@ -148,16 +137,7 @@ int ReadCorduroyFile (input_name)
     return 0;
 }
 
-/************************************************************************
- * Function:	CorduroyCppOptions						*
- *									*
- * Description:	Parses and removes the preprocesor options from the	*
- *		command line arguments.					*
- ************************************************************************/
-
-int CorduroyCppOptions (argc, argv)
-    int  *argc;
-    char *argv [ ];
+int CorduroyCppOptions (int *argc, char **argv)
 {
     int   i;
     int   j;

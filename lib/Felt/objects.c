@@ -31,14 +31,6 @@
 # include "objects.h"
 # include "allocate.h"
 
-/************************************************************************
- * Function:	 CreateNode						*
- *									*
- * Description:	 CreateNode creates and initializes a node structure.	*
- *		 The node number is assigned and all pointer fields are	*
- *		 set to NULL.						*
- ************************************************************************/
-
 Node
 CreateNode(unsigned int number)
 {
@@ -64,15 +56,6 @@ CreateNode(unsigned int number)
     return node;
 }
 
-
-/************************************************************************
- * Function:	 DestroyNode						*
- *									*
- * Description:	 DestroyNode deallocates a node structure.  The		*
- *		 auxillary pointer and equivalent force vector are	*
- *		 deallocated.						*
- ************************************************************************/
-
 void
 DestroyNode(Node node)
 {
@@ -82,17 +65,6 @@ DestroyNode(Node node)
 	Deallocate (node);
     }
 }
-
-
-/************************************************************************
- * Function:	 CreateElement						*
- *									*
- * Description:	 CreateElement creates and initializes a new element	*
- *		 structure.  The element number and definition are	*
- *		 assigned, the array of node pointers is allocated and	*
- *		 if definition is not NULL, and all other pointer	*
- *		 fields are initialized to NULL.			*
- ************************************************************************/
 
 Element
 CreateElement(unsigned int number, Definition defn)
@@ -134,16 +106,6 @@ CreateElement(unsigned int number, Definition defn)
     return element;
 }
 
-
-/************************************************************************
- * Function:	 DestroyElement						*
- *									*
- * Description:	 DestroyElement deallocates an element structure.  The	*
- *		 array of pointers to nodes, the array of stresses, and	*
- *		 the structure pointed to by the auxillary pointer are	*
- *		 deallocated.						*
- ************************************************************************/
-
 void
 DestroyElement(Element element)
 {
@@ -164,15 +126,6 @@ DestroyElement(Element element)
 	Deallocate (element);
     }
 }
-
-
-/************************************************************************
- * Function:	 CreateForce						*
- *									*
- * Description:	 CreateForce creates and initializes a force structure.	*
- *		 The name of the force is assigned (not copied) and the	*
- *		 force components are initialized to zero.		*
- ************************************************************************/
 
 Force
 CreateForce(char *name)
@@ -199,14 +152,6 @@ CreateForce(char *name)
     return force;
 }
 
-
-/************************************************************************
- * Function:	 DestroyForce						*
- *									*
- * Description:	 DestroyForce deallocates a force structure.  The name	*
- *		 and auxillary pointer are also deallocated.		*
- ************************************************************************/
-
 void
 DestroyForce(Force force)
 {
@@ -224,15 +169,6 @@ DestroyForce(Force force)
 	Deallocate (force);
     }
 }
-
-
-/************************************************************************
- * Function:	 CreateMaterial						*
- *									*
- * Description:	 CreateMaterial creates and initializes a new material	*
- *		 structure.  The name is assigned (not copied) and the	*
- *		 fields are initialized to zero.			*
- ************************************************************************/
 
 Material
 CreateMaterial(char *name)
@@ -267,14 +203,6 @@ CreateMaterial(char *name)
     return material;
 }
 
-
-/************************************************************************
- * Function:	 DestroyMaterial					*
- *									*
- * Description:	 DestroyMaterial deallocates a material structure.  The	*
- *		 name and auxillary structure are also deallocated.	*
- ************************************************************************/
-
 void
 DestroyMaterial(Material material)
 {
@@ -285,15 +213,6 @@ DestroyMaterial(Material material)
 	Deallocate (material);
     }
 }
-
-
-/************************************************************************
- * Function:	 CreateConstraint					*
- *									*
- * Description:	 CreateConstraint creates and initializes a new		*
- *		 constraint structure.  The name is assigned (not	*
- *		 copied) and the fields are initialized to zero.	*
- ************************************************************************/
 
 Constraint
 CreateConstraint(char *name)
@@ -324,14 +243,6 @@ CreateConstraint(char *name)
     return constraint;
 }
 
-
-/************************************************************************
- * Function:	 DestroyConstraint					*
- *									*
- * Description:	 DestroyConstraint deallocates a constraint structure.	*
- *		 The name and auxillary structure are also deallocated.	*
- ************************************************************************/
-
 void
 DestroyConstraint(Constraint constraint)
 {
@@ -349,15 +260,6 @@ DestroyConstraint(Constraint constraint)
 	Deallocate (constraint);
     }
 }
-
-
-/************************************************************************
- * Function:	 CreateDistributed					*
- *									*
- * Description:	 CreateDistributed creates and initializes a new	*
- *		 distributed structure.  The name is assigned (not	*
- *		 copied) and the array of values allocated.		*
- ************************************************************************/
 
 Distributed
 CreateDistributed(char *name, unsigned int nvalues)
@@ -382,15 +284,6 @@ CreateDistributed(char *name, unsigned int nvalues)
     return distributed;
 }
 
-
-/************************************************************************
- * Function:	 DestroyDistributed					*
- *									*
- * Description:	 DestroyDistributed deallocates a distributed		*
- *		 structure.  The array of values, name, and auxillary	*
- *		 structure are deallocated.				*
- ************************************************************************/
-
 void
 DestroyDistributed(Distributed distributed)
 {
@@ -403,15 +296,6 @@ DestroyDistributed(Distributed distributed)
 	Deallocate (distributed);
     }
 }
-
-
-/************************************************************************
- * Function:	 CreateLoadCase						*
- *									*
- * Description:	 CreateLoadCase creates and initializes a new		*
- *		 load case structure.  The name is assigned (not	*
- *		 copied) and the array of values allocated.		*
- ************************************************************************/
 
 LoadCase
 CreateLoadCase(char *name)
@@ -433,14 +317,6 @@ CreateLoadCase(char *name)
 
     return loadcase;
 }
-
-
-/************************************************************************
- * Function:	 DestroyLoadCase					*
- *									*
- * Description:	 DestroyLoadCase deallocates a load case 		*
- *		 structure.                                           	* 
- ************************************************************************/
 
 void
 DestroyLoadCase(LoadCase loadcase)
@@ -466,12 +342,6 @@ DestroyLoadCase(LoadCase loadcase)
 	Deallocate (loadcase);
     }
 }
-/************************************************************************
- * Function:	AssignForce						*
- *									*
- * Description:	Assigns a force given as a piece of code to a force	*
- *		structure.						*
- ************************************************************************/
 
 void
 AssignForce(Force force, DOF dof, Code expr, char *text)
@@ -484,13 +354,6 @@ AssignForce(Force force, DOF dof, Code expr, char *text)
     force -> force [dof].text  = text ? strdup (text) : NULL;
 }
 
-/************************************************************************
- * Function:	AssignSpectrum						*
- *									*
- * Description:	Assigns a spectrum given as a piece of code to a force	*
- *		structure.						*
- ************************************************************************/
-
 void
 AssignSpectrum(Force force, DOF dof, Code expr, char *text)
 {
@@ -501,14 +364,6 @@ AssignSpectrum(Force force, DOF dof, Code expr, char *text)
     force -> spectrum [dof].expr  = IsConstant (expr) ? NULL : CopyCode (expr);
     force -> spectrum [dof].text  = text ? strdup (text) : NULL;
 }
-
-/************************************************************************
- * Function:	AssignConstraint					*
- *									*
- * Description:	Assigns a boundary condition given as a piece of code   *
- *		to the boundary value part of a constraint structure	*
- *              (Tx=, Ty=, Tz=, Rx=, Ry=, Rz=)				*
- ************************************************************************/
 
 void
 AssignConstraint(Constraint constraint, DOF dof, Code expr, char *text, int symbol)

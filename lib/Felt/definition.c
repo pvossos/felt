@@ -43,13 +43,6 @@ DefinitionCompare(Item item1, Item item2)
     return strcmp (((Definition) item1) -> name, ((Definition) item2) -> name);
 }
 
-
-/************************************************************************
- * Function:	AddDefinition						*
- *									*
- * Description:	Add a definition to the set of definitions.		*
- ************************************************************************/
-
 int
 AddDefinition(Definition definition)
 {
@@ -59,13 +52,6 @@ AddDefinition(Definition definition)
     return TreeInsert (problem.definition_tree,definition) != (Item) definition;
 }
 
-
-/************************************************************************
- * Function:	RemoveDefinition					*
- *									*
- * Description:	Remove a definition for the set of definitions.		*
- ************************************************************************/
-
 int 
 RemoveDefinition(Definition definition)
 {
@@ -74,13 +60,6 @@ RemoveDefinition(Definition definition)
 
     return TreeDelete (problem.definition_tree,definition) != (Item) definition;
 }
-
-
-/************************************************************************
- * Function:	LookupDefinition					*
- *									*
- * Description:	Look up a definition by name in the set of definitions.	*
- ************************************************************************/
 
 Definition
 LookupDefinition(char *name)

@@ -26,10 +26,9 @@
 
 # include <stdio.h>
 # include <math.h>
+# include <stdarg.h>
 # include "code.h"
 # include "allocate.h"
-# include VAR_ARGS_INCLUDE
-
 
 # define MaxStackDepth	1024
 # define MaxCodeSize	1024
@@ -111,13 +110,6 @@ static double	  *sp;
 
 Code InCore = in_core;
 
-
-/************************************************************************
- * Function:	EmitCode						*
- *									*
- * Description:	Adds an instruction to the current piece of code.	*
- ************************************************************************/
-
 void
 EmitCode(Opcode op, ...)
 {
@@ -131,19 +123,19 @@ EmitCode(Opcode op, ...)
 
     switch (data [op].arg_type) {
     case Integer:
-	VA_START (ap, op);
+	va_start (ap, op);
 	ip ++ -> offset = va_arg (ap, int);
 	va_end (ap);
 	break;
 
     case Double:
-	VA_START (ap, op);
+	va_start (ap, op);
 	ip ++ -> arg = va_arg (ap, double);
 	va_end (ap);
 	break;
 
     case Array:
-	VA_START (ap, op);
+	va_start (ap, op);
 	array = va_arg (ap, double *);
 	ip ++ -> offset = length = va_arg (ap, int);
 	va_end (ap);
@@ -152,13 +144,6 @@ EmitCode(Opcode op, ...)
 	break;
     }
 }
-
-
-/************************************************************************
- * Function:	CopyCode						*
- *									*
- * Description:	Copies a piece of code.					*
- ************************************************************************/
 
 Code
 CopyCode(Code code)
@@ -200,13 +185,6 @@ CopyCode(Code code)
     return copy;
 }
 
-
-/************************************************************************
- * Function:	FreeCode						*
- *									*
- * Description:	Deallocates a copied program.				*
- ************************************************************************/
-
 void
 FreeCode(Code code)
 {
@@ -214,25 +192,11 @@ FreeCode(Code code)
 	Deallocate (code);
 }
 
-
-/************************************************************************
- * Function:	SetIP							*
- *									*
- * Description:	Sets the address of the instruction pointer.		*
- ************************************************************************/
-
 void
 SetIP(int new_ip)
 {
     ip = InCore + new_ip;
 }
-
-
-/************************************************************************
- * Function:	GetIP							*
- *									*
- * Description:	Returns the address of the instruction pointer.		*
- ************************************************************************/
 
 int
 GetIP(void)
@@ -288,13 +252,6 @@ EvalTable(Code array, int length, double time, int flag)
     /*printf ("(%g,%g) %g (%g,%g)\n", t1, x1, time, t2, x2);*/
     return t1 != t2 ? (x2 - x1) / (t2 - t1) * (time - t1) + x1 : x2;
 }
-
-
-/************************************************************************
- * Function:	EvalCode						*
- *									*
- * Description:	Evaluates a piece of code.				*
- ************************************************************************/
 
 double
 EvalCode(Code code, double time)
@@ -547,13 +504,6 @@ EvalCode(Code code, double time)
 	}
 }
 
-
-/************************************************************************
- * Function:	DebugCode						*
- *									*
- * Description:	Print a piece of stack code as instructions.		*
- ************************************************************************/
-
 void
 DebugCode(Code code)
 {
@@ -596,13 +546,6 @@ DebugCode(Code code)
 	    return;
     }
 }
-
-
-/************************************************************************
- * Function:	IsConstant						*
- *									*
- * Description:	Determines if a piece of code is constant.		*
- ************************************************************************/
 
 int
 IsConstant(Code code)

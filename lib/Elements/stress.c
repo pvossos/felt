@@ -148,14 +148,6 @@ PrincipalStresses2D(double *stress)
    return;
 }
 
-/*****************************************************************************
- *
- * Function:	 SetupStressMemory 
- *
- * Return value: none
- *
- *****************************************************************************/
-
 void
 SetupStressMemory(Element element)
 {
@@ -192,7 +184,6 @@ SetupStressMemory(Element element)
     
     return;
 }
-
 
 void
 AllocateNodalStress(Node node)

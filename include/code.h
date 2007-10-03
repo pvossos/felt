@@ -26,7 +26,6 @@
 
 # ifndef _CODE_H
 # define _CODE_H
-# include "proto.h"
 
 typedef union instruction *Code;
 
@@ -78,15 +77,56 @@ typedef enum {
 
 
 extern Code   InCore;
-extern void   EmitCode	   PROTO ((Opcode, ...));
-extern Code   CopyCode     PROTO ((Code));
-extern void   FreeCode     PROTO ((Code));
-extern double EvalCode     PROTO ((Code, double));
-extern void   DebugCode    PROTO ((Code));
-extern int    CompileCode  PROTO ((char *));
-extern int    IsConstant   PROTO ((Code));
-extern void   SetIP	   PROTO ((int));
-extern int    GetIP	   PROTO ((void));
-extern double exptod	   PROTO ((char *, char **));
+
+/*!
+  Adds an instruction to the current piece of code.
+*/
+void EmitCode(Opcode op, ...);
+
+/*!
+  Copies a piece of code.
+*/
+Code CopyCode(Code code);
+
+/*!
+  Deallocates a copied program.
+*/
+void FreeCode(Code code);
+
+/*!
+  Evaluates a piece of code.
+*/
+double EvalCode(Code code, double time);
+
+/*!
+  Print a piece of stack code as instructions.
+*/
+void DebugCode(Code code);
+
+/*!
+  Compiles a string to a piece of code.
+*/
+int CompileCode(char *text);
+
+/*!
+  Determines if a piece of code is constant.
+*/
+int IsConstant(Code code);
+
+/*!
+  Sets the address of the instruction pointer.
+*/
+void SetIP(int new_ip);
+
+/*!
+  Returns the address of the instruction pointer.
+*/
+int GetIP(void);
+
+/*!
+  Converts a string representing an expression to a double (works just
+  like strtod ( )).
+*/
+double exptod(char *expr, char **ptr);
 
 # endif /* _CODE_H */

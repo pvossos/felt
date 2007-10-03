@@ -17,21 +17,27 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	definition.h						*
- *									*
- * Description:	This file contains the public function prototypes for	*
- *		adding, removing, and looking up element definitions.	*
- ************************************************************************/
-
 # ifndef _DEFINITION_H
 # define _DEFINITION_H
 # include "fe.h"
 
 
-extern void 	  add_all_definitions PROTO ((void));
-extern int	  AddDefinition	      PROTO ((Definition));
-extern int	  RemoveDefinition    PROTO ((Definition));
-extern Definition LookupDefinition    PROTO ((char *));
+void add_all_definitions(void);
+
+/*!
+  Add a definition to the set of definitions.
+*/
+int AddDefinition(Definition definition);
+
+
+/*!
+  Remove a definition for the set of definitions.
+*/
+int RemoveDefinition(Definition definition);
+
+/*!
+  Look up a definition by name in the set of definitions.
+*/
+Definition LookupDefinition(char *name);
 
 # endif /* _DEFINITION_H */

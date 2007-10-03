@@ -32,15 +32,6 @@
 # include "error.h"
 # include "allocate.h"
 
-/*****************************************************************************
- *
- * Function:	GaussPoints
- *
- * Description:	sets an array containing the appropriate Gauss points
- *		for a given number of points for Gaussian quadrature
- *
- ******************************************************************************/
-
 unsigned
 GaussPoints(unsigned int npoints, double **xpoints, double **weights)
 {
@@ -62,12 +53,6 @@ GaussPoints(unsigned int npoints, double **xpoints, double **weights)
       return 0;
    }
 }
-
-/*****************************************************************************
- *
- * Function:	  PlaneStrainD
- *
- *****************************************************************************/
 
 Matrix 
 PlaneStrainD(Element element)
@@ -108,12 +93,6 @@ PlaneStrainD(Element element)
 
    return D;
 }
-
-/*****************************************************************************
- *
- * Function:	PlaneStressD
- *
- *****************************************************************************/
 
 Matrix
 PlaneStressD(Element element)
@@ -274,14 +253,6 @@ ElementLength(Element element, unsigned int coords)
       return 0.0;
 }
 
-/*****************************************************************************
- *
- * Function:	ElementArea
- *
- * Description:	Finds the area of a planar element of n nodes
- *
- ******************************************************************************/
-
 double
 ElementArea(Element e, unsigned int n)
 {
@@ -296,31 +267,6 @@ ElementArea(Element e, unsigned int n)
 
    return sum/2;
 }
-
-/****************************************************************************
- *
- * Function:	ResolveHingeConditions
- *
- * Description: Given a hinged DOF, we need to knock out the rows and
- *		columns associated with that DOF in the element stiffness
- *		matrix.  We also need to adjust all the coefficients
- *		in that stiffness matrix according to:
- *
- *		a(i,j) += [-a(m,j)/a(m,m)]*a(i,m)
- *
- *		where m is the row number of the hinged DOF.  The 
- *		downside to this procedure is that we will _not_ be able
- *		to get displacements at this DOF.  In general, the
- *		end displacements of elements connected at a hinged DOF
- *		will not be continuous.  Given the way FElt deals with
- *		displacements (i.e., as a solution), I figured it was
- *		a better compromise to put as much of this in as I could
- *		without completely changing the output paradigm (i.e.,
- *		I don't want to start outputting element end displacement
- *		in lieu of or in addition to the global displacements that
- *		we already calculate.)
- *		
- ****************************************************************************/
 
 void
 ResolveHingeConditions(Element element)
@@ -357,13 +303,6 @@ ResolveHingeConditions(Element element)
    return;
 }
 
-
-/*****************************************************************************
- *
- * Function:	 SetEquivalentForceMemory
- *
- *****************************************************************************/
-
 void
 SetEquivalentForceMemory(Element element)
 {
@@ -395,17 +334,6 @@ SetEquivalentForceMemory(Element element)
     return;
 }
 
-/*****************************************************************************
- *
- * Function:	 MultiplyAtBA
- *
- * Description:	 Multiplies A(trans)*B*A without actually transposing
- *               and with no full size temporary storage.  It is the
- *		 caller's responsibility to create storage for C
- *		 and to make sure that dimensions match.
- *
- *****************************************************************************/
-
 void
 MultiplyAtBA(Matrix C, Matrix A, Matrix B)
 {
@@ -431,15 +359,6 @@ MultiplyAtBA(Matrix C, Matrix A, Matrix B)
     }
 }
 
-/****************************************************************************
- *
- * Function:	ZeroRowCol
- *
- * Description:	Zeros out the row and column given by dof.  Places
- *		a one on the diagonal.
- *
- ****************************************************************************/
-
 Matrix
 ZeroRowCol(Matrix K, unsigned int dof)
 {
@@ -457,12 +376,6 @@ ZeroRowCol(Matrix K, unsigned int dof)
 
    return K;
 } 
-
-/*****************************************************************************
- *
- * Function:	AllocationError
- *
- ****************************************************************************/
 
 void
 AllocationError(Element e, char *msg)

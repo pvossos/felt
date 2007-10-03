@@ -54,13 +54,6 @@ static struct constraint default_constraint = {NULL, "default_constraint"};
 static char *cpp;
 static char  cpp_command [2048];
 
-
-/************************************************************************
- * Function:	defnlookup						*
- *									*
- * Description:	Looks up an element definition by name.			*
- ************************************************************************/
-
 Definition
 defnlookup(char *name)
 {
@@ -658,13 +651,6 @@ ParseCppOptions(int *argc, char **argv)
     return 0;
 }
 
-
-/************************************************************************
- * Function:	CompileCode						*
- *									*
- * Description:	Compiles a string to a piece of code.			*
- ************************************************************************/
-
 int
 CompileCode(char *text)
 {
@@ -677,14 +663,6 @@ CompileCode(char *text)
     problem.input = input;
     return yyparse ( );
 }
-
-
-/************************************************************************
- * Function:	exptod							*
- *									*
- * Description:	Converts a string representing an expression to a	*
- *		double (works just like strtod ( )).			*
- ************************************************************************/
 
 double
 exptod(char *expr, char **ptr)

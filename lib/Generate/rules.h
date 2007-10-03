@@ -17,56 +17,23 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	rules.h
- *
- ***************************************************************************/
+#ifndef FELTRULES_H
+#define FELTRULES_H
 
-# include "proto.h"
+void *AssignRule (Rule type);
 
-extern void *AssignRule PROTO ((
-   Rule
-));
+double linear_rule (int i, int ne, double L);
 
-extern double linear_rule PROTO ((
-   int,
-   int,
-   double 
-));
+double cos_rule (int i, int ne, double L);
 
-extern double cos_rule PROTO ((
-   int,
-   int,
-   double 
-));
+double sin_rule (int i, int ne, double L);
 
-extern double sin_rule PROTO ((
-   int,
-   int,
-   double 
-));
+double log_rule (int i, int ne, double L);
 
-extern double log_rule PROTO ((
-   int,
-   int,
-   double 
-));
+double parabolic_rule (int i, int ne, double L);
 
-extern double parabolic_rule PROTO ((
-   int,
-   int,
-   double 
-));
+double reverse_log_rule (int i, int ne, double L);
 
-extern double reverse_log_rule PROTO ((
-   int,
-   int,
-   double 
-));
+double reverse_parabolic_rule (int i, int ne, double L);
 
-extern double reverse_parabolic_rule PROTO ((
-   int,
-   int,
-   double 
-));
+#endif

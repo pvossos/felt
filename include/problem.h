@@ -81,19 +81,80 @@ typedef struct {
 extern Problem  problem;
 extern Analysis analysis;
 
-extern char        *copy_input	    PROTO ((int));
-extern void	    init_lexer	    PROTO ((FILE *));
-extern int	    yyparse	    PROTO ((void));
-extern Definition   defnlookup	    PROTO ((char *));
-extern int	    ParseCppOptions PROTO ((int *, char **));
-extern AnalysisType SetAnalysisMode PROTO ((void));
-extern int	    ReadFeltFile    PROTO ((const char *));
-extern int	    WriteFeltFile   PROTO ((char *));
-extern int	    DumpFeltFile    PROTO ((char *));
-extern int	    fWriteFeltFile  PROTO ((FILE *));
-extern int	    fDumpFeltFile   PROTO ((FILE *));
-extern void 	    detail PROTO ((char *, ...));
-extern void         SetDetailStream PROTO ((FILE *));
-extern FILE        *GetDetailStream PROTO (( ));
+/*!
+  Specifies whether yytext should be copied into a local buffer.  The
+  text is put into a canonical form in which leading and trailing
+  white space is eliminated and all other sequences of white space are
+  replaced by a space.
+*/
+char *copy_input (int flag);
+
+/*!
+  Initializes the lexer for a new file.			
+*/
+void init_lexer (FILE *fp);
+
+int yyparse (void);
+
+Definition defnlookup(char *name);
+
+/*!
+  Parses and removes the preprocesor options from the command line
+  arguments.
+*/
+int ParseCppOptions(int *argc, char **argv);
+
+/*!
+ Returns the current analysis mode for given problem instance.
+ Applications cannot simply use problem.mode blindly because we may
+ want to modify the mode to reflect factors other than those that the
+ user can specify with analysis= (i.e., we want to allow for
+ sub-modes).
+*/
+AnalysisType SetAnalysisMode(void);
+
+/*!
+  Reads a felt file using the preprocessor if desired.  A filename of
+  "-" indicates standard input (can only be used initially) and a NULL
+  filename indicates no file (an empty problem is created).
+*/
+int ReadFeltFile(const char *filename);
+
+/*!
+  Writes a felt file -- only referenced objects will be written.
+*/
+int WriteFeltFile(char *filename);
+
+/*!
+ Dumps a felt file -- referenced and unreferenced objects will be
+ written.
+*/
+int DumpFeltFile(char *filename);
+
+/*!
+  Writes a felt file -- only referenced objects will be written.
+*/
+int fWriteFeltFile(FILE *stream);
+
+/*!
+  Dumps a felt file -- referenced and unreferenced objects will be
+  written.
+ */
+int fDumpFeltFile(FILE *stream);
+
+/*!
+  Checks the state of the detail print flag and if it	
+  is on, prints a message to the current detail stream.
+*/
+void detail(char *format, ...);
+
+/*!
+  Turns on (or off) and sets the stream that describes where detail
+  messages should be printed.  To toggle detail messages off, set the
+  stream to NULL.
+*/
+void SetDetailStream(FILE *fp);
+
+FILE* GetDetailStream(void);
 
 # endif /* _PROBLEM_H */

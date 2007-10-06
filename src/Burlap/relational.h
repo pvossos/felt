@@ -26,13 +26,12 @@
 
 # ifndef _RELATIONAL_H
 # define _RELATIONAL_H
-# include "proto.h"			/* function declarations */
 
-extern int eq_op PROTO ((void));
-extern int ge_op PROTO ((void));
-extern int gt_op PROTO ((void));
-extern int le_op PROTO ((void));
-extern int lt_op PROTO ((void));
-extern int ne_op PROTO ((void));
+int eq_op (void);
+int ge_op (void);
+int gt_op (void);
+int le_op (void);
+int lt_op (void);
+int ne_op (void);
 
 # endif /* _RELATIONAL_H */

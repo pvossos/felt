@@ -47,7 +47,7 @@
 #define ZERO(x) (x)
 #endif
 
-extern double ElementArea ( );
+double ElementArea(Element e, unsigned int n);
 
 /**************************************************************************
  *

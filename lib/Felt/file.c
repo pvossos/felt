@@ -871,13 +871,6 @@ CloseFile(void)
     return;
 }
 
-/************************************************************************
- * Function:	WriteFeltFile						*
- *									*
- * Description:	Writes a felt file -- only referenced objects will be	*
- *		written.						*
- ************************************************************************/
-
 int
 WriteFeltFile(char *filename)
 {
@@ -891,14 +884,6 @@ WriteFeltFile(char *filename)
 
     return 0;
 }
-
-
-/************************************************************************
- * Function:	DumpFeltFile						*
- *									*
- * Description:	Dumps a felt file -- referenced and unreferenced	*
- *		objects will be written.				*
- ************************************************************************/
 
 int
 DumpFeltFile(char *filename)
@@ -914,13 +899,6 @@ DumpFeltFile(char *filename)
     return 0;
 }
 
-/************************************************************************
- * Function:	fWriteFeltFile						*
- *									*
- * Description:	Writes a felt file -- only referenced objects will be	*
- *		written.						*
- ************************************************************************/
-
 int
 fWriteFeltFile(FILE *stream)
 {
@@ -931,14 +909,6 @@ fWriteFeltFile(FILE *stream)
 
     return 0;
 }
-
-
-/************************************************************************
- * Function:	fDumpFeltFile						*
- *									*
- * Description:	Dumps a felt file -- referenced and unreferenced	*
- *		objects will be written.				*
- ************************************************************************/
 
 int 
 fDumpFeltFile(FILE *stream)

@@ -49,7 +49,7 @@
  *		double values unless both operands are strings.		*
  ************************************************************************/
 
-int eq_op ( )
+int eq_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -264,7 +264,7 @@ int eq_op ( )
  *		double values unless both operands are strings.		*
  ************************************************************************/
 
-int ge_op ( )
+int ge_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -413,7 +413,7 @@ int ge_op ( )
  *		double values unless both operands are strings.		*
  ************************************************************************/
 
-int gt_op ( )
+int gt_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -562,7 +562,7 @@ int gt_op ( )
  *		double values unless both operands are strings.		*
  ************************************************************************/
 
-int le_op ( )
+int le_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -711,7 +711,7 @@ int le_op ( )
  *		double values unless both operands are strings.		*
  ************************************************************************/
 
-int lt_op ( )
+int lt_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -861,7 +861,7 @@ int lt_op ( )
  *		double values unless both operands are strings.		*
  ************************************************************************/
 
-int ne_op ( )
+int ne_op (void)
 {
     Matrix	a;
     Matrix	b;

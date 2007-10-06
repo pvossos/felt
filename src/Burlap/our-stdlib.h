@@ -41,12 +41,12 @@
 # undef strtol
 # undef system
 
-extern double drand48 ( );
-extern char  *getenv  ( );
-extern void   qsort   ( );
-extern void   srand48 ( );
-extern double strtod  ( );
-extern long   strtol  ( );
-extern int    system  ( );
+extern double drand48 (void);
+extern char  *getenv  (const char *);
+extern void   qsort   (void *, size_t, size_t, int (*) (const void *, const void *));
+extern void   srand48 (long int);
+extern double strtod  (const char *, char **);
+extern long   strtol  (const char *, char **, int);
+extern int    system  (const char *);
 
 # endif /* _OUR_STDLIB_H */

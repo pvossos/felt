@@ -55,8 +55,7 @@
  *		string values.						*
  ************************************************************************/
 
-int concat_func (n)
-    int n;
+int concat_func (int n)
 {
     char       *s1;
     char       *s2;
@@ -109,8 +108,7 @@ int concat_func (n)
  * Description:	Not available yet.					*
  ************************************************************************/
 
-int eval_func (n)
-    int n;
+int eval_func (int n)
 {
     rterror ("eval() function is not available");
     return 1;
@@ -132,8 +130,7 @@ int eval_func (n)
  *		integer value.						*
  ************************************************************************/
 
-int exit_func (n)
-    int n;
+int exit_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -184,8 +181,7 @@ int exit_func (n)
  *		double value.						*
  ************************************************************************/
 
-int history_func (n)
-    int n;
+int history_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -245,8 +241,7 @@ int history_func (n)
  *		string value.						*
  ************************************************************************/
 
-int include_func (n)
-    int n;
+int include_func (int n)
 {
     char	*name;
     static char	*path;
@@ -295,8 +290,7 @@ int include_func (n)
  * Description:	Not available yet.					*
  ************************************************************************/
 
-int load_func (n)
-    int n;
+int load_func (int n)
 {
     rterror ("load() function is not available");
     return 1;
@@ -311,8 +305,7 @@ int load_func (n)
  *		A null descriptor is returned upon end-of-file.		*
  ************************************************************************/
 
-int read_func (n)
-    int n;
+int read_func (int n)
 {
     descriptor *result;
     char       *ptr;
@@ -350,8 +343,7 @@ int read_func (n)
  *		A null descriptor is returned upon end-of-file.		*
  ************************************************************************/
 
-int reads_func (n)
-    int n;
+int reads_func (int n)
 {
     descriptor *result;
     char	buffer [ReadBufferSize];
@@ -384,8 +376,7 @@ int reads_func (n)
  * Description:	Not available yet.					*
  ************************************************************************/
 
-int save_func (n)
-    int n;
+int save_func (int n)
 {
     rterror ("save() function is not available");
     return 1;
@@ -407,8 +398,7 @@ int save_func (n)
  *		string value.						*
  ************************************************************************/
 
-int system_func (n)
-    int n;
+int system_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -450,8 +440,7 @@ int system_func (n)
  *		type of the argument.					*
  ************************************************************************/
 
-int type_func (n)
-    int n;
+int type_func (int n)
 {
     descriptor *arg;
     descriptor *result;

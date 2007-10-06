@@ -26,20 +26,19 @@
 
 # ifndef _MATHFUNC_H
 # define _MATHFUNC_H
-# include "proto.h"			/* function declarations */
 
-extern int ceil_func  PROTO ((int));
-extern int cos_func   PROTO ((int));
-extern int exp_func   PROTO ((int));
-extern int fabs_func  PROTO ((int));
-extern int floor_func PROTO ((int));
-extern int fmod_func  PROTO ((int));
-extern int hypot_func PROTO ((int));
-extern int log_func   PROTO ((int));
-extern int log10_func PROTO ((int));
-extern int pow_func   PROTO ((int));
-extern int sin_func   PROTO ((int));
-extern int sqrt_func  PROTO ((int));
-extern int tan_func   PROTO ((int));
+int ceil_func  (int n);
+int cos_func   (int n);
+int exp_func   (int n);
+int fabs_func  (int n);
+int floor_func (int n);
+int fmod_func  (int n);
+int hypot_func (int n);
+int log_func   (int n);
+int log10_func (int n);
+int pow_func   (int n);
+int sin_func   (int n);
+int sqrt_func  (int n);
+int tan_func   (int n);
 
 # endif /* _MATHFUNC_H */

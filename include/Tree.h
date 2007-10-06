@@ -32,26 +32,38 @@
 
 typedef struct tree *Tree;
 
-extern Tree TreeCreate        PROTO ((ItemComparator));
-extern int  TreeDestroy       PROTO ((Tree));
-extern int  TreeIterate       PROTO ((Tree));
-extern int  TreeSize          PROTO ((Tree));
+Tree TreeCreate(ItemComparator compare);
 
-extern int  TreePreorder      PROTO ((Tree));
-extern int  TreeInorder       PROTO ((Tree));
-extern int  TreePostorder     PROTO ((Tree));
+int TreeDestroy(Tree tree);
 
-extern Item TreeInsert        PROTO ((Tree, Item));
-extern Item TreeDelete        PROTO ((Tree, Item));
-extern Item TreeSearch        PROTO ((Tree, Item));
+int TreeSize(Tree tree);
 
-extern Item TreeMinimum       PROTO ((Tree));
-extern Item TreeMaximum       PROTO ((Tree));
-extern Item TreePredecessor   PROTO ((Tree, Item));
-extern Item TreeSuccessor     PROTO ((Tree, Item));
+int TreeIterate(Tree tree);
 
-extern int  TreeSetIterator   PROTO ((Tree, ItemIterator));
-extern int  TreeSetDestructor PROTO ((Tree, ItemDestructor));
-extern int  TreeSetDuplicator PROTO ((Tree, ItemDuplicator));
+int TreePreorder(Tree tree);
+
+int TreeInorder(Tree tree);
+
+int TreePostorder(Tree tree);
+
+Item TreeInsert(Tree tree, Item item);
+
+Item TreeDelete(Tree tree, Item item);
+
+Item TreeSearch(Tree tree, Item item);
+
+Item TreeMinimum(Tree tree);
+
+Item TreeMaximum(Tree tree);
+
+Item TreePredecessor(Tree tree, Item item);
+
+Item TreeSuccessor(Tree tree, Item item);
+
+int TreeSetIterator(Tree tree, ItemIterator iterate);
+
+int TreeSetDestructor(Tree tree, ItemDestructor destroy);
+
+int TreeSetDuplicator(Tree tree, ItemDuplicator copy);
 
 # endif /* _Tree_h */

@@ -26,18 +26,17 @@
 
 # ifndef _MISCFUNC_H
 # define _MISCFUNC_H
-# include "proto.h"			/* function declarations */
 
-extern int concat_func	PROTO ((int));
-extern int eval_func	PROTO ((int));
-extern int exit_func	PROTO ((int));
-extern int history_func	PROTO ((int));
-extern int include_func	PROTO ((int));
-extern int load_func	PROTO ((int));
-extern int read_func	PROTO ((int));
-extern int reads_func	PROTO ((int));
-extern int save_func	PROTO ((int));
-extern int system_func	PROTO ((int));
-extern int type_func	PROTO ((int));
+int concat_func	(int n);
+int eval_func	(int n);
+int exit_func	(int n);
+int history_func	(int n);
+int include_func	(int n);
+int load_func	(int n);
+int read_func	(int n);
+int reads_func	(int n);
+int save_func	(int n);
+int system_func	(int n);
+int type_func	(int n);
 
 # endif /* _MISCFUNC_H */

@@ -26,18 +26,17 @@
 
 # ifndef _ARITHMETIC_H
 # define _ARITHMETIC_H
-# include "proto.h"			/* function declarations */
 
-extern int add_op   PROTO ((void));
-extern int bkslv_op PROTO ((void));
-extern int div_op   PROTO ((void));
-extern int mod_op   PROTO ((void));
-extern int mul_op   PROTO ((void));
-extern int neg_op   PROTO ((void));
-extern int not_op   PROTO ((void));
-extern int plus_op  PROTO ((void));
-extern int pow_op   PROTO ((void));
-extern int sub_op   PROTO ((void));
-extern int trans_op PROTO ((void));
+int add_op   (void);
+int bkslv_op (void);
+int div_op   (void);
+int mod_op   (void);
+int mul_op   (void);
+int neg_op   (void);
+int not_op   (void);
+int plus_op  (void);
+int pow_op   (void);
+int sub_op   (void);
+int trans_op (void);
 
 # endif /* _ARITHMETIC_H */

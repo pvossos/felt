@@ -40,7 +40,7 @@
  *		Most of the work is done by AssignData().		*
  ************************************************************************/
 
-int asgn_op ( )
+int asgn_op (void)
 {
     descriptor *src;
     descriptor *dest;
@@ -75,7 +75,7 @@ int asgn_op ( )
  *		the stack onto the stack.				*
  ************************************************************************/
 
-int copy_op ( )
+int copy_op (void)
 {
     double	value;
     descriptor *d;
@@ -106,7 +106,7 @@ int copy_op ( )
  *		from the stack.						*
  ************************************************************************/
 
-int pop_op ( )
+int pop_op (void)
 {
     int i;
     int n;
@@ -130,7 +130,7 @@ int pop_op ( )
  *		pushed on the stack.					*
  ************************************************************************/
 
-int test_op ( )
+int test_op (void)
 {
     double	value;
     descriptor *d;

@@ -46,8 +46,7 @@
  *		double value.						*
  ************************************************************************/
 
-int ceil_func (n)
-    int n;
+int ceil_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -116,8 +115,7 @@ int ceil_func (n)
  *		double value.						*
  ************************************************************************/
 
-int cos_func (n)
-    int n;
+int cos_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -186,8 +184,7 @@ int cos_func (n)
  *		a double value.						*
  ************************************************************************/
 
-int exp_func (n)
-    int n;
+int exp_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -256,8 +253,7 @@ int exp_func (n)
  *		double value.						*
  ************************************************************************/
 
-int fabs_func (n)
-    int n;
+int fabs_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -326,8 +322,7 @@ int fabs_func (n)
  *		double value.						*
  ************************************************************************/
 
-int floor_func (n)
-    int n;
+int floor_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -400,8 +395,7 @@ int floor_func (n)
  *		the event of an error.					*
  ************************************************************************/
 
-int fmod_func (n)
-    int n;
+int fmod_func (int n)
 {
     return mod_op ( );
 }
@@ -421,8 +415,7 @@ int fmod_func (n)
  *		double values.						*
  ************************************************************************/
 
-int hypot_func (n)
-    int n;
+int hypot_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -545,8 +538,7 @@ int hypot_func (n)
  *		double value.						*
  ************************************************************************/
 
-int log_func (n)
-    int n;
+int log_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -627,8 +619,7 @@ int log_func (n)
  *		double value.						*
  ************************************************************************/
 
-int log10_func (n)
-    int n;
+int log10_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -710,8 +701,7 @@ int log10_func (n)
  *		the event of an error.					*
  ************************************************************************/
 
-int pow_func (n)
-    int n;
+int pow_func (int n)
 {
     return pow_op ( );
 }
@@ -731,8 +721,7 @@ int pow_func (n)
  *		double value.						*
  ************************************************************************/
 
-int sin_func (n)
-    int n;
+int sin_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -802,8 +791,7 @@ int sin_func (n)
  *		compute a true square root for matrices.		*
  ************************************************************************/
 
-int sqrt_func (n)
-    int n;
+int sqrt_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -884,8 +872,7 @@ int sqrt_func (n)
  *		double value.						*
  ************************************************************************/
 
-int tan_func (n)
-    int n;
+int tan_func (int n)
 {
     Matrix	a;
     Matrix	b;

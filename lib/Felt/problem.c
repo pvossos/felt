@@ -436,16 +436,6 @@ resolve_names(void)
     }
 }
 
-
-/************************************************************************
- * Function:	ReadFeltFile						*
- *									*
- * Description:	Reads a felt file using the preprocessor if desired.  A	*
- *		filename of "-" indicates standard input (can only be	*
- *		used initially) and a NULL filename indicates no file	*
- *		(an empty problem is created).				*
- ************************************************************************/
-
 int
 ReadFeltFile(const char *filename)
 {
@@ -577,18 +567,6 @@ ReadFeltFile(const char *filename)
     return 0;
 }
 
-
-/************************************************************************
- * Function:	SetAnalysisMode						*
- *									*
- * Description:	Returns the current analysis mode for given problem	*
- *		instance.  Applications cannot simply use 		*
- *		problem.mode blindly because we may want to modify	*
- *		the mode to reflect factors other than those that	*
- *		the user can specify with analysis= (i.e., we want	*
- *		to allow for sub-modes)					*
- ************************************************************************/
-
 AnalysisType
 SetAnalysisMode(void)
 {
@@ -606,14 +584,6 @@ SetAnalysisMode(void)
 
     return problem.mode;        
 }
-
-
-/************************************************************************
- * Function:	ParseCppOptions						*
- *									*
- * Description:	Parses and removes the preprocesor options from the	*
- *		command line arguments.					*
- ************************************************************************/
 
 int
 ParseCppOptions(int *argc, char **argv)
@@ -677,14 +647,6 @@ exptod(char *expr, char **ptr)
 
     return EvalCode (code, 0.0);
 }
-
-
-/************************************************************************
- * Function:	InitAppearance						*
- *									*
- * Description:	Initializes the appearance structure, first freeing	*
- *		any existing information.				*
- ************************************************************************/
 
 void
 InitAppearance(void)

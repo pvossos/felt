@@ -1,71 +1,24 @@
 # ifndef _OPTIONS_H
 # define _OPTIONS_H
 
-# include "proto.h"
+int ArgsUsed (void);
 
-int ArgsUsed PROTO (( void ));
+int GetIntegerOption(int argc, char **argv, char *name, int **opt);
 
-int GetIntegerOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   int	**
-));
+int GetDoubleOption(int argc, char **argv, char *name, double **opt);
 
-int GetDoubleOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   double **
-));
+int GetFloatOption(int argc, char **argv, char *name, float **opt);
 
-int GetFloatOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   float **
-));
+int GetBooleanOption(int argc, char **argv, char *name, int *opt);
 
-int GetBooleanOption PROTO ((
-   int,
-   char **,
-   char *,
-   int *
-));
+int GetStringOption(int argc, char **argv, char *name, char ***opt);
 
-int GetStringOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   char	***
-));
+int GetSoloIntegerOption(int argc, char **argv, char *name, int *opt);
 
-int GetSoloIntegerOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   int	*
-));
+int GetSoloDoubleOption(int argc, char **argv, char *name, double *opt);
 
-int GetSoloDoubleOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   double *
-));
+int GetSoloFloatOption(int argc, char **argv, char *name, float *opt);
 
-int GetSoloFloatOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   float *
-));
-
-int GetSoloStringOption PROTO ((
-   int,
-   char	**,
-   char	*,
-   char	**
-));
+int GetSoloStringOption(int argc, char **argv, char *name, char **opt);
 
 # endif

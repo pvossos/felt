@@ -26,11 +26,10 @@
 
 # ifndef _ASSIGNMENT_H
 # define _ASSIGNMENT_H
-# include "proto.h"			/* function declarations */
 
-extern int asgn_op PROTO ((void));
-extern int copy_op PROTO ((void));
-extern int pop_op  PROTO ((void));
-extern int test_op PROTO ((void));
+int asgn_op (void);
+int copy_op (void);
+int pop_op  (void);
+int test_op (void);
 
 # endif /* _ASSIGNMENT_H */

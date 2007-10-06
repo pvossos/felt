@@ -39,8 +39,7 @@
  * Description:	Writes a null descriptor.				*
  ************************************************************************/
 
-static void write_null (d)
-    descriptor *d;
+static void write_null (descriptor *d)
 {
     printf ("null");
 }
@@ -52,8 +51,7 @@ static void write_null (d)
  * Description:	Writes a variable descriptor.				*
  ************************************************************************/
 
-static void write_variable (d)
-    descriptor *d;
+static void write_variable (descriptor *d)
 {
     d = deref (d);
     writetab [D_Type (d)] (d);
@@ -66,8 +64,7 @@ static void write_variable (d)
  * Description:	Writes a function descriptor.				*
  ************************************************************************/
 
-static void write_function (d)
-    descriptor *d;
+static void write_function (descriptor *d)
 {
     int      i;
     Function func;
@@ -89,8 +86,7 @@ static void write_function (d)
  * Description:	Writes an intrinsic function descriptor.		*
  ************************************************************************/
 
-static void write_intrinsic (d)
-    descriptor *d;
+static void write_intrinsic (descriptor *d)
 {
     int i;
     int nargs;
@@ -118,8 +114,7 @@ static void write_intrinsic (d)
  * Description:	Writes a string descriptor.				*
  ************************************************************************/
 
-static void write_string (d)
-    descriptor *d;
+static void write_string (descriptor *d)
 {
     printf ("%s", *D_String (d) ? *D_String (d) : "(null)");
 }
@@ -131,8 +126,7 @@ static void write_string (d)
  * Description:	Writes a double descriptor.				*
  ************************************************************************/
 
-static void write_double (d)
-    descriptor *d;
+static void write_double (descriptor *d)
 {
     printf ("%g", *D_Double (d));
 }
@@ -144,8 +138,7 @@ static void write_double (d)
  * Description:	Writes an integer descriptor.				*
  ************************************************************************/
 
-static void write_int (d)
-    descriptor *d;
+static void write_int (descriptor *d)
 {
     printf ("%d", *D_Int (d));
 }
@@ -157,8 +150,7 @@ static void write_int (d)
  * Description:	Writes a byte descriptor.				*
  ************************************************************************/
 
-static void write_byte (d)
-    descriptor *d;
+static void write_byte (descriptor *d)
 {
     printf (iscntrl (*D_Byte (d)) ? "%d" : "%c", *D_Byte (d));
 }
@@ -170,8 +162,7 @@ static void write_byte (d)
  * Description:	Writes an array descriptor.				*
  ************************************************************************/
 
-static void write_array (d)
-    descriptor *d;
+static void write_array (descriptor *d)
 {
     printf ("array of %s", type_names [D_Array (d) -> type]);
 }
@@ -183,8 +174,7 @@ static void write_array (d)
  * Description:	Writes a row descriptor.				*
  ************************************************************************/
 
-static void write_row (d)
-    descriptor *d;
+static void write_row (descriptor *d)
 {
     printf ("row");
 }
@@ -196,8 +186,7 @@ static void write_row (d)
  * Description:	Writes a matrix descriptor.				*
  ************************************************************************/
 
-static void write_matrix (d)
-    descriptor *d;
+static void write_matrix (descriptor *d)
 {
     PrintMatrix (D_Matrix (d), stdout);
 }
@@ -209,8 +198,7 @@ static void write_matrix (d)
  * Description:	Writes a matrix_ptr descriptor.				*
  ************************************************************************/
 
-static void write_matrix_ptr (d)
-    descriptor *d;
+static void write_matrix_ptr (descriptor *d)
 {
     printf ("matrixptr");
 }
@@ -222,8 +210,7 @@ static void write_matrix_ptr (d)
  * Description:	Writes an analysis descriptor.				*
  ************************************************************************/
 
-static void write_analysis (d)
-    descriptor *d;
+static void write_analysis (descriptor *d)
 {
     printf ("analysis parameters");
 }
@@ -235,8 +222,7 @@ static void write_analysis (d)
  * Description:	Writes a constraint descriptor.				*
  ************************************************************************/
 
-static void write_constraint (d)
-    descriptor *d;
+static void write_constraint (descriptor *d)
 {
     Constraint c;
 
@@ -252,8 +238,7 @@ static void write_constraint (d)
  * Description:	Writes a definition descriptor.				*
  ************************************************************************/
 
-static void write_definition (d)
-    descriptor *d;
+static void write_definition (descriptor *d)
 {
     Definition def;
 
@@ -269,8 +254,7 @@ static void write_definition (d)
  * Description:	Writes an element descriptor.				*
  ************************************************************************/
 
-static void write_element (d)
-    descriptor *d;
+static void write_element (descriptor *d)
 {
     Element e;
 
@@ -286,8 +270,7 @@ static void write_element (d)
  * Description:	Writes a force descriptor.				*
  ************************************************************************/
 
-static void write_force (d)
-    descriptor *d;
+static void write_force (descriptor *d)
 {
     Force f;
 
@@ -303,8 +286,7 @@ static void write_force (d)
  * Description:	Writes a load descriptor.				*
  ************************************************************************/
 
-static void write_load (d)
-    descriptor *d;
+static void write_load (descriptor *d)
 {
     Distributed l;
 
@@ -320,8 +302,7 @@ static void write_load (d)
  * Description:	Writes a material descriptor.				*
  ************************************************************************/
 
-static void write_material (d)
-    descriptor *d;
+static void write_material (descriptor *d)
 {
     Material m;
 
@@ -337,8 +318,7 @@ static void write_material (d)
  * Description:	Writes a node descriptor.				*
  ************************************************************************/
 
-static void write_node (d)
-    descriptor *d;
+static void write_node (descriptor *d)
 {
     Node n;
 
@@ -354,8 +334,7 @@ static void write_node (d)
  * Description:	Writes a pair descriptor.				*
  ************************************************************************/
 
-static void write_pair (d)
-    descriptor *d;
+static void write_pair (descriptor *d)
 {
     Pair *p;
 
@@ -371,8 +350,7 @@ static void write_pair (d)
  * Description:	Writes a problem descriptor.				*
  ************************************************************************/
 
-static void write_problem (d)
-    descriptor *d;
+static void write_problem (descriptor *d)
 {
     printf ("problem definition");
 }
@@ -384,8 +362,7 @@ static void write_problem (d)
  * Description:	Writes a stress descriptor.				*
  ************************************************************************/
 
-static void write_stress (d)
-    descriptor *d;
+static void write_stress (descriptor *d)
 {
     printf ("stress");
 }
@@ -397,8 +374,7 @@ static void write_stress (d)
  * Description:	Writes an external descriptor.				*
  ************************************************************************/
 
-static void write_external (d)
-    descriptor *d;
+static void write_external (descriptor *d)
 {
     printf ("external C function (%p)", *D_External (d));
 }
@@ -411,8 +387,7 @@ static void write_external (d)
  *		The result of the function is always zero.		*
  ************************************************************************/
 
-int write_func (n)
-    int n;
+int write_func (int n)
 {
     int		i;
     descriptor *d;
@@ -451,8 +426,7 @@ int write_func (n)
  *		function is always zero.				*
  ************************************************************************/
 
-int writes_func (n)
-    int n;
+int writes_func (int n)
 {
     int		i;
     descriptor *d;

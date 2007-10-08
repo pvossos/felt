@@ -26,10 +26,9 @@
 
 # ifndef _DEBUG_H
 # define _DEBUG_H
-# include "proto.h"			/* function declarations */
 
 extern int  debug;
-extern void eprintf PROTO ((char *, ...));
+extern void eprintf (char *, ...);
 
 # ifdef EXECDEBUG
 

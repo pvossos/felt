@@ -26,9 +26,8 @@
 
 # ifndef _LOCATION_H
 # define _LOCATION_H
-# include "proto.h"			/* function declarations */
 
-extern int file_op PROTO ((void));
-extern int line_op PROTO ((void));
+int file_op (void);
+int line_op (void);
 
 # endif /* _LOCATION_H */

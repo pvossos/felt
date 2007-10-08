@@ -115,29 +115,19 @@ static String table =
  <KeyUp>Return: AutoRepeat(saved) unset() GraphAction(button)\n\
  <KeyUp>space: AutoRepeat(saved) unset() GraphAction(button)";
 
-static void DismissCallback (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data;
-   XtPointer	call_data;
+static void DismissCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
    XtPopdown ((Widget) client_data); 
 }
 
-static void SaveCallback (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data;
-   XtPointer	call_data;
+static void SaveCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
    Widget	graph_dw = *(Widget *) client_data;
 
    DumpDrawingArea (graph_dw, "Save Line Plot", True);
 }
 
-static void GraphAction (w, event, params, num_params)
-   Widget	w;
-   XEvent	*event;
-   String	*params;
-   Cardinal	*num_params;
+static void GraphAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    if (strcmp (params [0], "tdShell") == 0)
       DismissCallback (NULL, (XtPointer) &tdShell, NULL);
@@ -147,10 +137,7 @@ static void GraphAction (w, event, params, num_params)
       XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-static void InitializeGraphShell (graphShell, graph_dw, gr)
-   Widget	graphShell; 
-   Widget	graph_dw;
-   graph	*gr;
+static void InitializeGraphShell (Widget graphShell, Widget graph_dw, graph *gr)
 {
    Arg		arglist [12];
    Cardinal	count;
@@ -184,7 +171,7 @@ static void InitializeGraphShell (graphShell, graph_dw, gr)
    XtSetValues (graph_dw, arglist, count);
 }
 
-static void InitializeFonts ( )
+static void InitializeFonts (void)
 {
    axis_font = XLoadQueryFont (XtDisplay (toplevel), AXIS_FONT1);
    if (axis_font == NULL) {
@@ -240,10 +227,7 @@ static void InitializeFonts ( )
 }
 
 
-static Widget CreateGraphShell (dw, shell_name, dw_name)
-   Widget		*dw;
-   char			*shell_name;
-   char			*dw_name;
+static Widget CreateGraphShell (Widget *dw, char *shell_name, char *dw_name)
 {
    Widget		graphShell;
    Arg			args [10];
@@ -336,9 +320,7 @@ static Widget CreateGraphShell (dw, shell_name, dw_name)
 	 * xmgr to figure out axis extreme and tick spacing ...
 	 */
 
-static double NiceNumber (x, round_mode)
-   double	x;
-   Boolean	round_mode;
+static double NiceNumber (double x, Boolean round_mode)
 {
    double	order;
    double	fraction;
@@ -369,10 +351,7 @@ static double NiceNumber (x, round_mode)
    return y*pow(10.0, order);
 }
 
-static void SetupYAxis (min, max, numticks, gr)
-   double	min, max;
-   int		numticks;
-   graph	*gr;
+static void SetupYAxis (double min, double max, int numticks, graph *gr)
 {
    double	range;
    double	d;
@@ -388,10 +367,7 @@ static void SetupYAxis (min, max, numticks, gr)
    return;
 }
 
-static void SetupXAxis (min, max, numticks, gr)
-   double	min, max;
-   int		numticks;
-   graph	*gr;
+static void SetupXAxis (double min, double max, int numticks, graph *gr)
 {
    double	range;
    double	d;
@@ -413,8 +389,7 @@ static void SetupXAxis (min, max, numticks, gr)
 	 * time step
 	 */
 
-static void SetupTimeAxis (gr)
-   graph	*gr;
+static void SetupTimeAxis (graph *gr)
 {
    int		numsteps;
 
@@ -441,11 +416,7 @@ static void SetupTimeAxis (gr)
    gr -> max_x = analysis.stop;
 }
 
-static void DrawLabel (data, axis, graph_dw, gr)
-   double	data;
-   int		axis;
-   Widget	graph_dw;
-   graph	*gr;
+static void DrawLabel (double data, int axis, Widget graph_dw, graph *gr)
 {
    char			buffer [20];
    XCharStruct  	cstruct;
@@ -474,12 +445,7 @@ static void DrawLabel (data, axis, graph_dw, gr)
    return;
 }
    
-static void SetupGraphArea (min_x, max_x, min_y, max_y, graph_dw, gr, use_time)
-   double	min_x, max_x;
-   double	min_y, max_y;
-   Widget	graph_dw;
-   graph	*gr;
-   unsigned	use_time;
+static void SetupGraphArea (double min_x, double max_x, double min_y, double max_y, Widget graph_dw, graph *gr, unsigned int use_time)
 {
    double	t, x, m;
  
@@ -539,10 +505,7 @@ static void SetupGraphArea (min_x, max_x, min_y, max_y, graph_dw, gr, use_time)
    return;
 }    
 
-static void DrawCurveLegend (i, print_dof_names, graph_dw)
-   int		i;
-   Boolean	print_dof_names;
-   Widget	graph_dw;
+static void DrawCurveLegend (int i, Boolean print_dof_names, Widget graph_dw)
 {
    static char		*symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    static int   	first = 1;
@@ -580,10 +543,7 @@ static void DrawCurveLegend (i, print_dof_names, graph_dw)
    return;
 }
 
-static void DrawTransferLegend (i, l, curve, graph_dw)
-   int		i, l;
-   int		curve;
-   Widget	graph_dw;
+static void DrawTransferLegend (int i, int l, int curve, Widget graph_dw)
 {
    static char		*symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    static int   	first = 1;
@@ -620,10 +580,7 @@ static void DrawTransferLegend (i, l, curve, graph_dw)
    return;
 }
 
-static void DrawForceLegend (i, symbol, graph_dw)
-   int		i;
-   char		*symbol;
-   Widget	graph_dw;
+static void DrawForceLegend (int i, char *symbol, Widget graph_dw)
 {
    static int   	first = 1;
    XCharStruct		cstruct;
@@ -651,12 +608,7 @@ static void DrawForceLegend (i, symbol, graph_dw)
    return;
 }
 
-static void PlaceTitles (alt_title, xlabel, ylabel, graph_dw, use_alt_title)
-   char		*alt_title;
-   char		*xlabel;
-   char		*ylabel;
-   Widget	graph_dw;
-   int		use_alt_title;
+static void PlaceTitles (char *alt_title, char *xlabel, char *ylabel, Widget graph_dw, int use_alt_title)
 {
    int		dr, far, fdr;
    XCharStruct	cstruct;
@@ -705,13 +657,7 @@ static void PlaceTitles (alt_title, xlabel, ylabel, graph_dw, use_alt_title)
    return;
 }
 
-void VelvetPlotTD (dtable, ttable, xlabel, ylabel, alt_title, print_dof_names)
-   Matrix	dtable;
-   Matrix	ttable;
-   char		*xlabel;
-   char		*ylabel;
-   char		*alt_title;
-   Boolean	print_dof_names;
+void VelvetPlotTD (Matrix dtable, Matrix ttable, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names)
 {
    Arg		args [1];
    int		depth;
@@ -807,12 +753,7 @@ void VelvetPlotTD (dtable, ttable, xlabel, ylabel, alt_title, print_dof_names)
    PlaceTitles (alt_title, xlabel, ylabel, td_dw, 0);
 }
 
-void VelvetPlotSpectra (P, xlabel, ylabel, alt_title, print_dof_names)
-   Matrix	P;
-   char		*xlabel;
-   char		*ylabel;
-   char		*alt_title;
-   Boolean	print_dof_names;
+void VelvetPlotSpectra (Matrix P, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names)
 {
    Arg		args [1];
    int		depth;
@@ -885,13 +826,7 @@ void VelvetPlotSpectra (P, xlabel, ylabel, alt_title, print_dof_names)
    PlaceTitles (alt_title, xlabel, ylabel, fp_dw, 0);
 }
 
-void VelvetPlotTransferFunctions (H, forced, numforced, xlabel, ylabel, alt_title)
-   Matrix	*H;
-   unsigned	*forced;
-   unsigned	numforced;
-   char		*xlabel;
-   char		*ylabel;
-   char		*alt_title;
+void VelvetPlotTransferFunctions (Matrix *H, unsigned int *forced, unsigned int numforced, char *xlabel, char *ylabel, char *alt_title)
 {
    Arg		args [1];
    int		depth;
@@ -973,9 +908,7 @@ void VelvetPlotTransferFunctions (H, forced, numforced, xlabel, ylabel, alt_titl
    PlaceTitles (alt_title, xlabel, ylabel, fp_dw, 0);
 }
 
-void VelvetPlotForce (force, quantity)
-   Force	force;
-   char		*quantity;
+void VelvetPlotForce (Force force, char *quantity)
 {
    static char *symbols [] = {"", "Fx", "Fy", "Fz", "Mx", "My", "Mz"};
    char		*symbol [4];
@@ -1122,8 +1055,7 @@ void VelvetPlotForce (force, quantity)
    return;
 }
 
-void VelvetPlotLoadRange (dtable)
-   Matrix	dtable;
+void VelvetPlotLoadRange (Matrix dtable)
 {
    Arg		args [1];
    int		depth;

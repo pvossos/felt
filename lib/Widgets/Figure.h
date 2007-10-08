@@ -117,64 +117,24 @@ struct figure {
 };
 
 
-extern Figure DW_CreateFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, FigureType, BOOLEAN, int
-# endif
-);
+Figure DW_CreateFigure (DrawingWidget dw, FigureType type, Boolean flag, int arg);
 
-extern void DW_DestroyFigure (
-# if NeedFunctionPrototypes
-    Figure
-# endif
-);
+void DW_DestroyFigure (Figure fig);
 
-extern void DW_AppendFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_AppendFigure (DrawingWidget dw, Figure fig);
 
-extern void DW_PrependFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_PrependFigure (DrawingWidget dw, Figure fig);
 
-extern void DW_DeleteFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_DeleteFigure (DrawingWidget dw, Figure fig);
 
-extern void DW_ScaleFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_ScaleFigure (DrawingWidget dw, Figure fig);
 
-extern void DW_DrawFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_DrawFigure (DrawingWidget dw, Figure fig);
 
-extern void DW_ClearFigure (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_ClearFigure (DrawingWidget dw, Figure fig);
 
-extern void DW_Detach (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure
-# endif
-);
+void DW_Detach (DrawingWidget dw, Figure fig);
 
-extern void DW_Attach (
-# if NeedFunctionPrototypes
-    DrawingWidget, Figure, Figure
-# endif
-);
+void DW_Attach (DrawingWidget dw, Figure fig, Figure group);
 
 # endif /* _Figure_h */

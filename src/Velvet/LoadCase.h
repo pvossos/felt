@@ -31,45 +31,14 @@
 
 typedef struct loadcase_dialog *LoadCaseDialog;
 
+LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title);
 
-extern LoadCaseDialog LoadCaseDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */
-# endif
-);
+void LoadCaseDialogPopup (LoadCaseDialog loadcased);
 
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Tree load_tree);
 
-extern void LoadCaseDialogPopup (
-# if NeedFunctionPrototypes
-    LoadCaseDialog			/* loadcase_dialog */
-# endif
-);
+LoadCase LoadCaseDialogActive (LoadCaseDialog loadcased);
 
-
-extern void LoadCaseDialogUpdate (
-# if NeedFunctionPrototypes
-    LoadCaseDialog			/* loadcase_dialog */,
-    Tree				/* loadcase_tree   */,
-    Tree				/* force tree	   */,
-    Tree				/* load tree	   */
-# endif
-);
-
-
-extern LoadCase LoadCaseDialogActive (
-# if NeedFunctionPrototypes
-    LoadCaseDialog			/* loadcase_dialog */
-# endif
-);
-
-
-extern void LoadCaseDialogDisplay (
-# if NeedFunctionPrototypes
-    LoadCaseDialog			/* loadcase_dialog */,
-    LoadCase				/* loadcase	*/
-# endif
-);
+void LoadCaseDialogDisplay (LoadCaseDialog loadcased, LoadCase loadcase);
 
 # endif /* _LoadCase_h */

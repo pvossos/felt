@@ -26,9 +26,9 @@
 
 # ifndef _ERROR_H
 # define _ERROR_H
-# include "proto.h"
 
-extern void error PROTO ((char *, ...));
-extern void Fatal PROTO ((char *, ...));
+void error (char *format, ...);
+
+void Fatal (char *format, ...);
 
 # endif /* _ERROR_H */

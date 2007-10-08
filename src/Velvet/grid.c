@@ -287,11 +287,7 @@ wll be generated along each of the three axes.";
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.cancel");
@@ -311,10 +307,7 @@ static void Action (w, event, params, num_params)
  * Description:	 
  ************************************************************************/
 
-static void ChangeRule (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ChangeRule (Widget w, XtPointer client_data, XtPointer call_data)
 {
     GridDialog  gridd;
     Widget      current_rule;
@@ -345,10 +338,7 @@ static void ChangeRule (w, client_data, call_data)
  * Description:								*
  ************************************************************************/
 
-static void Okay (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Okay (Widget w, XtPointer client_data, XtPointer call_data)
 {
     GridDialog   gridd;
 
@@ -364,10 +354,7 @@ static void Okay (w, client_data, call_data)
  * Description:	sets the cancel flag					*
  ************************************************************************/
 
-static void Cancel (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Cancel (Widget w, XtPointer client_data, XtPointer call_data)
 {
     GridDialog gridd;
 
@@ -375,8 +362,7 @@ static void Cancel (w, client_data, call_data)
     gridd -> status = CancelState;
 }
 
-static int MatchRuleName (name)
-   String	name;
+static int MatchRuleName (String name)
 {
    int	i;
 
@@ -396,8 +382,7 @@ static int MatchRuleName (name)
  * Description:	fills the Grid structure based on the text fields	*
  ************************************************************************/
 
-static int GridDialogSet (gridd)
-    GridDialog	gridd;
+static int GridDialogSet (GridDialog gridd)
 {
     Arg		args [1];
     String	value;
@@ -470,10 +455,7 @@ static int GridDialogSet (gridd)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-GridDialog GridDialogCreate (parent, name, title)
-    Widget	   parent;
-    String	   name;
-    String	   title;
+GridDialog GridDialogCreate (Widget parent, String name, String title)
 {
     Cardinal		i;
     char		buffer [128];
@@ -645,8 +627,7 @@ GridDialog GridDialogCreate (parent, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-Grid GridDialogPopup (gridd)
-    GridDialog gridd;
+Grid GridDialogPopup (GridDialog gridd)
 {
     XEvent	 event;
     XtAppContext app_context;

@@ -29,25 +29,44 @@
 
 # include <stdio.h>
 
-int pssetmode( );
-void drawps ( );
-int xconvps ( );
-int yconvps ( );
-int pssetcolor ( );
-int pssetlinewidth ( );
-int pssetlinestyle ( );
-void pssetfont ( );
-void pssetfontsize ( );
-void dispstrps ( );
-int pssetpat ( );
-void psfill ( );
-void psfillcolor ( );
-void psdrawarc ( );
-void psfillarc ( );
-void psdrawellipse ( );
-void psfillellipse ( );
-int psgetextents ( );
-void psleavegraphics ( );
-int psinitgraphics ( );
+int pssetmode(int mode, FILE *ps_fp);
+
+void drawps(int x2, int y2, int mode);
+
+int xconvps(double x);
+
+int yconvps(double y);
+
+int pssetcolor(int c);
+
+int pssetlinewidth(int c);
+
+int pssetlinestyle(int style);
+
+void pssetfont(int n);
+
+void pssetfontsize(double size);
+
+void dispstrps(int x, int y, int rot, char *s, int just, int fudge);
+
+int pssetpat(int k);
+
+void psfill(int n, int *px, int *py);
+
+void psfillcolor(int n, int *px, int *py);
+
+void psdrawarc(int x, int y, int r, int start, int end);
+
+void psfillarc(int x, int y, int r, int start, int end);
+
+void psdrawellipse(int x, int y, int xm, int ym, int start, int end);
+
+void psfillellipse(int x, int y, int xm, int ym, int start, int end);
+
+int psgetextents (int *x, int *y);
+
+void psleavegraphics(FILE *fp);
+
+int psinitgraphics(int dmode, FILE *ps_fp);
 
 # endif /* _PSLIB_H */

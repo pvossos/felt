@@ -400,8 +400,7 @@ empties all fields.  'Copy' empties the name field only.";
  *		index of the active load is also set.			*
  ************************************************************************/
 
-static int AppendLoadName (item)
-    Item item;
+static int AppendLoadName (Item item)
 {
     if (dialog -> active == (Distributed) item)
 	list_index = num_loads;
@@ -417,10 +416,7 @@ static int AppendLoadName (item)
  * Description: Sets a selected load direction.				*
  ************************************************************************/
 
-static void SetRadioState (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data,
-		call_data;
+static void SetRadioState (Widget w, XtPointer client_data, XtPointer call_data)
 {
    unsigned		mode;
    Arg			args [1];
@@ -469,8 +465,7 @@ static void SetRadioState (w, client_data, call_data)
  * Description:	Determine which load direction is selected.		*
  ************************************************************************/
 
-static Direction GetRadioState (loadd)
-   LoadDialog	loadd; 
+static Direction GetRadioState (LoadDialog loadd)
 {
    Boolean	state;
    Arg		args[1];
@@ -508,11 +503,7 @@ static Direction GetRadioState (loadd)
  * Description:	Callback to set the radio state.			*
  ************************************************************************/
 
-static void ToggleAction (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void ToggleAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     SetRadioState (w, &Forced, NULL);
 }
@@ -525,11 +516,7 @@ static void ToggleAction (w, event, params, num_params)
  *		specified button.					*	
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -553,10 +540,7 @@ static void Action (w, event, params, num_params)
  *		canceled.						*
  ************************************************************************/
 
-static void Change (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned		 i;
     char		 buffer [32];
@@ -650,10 +634,7 @@ static void Change (w, client_data, call_data)
  *		entries.						*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String		value;
     struct distributed  dummy;
@@ -756,10 +737,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadDialog loadd;
 
@@ -776,10 +754,7 @@ static void Dismiss (w, client_data, call_data)
  *		in effect.  The dialog is then updated.			*
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadDialog     loadd;
     LoadDialogInfo info;
@@ -815,10 +790,7 @@ static void Delete (w, client_data, call_data)
  *		that a new/copy operation is in effect.			*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadDialog loadd;
 
@@ -839,10 +811,7 @@ static void Copy (w, client_data, call_data)
  *		flag indicating that a new/copy operation is in effect.	*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned   i;
     LoadDialog loadd;
@@ -868,12 +837,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-LoadDialog LoadDialogCreate (parent, name, title, callback, closure)
-    Widget	   parent;
-    String	   name;
-    String	   title;
-    XtCallbackProc callback;
-    XtPointer	   closure;
+LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure)
 {
     Cardinal		i;
     Arg			args [2];
@@ -1130,8 +1094,7 @@ LoadDialog LoadDialogCreate (parent, name, title, callback, closure)
  * Description:	Pops up the specified load dialog.			*
  ************************************************************************/
 
-void LoadDialogPopup (loadd)
-    LoadDialog loadd;
+void LoadDialogPopup (LoadDialog loadd)
 {
     XtPopup (loadd -> shell, XtGrabNone);
 }
@@ -1143,8 +1106,7 @@ void LoadDialogPopup (loadd)
  * Description:	Returns the currently active load.			*
  ************************************************************************/
 
-Distributed LoadDialogActive (loadd)
-    LoadDialog loadd;
+Distributed LoadDialogActive (LoadDialog loadd)
 {
     return loadd -> active;
 }
@@ -1156,9 +1118,7 @@ Distributed LoadDialogActive (loadd)
  * Description:	Displays a specified load.				*
  ************************************************************************/
 
-void LoadDialogDisplay (loadd, load)
-    LoadDialog	loadd;
-    Distributed	load;
+void LoadDialogDisplay (LoadDialog loadd, Distributed load)
 {
     loadd -> active = load;
     LoadDialogUpdate (loadd, loadd -> tree);
@@ -1175,9 +1135,7 @@ void LoadDialogDisplay (loadd, load)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadDialogUpdate (loadd, tree)
-    LoadDialog loadd;
-    Tree       tree;
+void LoadDialogUpdate (LoadDialog loadd, Tree tree)
 {
     Cardinal nbytes;
 

@@ -34,12 +34,12 @@
 
 /* Private functions */
 
-static void    ClassInitialize ( );
-static void    Initialize ( );
-static void    Realize ( );
-static void    Redisplay ( );
-static void    Destroy ( );
-static Boolean SetValues ( );
+static void    ClassInitialize (void);
+static void    Initialize (Widget request, Widget new, ArgList argv, Cardinal argc);
+static void    Realize (Widget gw, XtValueMask *valuemaskp, XSetWindowAttributes *attr);
+static void    Redisplay (Widget gw, XEvent *event, Region region);
+static void    Destroy (Widget gw);
+static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal argc);
 
 
 /* Resource defaults */
@@ -170,10 +170,7 @@ WidgetClass drawingWidgetClass = (WidgetClass) &drawingClassRec;
    Description:	Snap the coordinates to the snap grid if enabled.
  ************************************************************************/
 
-static void SnapCoord (dw, x, y)
-    DrawingWidget dw;
-    float	 *x;
-    float	 *y;
+static void SnapCoord (DrawingWidget dw, float *x, float *y)
 {
     double snap;
 
@@ -191,11 +188,7 @@ static void SnapCoord (dw, x, y)
    Description:	Handles motion events when a button is not depressed.
  ************************************************************************/
 
-static void MotionHandler (gw, clientData, event, cont)
-    Widget    gw;
-    XtPointer clientData;
-    XEvent   *event;
-    Boolean  *cont;
+static void MotionHandler (Widget gw, XtPointer clientData, XEvent *event, Boolean *cont)
 {
     DrawingReport report;
     DrawingWidget dw;
@@ -243,11 +236,7 @@ static void MotionHandler (gw, clientData, event, cont)
    Description:	Handles mouse events when a button is depressed.
  ************************************************************************/
 
-static void ButtonHandler (gw, clientData, event, cont)
-    Widget    gw;
-    XtPointer clientData;
-    XEvent   *event;
-    Boolean  *cont;
+static void ButtonHandler (Widget gw, XtPointer clientData, XEvent *event, Boolean *cont)
 {
     static DrawingReport report;
     DrawingWidget	 dw;
@@ -298,8 +287,7 @@ static void ButtonHandler (gw, clientData, event, cont)
    Description:	Sets the clip region to the size of the widget.
  ************************************************************************/
 
-static void SetClipRegion (dw)
-    DrawingWidget dw;
+static void SetClipRegion (DrawingWidget dw)
 {
     Region     nullRegion;
     XRectangle rect;
@@ -321,8 +309,7 @@ static void SetClipRegion (dw)
    Description:	Draw the grid on the window.
  ************************************************************************/
 
-static void DrawGrid (gw)
-    Widget gw;
+static void DrawGrid (Widget gw)
 {
     int		  coord;
     float	  size;
@@ -366,8 +353,7 @@ static void DrawGrid (gw)
    Description:	Draws the display list.
  ************************************************************************/
 
-static void DrawList (dw)
-    DrawingWidget dw;
+static void DrawList (DrawingWidget dw)
 {
     Figure fig;
 
@@ -382,8 +368,7 @@ static void DrawList (dw)
    Description:	Scales the display list.
  ************************************************************************/
 
-static void ScaleList (dw)
-    DrawingWidget dw;
+static void ScaleList (DrawingWidget dw)
 {
     Figure fig;
 
@@ -400,7 +385,7 @@ static void ScaleList (dw)
    Description: Initializes the widget class.
  ************************************************************************/
 
-static void ClassInitialize ( )
+static void ClassInitialize (void)
 {
     XawInitializeWidgetSet ( );
 }
@@ -411,11 +396,7 @@ static void ClassInitialize ( )
    Description:	Initializes the widget.
  ************************************************************************/
 
-static void Initialize (request, new, argv, argc)
-    Widget   request;
-    Widget   new;
-    ArgList  argv;
-    Cardinal argc;
+static void Initialize (Widget request, Widget new, ArgList argv, Cardinal argc)
 {
     Display	 *display;
     XtArgVal	  value;
@@ -495,10 +476,7 @@ static void Initialize (request, new, argv, argc)
 		events handlers and creates the GCs.
  ************************************************************************/
 
-static void Realize (gw, valuemaskp, attr)
-    Widget		  gw;
-    XtValueMask		 *valuemaskp;
-    XSetWindowAttributes *attr;
+static void Realize (Widget gw, XtValueMask *valuemaskp, XSetWindowAttributes *attr)
 {
     Display	 *display;
     DrawingWidget dw;
@@ -563,8 +541,7 @@ static void Realize (gw, valuemaskp, attr)
    Description:	Destroys private resources.
  ************************************************************************/
 
-static void Destroy (gw)
-    Widget gw;
+static void Destroy (Widget gw)
 {
     Figure	  fig;
     Figure	  next;
@@ -604,10 +581,7 @@ static void Destroy (gw)
    Description:	Redisplays the widget.
  ************************************************************************/
 
-static void Redisplay (gw, event, region)
-    Widget  gw;
-    XEvent *event;
-    Region  region;
+static void Redisplay (Widget gw, XEvent *event, Region region)
 {
     Display	 *display;
     DrawingWidget dw;
@@ -637,12 +611,7 @@ static void Redisplay (gw, event, region)
 		information.
  ************************************************************************/
 
-static Boolean SetValues (old, request, new, argv, argc)
-    Widget   old;
-    Widget   request;
-    Widget   new;
-    ArgList  argv;
-    Cardinal argc;
+static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal argc)
 {
     Boolean       resize;
     Boolean	  rescale;

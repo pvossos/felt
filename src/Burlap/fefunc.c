@@ -26,6 +26,7 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "felt.h"
 # include "trap.h"
 # include "apply.h"
@@ -37,7 +38,6 @@
 # include "problem.h"
 # include "allocate.h"
 # include "definition.h"
-# include "our-stdlib.h"
 # include "pathsearch.h"
 
 

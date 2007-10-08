@@ -27,6 +27,7 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "error.h"
 # include "generator.h"
 
@@ -36,12 +37,8 @@
 # include "y.tab.h"
 # endif
 
-# undef atof
-extern double atof (const char *);
-
-
 static char *filename;
-static void  update_line PROTO ((void));
+static void  update_line (void);
 %}
 
 digit	[0-9]

@@ -30,50 +30,18 @@
 
 typedef struct element_list *ElementList;
 
+ElementList ElementListCreate (Widget parent, String name, String title);
 
-ElementList ElementListCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
+void ElementListPopup (ElementList elementl);
 
-void ElementListPopup (
-# if NeedFunctionPrototypes
-    ElementList		/* element_list */
-# endif
-);
+void ElementListSetupNames (ElementList elementl);
 
-void ElementListSetupNames (
-# if NeedFunctionPrototypes
-    ElementList		/* element_list */
-# endif
-);
+void ElementListPopdown (ElementList elementl);
 
-void ElementListPopdown (
-# if NeedFunctionPrototypes
-    ElementList		/* element_list */
-# endif
-);
+void ElementListSet (ElementList elementl, Definition definition);
 
-void ElementListSet (
-# if NeedFunctionPrototypes
-    ElementList		/* element_list  */,
-    Definition		/* definition	 */
-# endif
-);
+Definition ElementListDefinition (ElementList elementl);
 
-Definition ElementListDefinition (
-# if NeedFunctionPrototypes
-    ElementList		/* element_list */
-# endif
-);
-
-String ElementListName (
-# if NeedFunctionPrototypes
-    ElementList		/* element_list */
-# endif
-);
+String ElementListName (ElementList elementl);
 
 # endif /* _ElementList_h */

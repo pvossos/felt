@@ -40,46 +40,14 @@ typedef struct {
 } NodeDialogInfo;
 
 
-extern NodeDialog NodeDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */,
-    XtCallbackProc		/* callback    */,
-    XtPointer			/* client_data */
-# endif
-);
+NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure);
 
+void NodeDialogPopup (NodeDialog noded);
 
-extern void NodeDialogPopup (
-# if NeedFunctionPrototypes
-    NodeDialog			/* node_dialog */
-# endif
-);
+void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constraints);
 
+Node NodeDialogActive (NodeDialog noded);
 
-extern void NodeDialogUpdate (
-# if NeedFunctionPrototypes
-    NodeDialog			/* node_dialog	   */,
-    Tree			/* node_tree	   */,
-    Tree			/* force_tree	   */,
-    Tree			/* constraint_tree */
-# endif
-);
-
-
-extern Node NodeDialogActive (
-# if NeedFunctionPrototypes
-    NodeDialog			/* node_dialog */
-# endif
-);
-
-
-extern void NodeDialogDisplay (
-# if NeedFunctionPrototypes
-    NodeDialog			/* node_dialog */,
-    Node			/* node        */
-# endif
-);
+void NodeDialogDisplay (NodeDialog noded, Node node);
 
 # endif /* _Node_h */

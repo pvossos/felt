@@ -50,12 +50,7 @@ static struct field field_table [D_NumTypes] [MaxFields];
  *		dimensional array indexed by type and field number.	*
  ************************************************************************/
 
-void add_field (rtype, name, ftype, offset, handler)
-    int		rtype;
-    char       *name;
-    int		ftype;
-    unsigned	offset;
-    TrapHandler	handler;
+void add_field (int rtype, char *name, int ftype, unsigned int offset, TrapHandler handler)
 {
     ste  *s;
     Field f;
@@ -88,7 +83,7 @@ void add_field (rtype, name, ftype, offset, handler)
  *		first dereferenced and then the offset is added.	*
  ************************************************************************/
 
-int field_op ( )
+int field_op (void)
 {
     void       *ptr;
     descriptor *record;

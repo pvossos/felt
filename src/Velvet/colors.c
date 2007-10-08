@@ -53,7 +53,7 @@
 # define BOOLEAN Boolean
 # endif
 
-extern void RecolorCanvas ( );
+extern void RecolorCanvas (void);
 
 struct colors_dialog {
     Widget         shell;	/* topLevelShell  <specified>	 */
@@ -277,10 +277,7 @@ currently selected object.\
  * Description:	Call an external routine based on a button press	*
  ************************************************************************/
 
-static void ExternalCallback (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data;
-   XtPointer	call_data;
+static void ExternalCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
    ColorsDialog	colorsd;
 
@@ -299,11 +296,7 @@ static void ExternalCallback (w, client_data, call_data)
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -323,9 +316,7 @@ static void Action (w, event, params, num_params)
  *		color name						*
  ************************************************************************/
 
-static int FindColorIndex (colorsd, color)
-   ColorsDialog	colorsd;
-   String	color;
+static int FindColorIndex (ColorsDialog colorsd, String color)
 {
    unsigned	i;
 
@@ -344,10 +335,7 @@ static int FindColorIndex (colorsd, color)
  *									*	
  ************************************************************************/
 
-static void ObjectChange (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ColorsDialog	colorsd;
     XawListReturnStruct	*info;
@@ -410,10 +398,7 @@ static void ObjectChange (w, client_data, call_data)
  * Description:	changes the color of the currently active object	*
  ************************************************************************/
 
-static void ColorChange (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ColorChange (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ColorsDialog	colorsd;
     XawListReturnStruct	*info;
@@ -452,10 +437,7 @@ static void ColorChange (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ColorsDialog colorsd;
 
@@ -499,32 +481,28 @@ static int	 object_count;
 static String	*object_names = NULL;
 static String	*object_colors = NULL;
 
-static int AddMaterial (item)
-   Item	item;
+static int AddMaterial (Item item)
 {
    object_colors [object_count] = ((Material) item) -> color;
    object_names [object_count ++] = ((Material) item) -> name;
    return 0;
 }
 
-static int AddConstraint (item)
-   Item item;
+static int AddConstraint (Item item)
 {
    object_colors [object_count] = ((Constraint) item) -> color;
    object_names [object_count ++] = ((Constraint) item) -> name;
    return 0;
 }
 
-static int AddLoad (item)
-   Item item;
+static int AddLoad (Item item)
 {
    object_colors [object_count] = ((Distributed) item) -> color;
    object_names [object_count ++] = ((Distributed) item) -> name;
    return 0;
 }
 
-static int AddForce (item)
-   Item item;
+static int AddForce (Item item)
 {
    object_colors [object_count] = ((Force) item) -> color;
    object_names [object_count ++] = ((Force) item) -> name;
@@ -537,10 +515,7 @@ static int AddForce (item)
  * Description:	Does the actual dirty work for a given list and tree	*
  ************************************************************************/
 
-static void UpdateList (w, tree, deleted)
-   Widget	w;
-   Tree		tree;
-   Boolean	deleted;
+static void UpdateList (Widget w, Tree tree, Boolean deleted)
 {
    unsigned	size;
    unsigned	number_of_items;
@@ -572,10 +547,7 @@ static void UpdateList (w, tree, deleted)
  *	 	is passed in.						*
  ************************************************************************/
 
-void ColorsDialogUpdateObjectList (colorsd, tree, deleted)
-   ColorsDialog		colorsd;
-   Tree			tree;
-   BOOLEAN		deleted;
+void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted)
 {
    unsigned	i;
 
@@ -621,10 +593,7 @@ void ColorsDialogUpdateObjectList (colorsd, tree, deleted)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-ColorsDialog ColorsDialogCreate (parent, name, title)
-    Widget         parent;
-    String         name;
-    String         title;
+ColorsDialog ColorsDialogCreate (Widget parent, String name, String title)
 {
     Cardinal		i;
     Arg			args [1];
@@ -811,8 +780,7 @@ ColorsDialog ColorsDialogCreate (parent, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-void ColorsDialogPopup (colorsd)
-    ColorsDialog colorsd;
+void ColorsDialogPopup (ColorsDialog colorsd)
 {
     XtPopup (colorsd -> shell, XtGrabNone);
 }

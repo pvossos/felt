@@ -103,30 +103,19 @@ typedef struct {
  * Convenience callback function:
  * 'closure' must be an 'int *', into which is stored the current dial value.
  */
+void XfwfRheostatSetIntCallback(Widget w, XtPointer closure, XtPointer call_data);
 
-extern void XfwfRheostatSetIntCallback(
-#if NeedFunctionPrototypes
-	Widget,		/* RheostatWidget */
-	XtPointer, 	/* int *closure */
-	XtPointer  	/* RheostatCallbackStruct *call_data */ 
-#endif
-);
-
-extern void XfwfDrawArrow(
-#if NeedFunctionPrototypes
-    Display *,
-    Drawable d,
-    GC gc,
-    int endx,
-    int endy,				/* position of arrow tip */
-    int dx,
-    int dy,				/* slope of arrow */
-    int outer_length,			/* distance tip->base */
-    int inner_length,			/* distance tip->inner */
-    int width,				/* distance base->outer points */
-    int fill 				/* True=>fill arrow,False=>outline */
-#endif
-);
+/*!
+  \param endx x coordinate of arrow tip
+  \param endy y coordinate of arrow tip
+  \param outer_length distance tip->base
+  \param inner_length distance tip->inner
+  \param width distance base->outer points
+  \param fill True=>fill arrow,False=>outline
+ */
+void XfwfDrawArrow(Display *dpy, Drawable d, GC gc, Position endx, Position endy,
+                   int dx, int dy, Dimension outer_length, Dimension inner_length,
+                   Dimension width, Boolean fill);
 
 #endif	/* RHEOSTAT_H */
 

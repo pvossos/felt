@@ -94,9 +94,7 @@ static int output_format = 0;
  * Description:	Parses the command line options.			*
  ************************************************************************/
 
-static int ParseOptions (argc, argv)
-    int  *argc;
-    char *argv [ ];
+static int ParseOptions (int *argc, char **argv)
 {
     int   	i;
     int   	j;
@@ -161,9 +159,7 @@ static int ParseOptions (argc, argv)
  *		 application.						*
  ************************************************************************/
 
-int main (argc, argv)
-    int   argc;
-    char *argv [ ];
+int main (int argc, char **argv)
 {
     int	  status;
 

@@ -29,7 +29,8 @@
 # define _FIELD_H
 # include "trap.h"			/* TrapHandler type definition */
 
-extern void add_field PROTO ((int, char *, int, unsigned, TrapHandler));
-extern int  field_op  PROTO ((void));
+void add_field (int rtype, char *name, int ftype, unsigned int offset, TrapHandler handler);
+
+int field_op (void);
 
 # endif /* _FIELD_H */

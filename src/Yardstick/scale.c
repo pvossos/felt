@@ -38,8 +38,7 @@ static double	density;
 static double	length4;
 static double	length2;
 
-static int ScaleMaterial (item)
-   Item	item;
+static int ScaleMaterial (Item item)
 {
    Material m = (Material) item;
 
@@ -59,8 +58,7 @@ static int ScaleMaterial (item)
    return 0;
 }
 
-static int ScaleDistributed (item)
-   Item	item;
+static int ScaleDistributed (Item item)
 {
    Distributed	d = (Distributed) item;
 
@@ -74,8 +72,7 @@ static int ScaleDistributed (item)
    return 0;
 }
 
-static int ScaleForce (item)
-   Item	item;
+static int ScaleForce (Item item)
 {
    Force 	f = (Force) item;
    unsigned	i;
@@ -91,8 +88,7 @@ static int ScaleForce (item)
    return 0;
 }
 
-static int ScaleConstraint (item)
-   Item	item;
+static int ScaleConstraint (Item item)
 {
    Constraint	c = (Constraint) item;
    unsigned	i;
@@ -115,8 +111,7 @@ static int ScaleConstraint (item)
    return 0;
 }
 
-static int ScaleNode (item)
-   Item	item;
+static int ScaleNode (Item item)
 {
    Node	n = (Node) item;
 
@@ -130,7 +125,7 @@ static int ScaleNode (item)
 # define ScaleConfig(x) \
 	if (appearance.x != UnspecifiedValue) appearance.x *= length
 
-static void ScaleAppearance ( )
+static void ScaleAppearance (void)
 {
    FigInfo	*f;
    unsigned	i, j;
@@ -174,9 +169,7 @@ static void ScaleAppearance ( )
    } 
 }
 
-void ScaleFeltFile (l, f)
-   double	l;
-   double	f;
+void ScaleFeltFile (double l, double f)
 {
    length = l;
    force = f;

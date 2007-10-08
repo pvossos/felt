@@ -27,6 +27,7 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include <unistd.h>
 # include "error.h"
 # include "problem.h"
@@ -37,17 +38,8 @@
 # include "y.tab.h"
 # endif
 
-# undef atof
-# undef strtol
-extern double atof (const char *);
-extern long strtol (const char *, char **, int);
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif 
-
-
 static char *filename;
-static void  update_line PROTO ((void));
+static void  update_line (void);
 
 static int   copy_flag = 0;
 static char  copied_text [2048];

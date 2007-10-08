@@ -68,20 +68,20 @@ typedef struct {
 		z [POLYMAX];
 } DXFPolyline;
 
-int WriteDXFLine ( );
-int ReadDXFLine ( );
-int WriteDXFHeader ( );
-int ReadDXFHeader ( );
-int ReadDXFTrailer ( );
-int ReadDXFEntity ( );
-int WriteDXFTrailer ( );
-int WriteDXFPolyline ( );
-int ReadDXFPolyline ( );
-int WriteDXFPolyTrailer ( );
-int WriteDXFPolyHeader ( );
-int WriteDXFVertex ( );
-int WriteDXF3dMeshHeader ( );
-unsigned CheckValidity ( );
+int WriteDXFLine (DXFLine *line, char *layer, FILE *output);
+int ReadDXFLine (DXFLine *line, char *layer, FILE *input);
+int WriteDXFHeader (FILE *output);
+int ReadDXFHeader (FILE *input);
+int ReadDXFTrailer (FILE *input);
+int ReadDXFEntity (FILE *input);
+int WriteDXFTrailer (FILE *output);
+int WriteDXFPolyline (DXFPolyline *poly, char *layer, FILE *output);
+int ReadDXFPolyline (DXFPolyline *poly, char *layer, FILE *input);
+int WriteDXFPolyTrailer (char *layer, FILE *output);
+int WriteDXFPolyHeader (char *layer, FILE *output);
+int WriteDXFVertex (double x, double y, double z, char *layer, FILE *output);
+int WriteDXF3dMeshHeader (int m, int n, char *layer, FILE *output);
+unsigned CheckValidity (unsigned int read, unsigned int wanted);
 
 int WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output);
 

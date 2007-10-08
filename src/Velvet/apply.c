@@ -102,10 +102,7 @@ DoApplyForce(Node node)
     changeflag = True;
 }
 
-void ApplyForceCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -120,7 +117,7 @@ void ApplyForceCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEdit (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyForceGroup);
@@ -146,7 +143,7 @@ void ApplyForceCB (w, client_data, call_data)
 }
 
 
-void ApplyForceAP ( )
+void ApplyForceAP (void)
 {
     char       *status;
     struct node dummy;
@@ -169,7 +166,7 @@ void ApplyForceAP ( )
 }
 
 
-void EditApplyForce ( )
+void EditApplyForce (void)
 {
     if (ForceDialogActive (force_d) == NULL) {
 	error ("No active force defined.");
@@ -242,10 +239,7 @@ DoApplyConstraint(Node node)
 }
 
 
-void ApplyConstraintCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -260,7 +254,7 @@ void ApplyConstraintCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEdit (w, client_data, call_data );
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyConstraintGroup);
@@ -286,7 +280,7 @@ void ApplyConstraintCB (w, client_data, call_data)
 }
 
 
-void ApplyConstraintAP ( )
+void ApplyConstraintAP (void)
 {
     char       *status;
     struct node dummy;
@@ -309,7 +303,7 @@ void ApplyConstraintAP ( )
 }
 
 
-void EditApplyConstraint ( )
+void EditApplyConstraint (void)
 {
 
     if (ConstraintDialogActive (constraint_d) == NULL) {
@@ -395,10 +389,7 @@ DoApplyLoad(Element element)
 }
 
 
-void ApplyLoadCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -413,7 +404,7 @@ void ApplyLoadCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEdit (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyLoadGroup);
@@ -439,7 +430,7 @@ void ApplyLoadCB (w, client_data, call_data)
 }
 
 
-void ApplyLoadAP ( )
+void ApplyLoadAP (void)
 {
     char          *status;
     struct element dummy;
@@ -462,7 +453,7 @@ void ApplyLoadAP ( )
 }
 
 
-void EditApplyLoad ( )
+void EditApplyLoad (void)
 {
     if (LoadDialogActive (load_d) == NULL) {
 	error ("No active load defined.");
@@ -535,10 +526,7 @@ DoApplyMaterial(Element element)
 }
 
 
-void ApplyMaterialCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -553,7 +541,7 @@ void ApplyMaterialCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEdit (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyMaterialGroup);
@@ -579,7 +567,7 @@ void ApplyMaterialCB (w, client_data, call_data)
 }
 
 
-void ApplyMaterialAP ( )
+void ApplyMaterialAP (void)
 {
     char          *status;
     struct element dummy;
@@ -602,7 +590,7 @@ void ApplyMaterialAP ( )
 }
 
 
-void EditApplyMaterial ( )
+void EditApplyMaterial (void)
 {
     if (MaterialDialogActive (material_d) == NULL) {
 	error ("No active material defined.");

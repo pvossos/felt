@@ -74,11 +74,7 @@ static Widget	focused_widget;
  *		highlighting the widget.				*
  ************************************************************************/
 
-static void ChangeFocusProc (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void ChangeFocusProc (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     Arg      args [2];
     Cardinal offset;
@@ -168,11 +164,7 @@ static void ChangeFocusProc (w, event, params, num_params)
  *		an appropriate client message event.				*
  ************************************************************************/
 
-static void SetFocusProc (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void SetFocusProc (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     XEvent synthetic_event;
 
@@ -195,12 +187,7 @@ static void SetFocusProc (w, event, params, num_params)
  *		widget.							*
  ************************************************************************/
 
-void CreateTabGroup (ancestor, members, num_members, highlight, clear_caret)
-    Widget     ancestor;
-    WidgetList members;
-    Cardinal   num_members;
-    Pixel      highlight;
-    BOOLEAN    clear_caret;
+void CreateTabGroup (Widget ancestor, WidgetList members, Cardinal num_members, Pixel highlight, Boolean clear_caret)
 {
     int			depth;
     char		table [256];
@@ -320,8 +307,7 @@ void CreateTabGroup (ancestor, members, num_members, highlight, clear_caret)
  *		calling the SetFocus() action procedure.		*
  ************************************************************************/
 
-void SetFocus (member)
-    Widget member;
+void SetFocus (Widget member)
 {
     XtCallActionProc (member, "SetFocus", NULL, NULL, 0);
 }
@@ -333,8 +319,7 @@ void SetFocus (member)
  * Description:	Returns which widget has the keyboard focus.		*
  ************************************************************************/
 
-Widget GetFocus (member)
-    Widget member;
+Widget GetFocus (Widget member)
 {
     XEvent synthetic_event;
 
@@ -357,8 +342,7 @@ Widget GetFocus (member)
  *		focus.							*
  ************************************************************************/
 
-Boolean HasFocus (member)
-    Widget member;
+Boolean HasFocus (Widget member)
 {
     return GetFocus (member) == member ? True : False;
 }

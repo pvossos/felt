@@ -27,17 +27,8 @@
 # ifndef _SCROLL_H
 # define _SCROLL_H
 
-extern void AddScrollableTextTranslations (
-# if NeedFunctionPrototypes
-    Widget		/* text */
-# endif
-);
+void AddScrollableTextTranslations (Widget text);
 
-
-extern void ScrollToInsertionPoint (
-# if NeedFunctionPrototypes
-    Widget		/* text */
-# endif
-);
+void ScrollToInsertionPoint (Widget text);
 
 # endif /* _SCROLL_H */

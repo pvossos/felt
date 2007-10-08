@@ -270,11 +270,7 @@ Postprocessing menu. \
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -290,10 +286,7 @@ static void Action (w, event, params, num_params)
  * Description:								*
  ************************************************************************/
 
-static void Toggle (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Toggle (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		   args [1];
     ContourDialog  contourd;
@@ -323,10 +316,7 @@ static void Toggle (w, client_data, call_data)
  * Description:								*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		   args [1];
     ContourDialog contourd;
@@ -369,10 +359,7 @@ static void Accept (w, client_data, call_data)
  * Description:	sets the dismiss flag					*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ContourDialog contourd;
 
@@ -383,10 +370,7 @@ static void Dismiss (w, client_data, call_data)
 /************************************************************************
  ************************************************************************/
 
-static void ExternalCallback (w, client_data, call_data)
-    Widget 	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void ExternalCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ContourDialog	contourd;
 
@@ -406,8 +390,7 @@ static void ExternalCallback (w, client_data, call_data)
  * Description:	sets the widgets based on current solution settings 	*
  ************************************************************************/
 
-void ContourDialogUpdate (contourd)
-    ContourDialog	contourd;
+void ContourDialogUpdate (ContourDialog contourd)
 {
     Arg		args [1];
     char	buffer [80];
@@ -442,10 +425,7 @@ void ContourDialogUpdate (contourd)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-ContourDialog ContourDialogCreate (parent, name, title)
-    Widget parent;
-    String name;
-    String title;
+ContourDialog ContourDialogCreate (Widget parent, String name, String title)
 {
     Cardinal		i;
     Arg			args [1];
@@ -668,8 +648,7 @@ ContourDialog ContourDialogCreate (parent, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-void ContourDialogPopup (contourd)
-    ContourDialog contourd;
+void ContourDialogPopup (ContourDialog contourd)
 {
     XtPopup (contourd -> shell, XtGrabNone);
 }

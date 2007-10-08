@@ -99,29 +99,29 @@
 /*
  * Method functions:
  */
-static void     Initialize();
-static void     Redisplay();
-static void     Resize();
-static void     Destroy();
-static Boolean  SetValues();
+static void     Initialize(RheostatWidget request, RheostatWidget new);
+static void     Redisplay(RheostatWidget w, XEvent *event, Region region);
+static void     Resize(RheostatWidget w);
+static void     Destroy(RheostatWidget w);
+static Boolean  SetValues(RheostatWidget current, RheostatWidget request, RheostatWidget new);
 
 /*
  * Action functions:
  */
-static void     Set();
-static void     Notify();
-static void     Increment();
+static void     Set(RheostatWidget w, XEvent *event, String *params, Cardinal *nparams);
+static void     Notify(RheostatWidget w, XEvent *event, String *params, Cardinal *nparams);
+static void     Increment(RheostatWidget w, XEvent *event, String *params, Cardinal *nparams);
 
 /*
  * Private functions:
  */
-static void     draw_arrow	(/* RheostatWidget, GC */);
-static void     draw_ticks      (/* RheostatWidget, GC */);
-static void     draw_dial      	(/* RheostatWidget, GC */);
-static void     calculate_position	(/* RheostatWidget */);
-static void     get_GCs     	(/* RheostatWidget */);
-static void     free_GCs     	(/* RheostatWidget */);
-static void	call_callbacks	(/* RheostatWidget *, String, XEvent * */);
+static void     draw_arrow	(RheostatWidget w, GC gc);
+static void     draw_ticks      (RheostatWidget w, GC gc);
+static void     draw_dial      	(RheostatWidget w, GC gc);
+static void     calculate_position	(RheostatWidget w);
+static void     get_GCs     	(RheostatWidget w);
+static void     free_GCs     	(RheostatWidget w);
+static void	call_callbacks	(RheostatWidget w, char *callback_name, XEvent *event);
 
 /***********************************************************************
  *
@@ -288,8 +288,7 @@ WidgetClass     rheostatWidgetClass = (WidgetClass) &rheostatClassRec;
 /*
  * Initialize method:
  */
-static void Initialize(request, new)
-    RheostatWidget      request, new;
+static void Initialize(RheostatWidget request, RheostatWidget new)
 {
     int margin = MARGIN(new);
     int user_radius = new->rheostat.radius;	/* request from user */
@@ -342,8 +341,7 @@ static void Initialize(request, new)
 /*
  * Destroy method:
  */
-static void Destroy(w)
-    RheostatWidget      w;
+static void Destroy(RheostatWidget w)
 {
     free_GCs(w);
 }
@@ -351,8 +349,7 @@ static void Destroy(w)
 /*
  * Resize method:
  */
-static void Resize(w)
-    RheostatWidget      w;
+static void Resize(RheostatWidget w)
 {
     int newr;
 
@@ -380,10 +377,7 @@ static void Resize(w)
 /*
  * Expose method:
  */
-static void Redisplay(w, event, region)
-    RheostatWidget      w;
-    XEvent         *event;
-    Region          region;
+static void Redisplay(RheostatWidget w, XEvent *event, Region region)
 {
 #	ifdef MOTIF
 	int hlt = w->primitive.highlight_thickness;
@@ -401,8 +395,7 @@ static void Redisplay(w, event, region)
 /*
  * SetValues:
  */
-static Boolean SetValues(current, request, new)
-    RheostatWidget      current, request, new;
+static Boolean SetValues(RheostatWidget current, RheostatWidget request, RheostatWidget new)
 {
     Boolean redraw = FALSE;		/* TRUE=>widget needs to be redrawn */
     Boolean recalc = FALSE;		/* TRUE=>arrow position changed */
@@ -508,11 +501,7 @@ static Boolean SetValues(current, request, new)
  ***********************************************************************/
 
     /*ARGSUSED*/
-static void Set(w, event, params, nparams)
-    RheostatWidget	w;
-    XEvent	*event;
-    String	*params;
-    Cardinal	*nparams;
+static void Set(RheostatWidget w, XEvent *event, String *params, Cardinal *nparams)
 {
     if (event->type == ButtonPress || event->type == MotionNotify)
     {
@@ -574,11 +563,7 @@ static void Set(w, event, params, nparams)
 }
 
 
-static void Increment(w, event, params, nparams)
-    RheostatWidget      w;
-    XEvent         *event;
-    String 	   *params;
-    Cardinal	   *nparams;
+static void Increment(RheostatWidget w, XEvent *event, String *params, Cardinal *nparams)
 {
     double inc = ValueInc(w);
     Boolean snap = False;
@@ -618,11 +603,7 @@ static void Increment(w, event, params, nparams)
 }
 
     /*ARGSUSED*/
-static void Notify(w, event, params, nparams)
-    RheostatWidget      w;
-    XEvent         *event;
-    String 	   *params;
-    Cardinal	   *nparams;
+static void Notify(RheostatWidget w, XEvent *event, String *params, Cardinal *nparams)
 {
     call_callbacks(w, XtNnotify, event);
 }
@@ -633,10 +614,7 @@ static void Notify(w, event, params, nparams)
  * Utility routines:
  *
  ***********************************************************************/
-static void call_callbacks(w, callback_name, event)
-    RheostatWidget w;
-    char *callback_name;
-    XEvent *event;
+static void call_callbacks(RheostatWidget w, char *callback_name, XEvent *event)
 {
     RheostatCallbackStruct cb;
 
@@ -648,10 +626,7 @@ static void call_callbacks(w, callback_name, event)
 }
 
 
-static void draw_arrow(w, gc)
-    RheostatWidget      w;
-    GC              gc;
-
+static void draw_arrow(RheostatWidget w, GC gc)
 {
     XfwfDrawArrow(XtDisplay(w), XtWindow(w), gc,
 	w->rheostat.tip_x, w->rheostat.tip_y,
@@ -662,9 +637,7 @@ static void draw_arrow(w, gc)
 	w->rheostat.fill_arrow);
 }
 
-static void draw_dial(w, gc)
-    RheostatWidget      w;
-    GC     	         gc;
+static void draw_dial(RheostatWidget w, GC gc)
 {
     int radius  = w->rheostat.radius
 	+ w->rheostat.inner_margin
@@ -679,9 +652,7 @@ static void draw_dial(w, gc)
     );
 }
 
-static void draw_ticks(w, gc)
-    RheostatWidget      w;
-    GC              gc;
+static void draw_ticks(RheostatWidget w, GC gc)
 {
     int i,cx,cy;
     double theta,inc;
@@ -718,8 +689,7 @@ static void draw_ticks(w, gc)
     }
 }
 
-static void calculate_position(w)
-    RheostatWidget      w;
+static void calculate_position(RheostatWidget w)
 {
     double theta,length;
 
@@ -741,8 +711,7 @@ static void calculate_position(w)
  * get_GCs
  * allocate foreground & background. GCs.
  */
-static void get_GCs(w)
-    RheostatWidget w;
+static void get_GCs(RheostatWidget w)
 {
     XGCValues       values;
     XtGCMask        mask;
@@ -791,8 +760,7 @@ static void get_GCs(w)
 }
 
 
-static void free_GCs(w)
-    RheostatWidget w;
+static void free_GCs(RheostatWidget w)
 {
     XtReleaseGC(W w,w->rheostat.arrow_GC);
     XtReleaseGC(W w,w->rheostat.eraser_GC);
@@ -801,18 +769,9 @@ static void free_GCs(w)
     return;
 }
 
-void XfwfDrawArrow(dpy, d, gc, endx, endy, dx, dy,
-		       outer_length, inner_length, width, fill)
-    Display *dpy;
-    Drawable d;
-    GC gc;
-    Position endx, endy;		/* position of arrow tip */
-    int dx, dy;				/* slope of arrow */
-    Dimension outer_length;		/* distance tip->base */
-    Dimension inner_length;		/* distance tip->inner */
-    Dimension width;			/* distance base->outer points */
-    Boolean fill;			/* True=>fill arrow,False=>outline */
-
+void XfwfDrawArrow(Display *dpy, Drawable d, GC gc, Position endx, Position endy,
+                   int dx, int dy, Dimension outer_length, Dimension inner_length,
+                   Dimension width, Boolean fill)
 {
     XPoint points[5];
     float scalef = sqrt((double)(dx*dx+dy*dy)); /* normalization factor */
@@ -852,10 +811,7 @@ void XfwfDrawArrow(dpy, d, gc, endx, endy, dx, dy,
  * gets the position of the Rheostat, sets *(int *)closure
  */
 
-void XfwfRheostatSetIntCallback(w,closure,call_data)
-    Widget w;
-    XtPointer closure;
-    XtPointer call_data;
+void XfwfRheostatSetIntCallback(Widget w, XtPointer closure, XtPointer call_data)
 {
     *((int *)closure) = ((RheostatCallbackStruct *)call_data)->value;
 }

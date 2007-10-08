@@ -35,13 +35,13 @@ Node AddNode(double x, double y, double z, Constraint constraint, Force force);
 Element AddElement(Definition defn, Node *nodes, Material material, 
                    Distributed *distributed, unsigned numdistributed);
 
-int ReadDXFFile ( );
-int WriteDXFFile ( );
-int ReadGraphFile ( );
-int WriteGraphFile ( );
+int ReadDXFFile (char *name);
+int WriteDXFFile (char *name);
+int ReadGraphFile (char *filename);
+int WriteGraphFile (char *filename);
 
 int WriteLoganFile(char *name);
 
-int WriteOoglFile ( );
+int WriteOoglFile (char *filename);
 
 # endif /* _PATCHWORK_H */

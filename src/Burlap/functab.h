@@ -39,7 +39,7 @@
 static struct {
     char *name;
     int   num_args;
-    int (*func) PROTO ((int));
+    int (*func) (int);
 } functab [ ] = {
 
     /* Math library functions */

@@ -47,11 +47,7 @@ static struct {
 	        initializing.
  ************************************************************************/
 
-Figure DW_CreateFigure (dw, type, flag, arg)
-    DrawingWidget dw;
-    FigureType	  type;
-    BOOLEAN	  flag;
-    int		  arg;
+Figure DW_CreateFigure (DrawingWidget dw, FigureType type, Boolean flag, int arg)
 {
     Figure fig;
 
@@ -117,8 +113,7 @@ Figure DW_CreateFigure (dw, type, flag, arg)
    Description:	Destroys an figure by deallocating its memory.
  ************************************************************************/
 
-void DW_DestroyFigure (fig)
-    Figure fig;
+void DW_DestroyFigure (Figure fig)
 {
     if (fig -> type == PolygonFigure) {
 	XtFree ((char *) fig -> info.polygon.points);
@@ -143,9 +138,7 @@ void DW_DestroyFigure (fig)
    Description: Adds a figure to the end of the display list.
  ************************************************************************/
 
-void DW_AppendFigure (dw, fig)
-    DrawingWidget dw;
-    Figure	  fig;
+void DW_AppendFigure (DrawingWidget dw, Figure fig)
 {
     fig -> prev = dw -> drawing.tail;
     if (dw -> drawing.tail != NULL)
@@ -162,9 +155,7 @@ void DW_AppendFigure (dw, fig)
    Description:	Adds a figure to the beginning of the display list.
  ************************************************************************/
 
-void DW_PrependFigure (dw, fig)
-    DrawingWidget dw;
-    Figure        fig;
+void DW_PrependFigure (DrawingWidget dw, Figure fig)
 {
     fig -> next = dw -> drawing.head;
     if (dw -> drawing.head != NULL)
@@ -181,9 +172,7 @@ void DW_PrependFigure (dw, fig)
    Description:	Deletes a figure from the display list.
  ************************************************************************/
 
-void DW_DeleteFigure (dw, fig)
-    DrawingWidget dw;
-    Figure        fig;
+void DW_DeleteFigure (DrawingWidget dw, Figure fig)
 {
     if (fig -> next != NULL)
 	fig -> next -> prev = fig -> prev;
@@ -204,9 +193,7 @@ void DW_DeleteFigure (dw, fig)
    Description:	Scale a figure to window coordinates.
  ************************************************************************/
 
-void DW_ScaleFigure (dw, fig)
-    DrawingWidget dw;
-    Figure        fig;
+void DW_ScaleFigure (DrawingWidget dw, Figure fig)
 {
     int		i;
     int		direction;
@@ -434,9 +421,7 @@ void DW_ScaleFigure (dw, fig)
    Description:	Draws a figure in the window of the specified widget.
  ************************************************************************/
 
-void DW_DrawFigure (dw, fig)
-    DrawingWidget dw;
-    Figure        fig;
+void DW_DrawFigure (DrawingWidget dw, Figure fig)
 {
     Display	       *display;
     Window		window;
@@ -579,9 +564,7 @@ void DW_DrawFigure (dw, fig)
    Description:	Clears the area occupied by a figure.
  ************************************************************************/
 
-void DW_ClearFigure (dw, fig)
-    DrawingWidget dw;
-    Figure        fig;
+void DW_ClearFigure (DrawingWidget dw, Figure fig)
 {
     XRectangle rect;
 
@@ -612,9 +595,7 @@ void DW_ClearFigure (dw, fig)
    Description:	Detach a figure from a group.
  ************************************************************************/
 
-void DW_Detach (dw, fig)
-    DrawingWidget dw;
-    Figure        fig;
+void DW_Detach (DrawingWidget dw, Figure fig)
 {
     unsigned i;
     unsigned j;
@@ -642,10 +623,7 @@ void DW_Detach (dw, fig)
    Description:	Attach a figure to a group.
  ************************************************************************/
 
-void DW_Attach (dw, fig, group)
-    DrawingWidget dw;
-    Figure	  fig;
-    Figure	  group;
+void DW_Attach (DrawingWidget dw, Figure fig, Figure group)
 {
     if (fig -> group == group)
 	return;

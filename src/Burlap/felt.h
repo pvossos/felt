@@ -29,11 +29,12 @@
 # include "descriptor.h"
 # include "fe.h"
 
+int strict_assignment (descriptor *dest, descriptor **src);
 
-extern int strict_assignment PROTO ((descriptor *, descriptor **));
-extern int array_assignment  PROTO ((descriptor *, descriptor **));
+int array_assignment (descriptor *dest, descriptor **src);
 
-extern int init_felt PROTO ((int *, char **));
-extern int read_felt PROTO ((char *));
+int init_felt (int *argc, char **argv);
+
+int read_felt (char *file);
 
 # endif /* _FELT_H */

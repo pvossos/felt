@@ -58,9 +58,6 @@ static char *copyright = "\
 ";
 
 
-static void list_topics PROTO ((void));
-
-
 /************************************************************************
  * File:	list_topics						*
  *									*
@@ -69,7 +66,7 @@ static void list_topics PROTO ((void));
  *		stylized format.					*
  ************************************************************************/
 
-static void list_topics ( )
+static void list_topics (void)
 {
     int   i;
     int   j;
@@ -137,8 +134,7 @@ static void list_topics ( )
  *		string value.						*
  ************************************************************************/
 
-int help_func (n)
-    int n;
+int help_func (int n)
 {
     char       *string;
     descriptor *arg;

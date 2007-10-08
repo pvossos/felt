@@ -46,11 +46,7 @@ static XtTranslations scroll_translations;
  * Description:	Action procedure interface to ScrollToInsertionPoint().	*
  ************************************************************************/
 
-static void ScrollText (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void ScrollText (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     ScrollToInsertionPoint (w);
 }
@@ -63,8 +59,7 @@ static void ScrollText (w, event, params, num_params)
  *		enable a primitive character-based scrolling.		*
  ************************************************************************/
 
-void AddScrollableTextTranslations (text)
-    Widget text;
+void AddScrollableTextTranslations (Widget text)
 {
     static XtAppContext	app_context = NULL;
     static XtActionsRec	actions [ ] = {{"ScrollText", ScrollText}};
@@ -96,8 +91,7 @@ void AddScrollableTextTranslations (text)
  *		display position of the string and is rather primitive.	*
  ************************************************************************/
 
-void ScrollToInsertionPoint (text)
-    Widget text;
+void ScrollToInsertionPoint (Widget text)
 {
     int		 ins_pos;
     int		 disp_pos;

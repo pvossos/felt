@@ -76,9 +76,7 @@ static XtTranslations text_translations = NULL;
  *		XtRLayout.						*
  ************************************************************************/
 
-XtArgVal StringToLayout (widget, string)
-    Widget widget;
-    String string;
+XtArgVal StringToLayout (Widget widget, String string)
 {
     XrmValue from;
     XrmValue to;
@@ -109,10 +107,7 @@ XtArgVal StringToLayout (widget, string)
  *		the entire shell is located on the screen.		*
  ************************************************************************/
 
-void CenterOnWidget (shell, center, force)
-    Widget  shell;
-    Widget  center;
-    BOOLEAN force;
+void CenterOnWidget (Widget shell, Widget center, Boolean force)
 {
     Arg       args [4];
     String    geometry;
@@ -165,9 +160,7 @@ void CenterOnWidget (shell, center, force)
  *		widget will be centered on the screen.			*
  ************************************************************************/
 
-void CenterOnScreen (shell, force)
-    Widget  shell;
-    BOOLEAN force;
+void CenterOnScreen (Widget shell, Boolean force)
 {
     Arg       args [3];
     String    geometry;
@@ -207,9 +200,7 @@ void CenterOnScreen (shell, force)
  *		the WM_PROTOCOL action to the specified widget.		*
  ************************************************************************/
 
-void AddDeleteWindowProtocol (shell, action)
-    Widget shell;
-    String action;
+void AddDeleteWindowProtocol (Widget shell, String action)
 {
     static Atom    atom = None;
     XtTranslations translations;
@@ -234,8 +225,7 @@ void AddDeleteWindowProtocol (shell, action)
  *		widget.							*
  ************************************************************************/
 
-void WarpToCenter (w)
-    Widget w;
+void WarpToCenter (Widget w)
 {
     Arg       args [2];
     Dimension width;
@@ -262,11 +252,7 @@ void WarpToCenter (w)
  *		of the first or last visible item will be made.		*
  ************************************************************************/
 
-static void ListCursorMove (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void ListCursorMove (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     Arg			 args [6];
     int			 top_index;
@@ -383,8 +369,7 @@ static void ListCursorMove (w, event, params, num_params)
  *		change the selected item.				*
  ************************************************************************/
 
-void ListAddCursorTranslations (viewport)
-    Widget viewport;
+void ListAddCursorTranslations (Widget viewport)
 {
     ListAddCursorAccelerators (viewport, NULL);
 }
@@ -398,9 +383,7 @@ void ListAddCursorTranslations (viewport)
  *		cursor keys to be used to change the selected item.	*
  ************************************************************************/
 
-void ListAddCursorAccelerators (viewport, w)
-    Widget viewport;
-    Widget w;
+void ListAddCursorAccelerators (Widget viewport, Widget w)
 {
     Arg	   args		  [1];
     static XtAccelerators accelerators;
@@ -436,9 +419,7 @@ void ListAddCursorAccelerators (viewport, w)
  *		cursor at the end of the string.			*
  ************************************************************************/
 
-void SetTextString (w, value)
-    Widget w;
-    String value;
+void SetTextString (Widget w, String value)
 {
     Arg args [1];
 
@@ -461,8 +442,7 @@ void SetTextString (w, value)
  * Description:	Retrieves the value of a text widget.			*
  ************************************************************************/
 
-String GetTextString (w)
-    Widget w;
+String GetTextString (Widget w)
 {
     Arg    args [1];
     String value;
@@ -480,10 +460,7 @@ String GetTextString (w)
  * Description:	Returns the width of a text string.			*
  ************************************************************************/
 
-Cardinal GetTextWidth (font, text, length)
-    XFontStruct *font;
-    String	 text;
-    Cardinal	 length;
+Cardinal GetTextWidth (XFontStruct *font, String text, Cardinal length)
 {
     int		dr;
     int		far;
@@ -502,9 +479,7 @@ Cardinal GetTextWidth (font, text, length)
  * Description:	Sets the label string of a label widget.		*
  ************************************************************************/
 
-void SetLabelString (w, value)
-    Widget w;
-    String value;
+void SetLabelString (Widget w, String value)
 {
     Arg args [1];
 
@@ -523,8 +498,7 @@ void SetLabelString (w, value)
  * Description:	Retrieves the label string of a label widget.		*
  ************************************************************************/
 
-String GetLabelString (w)
-    Widget w;
+String GetLabelString (Widget w)
 {
     Arg    args [1];
     String value;
@@ -543,11 +517,7 @@ String GetLabelString (w)
  *		value.							*
  ************************************************************************/
 
-static void AutoRepeat (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void AutoRepeat (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
 # if 0
     static XKeyboardState state;
@@ -580,8 +550,7 @@ static void AutoRepeat (w, event, params, num_params)
  *		context.						*
  ************************************************************************/
 
-void AddAutoRepeatAction (app_context)
-    XtAppContext app_context;
+void AddAutoRepeatAction (XtAppContext app_context)
 {
     static XtAppContext	context = NULL;
     static XtActionsRec	actions [ ] = {{"AutoRepeat", AutoRepeat}};
@@ -601,9 +570,7 @@ void AddAutoRepeatAction (app_context)
  *		formatted text when activated by a key or button press.	*
  ************************************************************************/
 
-Widget CreateHelpButton (parent, name)
-    Widget parent;
-    String name;
+Widget CreateHelpButton (Widget parent, String name)
 {
     Arg    args [3];
     Widget button;
@@ -648,10 +615,7 @@ Widget CreateHelpButton (parent, name)
  * Description:	Updates the text widget within the help shell.		*
  ************************************************************************/
 
-void UpdateHelpMessage (button, message, width)
-    Widget    button;
-    String    message;
-    DIMENSION width;
+void UpdateHelpMessage (Widget button, String message, Dimension width)
 {
     Widget   text;
     Cardinal i;

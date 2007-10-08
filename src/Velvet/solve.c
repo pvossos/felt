@@ -48,8 +48,7 @@ extern NodeDialog    node_d;
 
 static unsigned	array_count;
 
-static int BuildNodeArray (item)
-   Item		item;
+static int BuildNodeArray (Item item)
 {
    FigureAttributes	attr;
    char			buffer [10];
@@ -72,8 +71,7 @@ static int BuildNodeArray (item)
    return 0;
 }
 
-static int BuildElementArray (item)
-   Item		item;
+static int BuildElementArray (Item item)
 {
    FigureAttributes	attr;
    char			buffer [10];
@@ -107,7 +105,7 @@ static int BuildElementArray (item)
  *
  ***************************************************************************/
 
-int SolveProblem ( )
+int SolveProblem (void)
 {
     unsigned	 numnodes;		/* total number of nodes	*/
     unsigned	 numelts;		/* total number of elements	*/
@@ -690,7 +688,7 @@ int SolveProblem ( )
     return 0;
 }
 
-int CompactNodeNumbers ( )
+int CompactNodeNumbers (void)
 {
     unsigned		numnodes;
 
@@ -722,7 +720,7 @@ int CompactNodeNumbers ( )
     return problem.num_nodes = numnodes;
 }          
     
-int CompactElementNumbers ( )
+int CompactElementNumbers (void)
 {
     unsigned		numelts;
 
@@ -750,7 +748,7 @@ int CompactElementNumbers ( )
     return problem.num_elements = numelts;
 }
 
-void SetupAndSolve ( )
+void SetupAndSolve (void)
 {
     SetWaitCursor (drawing);
 
@@ -764,7 +762,7 @@ void SetupAndSolve ( )
     SetNormalCursor (drawing);
 }
 
-void SetupAnimate ( )
+void SetupAnimate (void)
 {
     int			status1, status2;
     unsigned		i,j;
@@ -895,8 +893,7 @@ void SetupAnimate ( )
     return;
 }
 
-void SetupStresses (build_elt)
-    Boolean	build_elt;
+void SetupStresses (Boolean build_elt)
 {
     Element    *e;
     unsigned	numelts;
@@ -964,8 +961,7 @@ void SetupStresses (build_elt)
     return;
 }
 
-void SetupDisplacements (build_arrays)
-    Boolean	build_arrays;
+void SetupDisplacements (Boolean build_arrays)
 {
     unsigned    numnodes;
     unsigned	numelts;
@@ -1015,9 +1011,7 @@ void SetupDisplacements (build_arrays)
     return;
 }
 
-void SetupModeShapes (phi, lambda)
-    Matrix	phi;
-    Matrix	lambda;
+void SetupModeShapes (Matrix phi, Matrix lambda)
 {
     unsigned	i,j;
     double	z_plane;
@@ -1051,8 +1045,7 @@ void SetupModeShapes (phi, lambda)
     return;
 }
 
-void SetupStructure (build_elt) 
-    Boolean	build_elt;
+void SetupStructure (Boolean build_elt)
 {
     unsigned	i,j;
     double	z_plane;
@@ -1070,7 +1063,7 @@ void SetupStructure (build_elt)
                       problem.elements, numelts, False);
 }
 
-void OptimizeNumbering ( )
+void OptimizeNumbering (void)
 {
     char		buffer [10];
     FigureAttributes	attr;

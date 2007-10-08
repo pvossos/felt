@@ -27,39 +27,12 @@
 # ifndef _TabGroup_h
 # define _TabGroup_h
 
-extern void CreateTabGroup (
-# if NeedFunctionPrototypes
-    Widget		/* ancestor    */,
-    WidgetList		/* members     */,
-    Cardinal		/* num_members */,
-    Pixel		/* highlight   */,
-# if NeedWidePrototypes
-    int			/* clear_caret */
-# else
-    Boolean		/* clear_caret */
-# endif
-# endif
-);
+void CreateTabGroup (Widget ancestor, WidgetList members, Cardinal num_members, Pixel highlight, Boolean clear_caret);
 
+void SetFocus (Widget member);
 
-extern void SetFocus (
-# if NeedFunctionPrototypes
-    Widget		/* member */
-# endif
-);
+Widget GetFocus (Widget member);
 
-
-extern Widget GetFocus (
-# if NeedFunctionPrototypes
-    Widget		/* member */
-# endif
-);
-
-
-extern Boolean HasFocus (
-# if NeedFunctionPrototypes
-    Widget		/* member */
-# endif
-);
+Boolean HasFocus (Widget member);
 
 # endif /* _TabGroup_h */

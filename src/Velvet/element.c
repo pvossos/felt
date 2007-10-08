@@ -398,8 +398,7 @@ static Widget		menu_button;
  *		the specified load.					*
  ************************************************************************/
 
-static int SetLoadEntry (item)
-    Item item;
+static int SetLoadEntry (Item item)
 {
     SetLabelString (children [child_number], ((Distributed) item) -> name);
 
@@ -418,10 +417,7 @@ static int SetLoadEntry (item)
  *		of current loads.					*
  ************************************************************************/
 
-static void UpdateLoadMenu (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateLoadMenu (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		  args [2];
     char	  buffer [32];
@@ -477,10 +473,7 @@ static void UpdateLoadMenu (w, client_data, call_data)
  * Description:	Updates the load name on popdown if necessary.		*
  ************************************************************************/
 
-static void UpdateLoadName (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateLoadName (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Cardinal	  i;
     Widget	  name;
@@ -513,8 +506,7 @@ static void UpdateLoadName (w, client_data, call_data)
  *		the specified material.					*
  ************************************************************************/
 
-static int SetMaterialEntry (item)
-    Item item;
+static int SetMaterialEntry (Item item)
 {
     SetLabelString (children [child_number], ((Material) item) -> name);
 
@@ -533,10 +525,7 @@ static int SetMaterialEntry (item)
  *		list of current materials.				*
  ************************************************************************/
 
-static void UpdateMaterialMenu (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateMaterialMenu (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		  args [2];
     char	  buffer [32];
@@ -596,10 +585,7 @@ static void UpdateMaterialMenu (w, client_data, call_data)
  * Description:	Updates the material name on popdown if necessary.	*
  ************************************************************************/
 
-static void UpdateMaterialName (w, client_data, call_data)
-    Widget    w;
-    XtPointer call_data;
-    XtPointer client_data;
+static void UpdateMaterialName (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String	  label;
     ElementDialog eltd;
@@ -624,9 +610,7 @@ static void UpdateMaterialName (w, client_data, call_data)
  * Description:	Sets the label of the number widget.			*
  ************************************************************************/
 
-static void SetNumber (eltd, number)
-    ElementDialog eltd;
-    unsigned	  number;
+static void SetNumber (ElementDialog eltd, unsigned int number)
 {
     char buffer [10];
 
@@ -642,9 +626,7 @@ static void SetNumber (eltd, number)
  * Description:	Sets the label of the type widget.			*
  ************************************************************************/
 
-static void SetType (eltd, defn)
-    ElementDialog eltd;
-    Definition	  defn;
+static void SetType (ElementDialog eltd, Definition defn)
 {
     Cardinal i;
     unsigned numnodes;
@@ -679,8 +661,7 @@ static void SetType (eltd, defn)
  * Description:	Displays the node array.				*
  ************************************************************************/
 
-static void DisplayNodes (eltd)
-    ElementDialog eltd;
+static void DisplayNodes (ElementDialog eltd)
 {
     Cardinal i;
     Cardinal j;
@@ -708,8 +689,7 @@ static void DisplayNodes (eltd)
  * Description:	Retrieves the displayed nodes.				*
  ************************************************************************/
 
-static void RetrieveNodes (eltd)
-    ElementDialog eltd;
+static void RetrieveNodes (ElementDialog eltd)
 {
     Cardinal i;
     Cardinal j;
@@ -731,11 +711,7 @@ static void RetrieveNodes (eltd)
  * Description:	Records the menu button which activated the menu.	*
  ************************************************************************/
 
-static void Menu (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Menu (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     menu_button = w;
 }
@@ -748,11 +724,7 @@ static void Menu (w, event, params, num_params)
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -772,10 +744,7 @@ static void Action (w, event, params, num_params)
  * Description:	Displays the next highest numbered element.		*
  ************************************************************************/
 
-static void Up (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Element	  element;
     ElementDialog eltd;
@@ -799,10 +768,7 @@ static void Up (w, client_data, call_data)
  * Description:	Displays the next lowest numbered element.		*
  ************************************************************************/
 
-static void Down (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Down (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Element	  element;
     ElementDialog eltd;
@@ -826,10 +792,7 @@ static void Down (w, client_data, call_data)
  * Description:	Shifts the list of displayed nodes to the right.	*
  ************************************************************************/
 
-static void Left (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Left (Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned	  numnodes;
     ElementDialog eltd;
@@ -853,10 +816,7 @@ static void Left (w, client_data, call_data)
  * Description:	Shifts the list of displayed nodes to the left.		*
  ************************************************************************/
 
-static void Right (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Right (Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned	  numnodes;
     ElementDialog eltd;
@@ -885,10 +845,7 @@ static void Right (w, client_data, call_data)
  *		redisplayed to correct any invalid entries.		*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Cardinal	       i;
     unsigned	       numnodes;
@@ -1028,10 +985,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ElementDialog eltd;
 
@@ -1048,10 +1002,7 @@ static void Dismiss (w, client_data, call_data)
  *		not in effect.  The dialog is then updated.		*
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Element	      active;
     Element	      element;
@@ -1096,10 +1047,7 @@ static void Delete (w, client_data, call_data)
  *		is in effect.						*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Element	  element;
     ElementDialog eltd;
@@ -1123,10 +1071,7 @@ static void Copy (w, client_data, call_data)
  *		new/copy operation is in effect.			*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Cardinal	  i;
     unsigned	  numnodes;
@@ -1159,12 +1104,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-ElementDialog ElementDialogCreate (parent, name, title, callback, closure)
-    Widget	   parent;
-    String	   name;
-    String	   title;
-    XtCallbackProc callback;
-    XtPointer	   closure;
+ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure)
 {
     Cardinal		i;
     Arg			args [1];
@@ -1494,8 +1434,7 @@ ElementDialog ElementDialogCreate (parent, name, title, callback, closure)
  * Description:	Pops up the specified element dialog.			*
  ************************************************************************/
 
-void ElementDialogPopup (eltd)
-    ElementDialog eltd;
+void ElementDialogPopup (ElementDialog eltd)
 {
     XtPopup (eltd -> shell, XtGrabNone);
 }
@@ -1508,12 +1447,7 @@ void ElementDialogPopup (eltd)
  *		trees.							*
  ************************************************************************/
 
-void ElementDialogUpdate (eltd, elements, materials, loads, nodes)
-    ElementDialog eltd;
-    Tree	  elements;
-    Tree	  materials;
-    Tree	  loads;
-    Tree	  nodes;
+void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tree loads, Tree nodes)
 {
     /* Remember to update the menus if necessary. */
 
@@ -1555,8 +1489,7 @@ void ElementDialogUpdate (eltd, elements, materials, loads, nodes)
  * Description:	Returns the currently displayed (active) element.	*
  ************************************************************************/
 
-Element ElementDialogActive (eltd)
-    ElementDialog eltd;
+Element ElementDialogActive (ElementDialog eltd)
 {
     return eltd -> active;
 }
@@ -1568,9 +1501,7 @@ Element ElementDialogActive (eltd)
  * Description:	Displays the specified element.				*
  ************************************************************************/
 
-void ElementDialogDisplay (eltd, element)
-    ElementDialog eltd;
-    Element	  element;
+void ElementDialogDisplay (ElementDialog eltd, Element element)
 {
     unsigned	numnodes;
     Distributed	load;

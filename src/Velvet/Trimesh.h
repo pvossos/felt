@@ -30,20 +30,8 @@
 
 typedef struct trimesh_dialog *TrimeshDialog;
 
+TrimeshDialog TrimeshDialogCreate (Widget parent, String name, String title);
 
-TrimeshDialog TrimeshDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
-
-
-TriMesh TrimeshDialogPopup (
-# if NeedFunctionPrototypes
-    TrimeshDialog		/* material_dialog */
-# endif
-);
+TriMesh TrimeshDialogPopup (TrimeshDialog trimeshd);
 
 # endif /* _Trimesh_h */

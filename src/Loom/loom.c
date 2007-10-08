@@ -219,8 +219,8 @@ static void DumpOptions ( )
  * Description:	 							*
  ************************************************************************/
 
-void ExitLoom(status)
-    int	 status;
+void
+ExitLoom(int status)
 {
 
     if (fp_out)

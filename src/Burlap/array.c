@@ -36,11 +36,7 @@
  *		default the array is not temporary.			*
  ************************************************************************/
 
-Array CreateArray (ptr, type, length, handler)
-    void *ptr;
-    int   type;
-    int   length;
-    int   handler;
+Array CreateArray (void *ptr, int type, int length, int handler)
 {
     Array array;
 
@@ -114,8 +110,7 @@ Array CreateArray (ptr, type, length, handler)
  * Description:	Creates a copy of an array.				*
  ************************************************************************/
 
-Array CopyArray (array)
-    Array array;
+Array CopyArray (Array array)
 {
     array -> ref_count ++;
     return array;
@@ -129,8 +124,7 @@ Array CopyArray (array)
  *		deallocated unless it is temporary.			*
  ************************************************************************/
 
-void DestroyArray (array)
-    Array array;
+void DestroyArray (Array array)
 {
     if (! -- array -> ref_count) {
 	if (array -> temp)

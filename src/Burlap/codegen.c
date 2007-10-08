@@ -26,10 +26,10 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <stdarg.h>
 # include "optab.h"
 # include "codegen.h"
 # include "allocate.h"
-# include VAR_ARGS_INCLUDE
 
 # define InitCodeSize 256
 
@@ -87,19 +87,13 @@ emit_instr(Address addr, Opcode op, va_list ap)
  *		instruction pointer which is then incremented.		*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void emit (Opcode op, ...)
-# else
-void emit (op, va_alist)
-    Opcode op;
-    va_dcl
-# endif
 {
     int     inc;
     va_list ap;
 
 
-    VA_START (ap, op);
+    va_start (ap, op);
     inc = emit_instr (ip, op, ap);
     cs -> count += inc;
     ip += inc;
@@ -114,19 +108,12 @@ void emit (op, va_alist)
  *		changing the instruction pointer.			*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void patch (Address addr, Opcode op, ...)
-# else
-void patch (addr, op, va_alist)
-    Address addr;
-    Opcode  op;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, op);
+    va_start (ap, op);
     emit_instr (addr, op, ap);
     va_end (ap);
 }
@@ -139,8 +126,7 @@ void patch (addr, op, va_alist)
  *		current code segment.					*
  ************************************************************************/
 
-Word fetch (addr)
-    Address addr;
+Word fetch (Address addr)
 {
     static Word empty_word;
 
@@ -155,7 +141,7 @@ Word fetch (addr)
  * Description:	Resets the current code segment.			*
  ************************************************************************/
 
-void reset ( )
+void reset (void)
 {
     ip = 0;
     cs -> count = 0;
@@ -168,8 +154,7 @@ void reset ( )
  * Description:	Deallocates a code segment.				*
  ************************************************************************/
 
-void free_cs (cs)
-    Code cs;
+void free_cs (Code cs)
 {
     Deallocate (cs -> memory);
     Delete (cs);
@@ -182,7 +167,7 @@ void free_cs (cs)
  * Description:	Creates, initializes, and returns a new code segment.	*
  ************************************************************************/
 
-Code new_cs ( )
+Code new_cs (void)
 {
     Code cs;
 
@@ -203,8 +188,7 @@ Code new_cs ( )
  * Description:	Dumps a code segment to standard output.		*
  ************************************************************************/
 
-void dump (cs)
-    Code cs;
+void dump (Code cs)
 {
     Opcode   op;
     unsigned i;

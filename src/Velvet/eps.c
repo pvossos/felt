@@ -28,7 +28,6 @@
 #define MARGIN 0.95
 
 typedef unsigned char xelval;
-XImage *WidgetToXImage(Widget widget, XColor **colors, int *ncolors);
 static int colorstobpp(int colors);
 static void putinit(char* name, int cols, int rows, int padright, int bps, float scale,
                     int dpi, int pagewid, int pagehgt, int turnflag,

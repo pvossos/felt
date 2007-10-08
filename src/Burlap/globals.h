@@ -50,8 +50,8 @@ extern char	 **str_array;		/* array of string literals	  */
 extern double	  *dbl_array;		/* array of double literals	  */
 
 
-extern ste *add_literal PROTO ((st *, char *, Opcode));
-extern void global_init PROTO ((void));
-extern int  is_global   PROTO ((descriptor *));
+ste *add_literal (st *table, char *name, Opcode op);
+void global_init (void);
+int is_global (descriptor *var);
 
 # endif /* _GLOBALS_H */

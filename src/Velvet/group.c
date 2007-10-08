@@ -107,7 +107,7 @@ SelectGroupCB(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void SelectGroupAP ( )
+void SelectGroupAP (void)
 {
     static unsigned corner_number = 0;
     static float    xl, xr, yb, yt;
@@ -132,9 +132,7 @@ void SelectGroupAP ( )
 }
 
 
-void SelectGroup (call_data, op)
-    XtPointer  call_data;
-    void     (*op) ( );
+void SelectGroup (XtPointer call_data, void (*op) (/* ??? */))
 {
     Arg arglist [1];
 

@@ -78,11 +78,10 @@ static int	saved_token;
 static YYSTYPE	saved_value;
 static YYSTYPE *value;
 
-static int process	    PROTO ((int));
-static int process_operator PROTO ((int));
-static int process_literal  PROTO ((int));
-static int process_newline  PROTO ((void));
-static int process_eof	    PROTO ((void));
+static int process_operator (int this_token);
+static int process_literal  (int this_token);
+static int process_newline  (void);
+static int process_eof	    (void);
 %}
 
 digit		[0-9]
@@ -185,8 +184,7 @@ while				{return process_operator (WHILE);}
  * Description:	Reports a syntax error using the error mechanism.	*
  ************************************************************************/
 
-void yyerror (message)
-    char *message;
+void yyerror (char *message)
 {
     int c;
 
@@ -218,8 +216,7 @@ void yyerror (message)
  *		ELIF token if necessary as described above.		*
  ************************************************************************/
 
-static int process (this_token)
-    int this_token;
+static int process (int this_token)
 {
     if (newline && toktab [last_token].end && toktab [this_token].begin) {
 	saved_token = this_token;
@@ -244,8 +241,7 @@ static int process (this_token)
  *		and file number is set.					*
  ************************************************************************/
 
-static int process_operator (this_token)
-    int this_token;
+static int process_operator (int this_token)
 {
     value -> loc.line = line_num;
     value -> loc.file = file_num;
@@ -260,8 +256,7 @@ static int process_operator (this_token)
  * Description:	Process the current literal token.			*
  ************************************************************************/
 
-static int process_literal (this_token)
-    int this_token;
+static int process_literal (int this_token)
 {
     char *dest;
     char *src;
@@ -299,7 +294,7 @@ static int process_literal (this_token)
  * Description:	Processes a newline token.				*
  ************************************************************************/
 
-static int process_newline ( )
+static int process_newline (void)
 {
     value -> loc.line = line_num;
     value -> loc.file = file_num;
@@ -326,7 +321,7 @@ static int process_newline ( )
  *		then a semicolon is returned to terminate the file.	*
  ************************************************************************/
 
-static int process_eof ( )
+static int process_eof (void)
 {
     BEGIN (quit);
     return interactive ? YY_NULL : SEMICOL;
@@ -343,8 +338,7 @@ static int process_eof ( )
  *		information is restored.				*
  ************************************************************************/
 
-int yyinclude (file)
-    char *file;
+int yyinclude (char *file)
 {
     int		    old_newline;
     int		    old_last_token;
@@ -467,7 +461,7 @@ int yyinclude (file)
  ************************************************************************/
 
 #if 0
-int yywrap ( )
+int yywrap (void)
 {
     if (0) unput (0);
     return 1;

@@ -41,16 +41,13 @@
 
 extern FileDialog	filed;
  
-void OutputWindowPopup ( )
+void OutputWindowPopup (void)
 {
    OutputDialogPopup (output_dialog, "FElt Output","dismiss",
                       OutputButtonActions, NULL);
 }
 
-void OutputButtonActions (w, client_data, call_data)
-   Widget 	w;
-   XtPointer	client_data,
-		call_data;
+void OutputButtonActions (Widget w, XtPointer client_data, XtPointer call_data)
 {
    String      selected = (String) call_data;
    String      ans;

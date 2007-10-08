@@ -30,10 +30,12 @@
 # define _TRAP_H
 # include "descriptor.h"		/* descriptor type */
 
-typedef int (*TrapHandler) PROTO ((descriptor *, descriptor **));
+typedef int (*TrapHandler) (descriptor *, descriptor **);
 
-extern int AddTrap  PROTO ((TrapHandler));
-extern int CallTrap PROTO ((int, descriptor *, descriptor **));
-extern int NumTraps PROTO ((void));
+int AddTrap (TrapHandler handler);
+
+int CallTrap (int index, descriptor *arg1, descriptor **arg2);
+
+int NumTraps (void);
 
 # endif /* _TRAP_H */

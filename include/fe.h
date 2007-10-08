@@ -383,9 +383,6 @@ void AdjustForceVector(Vector Fcond, Vector Kcond, unsigned int affected_dof, do
 */
 unsigned SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac);
 
-Vector ConstructForceVector(void);
-
-
 /*
   Constructs the global nodal force vector based on all nodal forces
   and the global DOFs active at those nodes.  Global DOF determination

@@ -50,25 +50,10 @@ typedef struct canvas {
 
 extern Canvas	canvas;
 
-CanvasDialog CanvasDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent  */,
-    Widget		/* drawing */,
-    String		/* name    */,
-    String		/* title   */
-# endif
-);
+CanvasDialog CanvasDialogCreate (Widget parent, Widget dw, String name, String title);
 
-void CanvasDialogPopup (
-# if NeedFunctionPrototypes
-    CanvasDialog		/* canvas_dialog */
-# endif
-);
+void CanvasDialogPopup (CanvasDialog canvasd);
 
-void CanvasDialogSet (
-# if NeedFunctionPrototypes
-    CanvasDialog		/* canvas_dialog */
-# endif
-);
+void CanvasDialogSet (CanvasDialog canvasd);
 
 # endif /* _Canvas_h */

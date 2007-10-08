@@ -32,7 +32,6 @@
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <X11/Intrinsic.h>
-# include "proto.h"
 # include "error.h"
 # include "ppm.h"
 # include "xwd.h"
@@ -42,12 +41,7 @@
 
 static int 	pixel_count;
 
-static void WritePPMHeader (fp, filename, width, height, rawbits)
-   FILE		*fp;
-   char		*filename;
-   unsigned	width;
-   unsigned	height;
-   unsigned	rawbits;
+static void WritePPMHeader (FILE *fp, char *filename, unsigned int width, unsigned int height, unsigned int rawbits)
 {
    fprintf (fp, "%s\n", rawbits ? "P6" : "P3");
    fprintf (fp, "# %s\n", filename);
@@ -59,11 +53,7 @@ static void WritePPMHeader (fp, filename, width, height, rawbits)
    return;
 }
 
-static void WritePPMPixel (fp, r, g, b)
-   FILE		*fp;
-   int		r;
-   int		g;
-   int		b;
+static void WritePPMPixel (FILE *fp, int r, int g, int b)
 {
    fprintf (fp, "%3d %3d %3d ", r, g, b);
 
@@ -76,11 +66,7 @@ static void WritePPMPixel (fp, r, g, b)
    return;
 }
 
-static void WriteRawPPMPixel (fp, r, g, b)
-   FILE		*fp;
-   int		r;
-   int		g;
-   int		b;
+static void WriteRawPPMPixel (FILE *fp, int r, int g, int b)
 {
    char		array [3];
 
@@ -93,9 +79,7 @@ static void WriteRawPPMPixel (fp, r, g, b)
    return;
 }
 
-static void ClosePPM (fp, rawbits)
-   FILE		*fp;
-   int rawbits;
+static void ClosePPM (FILE *fp, int rawbits)
 {
    if (rawbits)
       fprintf (fp, "\n");

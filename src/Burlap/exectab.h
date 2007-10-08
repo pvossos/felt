@@ -39,7 +39,7 @@
 # include "relational.h"
 
 
-static int (*(exectab [ ])) PROTO ((void)) = {
+static int (*(exectab [ ])) (void) = {
     add_op,	/* arithmetic.c	*/
     apply_op,	/* apply.c	*/
     arg_op,	/* literal.c	*/

@@ -41,36 +41,14 @@ typedef struct drawn {
 } *Drawn;
 
 
-extern void DrawProblem (
-# if NeedFunctionPrototypes
-    double		/* z plane */
-# endif
-);
+void DrawProblem (double z);
 
+void DestroyProblem (ItemDestructor material_op);
 
-extern void DestroyProblem (
-# if NeedFunctionPrototypes
-    ItemDestructor	/* material destructor */
-# endif
-);
+void SetNodeNumbering (int value);
 
+void SetElementNumbering (int value);
 
-extern void SetNodeNumbering (
-# if NeedFunctionPrototypes
-    int			/* flag */
-# endif
-);
-
-
-extern void SetElementNumbering (
-# if NeedFunctionPrototypes
-    int			/* flag */
-# endif
-);
-
-extern void RecolorCanvas (
-# if NeedFunctionPrototypes
-# endif
-);
+void RecolorCanvas (void);
 
 # endif /* _VFE_H */

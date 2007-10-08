@@ -54,11 +54,11 @@
 # define AMIN(u,v) ((u) < (v) ? (u) : (v))
 # define AMAX(u,v) ((u) > (v) ? (u) : (v))
 
-float  idptip();
-void   idgrid();
-int    idtang();
-void   idpdrv();
-int    idxchg();
+static float  idptip(float *xd, float *yd, float *zd, int nt, int *ipt, int nl, int *ipl, float *pdd, int iti, float xii, float yii);
+static void   idgrid(float *xd, float *yd, int nt, int *ipt, int nl, int *ipl, int nxi, int nyi, float *xi, float *yi, int *ngp, int *igp);
+static int    idtang(int ndp, float *xd, float *yd, int *nt, int *ipt, int *nl, int *ipl, int *iwl, int *iwp, float *wk);
+static void   idpdrv(int ndp, float *xd, float *yd, float *zd, int nt, int *ipt, float *pd, float *wk);
+static int    idxchg(float *x, float *y, int i1, int i2, int i3, int i4);
 
 /****************************************************************************
  *
@@ -232,11 +232,7 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
  *
  ***************************************************************************/
 
-int idtang (ndp, xd, yd, nt, ipt, nl, ipl, iwl, iwp, wk)
-   int		ndp,*nt,*nl;
-   float	*xd,*yd;
-   float	*wk;
-   int		*ipt,*ipl,*iwl,*iwp;
+static int idtang (int ndp, float *xd, float *yd, int *nt, int *ipt, int *nl, int *ipl, int *iwl, int *iwp, float *wk)
 {
    int		itf[3];
    int		ndp0,ip1,ip2,ip3,ndpm1,ipmn1,ipmn2;
@@ -677,12 +673,7 @@ int idtang (ndp, xd, yd, nt, ipt, nl, ipl, iwl, iwp, wk)
  *
  ***************************************************************************/
 
-void idgrid (xd, yd, nt, ipt, nl, ipl, nxi, nyi, xi, yi, ngp, igp)
-   float	*xd,*yd;
-   int		*ipt,*ipl;
-   int		nt,nl,nxi,nyi;
-   int		*ngp,*igp;
-   float	*xi,*yi;
+static void idgrid (float *xd, float *yd, int nt, int *ipt, int nl, int *ipl, int nxi, int nyi, float *xi, float *yi, int *ngp, int *igp)
 {
    int		nt0,nl0,nxi0,nyi0;
    int      	nxinyi;
@@ -1007,11 +998,7 @@ void idgrid (xd, yd, nt, ipt, nl, ipl, nxi, nyi, xi, yi, ngp, igp)
  *
  ***************************************************************************/
 
-void idpdrv (ndp,xd,yd,zd,nt,ipt,pd,wk)
-   float	*xd,*yd,*zd;
-   int		ndp,nt;
-   int		*ipt;
-   float	*wk,*pd;
+static void idpdrv (int ndp, float *xd, float *yd, float *zd, int nt, int *ipt, float *pd, float *wk)
 {
    int		ipti[4];
    float	xv[4],yv[4],zv[4],zxv[4],zyv[4],
@@ -1162,12 +1149,7 @@ void idpdrv (ndp,xd,yd,zd,nt,ipt,pd,wk)
  *
  ***************************************************************************/
 
-float idptip (xd,yd,zd,nt,ipt,nl,ipl,pdd,iti,xii,yii)
-   float	*xd,*yd,*zd;
-   float	*pdd;
-   int		*ipt,*ipl;
-   float	xii,yii;
-   int		nt,nl,iti;
+static float idptip (float *xd, float *yd, float *zd, int nt, int *ipt, int nl, int *ipl, float *pdd, int iti, float xii, float yii)
 {
    float	zii;
    float	x[4],y[4],z[4],pd[16];
@@ -1514,9 +1496,7 @@ float idptip (xd,yd,zd,nt,ipt,nl,ipl,pdd,iti,xii,yii)
  *
  ***************************************************************************/
 
-int idxchg (x,y,i1,i2,i3,i4)
-   float	*x,*y;
-   int		i1,i2,i3,i4;
+static int idxchg (float *x, float *y, int i1, int i2, int i3, int i4)
 {
    int		idx;
    float	u1,u2,u3,u4;

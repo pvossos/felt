@@ -26,14 +26,13 @@
 
 # ifndef _PREDICATE_H
 # define _PREDICATE_H
-# include "proto.h"			/* function declarations */
 
-extern int anyp_func	   PROTO ((int));
-extern int compactp_func   PROTO ((int));
-extern int everyp_func	   PROTO ((int));
-extern int matrixp_func	   PROTO ((int));
-extern int nullp_func	   PROTO ((int));
-extern int scalarp_func	   PROTO ((int));
-extern int symmetricp_func PROTO ((int));
+int anyp_func	    (int n);
+int compactp_func   (int n);
+int everyp_func	    (int n);
+int matrixp_func    (int n);
+int nullp_func	    (int n);
+int scalarp_func	(int n);
+int symmetricp_func (int n);
 
 # endif /* _PREDICATE_H */

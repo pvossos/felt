@@ -26,7 +26,6 @@
 
 # ifndef _ARRAY_H
 # define _ARRAY_H
-# include "proto.h"			/* function declarations */
 
 typedef struct array {
     void *ptr;				/* pointer to data    */
@@ -39,8 +38,10 @@ typedef struct array {
 } *Array;
 
 
-extern Array CreateArray  PROTO ((void *, int, int, int));
-extern Array CopyArray	  PROTO ((Array));
-extern void  DestroyArray PROTO ((Array));
+Array CreateArray (void *ptr, int type, int length, int handler);
+
+Array CopyArray (Array array);
+
+void DestroyArray (Array array);
 
 # endif /* _ARRAY_H */

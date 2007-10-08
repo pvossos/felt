@@ -37,49 +37,16 @@ struct cache_data {
     unsigned  ref_count;
 };
 
+Cache DW_CacheCreate (void);
 
-extern Cache DW_CacheCreate (
-# if NeedFunctionPrototypes
-    void
-# endif
-);
+void DW_CacheDestroy (Cache cache);
 
+CacheData DW_CacheLookup (Cache cache, String name);
 
-extern void DW_CacheDestroy (
-# if NeedFunctionPrototypes
-    Cache		/* cache */
-# endif
-);
+CacheData DW_CacheInsert (Cache cache, String name, XtArgVal value);
 
+void DW_CacheAddRef (CacheData data);
 
-extern CacheData DW_CacheLookup (
-# if NeedFunctionPrototypes
-    Cache,		/* cache */
-    String		/* name  */
-# endif
-);
-
-
-extern CacheData DW_CacheInsert (
-# if NeedFunctionPrototypes
-    Cache,		/* cache */
-    String,		/* name  */
-    XtArgVal		/* value */
-# endif
-);
-
-
-extern void DW_CacheAddRef (
-# if NeedFunctionPrototypes
-    CacheData		/* data  */
-# endif
-);
-
-
-extern void DW_CacheDelRef (
-# if NeedFunctionPrototypes
-    CacheData		/* data  */
-# endif
-);
+void DW_CacheDelRef (CacheData data);
 
 # endif /* _Cache_h */

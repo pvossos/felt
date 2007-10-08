@@ -42,7 +42,7 @@
 
 extern Widget toplevel;
 
-Widget CreateDrawingShell ( );
+Widget CreateDrawingShell (String, String, XtCallbackProc, Widget *);
 
 # define MaxNodesPerElement 	12
 
@@ -50,17 +50,12 @@ static Widget	structShell;
 static Widget	struct_dw;
 static int     	first_time = 1;
 
-static void SaveCallback (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data,
-		call_data;
+static void SaveCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
    DumpDrawingArea (struct_dw, "Save Structure Plot", True);
 }                       
 
-void VisualizeStructure (element, numelts)
-   Element	*element;
-   unsigned	numelts;
+void VisualizeStructure (Element *element, unsigned int numelts)
 {
    Point	points [MaxNodesPerElement];
    unsigned	n;
@@ -202,9 +197,7 @@ void VisualizeStructure (element, numelts)
    DW_SetAutoRedraw (struct_dw, True);
 }
 
-void VisualizeStructure3D (element, numelts)
-   Element	*element;
-   unsigned	numelts;
+void VisualizeStructure3D (Element *element, unsigned int numelts)
 {
    Point	points [MaxNodesPerElement];
    Point	points2 [MaxNodesPerElement];

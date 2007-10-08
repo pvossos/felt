@@ -33,6 +33,6 @@ typedef struct {
    double	scale;		/* conversion factor to ref state	*/
 } Unit;
 
-void ScaleFeltFile ( );
+void ScaleFeltFile (double l, double f);
 
 # endif /* _YARDSTICK_H */

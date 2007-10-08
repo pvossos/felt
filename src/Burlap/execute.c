@@ -26,12 +26,12 @@
  ************************************************************************/
 
 # include <string.h>
+# include <stdarg.h>
 # include "debug.h"
 # include "error.h"
 # include "status.h"
 # include "execute.h"
 # include "exectab.h"
-# include VAR_ARGS_INCLUDE
 
 # ifndef StackSize
 # define StackSize 4096
@@ -53,8 +53,7 @@ descriptor *stack = the_stack;
  * Description:	Saves the current state of the virtual machine.		*
  ************************************************************************/
 
-void SaveState (state)
-    ExecState *state;
+void SaveState (ExecState *state)
 {
     state -> pc   = pc;
     state -> cs   = cs;
@@ -73,8 +72,7 @@ void SaveState (state)
  * Description:	Restores previously saved state information.		*
  ************************************************************************/
 
-void RestoreState (state)
-    ExecState *state;
+void RestoreState (ExecState *state)
 {
     pc	 = state -> pc;
     cs	 = state -> cs;
@@ -94,10 +92,7 @@ void RestoreState (state)
  * Description:	Executes a code segment of the virtual machine.		*
  ************************************************************************/
 
-int execute (code, vars, args)
-    Code	code;
-    descriptor *vars;
-    descriptor *args;
+int execute (Code code, descriptor *vars, descriptor *args)
 {
     ExecState state;
     int       status;
@@ -128,12 +123,7 @@ int execute (code, vars, args)
  * Description:	Reports a type error for an operator or function.	*
  ************************************************************************/
 
-void TypeError (op, a, b, c, is_func)
-    char       *op;
-    descriptor *a;
-    descriptor *b;
-    descriptor *c;
-    int		is_func;
+void TypeError (char *op, descriptor *a, descriptor *b, descriptor *c, int is_func)
 {
     char *a_type;
     char *b_type;
@@ -179,12 +169,7 @@ void TypeError (op, a, b, c, is_func)
  * Description:	Reports a matrix error.					*
  ************************************************************************/
 
-void MatrixError (op, a, b, s, is_func)
-    char  *op;
-    Matrix a;
-    Matrix b;
-    int    s;
-    int    is_func;
+void MatrixError (char *op, Matrix a, Matrix b, int s, int is_func)
 {
     char *msg;
     char  a_size [32];
@@ -292,8 +277,7 @@ void MatrixError (op, a, b, s, is_func)
  * Description:	Reports a mathematic exception.				*
  ************************************************************************/
 
-void MathException (s)
-    char *s;
+void MathException (char *s)
 {
     rterror ("exception in expression: %s", s);
 }

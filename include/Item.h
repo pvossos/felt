@@ -26,14 +26,13 @@
 
 # ifndef _Item_h
 # define _Item_h
-# include "proto.h"
 
 typedef void *Item;
 
-typedef Item (*ItemDuplicator) PROTO ((Item));
-typedef int  (*ItemComparator) PROTO ((Item, Item));
-typedef int  (*ItemDestructor) PROTO ((Item));
-typedef int  (*ItemIdentifier) PROTO ((Item));
-typedef int  (*ItemIterator)   PROTO ((Item));
+typedef Item (*ItemDuplicator) (Item);
+typedef int  (*ItemComparator) (Item, Item);
+typedef int  (*ItemDestructor) (Item);
+typedef int  (*ItemIdentifier) (Item);
+typedef int  (*ItemIterator)   (Item);
 
 # endif /* _Item_h */

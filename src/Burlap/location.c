@@ -37,7 +37,7 @@
  * Description:	Updates the current file name and number.		*
  ************************************************************************/
 
-int file_op ( )
+int file_op (void)
 {
     curr_file_num = fetch (pc ++).ival;
     curr_file_name = *strlit (curr_file_num);
@@ -52,7 +52,7 @@ int file_op ( )
  * Description:	Updates the current line number.			*
  ************************************************************************/
 
-int line_op ( )
+int line_op (void)
 {
     curr_line_num = fetch (pc ++).ival;
     d_printf ("line\t%d\n", curr_line_num);

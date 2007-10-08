@@ -26,10 +26,9 @@
 
 # ifndef _INTERACTIVE_H
 # define _INTERACTIVE_H
-# include "proto.h"			/* function declarations */
 
-extern void init_interactive PROTO ((char *, char *, int, int));
-extern int  readchar	     PROTO ((void));
-extern int  print_history    PROTO ((int));
+void init_interactive (char *argv0, char *s_file, int q_flag, int a_flag);
+int readchar (void);
+int print_history (int n);
 
 # endif /* _INTERACTIVE_H */

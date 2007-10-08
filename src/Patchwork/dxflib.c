@@ -30,10 +30,9 @@
 # include <string.h>
 # include "dxf.h"
 
-extern void error ( );
+extern void error (char *format, ...);
 
-int WriteDXFHeader (output)
-   FILE		*output;
+int WriteDXFHeader (FILE *output)
 {
    fprintf (output, "  %d\nSECTION\n",STRING);
    fprintf (output, "  %d\nENTITIES\n",HEADER);
@@ -41,8 +40,7 @@ int WriteDXFHeader (output)
    return 0;
 }
 
-int ReadDXFHeader (input)
-   FILE		*input;
+int ReadDXFHeader (FILE *input)
 {
    int		dummy;
    char		buffer [256];
@@ -66,8 +64,7 @@ int ReadDXFHeader (input)
    return 0;
 } 
 
-int ReadDXFEntity (input)
-   FILE		*input;
+int ReadDXFEntity (FILE *input)
 {
    int		dummy;
    char		buffer [256];
@@ -87,8 +84,7 @@ int ReadDXFEntity (input)
       return DXF_UNKNOWN;
 }
  
-int WriteDXFTrailer (output)
-   FILE		*output;
+int WriteDXFTrailer (FILE *output)
 {
    fprintf (output, "  %d\nENDSEC\n",STRING);
    fprintf (output, "  %d\nEOF\n",STRING);
@@ -96,8 +92,7 @@ int WriteDXFTrailer (output)
    return 0;
 }
 
-int ReadDXFTrailer (input)
-   FILE		*input;
+int ReadDXFTrailer (FILE *input)
 {
    int		dummy;
    char		buffer [256];
@@ -113,10 +108,7 @@ int ReadDXFTrailer (input)
    return 0;
 }
 
-int WriteDXFLine (line,layer,output)
-   DXFLine	*line;
-   char		*layer;
-   FILE		*output;
+int WriteDXFLine (DXFLine *line, char *layer, FILE *output)
 {
    fprintf (output,"  %d\nLINE\n",STRING); 
    fprintf (output,"  %d\n%s\n",LAYER,layer);
@@ -130,10 +122,7 @@ int WriteDXFLine (line,layer,output)
    return 0;
 }
 
-int ReadDXFLine (line, layer, input)
-   DXFLine	*line;
-   char		*layer;
-   FILE		*input;
+int ReadDXFLine (DXFLine *line, char *layer, FILE *input)
 {
    int		dummy; 
    char		buffer [256];
@@ -179,10 +168,7 @@ int ReadDXFLine (line, layer, input)
    return 0;
 }
 
-int WriteDXFPolyline (poly, layer, output)
-   DXFPolyline	*poly;
-   char		*layer;
-   FILE		*output;
+int WriteDXFPolyline (DXFPolyline *poly, char *layer, FILE *output)
 {
    unsigned	i;
 
@@ -206,10 +192,7 @@ int WriteDXFPolyline (poly, layer, output)
    return 0;
 }
 
-int ReadDXFPolyline (poly, layer, input)
-   DXFPolyline	*poly;
-   char		*layer;
-   FILE		*input;
+int ReadDXFPolyline (DXFPolyline *poly, char *layer, FILE *input)
 {
    int		dummy; 
    double	fdummy;
@@ -301,9 +284,7 @@ int ReadDXFPolyline (poly, layer, input)
    return 0;
 }
 
-int WriteDXFPolyHeader (layer,output)
-   FILE		*output;
-   char		*layer;
+int WriteDXFPolyHeader (char *layer, FILE *output)
 {
    fprintf (output,"   %d\nPOLYLINE\n",STRING);
    fprintf (output,"   %d\n%s\n",LAYER,layer);
@@ -316,9 +297,7 @@ int WriteDXFPolyHeader (layer,output)
    return 0;
 }
 
-int WriteDXFPolyTrailer (layer,output)
-   char		*layer;
-   FILE		*output;
+int WriteDXFPolyTrailer (char *layer, FILE *output)
 {
    fprintf (output, "   %d\nSEQEND\n",STRING);
    fprintf (output, "   %d\n%s\n",LAYER,layer);
@@ -326,10 +305,7 @@ int WriteDXFPolyTrailer (layer,output)
    return 0;
 }
 
-int WriteDXFVertex (x, y, z, layer, output)
-   double	x,y,z;
-   char		*layer;
-   FILE		*output;
+int WriteDXFVertex (double x, double y, double z, char *layer, FILE *output)
 {
    fprintf (output,"   %d\nVERTEX\n",STRING);
    fprintf (output,"   %d\n%s\n",LAYER,layer);
@@ -349,10 +325,7 @@ WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output)
    return 0;
 }
 
-int WriteDXF3dMeshHeader (m, n, layer, output)
-   int		m,n;
-   char		*layer;
-   FILE		*output;
+int WriteDXF3dMeshHeader (int m, int n, char *layer, FILE *output)
 {
    fprintf (output,"   %d\nPOLYLINE\n",STRING);
    fprintf (output,"   %d\n%s\n",LAYER,layer);
@@ -367,8 +340,7 @@ int WriteDXF3dMeshHeader (m, n, layer, output)
    return 0;
 }
 
-unsigned CheckValidity (read, wanted)
-   unsigned	read, wanted;
+unsigned CheckValidity (unsigned int read, unsigned int wanted)
 {
    if (read != wanted) {
       error ("dxf: expected DXF code %d, got %d",wanted,read);

@@ -370,8 +370,7 @@ static XtWidgetGeometry	preferred;
  *		the specified force.					*
  ************************************************************************/
 
-static int SetForceEntry (item)
-    Item item;
+static int SetForceEntry (Item item)
 {
     SetLabelString (children [child_number], ((Force) item) -> name);
 
@@ -390,10 +389,7 @@ static int SetForceEntry (item)
  *		list of current forces.					*
  ************************************************************************/
 
-static void UpdateForceMenu (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateForceMenu (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg        args [2];
     char       buffer [32];
@@ -449,10 +445,7 @@ static void UpdateForceMenu (w, client_data, call_data)
  * Description:	Updates the force name on popdown if necessary.		*
  ************************************************************************/
 
-static void UpdateForceName (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateForceName (Widget w, XtPointer client_data, XtPointer call_data)
 {
     NodeDialog noded;
 
@@ -476,8 +469,7 @@ static void UpdateForceName (w, client_data, call_data)
  *		the specified constraint.				*
  ************************************************************************/
 
-static int SetConstraintEntry (item)
-    Item item;
+static int SetConstraintEntry (Item item)
 {
     SetLabelString (children [child_number], ((Constraint) item) -> name);
 
@@ -496,10 +488,7 @@ static int SetConstraintEntry (item)
  *		the list of current constraints.			*
  ************************************************************************/
 
-static void UpdateConstraintMenu (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateConstraintMenu (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg        args [2];
     char       buffer [32];
@@ -560,10 +549,7 @@ static void UpdateConstraintMenu (w, client_data, call_data)
  * Description:	Updates the constraint name on popdown if necessary.	*
  ************************************************************************/
 
-static void UpdateConstraintName (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void UpdateConstraintName (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String     label;
     NodeDialog noded;
@@ -588,9 +574,7 @@ static void UpdateConstraintName (w, client_data, call_data)
  * Description: Sets the label of the number widget.			*
  ************************************************************************/
 
-static void SetNumber (noded, number)
-    NodeDialog noded;
-    unsigned   number;
+static void SetNumber (NodeDialog noded, unsigned int number)
 {
     char buffer [10];
 
@@ -607,11 +591,7 @@ static void SetNumber (noded, number)
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -631,10 +611,7 @@ static void Action (w, event, params, num_params)
  * Description:	Displays the next highest numbered node.		*
  ************************************************************************/
 
-static void Up (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Node       node;
     NodeDialog noded;
@@ -658,10 +635,7 @@ static void Up (w, client_data, call_data)
  * Description:	Displays the next lowest numbered node.			*
  ************************************************************************/
 
-static void Down (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Down (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Node       node;
     NodeDialog noded;
@@ -690,10 +664,7 @@ static void Down (w, client_data, call_data)
  *		invalid entries.					*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     double	      x;
     double	      y;
@@ -768,10 +739,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     NodeDialog noded;
 
@@ -788,10 +756,7 @@ static void Dismiss (w, client_data, call_data)
  *		in effect.  The dialog is then updated.			*
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Node	   node;
     NodeDialog	   noded;
@@ -832,10 +797,7 @@ static void Delete (w, client_data, call_data)
  *		operation is in effect.					*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Node       node;
     NodeDialog noded;
@@ -865,10 +827,7 @@ static void Copy (w, client_data, call_data)
  *		copy operation is in effect.				*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     NodeDialog noded;
 
@@ -893,12 +852,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-NodeDialog NodeDialogCreate (parent, name, title, callback, closure)
-    Widget         parent;
-    String         name;
-    String         title;
-    XtCallbackProc callback;
-    XtPointer	   closure;
+NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure)
 {
     Cardinal		i;
     Arg			args [1];
@@ -1176,8 +1130,7 @@ NodeDialog NodeDialogCreate (parent, name, title, callback, closure)
  * Description:	Pops up the specified node dialog.			*
  ************************************************************************/
 
-void NodeDialogPopup (noded)
-    NodeDialog noded;
+void NodeDialogPopup (NodeDialog noded)
 {
     XtPopup (noded -> shell, XtGrabNone);
 }
@@ -1190,11 +1143,7 @@ void NodeDialogPopup (noded)
  *		trees.							*
  ************************************************************************/
 
-void NodeDialogUpdate (noded, nodes, forces, constraints)
-    NodeDialog noded;
-    Tree       nodes;
-    Tree       forces;
-    Tree       constraints;
+void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constraints)
 {
     /* Remember to update the menus if necessary. */
 
@@ -1233,8 +1182,7 @@ void NodeDialogUpdate (noded, nodes, forces, constraints)
  * Description:	Returns the currently displayed (active) node.		*
  ************************************************************************/
 
-Node NodeDialogActive (noded)
-    NodeDialog noded;
+Node NodeDialogActive (NodeDialog noded)
 {
     return noded -> active;
 }
@@ -1246,9 +1194,7 @@ Node NodeDialogActive (noded)
  * Description:	Displays the specified node.				*
  ************************************************************************/
 
-void NodeDialogDisplay (noded, node)
-    NodeDialog noded;
-    Node       node;
+void NodeDialogDisplay (NodeDialog noded, Node node)
 {
     char buffer [32];
     Node active;

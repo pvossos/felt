@@ -134,8 +134,7 @@ static String repeater_table =
  <KeyUp>Return: unset() AnimateAction(button)\n\
  <KeyUp>space: unset() AnimateAction(button)";
 
-static Boolean AnimateOneStep (client_data)
-   XtPointer	client_data;
+static Boolean AnimateOneStep (XtPointer client_data)
 {
    struct timeval    timeout;
    Point	     points [MaxNodesPerElement];
@@ -187,8 +186,7 @@ static Boolean AnimateOneStep (client_data)
    return False;
 }
 
-static void ChangeSpeed (increment)
-   int	increment;
+static void ChangeSpeed (int increment)
 {
    delay += increment;
 
@@ -196,10 +194,7 @@ static void ChangeSpeed (increment)
       delay = 0;
 }
 
-static void ButtonCallback (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data,
-		call_data;
+static void ButtonCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
    unsigned	selected = *(unsigned *) client_data;
 
@@ -225,11 +220,7 @@ static void ButtonCallback (w, client_data, call_data)
    }
 }                       
 
-static void AnimateAction (w, event, params, num_params)
-   Widget	w;
-   XEvent	*event;
-   String	*params;
-   Cardinal	*num_params;
+static void AnimateAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    if (strcmp (params [0], "delete") == 0)
       ButtonCallback ((Widget) NULL, (XtPointer) &DismissButton, (XtPointer) NULL);
@@ -237,7 +228,7 @@ static void AnimateAction (w, event, params, num_params)
       XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-static void CreateAnimationShell ()
+static void CreateAnimationShell (void)
 {
    Arg			args [10];
    Cardinal		n;
@@ -382,11 +373,7 @@ static void CreateAnimationShell ()
    return; 
 }
 
-static void SetupArrays (dtable, element, numelts, numnodes)
-   Matrix	dtable;
-   Element	*element;
-   unsigned	numelts;
-   unsigned	numnodes;
+static void SetupArrays (Matrix dtable, Element *element, unsigned int numelts, unsigned int numnodes)
 {
    unsigned	i,j;
 
@@ -439,12 +426,7 @@ static void SetupArrays (dtable, element, numelts, numnodes)
 
 static int  	first_time = 1;
 
-void AnimateStructure (dtable, node, element, numnodes, numelts)
-   Matrix	dtable;
-   Node		*node;
-   Element	*element;
-   unsigned	numnodes;
-   unsigned	numelts;
+void AnimateStructure (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	x_max, x_min,
@@ -530,12 +512,7 @@ void AnimateStructure (dtable, node, element, numnodes, numelts)
    AnimateOneStep ((XtPointer) 1);
 }
 
-void AnimateStructure3D (dtable, node, element, numnodes, numelts)
-   Matrix	dtable;
-   Element	*element;
-   Node		*node;
-   unsigned	numnodes;
-   unsigned	numelts;
+void AnimateStructure3D (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	maxX, minX, 

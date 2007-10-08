@@ -25,14 +25,13 @@
  ************************************************************************/
 
 # include <string.h>
+# include <stdlib.h>
 # include "trap.h"
 # include "execute.h"
 # include "functab.h"
 # include "globals.h"
 # include "allocate.h"
 # include "consttab.h"
-# include "our-stdlib.h"
-
 
 /* Symbol tables for global symbols. */
 
@@ -57,18 +56,13 @@ char	  **str_array;
 double	   *dbl_array;
 
 
-static int constant_handler PROTO ((descriptor *, descriptor **));
-
-
 /************************************************************************
  * Function:	constant_handler					*
  *									*
  * Description:	Trapped variable handler for enumeration constants.	*
  ************************************************************************/
 
-static int constant_handler (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int constant_handler (descriptor *dest, descriptor **src)
 {
     /* This data is never recycled. */
 
@@ -93,10 +87,7 @@ static int constant_handler (dest, src)
  *		address).						*
  ************************************************************************/
 
-ste *add_literal (table, name, op)
-    st    *table;
-    char  *name;
-    Opcode op;
+ste *add_literal (st *table, char *name, Opcode op)
 {
     ste *s;
 
@@ -142,7 +133,7 @@ ste *add_literal (table, name, op)
  * Description:	Initializes the global symbol tables.			*
  ************************************************************************/
 
-void global_init ( )
+void global_init (void)
 {
     int		i;
     char	buffer [32];
@@ -193,8 +184,7 @@ void global_init ( )
  *		variable.						*
  ************************************************************************/
 
-int is_global (var)
-    descriptor *var;
+int is_global (descriptor *var)
 {
     return var_array <= var && var < var_array + var_st.num_syms;
 }

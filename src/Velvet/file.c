@@ -71,7 +71,7 @@ extern NodeDialog	node_d;
 extern ColorsDialog	colors_d;
 extern LoadCaseDialog   loadcase_d;
 
-static void CanvasToAppearance ( );
+static void CanvasToAppearance (void);
 
 
 /************************************************************************
@@ -80,7 +80,7 @@ static void CanvasToAppearance ( );
  * Description:	Prompt for and attempt to open a file.			*
  ************************************************************************/
 
-void OpenFile ( )
+void OpenFile (void)
 {
    String	ans;
    static char	suggestion [256] = "";
@@ -112,7 +112,7 @@ void OpenFile ( )
  * Description:	Reload the current file.				*
  ************************************************************************/
 
-void RestoreOriginal ( )
+void RestoreOriginal (void)
 {
    String	selected;
 
@@ -140,8 +140,7 @@ void RestoreOriginal ( )
  * Description:	Writes a named file.					*
  ************************************************************************/
    
-void WriteNamedFile (dump_all)
-   Boolean	dump_all;
+void WriteNamedFile (Boolean dump_all)
 {
    String	ans;
 
@@ -168,8 +167,7 @@ void WriteNamedFile (dump_all)
  * Description:	Writes the current file.				*
  ************************************************************************/
 
-int WriteVFeltFile (dump_all)
-    Boolean	dump_all;
+int WriteVFeltFile (Boolean dump_all)
 {
     CanvasToAppearance ( );
 
@@ -191,8 +189,7 @@ int WriteVFeltFile (dump_all)
  * Descripton:	Reads a named file.					*
  ************************************************************************/
 
-int VelvetReadFeltFile (file)
-    char *file;
+int VelvetReadFeltFile (char *file)
 {
     int      status;
     Element  elt;
@@ -247,7 +244,7 @@ int VelvetReadFeltFile (file)
  * Description:	Start a new problem.					*
  ************************************************************************/
 
-void StartNew ()
+void StartNew (void)
 {
     if (changeflag) 
        if (!QuerySave ()) return; 
@@ -295,7 +292,7 @@ void StartNew ()
  * Description:	Queries the user to save a file.			*
  ************************************************************************/
 
-Boolean QuerySave ( )
+Boolean QuerySave (void)
 {
     String	selected;
 
@@ -321,7 +318,7 @@ Boolean QuerySave ( )
  * Description:	Exits velvet.						*
  ************************************************************************/
     
-void QuitVelvet ( )
+void QuitVelvet (void)
 {
    if (changeflag) 
       if (!QuerySave ( ))
@@ -338,8 +335,7 @@ void QuitVelvet ( )
 
 Problem     saved;
 
-static int UpdateMaterial (item)
-    Item item;
+static int UpdateMaterial (Item item)
 {
     Item     found;
     Material old;
@@ -370,7 +366,7 @@ static int UpdateMaterial (item)
 /************************************************************************
  ************************************************************************/
 
-void OpenMaterialFile ( )
+void OpenMaterialFile (void)
 {
     String	ans;
     static char suggestion [256] = "";
@@ -416,8 +412,7 @@ void OpenMaterialFile ( )
 
 static FILE *fp;
 
-static int WriteMaterial (item)
-    Item item;
+static int WriteMaterial (Item item)
 {
     Material material = (Material) item;
 
@@ -441,7 +436,7 @@ static int WriteMaterial (item)
 /************************************************************************
  ************************************************************************/
 
-void WriteMaterialFile ( )
+void WriteMaterialFile (void)
 {
     String 	ans;
     static char suggestion [256] = "";
@@ -471,7 +466,7 @@ void WriteMaterialFile ( )
 /************************************************************************
  ************************************************************************/
 
-void UpdateFilenameDisplay ()
+void UpdateFilenameDisplay (void)
 {
    Arg	arglist [1];
 
@@ -487,9 +482,7 @@ void UpdateFilenameDisplay ()
 /************************************************************************
  ************************************************************************/
 
-void SaveWidgetPS (widget, ps_file)
-   Widget	widget;
-   String	ps_file;
+void SaveWidgetPS (Widget widget, String ps_file)
 {
    int		status;
    Figure	*figures;
@@ -542,10 +535,7 @@ void SaveWidgetPS (widget, ps_file)
 /************************************************************************
  ************************************************************************/
 
-void DumpDrawingArea (widget, title, allow_ps)
-   Widget	widget;
-   String	title;
-   Boolean	allow_ps;
+void DumpDrawingArea (Widget widget, String title, Boolean allow_ps)
 {
    String	save_file;
    String	format;
@@ -578,9 +568,7 @@ void DumpDrawingArea (widget, title, allow_ps)
 /************************************************************************
  ************************************************************************/
 
-void SaveWidgetXWD (widget, xwd_file)
-   Widget	widget;
-   String	xwd_file;
+void SaveWidgetXWD (Widget widget, String xwd_file)
 {
    FILE		*output;
 
@@ -607,7 +595,7 @@ void SaveWidgetXWD (widget, xwd_file)
  *		appearance structure.					*
  ************************************************************************/
 
-static void CanvasToAppearance ( )
+static void CanvasToAppearance (void)
 {
     Arg		     args [3];
     float	     scale;

@@ -36,10 +36,7 @@
 # include "dxf.h"
 # include "definition.h"
 
-extern int InitializeProblem ( );
-
-int ReadDXFFile (name)
-   char		*name;
+int ReadDXFFile (char *name)
 {
    int		status;
    unsigned	i;
@@ -132,8 +129,7 @@ int ReadDXFFile (name)
    return 0;
 }
 
-int WriteDXFFile (name)
-   char		*name;
+int WriteDXFFile (char *name)
 {
    unsigned	i, j;
    FILE		*fp;

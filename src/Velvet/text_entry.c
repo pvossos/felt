@@ -40,13 +40,7 @@
 # include "globals.h"
 # include "procedures.h"
 
-# undef strtol
-extern long strtol ( );
-
-char *GetTextCoordinates (rx,ry,rz)
-   float	*rx,
-		*ry;
-   float        *rz;
+char *GetTextCoordinates (float *rx, float *ry, float *rz)
 {
    String	result;
    Arg		arglist [2];
@@ -92,8 +86,7 @@ char *GetTextCoordinates (rx,ry,rz)
    }
 }
 
-char *GetTextNumber (number)
-   unsigned	*number;
+char *GetTextNumber (unsigned int *number)
 {
    String	result;
    static char  buffer [256];
@@ -129,7 +122,7 @@ char *GetTextNumber (number)
    }
 }
 
-String GetText ()
+String GetText (void)
 {
    String	result;
    String	copy;

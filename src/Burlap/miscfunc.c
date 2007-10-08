@@ -33,7 +33,6 @@
 # include "coerce.h"
 # include "execute.h"
 # include "miscfunc.h"
-# include "our-stdlib.h"
 # include "pathsearch.h"
 # include "interactive.h"
 

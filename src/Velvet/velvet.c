@@ -151,10 +151,7 @@ PanelId  last_command = -1;
  *		 panel id which indicates what action is to be taken.	*
  ************************************************************************/
 
-void PanelCallback (widget, clientData, callData)
-    Widget    widget;
-    XtPointer clientData;
-    XtPointer callData;
+void PanelCallback (Widget widget, XtPointer clientData, XtPointer callData)
 {
     if (!edit_mode) {
 
@@ -464,10 +461,7 @@ void PanelCallback (widget, clientData, callData)
  * Function:	SelectCallback
  ************************************************************************/
 
-void SelectCallback (w, clientData, callData)
-    Widget    w;
-    XtPointer clientData;
-    XtPointer callData;
+void SelectCallback (Widget w, XtPointer clientData, XtPointer callData)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -572,7 +566,7 @@ static XtResource Resources [ ] = {
 # undef offset
 
 
-static void GetArgs ( )
+static void GetArgs (void)
 {
     XtGetApplicationResources (toplevel, &appResources, Resources,
 				XtNumber (Resources), NULL, 0);
@@ -594,9 +588,7 @@ static void GetArgs ( )
  * Description:	 Main is the startup function for the velvet program.	*
  ************************************************************************/
 
-int main (argc, argv)
-    int   argc;
-    char *argv [ ];
+int main (int argc, char **argv)
 {
     int		   status = 0;
     int		   i, j;

@@ -30,7 +30,7 @@
 #else
 #include <stdio.h>
 
-static void memory_error_and_abort ();
+static void memory_error_and_abort (char *fname);
 
 /* **************************************************************** */
 /*								    */
@@ -42,8 +42,7 @@ static void memory_error_and_abort ();
    to hold BYTES number of bytes.  If the memory cannot be allocated,
    print an error message and abort. */
 char *
-xmalloc (bytes)
-     int bytes;
+xmalloc (int bytes)
 {
   char *temp = (char *)malloc (bytes);
 
@@ -53,9 +52,7 @@ xmalloc (bytes)
 }
 
 char *
-xrealloc (pointer, bytes)
-     char *pointer;
-     int bytes;
+xrealloc (char *pointer, int bytes)
 {
   char *temp;
 
@@ -70,8 +67,7 @@ xrealloc (pointer, bytes)
 }
 
 static void
-memory_error_and_abort (fname)
-     char *fname;
+memory_error_and_abort (char *fname)
 {
   fprintf (stderr, "%s: Out of virtual memory!\n", fname);
   abort ();

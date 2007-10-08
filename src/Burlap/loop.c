@@ -57,8 +57,7 @@ static loop_node loop_stack;
  *		if necessary.						*
  ************************************************************************/
 
-loop_node start_break (type)
-    int type;
+loop_node start_break (int type)
 {
     loop_node node;
 
@@ -84,9 +83,7 @@ loop_node start_break (type)
  *		the current depth, and emitting a jump instruction.	*
  ************************************************************************/
 
-void end_break (type, lnode)
-    int       type;
-    loop_node lnode;
+void end_break (int type, loop_node lnode)
 {
     break_node bnode;
 
@@ -110,8 +107,7 @@ void end_break (type, lnode)
  *		loop stack.						*
  ************************************************************************/
 
-void enter_loop (type)
-    int type;
+void enter_loop (int type)
 {
     loop_node node;
 
@@ -132,9 +128,7 @@ void enter_loop (type)
  *		expressions on its queue.				*
  ************************************************************************/
 
-void exit_loop (start, end)
-    Address start;
-    Address end;
+void exit_loop (Address start, Address end)
 {
     loop_node  lnode;
     break_node bnode;
@@ -160,7 +154,7 @@ void exit_loop (start, end)
  *		and destroying the queues.				*
  ************************************************************************/
 
-void exit_all ( )
+void exit_all (void)
 {
     loop_node  lnode;
     break_node bnode;

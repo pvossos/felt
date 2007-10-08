@@ -36,13 +36,12 @@
 # include "error.h"
 
 # undef atof
-extern double atof ();
-extern double strtod ();
+extern double atof (const char *);
+extern double strtod (const char *, char **);
 
-extern int InitializeProblem ( );
+extern int InitializeProblem (void);
 
-int ReadGraphFile (filename)
-   char		*filename;
+int ReadGraphFile (char *filename)
 {
    FILE			*fp;
    unsigned		i;
@@ -109,8 +108,7 @@ int ReadGraphFile (filename)
    return 0;
 }
 
-int WriteGraphFile (filename)
-   char		*filename;
+int WriteGraphFile (char *filename)
 {
    FILE		*output;
    unsigned	i,j;

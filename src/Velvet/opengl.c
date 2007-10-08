@@ -82,9 +82,7 @@ face bface[] =
     {0, 1, 5, 4},
 };
 
-static void MakeFont(fwidth, fheight)
-   int *fwidth;
-   int *fheight;
+static void MakeFont(int *fwidth, int *fheight)
 {
     XFontStruct *fontInfo;
     Font id;
@@ -466,11 +464,7 @@ static void HandleFocusEvent(Widget w, XtPointer client_data,
    RedrawFunction(inf -> mesa, (XtPointer) inf, NULL);
 }
    
-static void LoadResults(inf, element, numelts, mag)
-   info	   *inf;
-   Element *element;
-   int      numelts;
-   float    mag;
+static void LoadResults(info *inf, Element *element, int numelts, float mag)
 {
    int		i, j, k, nd;
    int		epn;
@@ -566,12 +560,7 @@ static void LoadResults(inf, element, numelts, mag)
    glEndList();
 }
 
-static void LoadContourResults(inf, stress, comp, element, numelts)
-   info	   *inf;
-   Boolean  stress;
-   int      comp;
-   Element *element;
-   int      numelts;
+static void LoadContourResults(info *inf, Boolean stress, int comp, Element *element, int numelts)
 {
    int		i, j, k, nd;
    int		epn;
@@ -729,11 +718,7 @@ static String table =
  <KeyUp>Return: AutoRepeat(saved) unset() ShellAction(button)\n\
  <KeyUp>space: AutoRepeat(saved) unset() ShellAction(button)";
 
-static void Action (w, event, params, num_params)
-   Widget        w;
-   XEvent       *event;
-   String       *params;
-   Cardinal     *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    if (strcmp (params [0], "delete") == 0)
       w = XtNameToWidget (w, "layout.dismiss");

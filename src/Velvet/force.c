@@ -341,8 +341,7 @@ current force. 'New' empties all fields. 'Copy' empties the name field only.";
  *		index of the active force is also set.			*
  ************************************************************************/
 
-static int AppendForceName (item)
-    Item item;
+static int AppendForceName (Item item)
 {
     if (dialog -> active == (Force) item)
 	list_index = num_forces;
@@ -358,11 +357,7 @@ static int AppendForceName (item)
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -375,8 +370,7 @@ static void Action (w, event, params, num_params)
 	XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-static void LoadForceValues (forced)
-    ForceDialog	forced;
+static void LoadForceValues (ForceDialog forced)
 {
     Boolean	state;
     Arg		args [1];
@@ -488,10 +482,7 @@ static void LoadForceValues (forced)
  *		canceled.						*
  ************************************************************************/
 
-static void Change (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Force		 active;
     struct force	 dummy;
@@ -535,10 +526,7 @@ static void Change (w, client_data, call_data)
  *		entries.						*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     struct force     old;
     struct force     dummy;
@@ -653,10 +641,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ForceDialog forced;
 
@@ -673,10 +658,7 @@ static void Dismiss (w, client_data, call_data)
  *		in effect.  The dialog is then updated.			*
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ForceDialog	    forced;
     ForceDialogInfo info;
@@ -710,10 +692,7 @@ static void Delete (w, client_data, call_data)
  * Description:								*
  ************************************************************************/
 
-static void Toggle (w, client_data, call_data)
-    Widget	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void Toggle (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ForceDialog		forced;
     Boolean		state;
@@ -745,10 +724,7 @@ static void Toggle (w, client_data, call_data)
  * Description:								*
  ************************************************************************/
 
-static void Plot (w, client_data, call_data)
-    Widget	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void Plot (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ForceDialog		forced;
 
@@ -769,10 +745,7 @@ static void Plot (w, client_data, call_data)
  *		that a new/copy operation is in effect.			*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ForceDialog forced;
 
@@ -793,10 +766,7 @@ static void Copy (w, client_data, call_data)
  *		flag indicating that a new/copy operation is in effect.	*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ForceDialog forced;
 
@@ -821,12 +791,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-ForceDialog ForceDialogCreate (parent, name, title, callback, closure)
-    Widget	   parent;
-    String	   name;
-    String	   title;
-    XtCallbackProc callback;
-    XtPointer	   closure;
+ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure)
 {
     Cardinal		i;
     Arg			args [1];
@@ -1056,8 +1021,7 @@ ForceDialog ForceDialogCreate (parent, name, title, callback, closure)
  * Description:	Pops up the specified force dialog.			*
  ************************************************************************/
 
-void ForceDialogPopup (forced)
-    ForceDialog forced;
+void ForceDialogPopup (ForceDialog forced)
 {
     XtPopup (forced -> shell, XtGrabNone);
 }
@@ -1069,8 +1033,7 @@ void ForceDialogPopup (forced)
  * Description:	Returns the currently active force.			*
  ************************************************************************/
 
-Force ForceDialogActive (forced)
-    ForceDialog forced;
+Force ForceDialogActive (ForceDialog forced)
 {
     return forced -> active;
 }
@@ -1082,9 +1045,7 @@ Force ForceDialogActive (forced)
  * Description:	Displays a specified force.				*
  ************************************************************************/
 
-void ForceDialogDisplay (forced, force)
-    ForceDialog forced;
-    Force	force;
+void ForceDialogDisplay (ForceDialog forced, Force force)
 {
     forced -> active = force;
     ForceDialogUpdate (forced, forced -> tree);
@@ -1101,9 +1062,7 @@ void ForceDialogDisplay (forced, force)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void ForceDialogUpdate (forced, tree)
-    ForceDialog forced;
-    Tree	tree;
+void ForceDialogUpdate (ForceDialog forced, Tree tree)
 {
     Cardinal nbytes;
 

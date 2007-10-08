@@ -26,14 +26,13 @@
 
 # ifndef _ERROR_H
 # define _ERROR_H
-# include "proto.h"			/* function declarations */
 
 extern int   curr_line_num;		/* line number during execution	*/
 extern int   curr_file_num;		/* file number during execution	*/
 extern char *curr_file_name;		/* file name during execution	*/
 
+void rterror (char *format, ...);
 
-extern void rterror PROTO ((char *, ...));
-extern void cterror PROTO ((char *, ...));
+void cterror (char *format, ...);
 
 # endif /* _ERROR_H */

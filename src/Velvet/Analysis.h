@@ -29,29 +29,10 @@
 
 typedef struct analysis_dialog *AnalysisDialog;
 
-AnalysisDialog AnalysisDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
+AnalysisDialog AnalysisDialogCreate (Widget parent, String name, String title);
 
-void AnalysisDialogPopup (
-# if NeedFunctionPrototypes
-    AnalysisDialog		/* analysis_dialog */
-# endif
-);
+void AnalysisDialogPopup (AnalysisDialog analysisd);
 
-void AnalysisDialogUpdate (
-# if NeedFunctionPrototypes
-    AnalysisDialog		/* analysis_dialog */,
-# if NeedWidePrototypes
-    int				/* clear node flag */
-# else
-    Boolean			/* clear node flag */
-# endif
-# endif
-);
+void AnalysisDialogUpdate (AnalysisDialog analysisd, Boolean force);
 
 # endif /* _Analysis_h */

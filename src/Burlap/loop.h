@@ -27,17 +27,15 @@
 
 # ifndef _LOOP_H
 # define _LOOP_H
-# include "proto.h"			/* function declarations   */
 # include "opcodes.h"			/* Address type definition */
 
 typedef struct loop_node  *loop_node;
 typedef struct break_node *break_node;
 
-
-extern loop_node start_break PROTO ((int));
-extern void	 end_break   PROTO ((int, loop_node));
-extern void	 enter_loop  PROTO ((int));
-extern void	 exit_loop   PROTO ((Address, Address));
-extern void	 exit_all    PROTO ((void));
+loop_node start_break (int type);
+void end_break (int type, loop_node lnode);
+void enter_loop (int type);
+void exit_loop (Address start, Address end);
+void exit_all (void);
 
 # endif /* _LOOP_H */

@@ -27,11 +27,7 @@
 # define Y 2
 # define Z 3
 
-# undef atof
-extern double atof ();
-extern double strtod ();
-
-extern int InitializeProblem ( );
+extern int InitializeProblem (void);
 
 /******************************************************* 
  * function place_symbol
@@ -153,8 +149,7 @@ dcomp(const void *aa, const void *bb)
  *
  ******************************************************/
 
-int WriteOoglFile (filename)
-   char		*filename;
+int WriteOoglFile (char *filename)
 {
    FILE		*output;
    unsigned	i,j;

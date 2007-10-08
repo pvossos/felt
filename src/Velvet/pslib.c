@@ -22,13 +22,14 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
+#include "pslib.h"
 #include "version.h"
 
 #define MAX_BUF_LEN 128
 
-static void putps();
-static int isoneof();
-static void stripspecial ();
+static void putps(char *s);
+static int isoneof(int c, char *s);
+static void stripspecial (char *s, char *cs);
 
 /* postscript page at scale = 0.25 */
 
@@ -76,7 +77,7 @@ static int   prevx = 99999,
              prevy = 99999, 
 	     prevmode;
 
-static void stroke()
+static void stroke(void)
 {
     if (pathlength) {
 	 fprintf(psout, "stroke\n");
@@ -86,9 +87,7 @@ static void stroke()
     }
 }
 
-int pssetmode(mode, ps_fp)
-    int    mode;
-    FILE   *ps_fp;
+int pssetmode(int mode, FILE *ps_fp)
 {
     if (mode % 2) {
        psout = ps_fp;
@@ -133,8 +132,7 @@ int pssetmode(mode, ps_fp)
     return mode;
 }
 
-void drawps(x2, y2, mode)
-    int x2, y2, mode;
+void drawps(int x2, int y2, int mode)
 {
     int xtmp, ytmp;
 
@@ -175,20 +173,17 @@ void drawps(x2, y2, mode)
     }
 }
 
-int xconvps(x)
-    double x;
+int xconvps(double x)
 {
     return ((int) (psxmin + x));
 }
 
-int yconvps(y)
-    double y;
+int yconvps(double y)
 {
     return ((int) (psymin + y));
 }
 
-int pssetcolor(c)
-    int c;
+int pssetcolor(int c)
 {
     static int		   first_time = 1;
     static unsigned char   red[16], 
@@ -230,8 +225,7 @@ int pssetcolor(c)
     return c;
 }
 
-int pssetlinewidth(c)
-    int c;
+int pssetlinewidth(int c)
 {
     stroke();
     if (c != pslinewidth) {
@@ -245,8 +239,7 @@ int pssetlinewidth(c)
     return c;
 }
 
-int pssetlinestyle(style)
-    int style;
+int pssetlinestyle(int style)
 {
     stroke();
     if (style == pslinestyle) {
@@ -275,8 +268,7 @@ int pssetlinestyle(style)
 char pscurfont[MAX_BUF_LEN] = "/Times-Roman findfont \n60 scalefont\n setfont";
 int psfontsize = 60;
 
-void pssetfont(n)
-    int n;
+void pssetfont(int n)
 {
     if (psfont == n) {
 	return;
@@ -333,8 +325,7 @@ void pssetfont(n)
     psfont = n;
 }
 
-void pssetfontsize(size)
-    double size;
+void pssetfontsize(double size)
 {
     static double	prev_size;
     int sf = psfont;
@@ -348,8 +339,7 @@ void pssetfontsize(size)
     pssetfont(sf);
 }
 
-static void escape_paren(s)
-    char *s;
+static void escape_paren(char *s)
 {
     char t[256];
     int i, cnt = 0;
@@ -363,9 +353,7 @@ static void escape_paren(s)
     strcpy(s, t);
 }
 
-void dispstrps(x, y, rot, s, just, fudge)
-    int x, y, rot, just, fudge;
-    char *s;
+void dispstrps(int x, int y, int rot, char *s, int just, int fudge)
 {
     char tmpstr[256];
 
@@ -401,8 +389,7 @@ void dispstrps(x, y, rot, s, just, fudge)
     fprintf(psout, "newpath\n");
 }
 
-static void putps(s)
-    char *s;
+static void putps(char *s)
 {
     int i, slen = strlen(s), curcnt = 0;
     int underline = 0, offset = 0;
@@ -548,8 +535,7 @@ static void putps(s)
     fprintf(psout, "(%s) show\n", curstr);
 }
 
-int pssetpat(k)
-    int k;
+int pssetpat(int k)
 {
     stroke();
     if (k > PSMAXPAT) {
@@ -561,10 +547,7 @@ int pssetpat(k)
     return (pspattern = k);
 }
 
-void psfill(n, px, py)
-    int n;
-    int px[], py[];
-
+void psfill(int n, int *px, int *py)
 {
     int i;
 
@@ -580,10 +563,7 @@ void psfill(n, px, py)
     fprintf(psout, "0 setgray\n");
 }
 
-void psfillcolor(n, px, py)
-    int n;
-    int px[], py[];
-
+void psfillcolor(int n, int *px, int *py)
 {
     int i;
 
@@ -597,16 +577,14 @@ void psfillcolor(n, px, py)
     stroke();
 }
 
-void psdrawarc(x, y, r, start, end) 
-    int x, y, r, start, end;
+void psdrawarc(int x, int y, int r, int start, int end)
 {
     stroke();
     fprintf(psout, "%d %d %d %d %d arc\n", x, y, r, start, end);
     fprintf(psout, "stroke\n");
 }
 
-void psfillarc(x, y, r, start, end)
-    int x, y, r, start, end;
+void psfillarc(int x, int y, int r, int start, int end)
 {
     stroke();
     fprintf(psout, "%d %d %d %d %d arc\n", x, y, r, start, end);
@@ -614,8 +592,7 @@ void psfillarc(x, y, r, start, end)
     fprintf(psout, "stroke\n");
 }
 
-void psdrawellipse(x, y, xm, ym, start, end)
-    int x, y, xm, ym, start, end;
+void psdrawellipse(int x, int y, int xm, int ym, int start, int end)
 {
     double scalex = (double) xm / (double) ym, scaley = 1.0;
 
@@ -628,8 +605,7 @@ void psdrawellipse(x, y, xm, ym, start, end)
     fprintf(psout, "grestore\n");
 }
 
-void psfillellipse(x, y, xm, ym, start, end)
-    int x, y, xm, ym, start, end;
+void psfillellipse(int x, int y, int xm, int ym, int start, int end)
 {
     double scalex = (double) xm / (double) ym, scaley = 1.0;
 
@@ -646,8 +622,7 @@ void psfillellipse(x, y, xm, ym, start, end)
     fprintf(psout, "grestore\n");
 }
 
-int psgetextents (x, y)
-    int		*x, *y;
+int psgetextents (int *x, int *y)
 {
     *x = psdx;
     *y = psdy;
@@ -655,8 +630,7 @@ int psgetextents (x, y)
     return 0;
 }
 
-void psleavegraphics(fp)
-     FILE *fp;
+void psleavegraphics(FILE *fp)
 {
      pssetmode(psdmode + 1, fp);
 }
@@ -664,9 +638,7 @@ void psleavegraphics(fp)
 /*           postscript initialization routine  */
 
 
-int psinitgraphics(dmode, ps_fp)
-    int   dmode;
-    FILE  *ps_fp;
+int psinitgraphics(int dmode, FILE *ps_fp)
 {
     psdmode = dmode;
     if (!pssetmode(psdmode, ps_fp)) {
@@ -712,9 +684,7 @@ int psinitgraphics(dmode, ps_fp)
     return 0;
 }
 
-static int isoneof(c, s)
-    int c;
-    char *s;
+static int isoneof(int c, char *s)
 {
     while (*s) {
 	if (c == *s) {
@@ -726,8 +696,7 @@ static int isoneof(c, s)
     return 0;
 }
 
-static void stripspecial(s, cs)
-    char *s, *cs;
+static void stripspecial(char *s, char *cs)
 {
     int i, slen = strlen(s), curcnt = 0;
 

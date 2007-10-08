@@ -48,8 +48,6 @@ static int *nacum;
 static int *nhigh;
 static int *nlow;
 
-unsigned *RenumberNodes (Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
-void     RestoreNodeNumbers (Node *node, unsigned int *old_numbers, unsigned int numnodes);
 static unsigned *Reduce (unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof);
 static int      SortBySize (int *size, int *stpt, int xc);
 static int	 FindDiameter (int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst);

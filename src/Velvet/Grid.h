@@ -30,20 +30,8 @@
 
 typedef struct grid_dialog *GridDialog;
 
+GridDialog GridDialogCreate (Widget parent, String name, String title);
 
-GridDialog GridDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
-
-
-Grid GridDialogPopup (
-# if NeedFunctionPrototypes
-    GridDialog		/* grid_dialog */
-# endif
-);
+Grid GridDialogPopup (GridDialog gridd);
 
 # endif /* _Grid_h */

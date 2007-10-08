@@ -29,24 +29,10 @@
 
 typedef struct contour_dialog *ContourDialog;
 
-ContourDialog ContourDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
+ContourDialog ContourDialogCreate (Widget parent, String name, String title);
 
-void ContourDialogPopup (
-# if NeedFunctionPrototypes
-    ContourDialog		/* contour_dialog */
-# endif
-);
+void ContourDialogPopup (ContourDialog contourd);
 
-void ContourDialogUpdate (
-# if NeedFunctionPrototypes
-    ContourDialog		/* contour_dialog */
-# endif
-);
+void ContourDialogUpdate (ContourDialog contourd);
 
 # endif /* _Contour_h */

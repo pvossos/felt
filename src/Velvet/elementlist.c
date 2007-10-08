@@ -155,10 +155,7 @@ static XtTranslations dismiss_translations;
  *		entry to the entry widget.				*
  ************************************************************************/
 
-static void CopySelected (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void CopySelected (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ElementList		 elementl;
     XawListReturnStruct *info;
@@ -177,10 +174,7 @@ static void CopySelected (w, client_data, call_data)
  *		from the current entry.  				*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     XawListReturnStruct	*item;
     ElementList		 elementl;
@@ -216,10 +210,7 @@ static void Accept (w, client_data, call_data)
  *		the user wishes to popdown the element list		*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ElementList	elementl;
 
@@ -235,11 +226,7 @@ static void Dismiss (w, client_data, call_data)
  *		accept button.						* 
  ************************************************************************/
 
-static void ElementListAccept (w, event, params, num_params)
-    Widget   w;
-    XEvent  *event;
-    String  *params;
-    Cardinal num_params;
+static void ElementListAccept (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == listWidgetClass)
 	w = XtParent (w);
@@ -256,11 +243,7 @@ static void ElementListAccept (w, event, params, num_params)
  *		dismiss button.						*
  ************************************************************************/
 
-static void ElementListDismiss (w, event, params, num_params)
-    Widget   w;
-    XEvent  *event;
-    String  *params;
-    Cardinal num_params;
+static void ElementListDismiss (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (event -> type == ClientMessage)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -276,8 +259,7 @@ static void ElementListDismiss (w, event, params, num_params)
  * Description:	Sets the element names into the list widget		*
  ************************************************************************/
  
-static void ElementListUpdate (elementl)
-    ElementList	elementl;
+static void ElementListUpdate (ElementList elementl)
 {
     XawListChange (elementl -> list, element_names, num_types, 0, True);
     XawViewportSetCoordinates (elementl -> viewport, 0, 0);
@@ -292,10 +274,7 @@ static void ElementListUpdate (elementl)
  * Description:	Creates and returns a new element list box.  		*
  ************************************************************************/
 
-ElementList ElementListCreate (parent, name, title)
-    Widget parent;
-    String name;
-    String title;
+ElementList ElementListCreate (Widget parent, String name, String title)
 {
     Arg			args[1];
     Widget		group [4];
@@ -413,9 +392,7 @@ ElementList ElementListCreate (parent, name, title)
  *		definition;
  ************************************************************************/
 
-void ElementListSet (elementl, definition)
-    ElementList	elementl;
-    Definition	definition;
+void ElementListSet (ElementList elementl, Definition definition)
 {
     unsigned	i;
     int		index;
@@ -447,8 +424,7 @@ void ElementListSet (elementl, definition)
  * Description: Returns the currently selected element definition	*
  ************************************************************************/
 
-Definition ElementListDefinition (elementl)
-    ElementList	elementl;
+Definition ElementListDefinition (ElementList elementl)
 {
     XawListReturnStruct	*item;
 
@@ -466,8 +442,7 @@ Definition ElementListDefinition (elementl)
  * Description: Returns the currently selected element definition	*
  ************************************************************************/
 
-String ElementListName (elementl)
-    ElementList	elementl;
+String ElementListName (ElementList elementl)
 {
     XawListReturnStruct	*item;
 
@@ -481,8 +456,7 @@ String ElementListName (elementl)
 
 static int	count;
 
-static int SetName (item)
-    Item	item;
+static int SetName (Item item)
 {
     element_names [count ++] = XtNewString (((Definition) item) -> name);
     return 0;
@@ -495,8 +469,7 @@ static int SetName (item)
  *		on the definition_tree					*
  ************************************************************************/
 
-void ElementListSetupNames (elementl)
-    ElementList	elementl;
+void ElementListSetupNames (ElementList elementl)
 {
     unsigned	i;
 
@@ -523,8 +496,7 @@ void ElementListSetupNames (elementl)
  * Description: Pops up the element list with the specified title.	*
  ************************************************************************/
 
-void ElementListPopup (elementl)
-    ElementList	   elementl;
+void ElementListPopup (ElementList elementl)
 {
     SetFocus (elementl -> entry);
     XtPopup (elementl -> shell, XtGrabNone);
@@ -537,8 +509,7 @@ void ElementListPopup (elementl)
  * Descripion:	Pops down the specified element list			*
  ************************************************************************/
 
-void ElementListPopdown (elementl)
-    ElementList elementl;
+void ElementListPopdown (ElementList elementl)
 {
     XtPopdown (elementl -> shell);
 }

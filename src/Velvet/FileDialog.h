@@ -29,60 +29,16 @@
 
 typedef struct file_dialog *FileDialog;
 
+FileDialog FileDialogCreate (Widget parent, String name, char **toggle_labels);
 
-extern FileDialog FileDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent  */,
-    String		/* name    */,
-    String *		/* toggles */
-# endif
-);
+void FileDialogSelect (FileDialog filed, String title, String label, String suggestion, String *answer, String *toggle);
 
+void FileDialogPopup (FileDialog filed, String title, String label, String suggestion, XtCallbackProc callback, XtPointer client_data);
 
-extern void FileDialogSelect (
-# if NeedFunctionPrototypes
-    FileDialog		/* file_dialog */,
-    String		/* title       */,
-    String 		/* label       */,
-    String		/* suggestion  */,
-    String *		/* answer      */,
-    String *		/* toggled     */
-# endif
-);
+String FileDialogToggle (FileDialog filed);
 
+void FileDialogSetToggles (FileDialog filed, String label1, String label2);
 
-extern void FileDialogPopup (
-# if NeedFunctionPrototypes
-    FileDialog		/* file_dialog */,
-    String		/* title       */,
-    String		/* label       */,
-    String		/* suggestion  */,
-    XtCallbackProc	/* callback    */,
-    XtPointer		/* client_data */
-# endif
-);
-
-
-extern String FileDialogToggle (
-# if NeedFunctionPrototypes
-    FileDialog		/* file_dialog */
-# endif
-);
-
-
-extern void FileDialogSetToggles (
-# if NeedFunctionPrototypes
-    FileDialog		/* file_dialog */,
-    String		/* label_1     */,
-    String		/* label_2     */
-# endif
-);
-
-
-extern void FileDialogPopdown (
-# if NeedFunctionPrototypes
-    FileDialog		/* file_dialog */
-# endif
-);
+void FileDialogPopdown (FileDialog filed);
 
 # endif /* _FileDialog_h */

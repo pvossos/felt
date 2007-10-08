@@ -50,7 +50,7 @@ detail(char *format, ...)
     if (!detail_fp)
        return;
 
-    VA_START (ap, format);
+    va_start (ap, format);
 
     vfprintf (detail_fp, format, ap);
     fprintf (detail_fp, "\n");

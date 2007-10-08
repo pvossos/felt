@@ -29,8 +29,10 @@
 # define _APPLY_H
 # include "descriptor.h"		/* descriptor type definition */
 
-extern int function_call PROTO ((descriptor *, int));
-extern int apply_op	 PROTO ((void));
-extern int rtn_op	 PROTO ((void));
+int function_call (descriptor *object, int num_args);
+
+int apply_op (void);
+
+int rtn_op (void);
 
 # endif /* _APPLY_H */

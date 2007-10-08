@@ -307,11 +307,7 @@ for spectral analysis, and mode shape plots for modal analysis problems.";
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -328,10 +324,7 @@ static void Action (w, event, params, num_params)
  * Description:								*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		   args [1];
     SolutionDialog solutiond;
@@ -378,10 +371,7 @@ static void Accept (w, client_data, call_data)
  * Description:	sets the dismiss flag					*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     SolutionDialog solutiond;
 
@@ -392,10 +382,7 @@ static void Dismiss (w, client_data, call_data)
 /************************************************************************
  ************************************************************************/
 
-static void ExternalCallback (w, client_data, call_data)
-    Widget 	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void ExternalCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     SolutionDialog	solutiond;
 
@@ -415,8 +402,7 @@ static void ExternalCallback (w, client_data, call_data)
  * Description:	sets the widgets based on current solution settings 	*
  ************************************************************************/
 
-void SolutionDialogUpdate (solutiond)
-    SolutionDialog	solutiond;
+void SolutionDialogUpdate (SolutionDialog solutiond)
 {
     Arg		args [1];
 
@@ -459,10 +445,7 @@ void SolutionDialogUpdate (solutiond)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-SolutionDialog SolutionDialogCreate (parent, name, title)
-    Widget parent;
-    String name;
-    String title;
+SolutionDialog SolutionDialogCreate (Widget parent, String name, String title)
 {
     Cardinal		i;
     Arg			args [1];
@@ -680,8 +663,7 @@ SolutionDialog SolutionDialogCreate (parent, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-void SolutionDialogPopup (solutiond)
-    SolutionDialog solutiond;
+void SolutionDialogPopup (SolutionDialog solutiond)
 {
     XtPopup (solutiond -> shell, XtGrabNone);
 }

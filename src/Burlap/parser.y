@@ -40,12 +40,10 @@
 # define alloca malloc		/* prevents alloca from being called */
 # endif
 
-Code global_cs;
-
 static st  *vars;
 static st   local_st;
 
-static void emitloc PROTO ((yyloc));
+static void emitloc (yyloc);
 
 static char arg_types [256];		/* should be plenty */
 static int  last_line_num = -1;
@@ -595,8 +593,7 @@ do_for
  *		changed since the last time that they were emitted.	*
  ************************************************************************/
 
-static void emitloc (loc)
-    yyloc loc;
+static void emitloc (yyloc loc)
 {
     if (last_file_num != loc.file)
 	emit (FileOp, last_file_num = loc.file);

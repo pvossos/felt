@@ -41,7 +41,6 @@ struct definition beam3dDefinition = {
 };
 
 static Matrix Beam3dLumpedMassMatrix  (Element element);
-static Matrix Beam3dConsistentMassMatrix (Element element);
 static Matrix Beam3dLocalK            (Element element);
 static Matrix Beam3dTransformMatrix   (Element element);
 static Vector Beam3dEquivNodalForces  (Element element, int *err_count);
@@ -293,12 +292,6 @@ Beam3dLumpedMassMatrix(Element element)
    MatrixData (me) [12][12] = I_factor;
 
    return me;
-}
-
-static Matrix
-Beam3dConsistentMassMatrix(Element element)
-{
-   return Beam3dLumpedMassMatrix (element);
 }
 
 static Matrix

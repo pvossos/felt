@@ -27,5 +27,4 @@
 
 char *GetTextCoordinates (float *rx, float *ry, float *rz);
 char *GetTextNumber (unsigned int *number);
-int GetTextNumberArray ();
 String GetText (void);

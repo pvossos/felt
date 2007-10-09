@@ -29,7 +29,7 @@
 # include "bmp.h"
 # include "error.h"
 
-static int architecture ( )
+static int architecture (void)
 {
    int  x = 1;
 
@@ -39,8 +39,7 @@ static int architecture ( )
       return 1;
 }
 
-static short SwapShort (x)
-   short        x;
+static short SwapShort (short int x)
 {
    char         *ptr;
    char         buffer [2];
@@ -54,8 +53,7 @@ static short SwapShort (x)
    return *((short *) ptr);
 }
 
-static long SwapLong (x)
-   int          x;
+static long SwapLong (int x)
 {
    char         *ptr;
    char         buffer [4];

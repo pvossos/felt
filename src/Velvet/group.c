@@ -41,7 +41,7 @@
 # include "globals.h"
 # include "procedures.h"
 
-static void    (*function) ( );
+static void    (*function) (Figure *, unsigned);
 
 
 static void
@@ -132,7 +132,7 @@ void SelectGroupAP (void)
 }
 
 
-void SelectGroup (XtPointer call_data, void (*op) (/* ??? */))
+void SelectGroup (XtPointer call_data, void (*op) (Figure *, unsigned))
 {
     Arg arglist [1];
 

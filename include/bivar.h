@@ -3,6 +3,6 @@
 
 int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
                      int nxi, int nyi, float *xi, float *yi, float **zi,
-                     char **mask);
+                     unsigned char **mask);
 
 #endif

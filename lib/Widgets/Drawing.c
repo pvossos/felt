@@ -35,11 +35,11 @@
 /* Private functions */
 
 static void    ClassInitialize (void);
-static void    Initialize (Widget request, Widget new, ArgList argv, Cardinal argc);
+static void    Initialize (Widget request, Widget new, ArgList argv, Cardinal *argc);
 static void    Realize (Widget gw, XtValueMask *valuemaskp, XSetWindowAttributes *attr);
 static void    Redisplay (Widget gw, XEvent *event, Region region);
 static void    Destroy (Widget gw);
-static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal argc);
+static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal *argc);
 
 
 /* Resource defaults */
@@ -396,7 +396,7 @@ static void ClassInitialize (void)
    Description:	Initializes the widget.
  ************************************************************************/
 
-static void Initialize (Widget request, Widget new, ArgList argv, Cardinal argc)
+static void Initialize (Widget request, Widget new, ArgList argv, Cardinal *argc)
 {
     Display	 *display;
     XtArgVal	  value;
@@ -611,7 +611,7 @@ static void Redisplay (Widget gw, XEvent *event, Region region)
 		information.
  ************************************************************************/
 
-static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal argc)
+static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal *argc)
 {
     Boolean       resize;
     Boolean	  rescale;

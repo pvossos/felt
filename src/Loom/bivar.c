@@ -93,7 +93,7 @@ static int    idxchg(float *x, float *y, int i1, int i2, int i3, int i4);
 /* zi should be ZERO offset! */
 int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
                      int nxi, int nyi, float *xi, float *yi, float **zi,
-                     char **mask)
+                     unsigned char **mask)
 {
    float	*wk;
    int		*iwk;

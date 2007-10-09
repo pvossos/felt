@@ -842,7 +842,7 @@ void SetupAnimate (void)
 
     K = M = C = dtable = NullMatrix;
  
-    count = FindDOFS(); //problem.elements, numelts, dofs);
+    count = FindDOFS(); /* WAS: problem.elements, numelts, dofs);*/
 
     status1 = CheckAnalysisParameters (Transient);
     status2 = 0;

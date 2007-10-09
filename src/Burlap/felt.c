@@ -41,12 +41,11 @@
    the same size all over the world. */
 
 extern Code   InCore;
-extern int    CompileCode ( );
-extern int    IsConstant  ( );
-extern double EvalCode	  ( );
-extern void   FreeCode	  ( );
-extern Code   CopyCode	  ( );
-
+int CompileCode(char *text);
+int IsConstant(Code code);
+double EvalCode(Code code, double time);
+void FreeCode(Code code);
+Code CopyCode(Code code);
 
 /* This is only in misc.h. */
 

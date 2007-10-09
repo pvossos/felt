@@ -38,7 +38,7 @@
 # include "fe.h"
 # include "error.h"
 
-extern Matrix ZeroRowCol ( );
+Matrix ZeroRowCol(Matrix K, unsigned int dof);
 
 int
 FindDOFS(void)

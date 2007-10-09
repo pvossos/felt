@@ -109,9 +109,7 @@ static Boolean	 contour_overlay = 0;
  * Description:	Parses the specific command line options.		*
  ************************************************************************/
 
-static int ParseOptions (argc, argv)
-    int   argc;
-    char *argv [ ];
+static int ParseOptions (int argc, char **argv)
 {
     int		n;
 
@@ -184,7 +182,7 @@ static int ParseOptions (argc, argv)
     return 0;
 }
 
-static void DumpOptions ( )
+static void DumpOptions (void)
 {
    printf ("in = %s\n", in);
    printf ("out = %s\n", out);
@@ -241,9 +239,7 @@ ExitLoom(int status)
  * Description:	 Main is the driver function for loom.			*
  ************************************************************************/
 
-int main (argc, argv)
-    int   argc;
-    char *argv [ ];
+int main (int argc, char **argv)
 {
     int		 i;
     char	*title;			/* title of problem		*/

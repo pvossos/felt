@@ -42,11 +42,9 @@ void SelectCallback (Widget w, XtPointer clientData, XtPointer callData);
 void EditAddNode (void);
 void ToggleSnapStatus (void);
 void ToggleGridStatus (void);
-void GetCanvasParameters ();
 void DumpDrawingArea (Widget widget, String title, Boolean allow_ps);
 void SaveWidgetXWD (Widget widget, String xwd_file);
 void SaveWidgetPS (Widget widget, String ps_file);
-void GetConfiguration ();
 
 void ZoomAll (void);
 void ZoomStart (void);
@@ -103,7 +101,7 @@ void ToolsDrawPolygon (void);
 void DoPolygonMotionCB (Widget w, XtPointer clientData, XtPointer callData);
 void DoPolygonButtonCB (Widget w, XtPointer clientData, XtPointer callData);
 void SelectGroupAP (void);
-void SelectGroup (XtPointer call_data, void (*op) (/* ??? */));
+void SelectGroup (XtPointer call_data, void (*op) (Figure *, unsigned));
 void QuitMoveTool (Widget w, XtPointer closure, XtPointer call_data);
 void AbortMoveTool (Widget w, XtPointer closure, XtPointer call_data);
 void QuitPolygon (Widget w, XtPointer closure, XtPointer call_data);
@@ -197,7 +195,6 @@ void BackupOnePoint (void);
 
 void SetupAndSolve (void);
 void SetupAnimate (void);
-void AnimateTransient ( );
 void AnimateStructure (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
 int  CompactNodeNumbers (void);
 int  CompactElementNumbers (void);
@@ -214,7 +211,7 @@ void BufferErrors (Boolean flag);
 int  DumpWidget (Widget, FILE *);
 int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
                      int nxi, int nyi, float *xi, float *yi, float **zi,
-                     char **mask);
+                     unsigned char **mask);
 
 void VelvetPlotTD (Matrix dtable, Matrix ttable, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names);
 void VelvetPlotSpectra(Matrix P, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names);

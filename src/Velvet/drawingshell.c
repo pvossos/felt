@@ -57,19 +57,12 @@ static String table =
  <KeyUp>Return: AutoRepeat(saved) unset() ShellAction(button)\n\
  <KeyUp>space: AutoRepeat(saved) unset() ShellAction(button)";
 
-static void Dismiss (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data;
-   XtPointer	call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
    XtPopdown ((Widget) client_data);
 }
 
-static void Action (w, event, params, num_params)
-   Widget	 w;
-   XEvent       *event;
-   String	*params;
-   Cardinal	*num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    if (strcmp (params [0], "delete") == 0)
       w = XtNameToWidget (w, "layout.dismiss");
@@ -158,10 +151,7 @@ CreateDrawingShell(String name, String title,
 
 static int ready;
 
-static void ClearToDraw (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data;
-   XtPointer	call_data;
+static void ClearToDraw (Widget w, XtPointer client_data, XtPointer call_data)
 {
    ready = 1;
 }

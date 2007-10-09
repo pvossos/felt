@@ -536,7 +536,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     Boolean	     duplicate;
     ForceDialog	     forced;
     ForceDialogInfo  info;
-    void	    (*Assign) ( );
+    void	    (*Assign) (Force, DOF, Code, char*);
     Arg		     args [1];
     Boolean	     state;
 

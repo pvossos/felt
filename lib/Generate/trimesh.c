@@ -49,10 +49,8 @@ GenerateTriMesh(TriMesh trimesh, Element **element, Node **node,
                 unsigned int bnode, unsigned int belement)
 {
    unsigned	i,j;
-   unsigned	count;
    int		n, m;
    int		ne, nn;
-   int		status;
    struct triangulateio   in, out;
    int		npoints;
    double       x, y;

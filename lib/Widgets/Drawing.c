@@ -272,11 +272,12 @@ static void ButtonHandler (Widget gw, XtPointer clientData, XEvent *event, Boole
     SnapCoord (dw, &report.snapped.x, &report.snapped.y);
 
 
-    if (event -> type == ButtonPress)
-	if (dw -> drawing.search == True)
-	    report.figure = DW_FindFigure (gw, realx, realy);
-	else
-	    report.figure = NULL;
+    if (event -> type == ButtonPress) {
+         if (dw -> drawing.search == True)
+              report.figure = DW_FindFigure (gw, realx, realy);
+         else
+              report.figure = NULL;
+    }
 
     XtCallCallbacks (gw, XtNbuttonCallback, (XtPointer) &report);
 }

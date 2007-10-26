@@ -32,9 +32,9 @@
 # include "mesh.h"
 # include "rules.h"
 
-void *AssignRule (Rule type)
+RuleFunction AssignRule (Rule type)
 {
-   double (*func) ();
+   double (*func) (int, int, double);
 
    if (type == CosRule)
       func = cos_rule;

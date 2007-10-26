@@ -30,7 +30,7 @@ GenerateLine (Line line, Element **element, Node **node,
               unsigned int *numelts, unsigned int *numnodes,
               unsigned int bnode, unsigned int belement)
 {
-   double	(*rule_func) ();
+   RuleFunction rule_func;
    unsigned	ne, nn;
    unsigned	i;
    double	L;

@@ -52,6 +52,7 @@ complex cmdata (ComplexMatrix A, unsigned int row, unsigned int col)
    return zero();
 }
 
+/* UNUSED
 static ComplexMatrix
 CreateSubsectionComplexMatrix(ComplexMatrix a, 
                               unsigned sr, unsigned sc,
@@ -94,6 +95,7 @@ CreateSubsectionComplexMatrix(ComplexMatrix a,
 
    return b;
 }
+*/
 
 ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
 {

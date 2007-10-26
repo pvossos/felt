@@ -463,6 +463,7 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned
    return H; 
 }
 
+/* UNUSED
 static void
 AlignSpectra(Matrix S1, Matrix S2, Matrix freq2)
 {
@@ -503,6 +504,7 @@ AlignSpectra(Matrix S1, Matrix S2, Matrix freq2)
      
    return; 
 }
+*/
 
 Matrix
 ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced)

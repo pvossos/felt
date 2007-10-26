@@ -767,7 +767,6 @@ void SetupAnimate (void)
     int			status1, status2;
     unsigned		i,j;
     unsigned		count;
-    unsigned		dofs [7];
     Matrix		M, C, K;
     unsigned		numnodes, numelts;
     Matrix		dtable;
@@ -1047,8 +1046,6 @@ void SetupModeShapes (Matrix phi, Matrix lambda)
 
 void SetupStructure (Boolean build_elt)
 {
-    unsigned	i,j;
-    double	z_plane;
     unsigned	numelts;
 
     if (build_elt) 

@@ -427,8 +427,12 @@ FindDiameter(int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, 
    unsigned	do_tree;
 
    ndxn = 0;
+   ndxl = 0;
    mtw1 = 0;
-
+   maxlw = 0;
+   lvlwth = 0;
+   lvln = 0;
+   lvlbot = 0;
    mtw2 = numnodes;
    snd = *snd1;
 

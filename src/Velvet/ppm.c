@@ -53,6 +53,7 @@ static void WritePPMHeader (FILE *fp, char *filename, unsigned int width, unsign
    return;
 }
 
+/* UNUSED
 static void WritePPMPixel (FILE *fp, int r, int g, int b)
 {
    fprintf (fp, "%3d %3d %3d ", r, g, b);
@@ -65,6 +66,7 @@ static void WritePPMPixel (FILE *fp, int r, int g, int b)
 
    return;
 }
+*/
 
 static void WriteRawPPMPixel (FILE *fp, int r, int g, int b)
 {

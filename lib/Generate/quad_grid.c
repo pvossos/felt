@@ -30,8 +30,8 @@ GenerateQuadGrid(Grid grid, Element **element, Node **node,
                  unsigned int *numelts, unsigned int *numnodes, 
                  unsigned int bnode, unsigned int belement)
 {
-   double	(*xrule_func) ();
-   double	(*yrule_func) ();
+   RuleFunction xrule_func;
+   RuleFunction yrule_func;
    unsigned	ne, nn;
    unsigned	ecount, ncount;
    unsigned	node1, node2, node3, node4;

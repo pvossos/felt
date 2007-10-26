@@ -457,11 +457,14 @@ int TridiagSymmMatrixEigenModes (Matrix diag, Matrix sub_diag, Matrix lambda, Ma
    return 0;
 }
 
+/* UNUSED
 static int CholeskyReduction (Matrix a, Matrix b, Matrix ar, Matrix br)
 {
    return 1;
 }
+*/
 
+/* UNUSED
 static int
 SymmetricMatrixGeneralEigenModes(Matrix a, Matrix b, Matrix lambda,
                                  Matrix x, unsigned maxit)
@@ -517,6 +520,7 @@ SymmetricMatrixGeneralEigenModes(Matrix a, Matrix b, Matrix lambda,
 
    return 0;
 }
+*/
 
 int NormalizeByLength (Matrix b, Matrix a)
 {

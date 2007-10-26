@@ -39,9 +39,6 @@ static void
 place_symbol(FILE *output, int direct, double scale, 
              double x, double y, double z, char *symbol)
 {
-  double	s;
-  
-  
   fprintf (output, "\n{");
   fprintf (output, "\nINST\ntransform\n");
 

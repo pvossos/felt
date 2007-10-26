@@ -61,8 +61,7 @@ usage: corduroy [options] [filename]\n\
  * Description:	Quotes a string if necessary.				*
  ************************************************************************/
 
-static char *Quote (s)
-    char *s;
+static char *Quote (char *s)
 {
     char	c;
     char       *ptr;
@@ -82,15 +81,7 @@ static char *Quote (s)
 /************************************************************************
  ************************************************************************/
 
-static void AddNewArrays (node, element, numnodes, numelts,
-                          all_nodes, all_elements, nn, ne)
-   Node		*node;
-   Element	*element;
-   unsigned	numnodes, numelts;
-   Node		**all_nodes;
-   Element	**all_elements;
-   unsigned	*nn;
-   unsigned	*ne;
+static void AddNewArrays (Node *node, Element *element, unsigned int numnodes, unsigned int numelts, Node **all_nodes, Element **all_elements, unsigned int *nn, unsigned int *ne)
 {
    unsigned	i;
 
@@ -121,9 +112,7 @@ static void AddNewArrays (node, element, numnodes, numelts,
  *		application.						*
  ************************************************************************/
 
-int main (argc, argv)
-   int		argc;
-   char		*argv [ ];
+int main (int argc, char **argv)
 {
    Definition	definition;
    Element	*element;

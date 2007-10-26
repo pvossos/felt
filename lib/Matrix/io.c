@@ -81,6 +81,7 @@ static long SwapLong (long int x)
    return *((long *) ptr);
 }
 
+/* UNUSED
 static short SwapShort (short int x)
 {
    char		*ptr;
@@ -94,7 +95,9 @@ static short SwapShort (short int x)
    ptr = buffer;
    return *((short *) ptr);
 }
+*/
 
+ /* UNUSED
 static unsigned short SwapUnsignedShort (short unsigned int x)
 {
    char		*ptr;
@@ -108,6 +111,7 @@ static unsigned short SwapUnsignedShort (short unsigned int x)
    ptr = buffer;
    return *((unsigned short *) ptr);
 }
+ */
 
 static double SwapDouble (double x)
 {

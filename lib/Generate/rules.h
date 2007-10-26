@@ -20,7 +20,9 @@
 #ifndef FELTRULES_H
 #define FELTRULES_H
 
-void *AssignRule (Rule type);
+typedef double (*RuleFunction) (int, int, double);
+
+RuleFunction AssignRule (Rule type);
 
 double linear_rule (int i, int ne, double L);
 

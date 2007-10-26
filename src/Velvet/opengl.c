@@ -205,7 +205,6 @@ static void SaveFunction(Widget w, XtPointer client_data, XtPointer call_data)
 
 static void DismissFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-   int	 i;
    info *inf = (info *) client_data;
 
    XtDestroyWidget(inf -> shell);
@@ -215,7 +214,6 @@ static void DismissFunction(Widget w, XtPointer client_data, XtPointer call_data
 static void ToggleFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
    Boolean	 state;
-   Widget        dw = (Widget) client_data;
    Arg		 args [1];
    info		*inf = (info *) client_data;
 
@@ -333,7 +331,6 @@ static void DrawWedge (info *inf)
 {
    static int  fwidth, fheight;
    static int  init = 0;
-   Arg         args [2];
    int	       i;
    double      dy;
    char        buffer [32];
@@ -730,11 +727,9 @@ void CreateOpenGLShell(String name, String title, Boolean stress,
                        int comp, Element *element, unsigned numelts, Boolean contour)
 {
    static XVisualInfo  *vi = NULL;
-   Widget	        group [3];
    Widget               mesa, shell, layout, dismiss, save, toggle;
    Cardinal             n;
    Arg	                args [10];
-   Pixel	        highlight;
    XtTranslations       translations;
    static XtActionsRec  actions [ ] = {{"ShellAction", Action}};
    info                *inf;

@@ -288,7 +288,6 @@ int XImageCellXY(XImage *img, int x, int y, XColor *colors, int ncolors)
 {
    int		 i;
    unsigned long point;
-   int		 idx;
 
    point = XGetPixel(img, x, y);
    _swaplong((char *) &point, sizeof(long));

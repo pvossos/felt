@@ -182,6 +182,7 @@ static int ParseOptions (int argc, char **argv)
     return 0;
 }
 
+/* UNUSED
 static void DumpOptions (void)
 {
    printf ("in = %s\n", in);
@@ -210,6 +211,7 @@ static void DumpOptions (void)
    printf ("renumber = %d\n", renumber);
    printf ("table = %d\n", table);
 }
+*/
 
 /************************************************************************
  * Function:	 ExitLoom						*

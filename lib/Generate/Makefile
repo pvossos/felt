@@ -26,4 +26,4 @@ TOPDIR	= ../..
 include $(TOPDIR)/etc/Makefile.lib
 
 triangle.o:	triangle.c triangle.h
-		$(CC) $(CCOPTS) -DTRILIBRARY -DREDUCED -c triangle.c -o triangle.o
+		$(CC) $(CCOPTS) -DANSI_DECLARATORS -DTRILIBRARY -DREDUCED -c triangle.c -o triangle.o

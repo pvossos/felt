@@ -117,7 +117,7 @@ void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyForceGroup);
@@ -143,7 +143,7 @@ void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void ApplyForceAP (void)
+void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -254,7 +254,7 @@ void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data );
+         QuitEditCB (w, client_data, call_data );
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyConstraintGroup);
@@ -280,7 +280,7 @@ void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void ApplyConstraintAP (void)
+void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -404,7 +404,7 @@ void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyLoadGroup);
@@ -430,7 +430,7 @@ void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void ApplyLoadAP (void)
+void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
@@ -541,7 +541,7 @@ void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2)
 	SelectGroup (call_data, ApplyMaterialGroup);
@@ -567,7 +567,7 @@ void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void ApplyMaterialAP (void)
+void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;

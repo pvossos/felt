@@ -201,7 +201,7 @@ void ZoomStart (void)
 	(void) DW_SetForeground (drawing, "black");
 }
 
-void ZoomAP (void)
+void ZoomAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static unsigned	corner_number = 0;
    static float		xl,xr,
@@ -350,7 +350,7 @@ void SetNormalCursor (Widget w)
    XFlush (XtDisplay (toplevel));
 }
 
-void ParseEntryLine (void)
+void ParseEntryLine (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    extern PanelId     last_command;
    Arg		      arglist [1];
@@ -425,13 +425,23 @@ void MenuAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
       fprintf (stderr,"velvet: could not find menu entry named %s\n",*params);
 }  
 
-void QuitEdit(Widget widget, XtPointer closure, XtPointer data)
+void QuitEditCB(Widget w, XtPointer closure, XtPointer data)
+{
+     QuitEdit(w, NULL, NULL, NULL);
+}
+
+void QuitEdit(Widget w, XEvent *event, String *params, Cardinal *num)
 {
    if (edit_mode == True) 
       SetNormalMode ();
 }
 
-void AbortEdit(Widget widget, XtPointer closure, XtPointer data)
+void AbortEditCB(Widget w, XtPointer closure, XtPointer data)
+{
+     AbortEdit(w, NULL, NULL, NULL);
+}
+
+void AbortEdit(Widget w, XEvent *event, String *params, Cardinal *num)
 {
    if (edit_mode == True) 
       SetNormalMode ();
@@ -464,7 +474,7 @@ void SetNormalMode (void)
 
    XtAddCallback (drawing, XtNbuttonCallback, SelectCallback, NULL);
 
-   AssignQuitAbort (QuitEdit, "QuitEdit", AbortEdit, "AbortEdit");
+   AssignQuitAbort (QuitEditCB, "QuitEdit", AbortEditCB, "AbortEdit");
 
    if (sensitive_menus == True) {
       for (i = 0 ; i <= 2 ; i++)

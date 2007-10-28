@@ -252,7 +252,7 @@ void SetupTriangleGeneration (void)
       trimesh -> curves [i] -> numvc = 0;
    }
 
-   AssignQuitAbort (FinishCurve, "FinishCurve", AbortTriMesh, "AbortTriMesh");
+   AssignQuitAbort (FinishCurveCB, "FinishCurve", AbortTriMeshCB, "AbortTriMesh");
 
    XtOverrideTranslations (entry,
       XtParseTranslationTable ("Shift<Key>BackSpace: BackupOnePoint()"));
@@ -276,7 +276,7 @@ void SetupTriangleGeneration (void)
    SetEditMode ();
 }
 
-void AddCurvePointAP (void)
+void AddCurvePointAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    char		*status;
    float	x,y;
@@ -297,7 +297,7 @@ void AddCurvePointCB (Widget w, XtPointer clientData, XtPointer callData)
       return;
 
    if (report -> event -> xbutton.button == 3) {
-        FinishCurve (w, clientData, callData);
+        FinishCurveCB (w, clientData, callData);
       return;
    } 
    else if (report -> event -> xbutton.button != 1)
@@ -407,7 +407,12 @@ DoTriMeshGeneration(void)
    changeflag = True;
 }
 
-void FinishCurve (Widget w, XtPointer closure, XtPointer call_data)
+void FinishCurveCB (Widget w, XtPointer closure, XtPointer data)
+{
+     FinishCurve(w, NULL, NULL, NULL);
+}
+
+void FinishCurve (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    trimesh -> curves [curr_curve] -> numvc = curr_vc;
    maxvc = 20;
@@ -425,7 +430,12 @@ void FinishCurve (Widget w, XtPointer closure, XtPointer call_data)
       ChangeStatusLine ("Select first hole point:", True);
 }
 
-void AbortTriMesh (Widget w, XtPointer closure, XtPointer call_data)
+void AbortTriMeshCB (Widget w, XtPointer closure, XtPointer data)
+{
+     AbortTriMesh(w, NULL, NULL, NULL);
+}
+
+void AbortTriMesh (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    unsigned	i;
 
@@ -449,7 +459,7 @@ void AbortTriMesh (Widget w, XtPointer closure, XtPointer call_data)
    SetNormalMode ();
 }
 
-void BackupOnePoint (void)
+void BackupOnePoint (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    char		message [80];
 

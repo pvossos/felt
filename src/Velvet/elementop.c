@@ -156,7 +156,7 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2) {
 	SelectGroup (call_data, DeleteElementGroup);
@@ -184,7 +184,7 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void DeleteEltAP (void)
+void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
@@ -240,7 +240,7 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -264,7 +264,7 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void EditElementAP (void)
+void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
@@ -307,8 +307,13 @@ static char *ordinals [ ] = {"", "first", "second", "third", "fourth", "fifth",
 			"sixth", "seventh", "eighth", "ninth", "tenth",
 			"eleventh", "twelfth", "thirteenth", "fourteenth"};
 
+void AbortAddElementCB (Widget w, XtPointer closure, XtPointer data)
+{
+     AbortAddElement(w, NULL, NULL, NULL);     
+}
 
-void AbortAddElement (Widget w, XtPointer closure, XtPointer call_data)
+
+void AbortAddElement (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     if (num_nodes == 0)
 	SetNormalMode ( );
@@ -362,7 +367,7 @@ void DoAddElement (Node node)
 }
 
 
-void AddElementAP (void)
+void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -401,7 +406,7 @@ void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -449,7 +454,7 @@ void EditAddElement (void)
     XtRemoveAllCallbacks (drawing, XtNbuttonCallback);
     XtAddCallback (drawing, XtNbuttonCallback, AddElementCB, NULL);
 
-    AssignQuitAbort (QuitEdit, "QuitEdit", AbortAddElement, "AbortAddElement");
+    AssignQuitAbort (QuitEditCB, "QuitEdit", AbortAddElementCB, "AbortAddElement");
 
     XtOverrideTranslations (entry,
 	XtParseTranslationTable ("<Key>Return: AddElementAP()"));

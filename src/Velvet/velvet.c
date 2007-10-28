@@ -755,11 +755,11 @@ int main (int argc, char **argv)
 
     quitbutton = XtCreateManagedWidget ("quit", commandWidgetClass,
                       control, NULL, 0);
-    XtAddCallback (quitbutton, XtNcallback, QuitEdit, NULL);
+    XtAddCallback (quitbutton, XtNcallback, QuitEditCB, NULL);
 
     abortbutton = XtCreateManagedWidget ("abort", commandWidgetClass,
                       control, NULL, 0);
-    XtAddCallback (abortbutton, XtNcallback, AbortEdit, NULL);
+    XtAddCallback (abortbutton, XtNcallback, AbortEditCB, NULL);
  
 
     /* Create the canvas configuration so we can do the args */

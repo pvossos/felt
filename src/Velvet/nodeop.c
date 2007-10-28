@@ -70,10 +70,10 @@ void AddNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
       DoAddNode (report -> snapped.x, report -> snapped.y, 0.0);
 
    if (report -> event -> xbutton.button == 3)
-        QuitEdit (w, client_data, call_data);
+        QuitEditCB (w, client_data, call_data);
 }
 
-void AddNodeAP (void)
+void AddNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    char *status;
    float x,y,z = 0;
@@ -307,7 +307,7 @@ void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -330,7 +330,7 @@ void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void DeleteNodeAP (void)
+void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -386,7 +386,7 @@ void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -410,7 +410,7 @@ void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void EditNodeAP (void)
+void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -510,8 +510,12 @@ int DrawNode (Node node)
     return 0;
 }
 
+void QuitMoveNodeCB (Widget w, XtPointer closure, XtPointer data)
+{
+     QuitMoveNode(w, NULL, NULL, NULL);
+}
 
-void QuitMoveNode (Widget w, XtPointer closure, XtPointer call_data)
+void QuitMoveNode (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     DW_RemoveFigure (drawing, ghost_figure);
     DW_SetInteractive (drawing, False);
@@ -530,7 +534,7 @@ void WalkNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 
     if (report -> event -> type == ButtonPress) {
 	if (report -> event -> xbutton.button == 3)
-         QuitMoveNode (w, client_data, call_data);
+         QuitMoveNodeCB (w, client_data, call_data);
 
 	if (report -> event -> xbutton.button > 2)
 	    return;
@@ -550,7 +554,7 @@ void WalkNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void WalkNodeAP (Widget widget, XtPointer closure, XtPointer data)
+void WalkNodeAP (Widget widget, XEvent *event, String *params, Cardinal *num)
 {
     char *status;
     float x, y;
@@ -561,7 +565,7 @@ void WalkNodeAP (Widget widget, XtPointer closure, XtPointer data)
 
    moved_node -> x = x;
    moved_node -> y = y;
-   QuitMoveNode (widget, closure, data);
+   QuitMoveNode (widget, event, params, num);
    DoWalkNode (moved_node);
 }
 
@@ -575,7 +579,7 @@ void DoMoveNode (Node node, Boolean motion)
     sprintf (buffer, "Nodal coordinates for node %d:", node -> number);
     ChangeStatusLine (buffer, True);
 
-    AssignQuitAbort (QuitMoveNode, "QuitMoveNode", QuitMoveNode,"QuitMoveNode");
+    AssignQuitAbort (QuitMoveNodeCB, "QuitMoveNode", QuitMoveNodeCB,"QuitMoveNode");
 
     XtRemoveAllCallbacks (drawing, XtNbuttonCallback);
     XtAddCallback (drawing, XtNbuttonCallback, WalkNodeCB, node);
@@ -612,7 +616,7 @@ void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -636,7 +640,7 @@ void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void MoveNodeAP (void)
+void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -737,7 +741,7 @@ void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -760,7 +764,7 @@ void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void AssignMassAP (void)
+void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -782,7 +786,7 @@ void AssignMassAP (void)
     DoAssignMass (found);
 }
 
-void SetMassAP (void)
+void SetMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     Arg		args [1];
     char	*status;

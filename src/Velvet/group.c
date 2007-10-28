@@ -107,7 +107,7 @@ SelectGroupCB(Widget w, XtPointer client_data, XtPointer call_data)
 }
 
 
-void SelectGroupAP (void)
+void SelectGroupAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     static unsigned corner_number = 0;
     static float    xl, xr, yb, yt;

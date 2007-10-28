@@ -48,7 +48,7 @@ void SaveWidgetPS (Widget widget, String ps_file);
 
 void ZoomAll (void);
 void ZoomStart (void);
-void ZoomAP (void);
+void ZoomAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void ZoomSelect (Widget w, XtPointer clientData, XtPointer callData);
 void ZoomEnd (Figure box);
 
@@ -64,11 +64,13 @@ Boolean QuerySave (void);
 
 void QuitVelvet (void);
 
-void ParseEntryLine (void);
+void ParseEntryLine (Widget w, XEvent *event, String *params, Cardinal *num);
 void MenuAction (Widget w, XEvent *event, String *params, Cardinal *num_params);
 void AssignQuitAbort (XtCallbackProc quitCB, String quitAP, XtCallbackProc abortCB, String abortAP);
-void QuitEdit(Widget, XtPointer, XtPointer);
-void AbortEdit(Widget widget, XtPointer closure, XtPointer data);
+void QuitEditCB(Widget w, XtPointer closure, XtPointer data);
+void QuitEdit(Widget w, XEvent *event, String *params, Cardinal *num);
+void AbortEditCB(Widget w, XtPointer closure, XtPointer data);
+void AbortEdit(Widget w, XEvent *event, String *params, Cardinal *num);
 void SetEditMode (void);
 void SetNormalMode (void);
 void SetWaitCursor (Widget w);
@@ -84,28 +86,30 @@ void ToolsDeleteFigure (void);
 void DeleteToolCB (Widget w, XtPointer clientData, XtPointer callData);
 void ToolsDrawLine (void);
 void DoLineCB (Widget w, XtPointer clientData, XtPointer callData);
-void DoLineAP (void);
+void DoLineAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void ToolsDrawCircle (void);
 void DoCircleCB (Widget w, XtPointer clientData, XtPointer callData);
-void DoCircleAP (void);
-void DoPolygonAP (void);
+void DoCircleAP (Widget w, XEvent *event, String *params, Cardinal *num);
+void DoPolygonAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void ToolsDrawArc (void);
 void DoArcCB (Widget w, XtPointer clientData, XtPointer callData);
 void ToolsDrawRectangle (void);
 void DoRectangleCB (Widget w, XtPointer clientData, XtPointer callData);
-void DoRectangleAP (void);
+void DoRectangleAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void ToolsDrawText (void);
-void DoTextAP (void);
+void DoTextAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void DoTextCB (Widget w, XtPointer clientData, XtPointer callData);
 void ToolsDrawPolygon (void);
 void DoPolygonMotionCB (Widget w, XtPointer clientData, XtPointer callData);
 void DoPolygonButtonCB (Widget w, XtPointer clientData, XtPointer callData);
-void SelectGroupAP (void);
+void SelectGroupAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void SelectGroup (XtPointer call_data, void (*op) (Figure *, unsigned));
-void QuitMoveTool (Widget w, XtPointer closure, XtPointer call_data);
-void AbortMoveTool (Widget w, XtPointer closure, XtPointer call_data);
-void QuitPolygon (Widget w, XtPointer closure, XtPointer call_data);
-void AbortPolygon (Widget w, XtPointer closure, XtPointer call_data);
+void QuitMoveTool (Widget w, XEvent *event, String *params, Cardinal *num);
+void AbortMoveTool (Widget w, XEvent *event, String *params, Cardinal *num);
+void QuitPolygonCB (Widget w, XtPointer closure, XtPointer data);
+void QuitPolygon (Widget w, XEvent *event, String *params, Cardinal *num);
+void AbortPolygonCB (Widget w, XtPointer closure, XtPointer data);
+void AbortPolygon (Widget w, XEvent *event, String *params, Cardinal *num);
 void MoveTool (void);
 int  figure_cmp (Item item1, Item item2);
 
@@ -114,25 +118,26 @@ int  figure_cmp (Item item1, Item item2);
 	 */
 
 void AddNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
-void AddNodeAP (void);
+void AddNodeAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void DoAddNode (float x, float y, float z);
 void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
-void DeleteNodeAP (void);
+void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void DoAssignMass (Node node);
-void AssignMassAP (void);
-void SetMassAP (void);
+void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num);
+void SetMassAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data);
 void EditNodalMass (void);
 void EditNodeNumber (void);
-void EditNodeAP (void);
+void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
 void MoveElement (Element element, Node *old_nodes);
 void MoveNodeNumber (void);
-void MoveNodeAP (void);
+void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
-void WalkNodeAP (Widget widget, XtPointer closure, XtPointer data);
+void WalkNodeAP (Widget widget, XEvent *event, String *params, Cardinal *num);
 void WalkNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
-void QuitMoveNode (Widget w, XtPointer closure, XtPointer call_data);
+void QuitMoveNodeCB (Widget w, XtPointer closure, XtPointer data);
+void QuitMoveNode (Widget w, XEvent *event, String *params, Cardinal *num);
 void EditDeleteNode (void);
 void DoMoveNode (Node node, Boolean motion);
 void DoWalkNode (Node node);
@@ -145,34 +150,35 @@ int DrawNode (Node node);
 	 */
 
 void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data);
-void AddElementAP (void);
+void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void DoAddElement (Node node);
 void EditAddElement (void);
 void EditDeleteElement (void);
 void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data);
-void DeleteEltAP (void);
+void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void EditElementNumber (void);
 void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data);
-void EditElementAP (void);
+void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num);
 int DrawElement (Element element);
-void AbortAddElement (Widget w, XtPointer closure, XtPointer call_data);
+void AbortAddElementCB (Widget w, XtPointer closure, XtPointer data);
+void AbortAddElement (Widget w, XEvent *event, String *params, Cardinal *num);
 void ComputeCenter (Element element, float *x, float *y);
 
 void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data);
-void ApplyForceAP (void);
+void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void EditApplyForce (void);
 
 void EditApplyLoad (void);
 void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data);
-void ApplyLoadAP (void);
+void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num);
 
 void EditApplyMaterial (void);
-void ApplyMaterialAP (void);
+void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data);
 
 void EditApplyConstraint (void);
 void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data);
-void ApplyConstraintAP (void);
+void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num);
 
 void SetupGridGeneration (void);
 void SetupTriangleGeneration (void);
@@ -182,12 +188,14 @@ void ToggleEltNumberStatus (void);
 void SetNodeNumberFlag(void);
 void SetEltNumberFlag(void);
 
-void FinishCurve (Widget w, XtPointer closure, XtPointer call_data);
-void AbortTriMesh (Widget w, XtPointer closure, XtPointer call_data);
-void AddCurvePointAP (void);
+void FinishCurveCB (Widget w, XtPointer closure, XtPointer data);
+void FinishCurve (Widget w, XEvent *event, String *params, Cardinal *num);
+void AbortTriMeshCB (Widget w, XtPointer closure, XtPointer data);
+void AbortTriMesh (Widget w, XEvent *event, String *params, Cardinal *num);
+void AddCurvePointAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void AddCurvePointCB (Widget w, XtPointer clientData, XtPointer callData);
 void DoAddCurvePoint (float x, float y);
-void BackupOnePoint (void);
+void BackupOnePoint (Widget w, XEvent *event, String *params, Cardinal *num);
 
 	/*
 	 * defining and solving the problem

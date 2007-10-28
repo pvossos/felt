@@ -49,8 +49,7 @@ Code CopyCode(Code code);
 
 /* This is only in misc.h. */
 
-extern void SetupStressMemory ( );
-
+void SetupStressMemory(Element element);
 
 # define NUMBER(x)	(sizeof (x) / sizeof (*x))
 # define OFFSET(x,y)	((unsigned) (((char *) (&(((x)0)->y))) - ((char *) 0)))

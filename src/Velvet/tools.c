@@ -113,7 +113,7 @@ void DeleteToolCB (Widget w, XtPointer clientData, XtPointer callData)
 	return;
 
    if (report -> event -> xbutton.button == 3)
-        QuitEdit (w, clientData, callData);
+        QuitEditCB (w, clientData, callData);
 
    if (report -> event -> xbutton.button == 2) {
 	SelectGroup (callData, DeleteFigureGroup);
@@ -158,7 +158,7 @@ void ToolsDrawLine (void)
        XtParseTranslationTable ("<Key>Return: DoLineAP()"));
 }
 
-void DoLineAP (void)
+void DoLineAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static float 	xs,xe,
 			ys,ye;
@@ -244,7 +244,7 @@ void ToolsDrawRectangle (void)
        XtParseTranslationTable ("<Key>Return: DoRectangleAP()"));
 }
 
-void DoRectangleAP (void)
+void DoRectangleAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static float 	xl,xr,
 			yb,yt;
@@ -371,7 +371,7 @@ void DoCircleCB (Widget w, XtPointer clientData, XtPointer callData)
    }
 }
 
-void DoCircleAP (void)
+void DoCircleAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static float 	xc,yc,
 			radius;
@@ -483,7 +483,12 @@ static int    currline;
 static Figure lines  [MAXLINES];
 static FigureAttributes attributes;
 
-void QuitPolygon (Widget w, XtPointer closure, XtPointer call_data)
+void QuitPolygonCB (Widget w, XtPointer closure, XtPointer data)
+{
+     QuitPolygon(w, NULL, NULL, NULL);
+}
+
+void QuitPolygon (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    int		i;
    Point 	points [100];
@@ -508,7 +513,12 @@ void QuitPolygon (Widget w, XtPointer closure, XtPointer call_data)
     changeflag = True;
 }
 
-void AbortPolygon (Widget w, XtPointer closure, XtPointer call_data)
+void AbortPolygonCB (Widget w, XtPointer closure, XtPointer data)
+{
+     AbortPolygon(w, NULL, NULL, NULL);
+}
+
+void AbortPolygon (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    int		i;
 
@@ -535,7 +545,7 @@ void ToolsDrawPolygon (void)
       DW_SetForeground (drawing, "black");
   
    ChangeStatusLine ("Select first point:", True);
-   AssignQuitAbort (QuitPolygon, "QuitPolygon", AbortPolygon, "AbortPolygon");
+   AssignQuitAbort (QuitPolygonCB, "QuitPolygon", AbortPolygonCB, "AbortPolygon");
 
    currline = -1;
    for (i = 0 ; i < MAXLINES ; i++)
@@ -551,7 +561,7 @@ void ToolsDrawPolygon (void)
        XtParseTranslationTable ("<Key>Return: DoPolygonAP()"));
 }
 
-void DoPolygonAP (void)
+void DoPolygonAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static float 	xc,yc;
    static float 	xc_prev, yc_prev;
@@ -652,7 +662,7 @@ void ToolsDrawText (void)
        XtParseTranslationTable ("<Key>Return: DoTextAP()"));
 }
 
-void DoTextAP (void)
+void DoTextAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static String	result;
    float		x,y;
@@ -707,13 +717,23 @@ static double	origy;
 static Boolean	offset_from_points;
 static Figure	moving;
 
-void QuitMoveTool (Widget w, XtPointer closure, XtPointer call_data)
+static void QuitMoveToolCB (Widget w, XtPointer closure, XtPointer data)
+{
+     QuitMoveTool(w, NULL, NULL, NULL);
+}
+
+void QuitMoveTool (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     DW_SetInteractive (drawing, False);
     SetNormalMode ( );
 }
 
-void AbortMoveTool (Widget w, XtPointer closure, XtPointer call_data)
+static void AbortMoveToolCB (Widget w, XtPointer closure, XtPointer data)
+{
+     AbortMoveTool(w, NULL, NULL, NULL);
+}
+
+void AbortMoveTool (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     unsigned		i;
     FigureAttributes	attr;  
@@ -736,7 +756,7 @@ void AbortMoveTool (Widget w, XtPointer closure, XtPointer call_data)
        DW_SetAttributes (drawing, moving, DW_FigureLocation, &attr);
     } 
 
-    QuitMoveTool (w, closure, call_data);
+    QuitMoveTool (w, event, params, num);
 }
 
 static void
@@ -752,7 +772,7 @@ WalkToolCB(Widget w, XtPointer client_data, XtPointer call_data)
 
     if (report -> event -> type == ButtonPress) {
 	if (report -> event -> xbutton.button == 3)
-         QuitMoveTool (w, client_data, call_data);
+         QuitMoveToolCB (w, client_data, call_data);
 
 	if (report -> event -> xbutton.button > 2)
 	    return;
@@ -786,7 +806,7 @@ DoMoveTool(Figure figure)
     SetEditMode ( );
     ChangeStatusLine ("- Select new location for figure -", False);
 
-    AssignQuitAbort (QuitMoveTool, "QuitMoveTool", AbortMoveTool,"AbortMoveTool");
+    AssignQuitAbort (QuitMoveToolCB, "QuitMoveTool", AbortMoveToolCB, "AbortMoveTool");
 
     XtRemoveAllCallbacks (drawing, XtNbuttonCallback);
     XtAddCallback (drawing, XtNbuttonCallback, WalkToolCB, figure);
@@ -812,7 +832,7 @@ MoveToolCB(Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-         QuitEdit (w, client_data, call_data);
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;

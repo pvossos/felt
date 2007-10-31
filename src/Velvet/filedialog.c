@@ -279,8 +279,10 @@ static void ResizeHandler (Widget w, XtPointer client_data, XEvent *event, Boole
  *		(which end with a /) are always placed before files	*
  ************************************************************************/
 
-static int SortEntries (String *s1, String *s2)
+static int SortEntries (const void *vs1, const void *vs2)
 {
+    const String *s1 = (const String *) vs1;
+    const String *s2 = (const String *) vs2;
     String dir1;
     String dir2;
 

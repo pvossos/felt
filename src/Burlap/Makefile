@@ -24,7 +24,7 @@ OBJS	= apply.o arithmetic.o array.o assignment.o burlap.o\
 	  execute.o fefunc.o felt.o field.o function.o globals.o help.o\
 	  interactive.o lexer.o literal.o location.o loop.o mathfunc.o\
 	  matrixfunc.o miscfunc.o parser.o pathsearch.o predicate.o\
-	  relational.o symbol.o trap.o vector.o write.o xmalloc.o
+	  relational.o symbol.o trap.o vector.o write.o
 PROG	= burlap
 SRCS	= lexer.c parser.c
 YACC	= bison

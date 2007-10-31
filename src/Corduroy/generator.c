@@ -57,7 +57,7 @@ int ReadCorduroyFile (char *input_name)
 	/* open the file and send it through the pre-processor */
     
     if (input_name) {
-# ifndef DOS
+
 	if (cpp != NULL) {
 	    if (streq (input_name, "-"))
 		sprintf (buffer, "%s", cpp_command);
@@ -75,7 +75,7 @@ int ReadCorduroyFile (char *input_name)
 	    }
 
 	} else
-# endif
+
 	{
 	    if (streq (input_name, "-"))
 		input = stdin;
@@ -116,14 +116,10 @@ int ReadCorduroyFile (char *input_name)
 	yyparse ( );
 	generator.line = 0;
 
-# ifdef DOS
-        fclose (input);
-# else
 	if (cpp)
 	    pclose (input);
 	else
 	    fclose (input);
-# endif
 
 	/* Report any errors. */
 

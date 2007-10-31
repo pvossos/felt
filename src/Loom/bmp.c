@@ -79,11 +79,7 @@ void ImageDataToBMP(char *out, unsigned char **image, int rows, int cols,
    int		nbytes;
    int		a;
 
-# ifndef DOS
    fp = fopen(out, "w");
-# else
-   fp = fopen(out, "wb");
-# endif
 
    if (fp == NULL)
       Fatal ("temporary file error -> bitmap");

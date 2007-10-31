@@ -17,21 +17,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+# include <stdlib.h>
 # include <time.h>
 # include <math.h>
 # include <stdio.h>
 # include "matrix.h"
 # include "cmatrix.h"
-
-#undef srand48
-#undef drand48
-extern void srand48 (long int);
-extern double drand48 (void);
-
-# if (defined DOS || defined __CYGWIN32__)
-# define srand48 srand
-# define drand48 rand
-# endif
 
 # define PRINT_TOL 1.0e-12
 

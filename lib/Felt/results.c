@@ -1139,11 +1139,7 @@ MatlabGlobalMatrices(char *filename, Matrix M, Matrix C, Matrix K)
 {
    FILE	    *fp;
 
-# ifdef DOS
-   fp = fopen (filename, "wb");
-# else
    fp = fopen (filename, "w");
-# endif
 
    if (fp == NULL) {
       error ("could not open file %s for writing", filename);
@@ -1167,11 +1163,7 @@ int
 WriteAllMatlab(char *filename, Problem *data)
 {
     FILE *fp;
-# ifdef DOS
-    fp = fopen (filename, "wb");
-# else
     fp = fopen (filename, "w");
-# endif
 
     if (fp == NULL) {
 	error ("could not open file %s for writing", filename);

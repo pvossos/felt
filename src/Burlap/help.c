@@ -27,14 +27,13 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "help.h"
 # include "debug.h"
 # include "coerce.h"
 # include "execute.h"
 # include "helptab.h"
 # include "functab.h"
-# include "our-stdlib.h"
-
 
 static char *copyright = "\
 \n\
@@ -82,15 +81,11 @@ static void list_topics (void)
     across = 0;
     last_type = -1;
 
-# ifdef DOS
-    stream = stdout;
-# else
     if (!(pager = getenv ("PAGER")))
 	pager = "more";
 
     if (!(stream = popen (pager, "w")))
 	stream = stdout;
-# endif
 
     fprintf (stream, "\nHelp is available on the following topics:");
 
@@ -112,10 +107,8 @@ static void list_topics (void)
     fprintf (stream, "\n");
     fprintf (stream, "\n");
 
-# ifndef DOS
     if (stream != stdout)
 	pclose (stream);
-# endif
 }
 
 

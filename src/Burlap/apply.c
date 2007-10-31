@@ -25,6 +25,7 @@
  *		array application and function return.			*
  ************************************************************************/
 
+# include <stdlib.h>
 # include "trap.h"
 # include "apply.h"
 # include "debug.h"
@@ -33,7 +34,6 @@
 # include "coerce.h"
 # include "execute.h"
 # include "functab.h"
-# include "our-stdlib.h"
 # include "pathsearch.h"
 
 

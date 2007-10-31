@@ -448,7 +448,7 @@ ReadFeltFile(const char *filename)
     /* Open the file and send it through the preprocessor. */
 
     if (filename) {
-# ifndef DOS
+
 	if (cpp != NULL) {
 	    if (streq (filename, "-"))
 		sprintf (buffer, "%s", cpp_command);
@@ -466,7 +466,7 @@ ReadFeltFile(const char *filename)
 	    }
 
 	} else
-# endif
+
 	{
 	    if (streq (filename, "-"))
 		input = stdin;
@@ -542,14 +542,10 @@ ReadFeltFile(const char *filename)
 	yyparse ( );
 	problem.line = 0;
 
-# ifdef DOS
-        fclose (input);
-# else
 	if (cpp)
 	    pclose (input);
 	else if (input != stdin)
 	    fclose (input);
-# endif
 
 	if (!problem.num_errors)
 	    resolve_names ( );

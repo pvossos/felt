@@ -36,8 +36,6 @@
 
 # define streq(a,b)	!strcmp(a,b)
 
-
-# ifndef DOS
 static char *usage = "\
 usage: corduroy [options] [filename]\n\
        -debug           write debugging output\n\
@@ -47,13 +45,6 @@ usage: corduroy [options] [filename]\n\
        -Uname           undefine a macro\n\
        -Idirectory      specify include directory\n\
 ";
-# else
-static char *usage = "\
-usage: corduroy [options] [filename]\n\
-       -debug           write debugging output\n\
-";
-# endif
-
 
 /************************************************************************
  * Function:	Quote							*
@@ -138,12 +129,10 @@ int main (int argc, char **argv)
 	 * check usage and read the input file
 	 */
 
-# ifndef DOS
    if (CorduroyCppOptions (&argc, argv)) {
 	fputs (usage, stderr);
 	exit (1);
    }
-# endif
 
    j = 1;
    for (i = 1; i < argc; i ++) {

@@ -42,7 +42,6 @@
 # define GRAPH 4
 # define OOGL  5
 
-# ifndef DOS
 static char *usage = "\
 usage: patchwork -[in format] [filename] -[out format] [filename] [options]\n\
 \n\
@@ -64,23 +63,6 @@ usage: patchwork -[in format] [filename] -[out format] [filename] [options]\n\
        -Uname              undefine a macro\n\
        -Idirectory         specify include directory\n\
 ";
-# else
-static char *usage = "\
-usage: patchwork -[in format] [filename] -[out format] [filename] [options]\n\
-\n\
-       Available input formats:\n\
-       dxf           AutoCAD style DXF files\n\
-       felt          standard FElt files\n\
-       graph         standard ASCII graph data (gnuplot)\n\
-\n\
-       Available output formats:\n\
-       dxf           AutoCAD style DXF files\n\
-       felt          standard FElt files\n\
-       graph         standard ASCII graph data (gnuplot)\n\
-       logan         files formatted for the software from Logan's book\n\
-       oogl          the OOGL Geom File Format to view with Geomview\n\
-";
-# endif
 
 static char *input_name = NULL;
 static char *output_name = NULL;
@@ -167,12 +149,10 @@ int main (int argc, char **argv)
 	 * what the heck - just in case the input file is FElt style
 	 */
 
-# ifndef DOS
     if (ParseCppOptions (&argc, argv)) {
         fputs (usage, stderr);
         exit (1);
     }
-# endif
 
 	/*
 	 * get the patchwork specific options

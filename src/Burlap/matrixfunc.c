@@ -27,17 +27,12 @@
 # include <math.h>
 # include <time.h>
 # include <string.h>
+# include <stdlib.h>
 # include "debug.h"
 # include "error.h"
 # include "coerce.h"
 # include "execute.h"
 # include "matrixfunc.h"
-# include "our-stdlib.h"
-
-# ifdef DOS
-# define srand48 srand
-# define drand48 rand
-# endif
 
 /************************************************************************
  * Function:	chol_func						*

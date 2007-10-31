@@ -30,12 +30,7 @@
 # include <stdlib.h>
 # include "error.h"
 # include "generator.h"
-
-# ifdef DOS
-# include "yxtab.h"
-# else
 # include "y.tab.h"
-# endif
 
 static char *filename;
 static void  update_line (void);

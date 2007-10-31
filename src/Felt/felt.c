@@ -39,8 +39,6 @@
 
 # define streq(a,b)	!strcmp(a,b)
 
-
-# ifndef DOS
 static char *usage = "\
 usage: felt [options] [filename]\n\
        -debug               write debugging output\n\
@@ -65,28 +63,6 @@ usage: felt [options] [filename]\n\
        -Uname               undefine a macro\n\
        -Idirectory          specify include directory\n\
 ";
-# else
-static char *usage = "\
-usage: felt [options] [filename]\n\
-       -debug               write debugging output\n\
-       -preview             write a simple ASCII rendering of the problem\n\
-       +table               do not print tabular dynamic results\n\
-       -plot                do graphical plot for dynamic results\n\
-       -transfer            only show transfer functions for spectral results\n\
-       -eigen               only compute eigen results for modal analysis\n\
-       -orthonormal         use orthonormal mode shapes for modal matrices\n\
-       -renumber            force automatic node renumbering\n\
-       -summary             include material summary statistics\n\
-       -matrices            print the global matrices\n\
-       -details             print ancillary analysis details\n\
-       -matlab filename     write the global matrices to a file\n\
-       -matlab-all filename write all matrices to a file\n\
-       -gnuplot             output tables readable by gnuplot\n\
-       -graphics filename   create file for structure visualization\n\
-       -version             print version information and exit\n\
-";
-# endif
-
 
 static int   debug = 0;
 static int   preview = 0;
@@ -223,12 +199,10 @@ int main (argc, argv)
          * Do everything to setup the problem
          */
 
-# ifndef DOS
     if (ParseCppOptions (&argc, argv)) {
 	fputs (usage, stderr);
 	exit (1);
     }
-# endif
 
     if (ParseFeltOptions (&argc, argv)) {
 	fputs (usage, stderr);

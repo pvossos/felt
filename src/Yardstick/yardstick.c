@@ -37,7 +37,6 @@
 
 # define streq(a,b)	!strcmp(a,b)
 
-# ifndef DOS
 static char *usage = "\
 unit conversion: yardstick -if [force units] -il [length units]\n\
                            -of [force units] -ol [length units]\n\
@@ -56,20 +55,6 @@ problem scaling: yardstick -fs [force scale factor] -ls [length scale factor]\n\
        -Uname              undefine a macro\n\
        -Idirectory         specify include directory\n\
 ";
-# else
-static char *usage = "\
-unit conversion: yardstick -if [force units] -il [length units]\n\
-                           -of [force units] -ol [length units]\n\
-                           [filename]\n\
-\n\
-problem scaling: yardstick -fs [force scale factor] -ls [length scale factor]\n\
-                           [filename]\n\
-\n\
-       Available force units:    lbs, kips, N, MN, GN\n\
-       Available length formats: in, ft, m, mm, cm\n\
-\n\
-";
-# endif
 
 static char *ilength = NULL;
 static char *iforce  = NULL;
@@ -152,12 +137,11 @@ int main (int argc, char **argv)
 	 * just in case there are cpp directives in the input
 	 */
 
-# ifndef DOS
     if (ParseCppOptions (&argc, argv)) {
         fputs (usage, stderr);
         exit (1);
     }
-# endif
+
 	/*
 	 * get the yardstick specific options
 	 */

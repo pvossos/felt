@@ -84,7 +84,7 @@
 # define D_Analysis(d)	 ((Analysis *) (d) -> u.ptr)
 # define D_Constraint(d) ((Constraint *) (d) -> u.ptr)
 # define D_Definition(d) ((Definition *) (d) -> u.ptr)
-# define D_Element(d)	 ((Element *) (d) -> u.ptr)
+# define D_Element(d)	 ((Element *) ((d) -> u.ptr))
 # define D_Force(d)	 ((Force *) (d) -> u.ptr)
 # define D_Load(d)	 ((Distributed *) (d) -> u.ptr)
 # define D_Material(d)	 ((Material *) (d) -> u.ptr)

@@ -1,7 +1,6 @@
 Due to our own lack of experience/hardware/software, we definitely need
 volunteers (we'd be willing to help where we could of course) for this stuff:
 
-	o load combinations
 	o some sort of velvet-like interface for Windows
 	o all of the above kinds of things (particularly just binaries of the
           command-line applications) for the Mac.
@@ -47,7 +46,6 @@ then please feel free.  In no particular order:
           quad, axisymm. 
         o uniform stresses, nodally averaged stresses as appropriate,
           principle stresses, von Mises stress
-        o von Mises precision calculation
         o better, more uniform handling of distributed loads
         o better handling of thermal analysis for the two elements that
 	  we currently have, convection over the ctg surface for example,

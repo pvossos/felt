@@ -1,3 +1,0 @@
-This directory contains files not found under X11R4, but which are necessary
-for FElt to compile.  The files are taken directly from the MIT sources
-for X11R5.  All copyrights still hold.

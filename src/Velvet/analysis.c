@@ -963,13 +963,7 @@ static void ExternalCallback (w, client_data, call_data)
  * Description:	sets the widgets based on current analysis settings 	*
  ************************************************************************/
 
-# if defined(__STDC__)
 void AnalysisDialogUpdate (AnalysisDialog analysisd, int force)
-# else
-void AnalysisDialogUpdate (analysisd,force)
-    AnalysisDialog	analysisd;
-    Boolean		force;
-# endif
 {
     Arg		args [1];
     char	buffer [80];

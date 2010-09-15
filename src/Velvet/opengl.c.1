@@ -35,8 +35,7 @@
 #include <X11/Shell.h>
 #include <X11/Xaw/Command.h>
 #include <X11/Xaw/Toggle.h>
-// #include <GL/xmesa.h>
-#include <GL/glx.h>
+#include <GL/xmesa.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/GLwDrawA.h> 
@@ -60,10 +59,11 @@ typedef struct {
    double    smin, smax;
    GLfloat   xrot, yrot, zrot;
    GLfloat   xbase, ybase, zbase;
-   GLuint    list;
+   float   **x, **y, **z;
+   int	   **idx;
+   int	     numelts;
    int       wedge;
    Dimension winW, winH;
-   Boolean   contour;
 } info;
 
 typedef int face[4];
@@ -121,7 +121,20 @@ static void PrintString(GLfloat x, GLfloat y, GLfloat z, char *s)
 
 static void DrawElements (info *inf)
 {
-    glCallList(inf -> list);
+    int i, j, k;
+
+    glBegin (GL_QUADS);
+        for (i = 0; i < inf -> numelts; i ++) {
+           for (j = 0 ; j < 6 ; j++) {
+              for (k = 0 ; k < 4 ; k++) {
+                 glColor3fv (colors [inf -> idx [i][bface[j][k]]]);
+                 glVertex3f (inf -> x [i][bface[j][k]], 
+                             inf -> y [i][bface[j][k]], 
+                             inf -> z [i][bface[j][k]]);
+              }
+           }
+        }  
+    glEnd ();
 }
 
 static void InitDisplay (info *inf)
@@ -184,7 +197,7 @@ static void SaveFunction(Widget w, XtPointer client_data, XtPointer call_data)
    FileDialogSetToggles (dumpd, "PPM", "EPS");
    CenterOnScreen (XtNameToWidget (toplevel, "fileDialog"), True);
    WarpToCenter (XtNameToWidget (toplevel, "fileDialog"));
-   FileDialogSelect (dumpd, "Save Plot", "Save file name:", 
+   FileDialogSelect (dumpd, "Save Contour plot", "Save file name:", 
                      "", &save_file, &format);
 
    if (save_file == NULL)
@@ -206,6 +219,17 @@ static void DismissFunction(Widget w, XtPointer client_data, XtPointer call_data
    int	 i;
    info *inf = (info *) client_data;
 
+   for (i = 0 ; i < inf -> numelts ; i++) {
+      free(inf -> x [i]);
+      free(inf -> y [i]);
+      free(inf -> z [i]);
+      free(inf -> idx [i]);
+   }
+
+   free(inf -> x);
+   free(inf -> y);
+   free(inf -> z);
+   free(inf -> idx);
    XtDestroyWidget(inf -> shell);
    free(inf);
 }
@@ -222,9 +246,8 @@ static void ToggleFunction(Widget w, XtPointer client_data, XtPointer call_data)
    XtSetArg (args [0], XtNstate, &state);
    XtGetValues (w, args, 1);
 
-   inf -> contour = !state;
-   glPolygonMode (GL_FRONT_AND_BACK, inf -> contour ? GL_FILL : GL_LINE);
-   
+   glPolygonMode (GL_FRONT_AND_BACK, state ? GL_LINE : GL_FILL); 
+
    RefreshDisplay(inf);
 }
 
@@ -280,9 +303,9 @@ void InputFunction (Widget w, XtPointer client_data, XtPointer call_data)
          prev_y = gs -> event -> xbutton.y;
          rotating = 1;
       }
-      else if (button == 2 && !wpid)  
+      else if (button == 2) 
          wpid = XtAppAddWorkProc (app_context, RotateZPos, (XtPointer) inf);
-      else if (button == 3 && !wpid) 
+      else if (button == 3)
          wpid = XtAppAddWorkProc (app_context, RotateZNeg, (XtPointer) inf);
 
       break;
@@ -294,7 +317,7 @@ void InputFunction (Widget w, XtPointer client_data, XtPointer call_data)
          inf -> ybase = inf -> yrot;
          rotating = 0;
       }
-      else if (wpid) {
+      else {
          XtRemoveWorkProc (wpid);
          wpid = 0;
       }
@@ -405,20 +428,11 @@ static void DrawWedge (info *inf)
    return;
 }
 
-	/*
-	 * for safety sake we have to re-initialize the perspective
-	 * view and the viewport because another GL widget may have
-	 * been recently active and thus those transformation matrices
-	 * are actually on the stack right now ... we'd have to do this
-	 * any way on a resize, the safety part is doing it for expose
-	 */
-
-static void RedrawFunction(Widget w, XtPointer client_data, XtPointer call_data)
+static void ResizeFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
    info	*inf = (info *) client_data;
 
    GLwDrawingAreaMakeCurrent (w, cx);
-   glPolygonMode (GL_FRONT_AND_BACK, inf -> contour ? GL_FILL : GL_LINE);
 
    InitDisplay(inf);
 
@@ -434,161 +448,61 @@ static void RedrawFunction(Widget w, XtPointer client_data, XtPointer call_data)
    return;
 }
 
-	/*
-	 * also make sure things get re-initialized just once whenever
-	 * we get the focus back ... this will happen before any input
-	 * callbacks (user requested rotations) so that things start
-	 * out right for the newly focused widget
-	 */
 
-static void HandleFocusEvent(Widget w, XtPointer client_data, 
-                             XEvent *event, Boolean *cont)
+static void RedrawFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-   info	          *inf = (info *) client_data;
-   static Window   prev_w = 0;
+   info	*inf = (info *) client_data;
 
-	/*
- 	 * bail if we're losing focus or if this window is the most
-	 * most recently focused window (resize or re-focus clicks
-	 * generate FocusChange events)
-	 */
+   GLwDrawingAreaMakeCurrent (w, cx);
 
-   if (event -> type == FocusOut || prev_w == event -> xfocus.window) 
-      return;
-   
-   prev_w = event -> xfocus.window; 
+   glDisable(GL_SCISSOR_TEST);
 
-   RedrawFunction(inf -> mesa, (XtPointer) inf, NULL);
-}
-   
-static void LoadResults(inf, element, numelts, mag)
-   info	   *inf;
-   Element *element;
-   int      numelts;
-   float    mag;
-{
-   int		i, j, k, nd;
-   int		epn;
-   double	x, y, z;
-   double	xmax, xmin, ymax, ymin, zmax, zmin;
-   double	xctr, yctr, zctr;
-   double	xdist, ydist, zdist;
-   double	scale;
-   GLenum       modes[] = {0, 0, GL_LINES, GL_TRIANGLES, GL_QUADS};
-   Node	  	n;
+   RefreshDisplay(inf);
 
-   xmin = ymin = zmin = inf -> smin = 1e12;
-   xmax = ymax = zmax = inf -> smax = -1e12; 
+   if (inf -> wedge)
+      DrawWedge(inf);
 
-   for (i = 0 ; i < numelts ; i++) {
-      epn = element [i+1] -> definition -> shapenodes;
+   glEnable(GL_SCISSOR_TEST);
 
-       for (j = 0 ; j < epn ; j++) {
-         n = element [i+1] -> node [j+1];
-         x = n -> x + mag*n -> dx [1];
-         y = n -> y + mag*n -> dx [2];
-         z = n -> z + mag*n -> dx [3];
-
-         if (x  > xmax) 
-            xmax = x;
-         else if (x < xmin)
-            xmin = x;
-
-         if (y > ymax)
-            ymax = y;
-         else if (y < ymin)
-            ymin = y;
-
-         if (z  > zmax) 
-            zmax = z;
-         else if (z < zmin)
-            zmin = z;
-      }
-   }
-
-   xctr = (xmax + xmin)/2.0;
-   yctr = (ymax + ymin)/2.0;
-   zctr = (zmax + zmin)/2.0;
-   xdist = xmax - xmin;
-   ydist = ymax - ymin;
-   zdist = zmax - zmin;
-   
-   if (xdist >= ydist && xdist >= zdist && xdist)
-      scale = 2.0/xdist;
-   else if (ydist >= xdist && ydist >= zdist && ydist)
-      scale = 2.0/ydist;
-   else if (zdist)
-      scale = 2.0/zdist;
-   else
-      scale = 1.0;
- 
-   glNewList(inf -> list, GL_COMPILE);
-   glColor3f(1.0, 1.0, 1.0);
-
-   for (i = 0 ; i < numelts ; i++) {
-
-      epn = element [i+1] -> definition -> shapenodes;
-
-      if (element [i+1] -> definition -> shape == Solid) {	/* Solid */
-         glBegin (GL_QUADS);
-         for (j = 0 ; j < 6 ; j++) {
-            for (k = 0 ; k < 4 ; k++) {
-               nd = bface[j][k];
-               n = element [i+1] -> node [nd+1];
-               x = ((n -> x + mag*n -> dx [1]) - xctr)*scale;
-               y = ((n -> y + mag*n -> dx [2]) - yctr)*scale;
-               z = ((n -> z + mag*n -> dx [3]) - zctr)*scale;
-
-               glVertex3f (x, y, z);
-            }
-         }
-         glEnd ();
-      }  
-      else { /* Linear or Planar */
-         glBegin (modes [epn]);
-         for (j = 0 ; j < epn ; j++) {
-            n = element [i+1] -> node [j+1];
-            x = ((n -> x + mag*n -> dx [1]) - xctr)*scale;
-            y = ((n -> y + mag*n -> dx [2]) - yctr)*scale;
-            z = ((n -> z + mag*n -> dx [3]) - zctr)*scale;
-
-            glVertex3f (x, y, z);
-         }
-         glEnd();
-      }
-   }
-
-   glEndList();
+   return;
 }
 
-static void LoadContourResults(inf, stress, comp, element, numelts)
+static void LoadResults(inf, stress, comp, element, numelts)
    info	   *inf;
    Boolean  stress;
    int      comp;
    Element *element;
    int      numelts;
 {
-   int		i, j, k, nd;
+   int		i, j;
    int		epn;
-   int		idx;
    float        s;
-   double	x, y, z;
    double	xmax, xmin, ymax, ymin, zmax, zmin;
    double	xctr, yctr, zctr;
    double	xdist, ydist, zdist;
    double	scale;
-   GLenum       modes[] = {0, 0, GL_LINES, GL_TRIANGLES, GL_QUADS};
 
+   inf -> numelts = numelts;
+
+   inf -> x = (float **) malloc(sizeof(float *) * numelts); 
+   inf -> y = (float **) malloc(sizeof(float *) * numelts); 
+   inf -> z = (float **) malloc(sizeof(float *) * numelts); 
+   inf -> idx = (int **) malloc(sizeof(int *) * numelts); 
+  
    xmin = ymin = zmin = inf -> smin = 1e12;
    xmax = ymax = zmax = inf -> smax = -1e12; 
 
    for (i = 0 ; i < numelts ; i++) {
       epn = element [i+1] -> definition -> shapenodes;
+      inf -> x [i] = (float *) malloc(sizeof(float) * epn);
+      inf -> y [i] = (float *) malloc(sizeof(float) * epn);
+      inf -> z [i] = (float *) malloc(sizeof(float) * epn);
+      inf -> idx [i] = (int *) malloc(sizeof(int) * epn);
 
        for (j = 0 ; j < epn ; j++) {
-         x = element [i+1] -> node [j+1] -> x;
-         y = element [i+1] -> node [j+1] -> y;
-         z = element [i+1] -> node [j+1] -> z;
+         inf -> x[i][j] = element [i+1] -> node [j+1] -> x;
+         inf -> y[i][j] = element [i+1] -> node [j+1] -> y;
+         inf -> z[i][j] = element [i+1] -> node [j+1] -> z;
 
          if (stress)
             s = element [i+1] -> node [j+1] -> stress [comp];
@@ -600,20 +514,20 @@ static void LoadContourResults(inf, stress, comp, element, numelts)
          else if (s < inf -> smin)
             inf -> smin = s;
 
-         if (x  > xmax) 
-            xmax = x;
-         else if (x < xmin)
-            xmin = x;
+         if (inf -> x [i][j]  > xmax) 
+            xmax = inf -> x [i][j];
+         else if (inf -> x [i][j] < xmin)
+            xmin = inf -> x [i][j];
 
-         if (y > ymax)
-            ymax = y;
-         else if (y < ymin)
-            ymin = y;
+         if (inf -> y [i][j]  > ymax) 
+            ymax = inf -> y [i][j];
+         else if (inf -> y [i][j] < ymin)
+            ymin = inf -> y [i][j];
 
-         if (z  > zmax) 
-            zmax = z;
-         else if (z < zmin)
-            zmin = z;
+         if (inf -> z [i][j]  > zmax) 
+            zmax = inf -> z [i][j];
+         else if (inf -> z [i][j] < zmin)
+            zmin = inf -> z [i][j];
       }
    }
 
@@ -633,59 +547,23 @@ static void LoadContourResults(inf, stress, comp, element, numelts)
    else
       scale = 1.0;
  
-   inf -> list = glGenLists(1);
-   glNewList(inf -> list, GL_COMPILE);
-   
    for (i = 0 ; i < numelts ; i++) {
 
       epn = element [i+1] -> definition -> shapenodes;
 
-      if (element [i+1] -> definition -> shape == Solid) {	/* Solid */
-         glBegin (GL_QUADS);
-         for (j = 0 ; j < 6 ; j++) {
-            for (k = 0 ; k < 4 ; k++) {
-               nd = bface[j][k];
-               x = (element [i+1] -> node [nd+1] -> x - xctr)*scale;
-               y = (element [i+1] -> node [nd+1] -> y - yctr)*scale;
-               z = (element [i+1] -> node [nd+1] -> z - zctr)*scale;
-
-               if (stress)
-                  s = element [i+1] -> node [nd+1] -> stress [comp];
-               else   
-                  s = element [i+1] -> node [nd+1] -> dx [comp];
-
-               idx = (int) (253*(s - inf -> smin)
-                                /(inf -> smax - inf -> smin));
-
-               glColor3fv (colors [idx]);
-               glVertex3f (x, y, z);
-            }
-         }
-         glEnd ();
-      }  
-      else { /* Linear or Planar */
-         glBegin (modes [epn]);
-         for (j = 0 ; j < epn ; j++) {
-            x = (element [i+1] -> node [j+1] -> x - xctr)*scale;
-            y = (element [i+1] -> node [j+1] -> y - yctr)*scale;
-            z = (element [i+1] -> node [j+1] -> z - zctr)*scale;
-
-            if (stress)
-               s = element [i+1] -> node [j+1] -> stress [comp];
-            else   
-               s = element [i+1] -> node [j+1] -> dx [comp];
-
-            idx = (int) (253*(s - inf -> smin)
-                             /(inf -> smax - inf -> smin));
-
-            glColor3fv (colors [idx]);
-            glVertex3f (x, y, z);
-         }
-         glEnd();
+      for (j = 0 ; j < epn ; j++) {
+         if (stress)
+            s = element [i+1] -> node [j+1] -> stress [comp];
+         else   
+            s = element [i+1] -> node [j+1] -> dx [comp];
+ 
+         inf -> idx [i][j] = (int) (253*(s - inf -> smin)/
+                                        (inf -> smax - inf -> smin));
+         inf -> x [i][j] = (inf -> x [i][j] - xctr)*scale;
+         inf -> y [i][j] = (inf -> y [i][j] - yctr)*scale;
+         inf -> z [i][j] = (inf -> z [i][j] - zctr)*scale;
       }
    }
-
-   glEndList();
 }
 
 
@@ -807,11 +685,8 @@ void CreateOpenGLShell(name, title, stress, comp, element, numelts, contour)
    XtAddCallback (save,   XtNcallback,       SaveFunction,    (XtPointer) inf);
    XtAddCallback (toggle,XtNcallback,        ToggleFunction,  (XtPointer) inf);
    XtAddCallback (mesa,  GLwNinputCallback,  InputFunction,   (XtPointer) inf);
-   XtAddCallback (mesa,  GLwNresizeCallback, RedrawFunction,  (XtPointer) inf);
+   XtAddCallback (mesa,  GLwNresizeCallback, ResizeFunction,  (XtPointer) inf);
    XtAddCallback (mesa,  GLwNexposeCallback, RedrawFunction,  (XtPointer) inf);
-
-   XtAddEventHandler(shell, FocusChangeMask, False, HandleFocusEvent, (XtPointer) inf);
-
    XtRealizeWidget (shell);
 
 # ifdef SMOOTHLINES
@@ -824,20 +699,11 @@ void CreateOpenGLShell(name, title, stress, comp, element, numelts, contour)
    GLwDrawingAreaMakeCurrent (mesa, cx);
 
    glEnable (GL_DEPTH_TEST);
-   glPolygonMode (GL_FRONT_AND_BACK, contour ? GL_FILL : GL_LINE);
-   inf -> contour = contour;
-
-   XtSetSensitive(toggle, contour);
+   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
 
    inf -> xrot = inf -> yrot = inf -> zrot = 0.0;
  
-   inf -> list = glGenLists(1);
-
-   if (contour)
-      LoadContourResults(inf, stress, comp, element, numelts);
-   else
-      LoadResults(inf, element, numelts, 0.0);
-
+   LoadResults(inf, stress, comp, element, numelts);
 /*
    group [0] = dismiss;
    group [1] = save;

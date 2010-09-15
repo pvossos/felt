@@ -26,7 +26,6 @@
  *		to Algorithms".						*
  ************************************************************************/
 
-# include <stdlib.h>
 # include "Tree.h"
 # define NIL (&sentinel)
 # define NULL 0
@@ -57,6 +56,9 @@ static struct node    sentinel = {NULL, Black, NULL, NULL, NULL};
 static ItemDestructor destructor;
 static ItemIterator   iterator;
 static int            error_flag;
+
+extern char *malloc ( );
+extern void  free   ( );
 
 
 static void TreeDestroy_ (tree, node)

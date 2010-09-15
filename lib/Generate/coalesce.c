@@ -56,7 +56,7 @@ CheckConnections(Node n1, Node n2, Element *element, unsigned numelts)
 }
 
 static void
-Reconnect(Node new, Node old, Element *element, unsigned numelts)
+Reconnect(Node nu, Node old, Element *element, unsigned numelts)
 {
    unsigned	i,j;
 
@@ -64,7 +64,7 @@ Reconnect(Node new, Node old, Element *element, unsigned numelts)
       for (j = 1 ; j <= element[i] -> definition -> numnodes ; j++) {
 
          if (element[i] -> node[j] == old) {
-            element[i] -> node[j] = new;
+            element[i] -> node[j] = nu;
             break;
          }
       }

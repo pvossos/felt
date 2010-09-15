@@ -53,7 +53,7 @@ static XtResource resources[] = {
 
 #undef offset
 
-static void ClassInitialize(void), Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args);
+static void ClassInitialize(void), Initialize(Widget request, Widget nu, ArgList args, Cardinal *num_args);
 static void Resize(Widget gw);
 static Boolean SetValues(Widget gold, Widget greq, Widget gnew, ArgList args, Cardinal *num_args);
 static XtGeometryResult GeometryManager(Widget child, XtWidgetGeometry *request, XtWidgetGeometry *reply);
@@ -208,9 +208,9 @@ static XtGeometryResult GeometryManager(Widget child, XtWidgetGeometry *request,
 }
 
 /* ARGSUSED */
-static void Initialize(Widget request, Widget new, ArgList args, Cardinal *num_args)
+static void Initialize(Widget request, Widget nu, ArgList args, Cardinal *num_args)
 {
-/*    LayoutWidget w = (LayoutWidget)new; */
+/*    LayoutWidget w = (LayoutWidget)nu; */
 }
 
 static void ChangeManaged(Widget gw)
@@ -253,10 +253,10 @@ static Boolean
 SetValues(Widget gold, Widget greq, Widget gnew, ArgList args, Cardinal *num_args)
 {
     LayoutWidget    old = (LayoutWidget) gold,
-		    new = (LayoutWidget) gnew;
+		    nu = (LayoutWidget) gnew;
 
-    if (old->layout.layout != new->layout.layout)
-	LayoutLayout (new, TRUE);
+    if (old->layout.layout != nu->layout.layout)
+	LayoutLayout (nu, TRUE);
     return FALSE;
 } /* SetValues */
 

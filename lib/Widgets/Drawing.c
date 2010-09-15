@@ -35,11 +35,11 @@
 /* Private functions */
 
 static void    ClassInitialize (void);
-static void    Initialize (Widget request, Widget new, ArgList argv, Cardinal *argc);
+static void    Initialize (Widget request, Widget nu, ArgList argv, Cardinal *argc);
 static void    Realize (Widget gw, XtValueMask *valuemaskp, XSetWindowAttributes *attr);
 static void    Redisplay (Widget gw, XEvent *event, Region region);
 static void    Destroy (Widget gw);
-static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal *argc);
+static Boolean SetValues (Widget old, Widget request, Widget nu, ArgList argv, Cardinal *argc);
 
 
 /* Resource defaults */
@@ -397,7 +397,7 @@ static void ClassInitialize (void)
    Description:	Initializes the widget.
  ************************************************************************/
 
-static void Initialize (Widget request, Widget new, ArgList argv, Cardinal *argc)
+static void Initialize (Widget request, Widget nu, ArgList argv, Cardinal *argc)
 {
     Display	 *display;
     XtArgVal	  value;
@@ -405,8 +405,8 @@ static void Initialize (Widget request, Widget new, ArgList argv, Cardinal *argc
     DrawingWidget dw;
 
 
-    dw = (DrawingWidget) new;
-    display = XtDisplay (new);
+    dw = (DrawingWidget) nu;
+    display = XtDisplay (nu);
 
 
     if (dw -> drawing.xMin >= dw -> drawing.xMax) {
@@ -612,7 +612,7 @@ static void Redisplay (Widget gw, XEvent *event, Region region)
 		information.
  ************************************************************************/
 
-static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, Cardinal *argc)
+static Boolean SetValues (Widget old, Widget request, Widget nu, ArgList argv, Cardinal *argc)
 {
     Boolean       resize;
     Boolean	  rescale;
@@ -622,7 +622,7 @@ static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, 
 
 
     odw = (DrawingWidget) old;
-    ndw = (DrawingWidget) new;
+    ndw = (DrawingWidget) nu;
 
     resize    = False;
     rescale   = False;
@@ -683,10 +683,10 @@ static Boolean SetValues (Widget old, Widget request, Widget new, ArgList argv, 
 	redisplay = True;
 
     if (odw -> drawing.interactive != ndw -> drawing.interactive)
-	DW_SetInteractive (new, ndw -> drawing.interactive);
+	DW_SetInteractive (nu, ndw -> drawing.interactive);
 
     if (odw -> drawing.redraw != ndw -> drawing.redraw)
-	DW_SetAutoRedraw (new, ndw -> drawing.redraw);
+	DW_SetAutoRedraw (nu, ndw -> drawing.redraw);
 
 
     ndw -> core.width = ndw -> drawing.width;

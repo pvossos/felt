@@ -49,15 +49,3 @@ fulldist::;	@cd $(TOPDIR)/..; rm -f felt.tar.gz; \
 bindist::;	@cd $(TOPDIR)/..; rm -f felt-bin.tar.gz; \
 		sed -e s/ROOT/$(ROOT)/ $(ROOT)/etc/bindist | \
 		xargs $(TAR) rvf felt-bin.tar; gzip --best felt-bin.tar
-
-dosdist::;	@cd $(TOPDIR); rm -f ../felt-dos.zip; \
-		mv lib/Felt/y.tab.h lib/Felt/yxtab.h; \
-		mv src/Corduroy/y.tab.h src/Corduroy/yxtab.h; \
-		find etc lib/Felt lib/Elements lib/Matrix lib/Generate \
-		lib/Geompack src/Felt src/Corduroy src/Patchwork src/Burlap \
-		src/Yardstick src/Loom include examples CHANGELOG FAQ README \
-		README.old TODO COPYING -name core -prune -o -name "*.[oaylf]" \
-		-prune -o -perm 755 -type f -prune \
-		-o -type f -print | xargs zip ../felt-dos.zip; \
-		mv src/Corduroy/yxtab.h src/Corduroy/y.tab.h; \
-		mv lib/Felt/yxtab.h lib/Felt/y.tab.h

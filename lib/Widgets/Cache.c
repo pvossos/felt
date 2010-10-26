@@ -39,14 +39,15 @@
    Description:	Returns a hash value for a string.
  ************************************************************************/
 
-static unsigned StringHash (char *s)
+static unsigned StringHash (const char *s)
 {
     unsigned g;
     unsigned h;
+    size_t ln = strlen(s);
+    size_t i = 0;
 
-
-    for (h = 0; *s; s ++)
-	if ((g = (h = (h << 4) + *s) & 0xf0000000))
+    for (h = 0; i < ln; i++)
+	if ((g = (h = (h << 4) + s[i]) & 0xf0000000))
 	    h ^= (g >> 24) ^ g;
 
     return h;

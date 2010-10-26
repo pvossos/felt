@@ -121,7 +121,7 @@ struct descriptor {
 };
 
 
-extern char *type_names [ ];
+extern const char *type_names [ ];
 
 void CreateData (descriptor *d, descriptor *a, descriptor *b, int type, ...);
 

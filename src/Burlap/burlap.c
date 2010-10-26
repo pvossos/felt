@@ -36,7 +36,7 @@
 # include "interactive.h"
 
 
-static char *usage = "\
+static const char *usage = "\
 usage: burlap [cpp-options] [-f file] [-s file] [-q] [-a] [-n | -i] [file ...]\n\
        -f | -felt file        load FElt file on start-up\n\
        -s | -source file      read commands from file on start-up\n\

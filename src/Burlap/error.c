@@ -40,7 +40,7 @@ char *curr_file_name;			/* current file name   */
  * Description:	Prints a run-time error message.			*
  ************************************************************************/
 
-void rterror (char *format, ...)
+void rterror (const char *format, ...)
 {
     va_list ap;
 
@@ -59,7 +59,7 @@ void rterror (char *format, ...)
  * Description:	Prints a compile-time error message.			*
  ************************************************************************/
 
-void cterror (char *format, ...)
+void cterror (const char *format, ...)
 {
     va_list ap;
 

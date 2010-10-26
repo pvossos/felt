@@ -29,7 +29,7 @@
 # define _FIELD_H
 # include "trap.h"			/* TrapHandler type definition */
 
-void add_field (int rtype, char *name, int ftype, unsigned int offset, TrapHandler handler);
+void add_field (int rtype, const char *name, int ftype, unsigned int offset, TrapHandler handler);
 
 int field_op (void);
 

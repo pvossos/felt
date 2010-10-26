@@ -259,7 +259,7 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
    return count;
 }
  
-static void WriteMAT (Matrix a, FILE *fp, char *name, int arch)
+static void WriteMAT (Matrix a, FILE *fp, const char *name, int arch)
 {
    long		mopt;
    double	x;
@@ -290,7 +290,7 @@ static void WriteMAT (Matrix a, FILE *fp, char *name, int arch)
 }
 
 
-int MatrixToMatlab (Matrix a, FILE *fp, char *name)
+int MatrixToMatlab (Matrix a, FILE *fp, const char *name)
 {
    int		arch;
   

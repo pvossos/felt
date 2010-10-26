@@ -491,7 +491,7 @@ int PNormMatrix (double *result, Matrix a, char *p);
   \param a source vector
   \param p "1", "2", "inf" type of norm
 */
-int PNormVector (double *result, Matrix a, char *p);
+int PNormVector (double *result, Matrix a, const char *p);
 
 	/*
 	 * prototypes for the PROPERTY routines
@@ -527,7 +527,7 @@ int StddevMatrix (Matrix a, double *x);
 	 * prototypes for the IO routines
 	 */
 
-int MatrixToMatlab (Matrix a, FILE *fp, char *name);
+int MatrixToMatlab (Matrix a, FILE *fp, const char *name);
 
 int MatricesToMatlab (Matrix *a, unsigned int n, FILE *fp, char **name);
 

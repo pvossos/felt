@@ -40,7 +40,7 @@ extern void ExitLoom ( );
  *		printed before the error message.			*
  ************************************************************************/
 
-void error (char *format, ...)
+void error (const char *format, ...)
 {
     va_list ap;
 
@@ -65,7 +65,7 @@ void error (char *format, ...)
  		and arguments to standard error and exits the program.	*
  ************************************************************************/
 
-void Fatal (char *format, ...)
+void Fatal (const char *format, ...)
 {
     va_list ap;
 

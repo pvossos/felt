@@ -44,7 +44,7 @@ static void SetSelectedOkay(Widget w, XEvent *event, String *params, Cardinal *n
 static unsigned selected;
 
 static struct {
-    char    *name;
+    const char    *name;
     unsigned flag;
 } buttons [ ] = {
     {"yes",    Yes},

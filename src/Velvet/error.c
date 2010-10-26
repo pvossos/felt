@@ -54,13 +54,7 @@ static FILE *output;
  *		 string and arguments to the error dialog.		*
  ************************************************************************/
 
-# if NeedVarargsPrototypes
-void error (char *format, ...)
-# else
-void error (format, va_alist)
-    char *format;
-    va_dcl
-# endif
+void error (const char *format, ...)
 {
     va_list ap;
 
@@ -94,7 +88,7 @@ void error (format, va_alist)
  *		 program.						*
  ************************************************************************/
 
-void Fatal (char *format, ...)
+void Fatal (const char *format, ...)
 {
     va_list ap;
 

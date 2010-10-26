@@ -37,7 +37,7 @@
 # define NumIntrinsics (sizeof (functab) / sizeof (*functab))
 
 static struct {
-    char *name;
+    const char *name;
     int   num_args;
     int (*func) (int);
 } functab [ ] = {

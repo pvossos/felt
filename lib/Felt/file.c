@@ -96,7 +96,7 @@ static Element prev_element;
  * Description:	Format a constraint into a proper string.		*
  ************************************************************************/
 
-static char*
+static const char*
 ConstraintSymbol(Constraint constraint, DOF dof)
 {
     static char buffer [32];
@@ -123,23 +123,27 @@ ConstraintSymbol(Constraint constraint, DOF dof)
  ************************************************************************/
 
 static char*
-Quote(char *s)
+Quote(const char *s)
 {
     char	c;
     char       *ptr;
     static char buffer [256];
 
-    
-    if (s == NULL || strcmp (s, "") == 0)
-       return "\"\"";
+    if (s == NULL || strcmp (s, "") == 0) {
+        strcpy(buffer, "\"\"");
+        return buffer;
+    }
 
-    for (ptr = s; (c = *ptr); ptr ++)
+    strcpy(buffer, s);
+
+    for (ptr = buffer; (c = *ptr); ptr ++) {
 	if (!isalpha (c) && c != '_' && (isdigit (c) ? ptr == s : 1)) {
 	    sprintf (buffer, "\"%s\"", s);
 	    return buffer;
 	}
-
-    return s;
+    }
+    
+    return buffer;
 }
 
 
@@ -261,7 +265,7 @@ WriteLoad(Item item)
 {
     unsigned	 i;
     Distributed  load;
-    static char *direction_names [ ] = {"", "LocalX", "LocalY", "LocalZ",
+    static const char *direction_names [ ] = {"", "LocalX", "LocalY", "LocalZ",
 					"GlobalX", "GlobalY", "GlobalZ",
 					"parallel", "perpendicular", 
 					"radial", "axial"};
@@ -508,7 +512,7 @@ static void
 WriteAnalysisParameters(void)
 {
     unsigned	 i;
-    static char *dof_symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
+    static const char *dof_symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
 
 
     if (analysis.start || analysis.step || analysis.stop) {
@@ -709,7 +713,7 @@ WriteFile(char *flag)
     unsigned	 i;
     unsigned	 j;
     Definition	 definition;
-    static char	*analysis_names [ ] = {"", "static", "transient", "modal",
+    static const char	*analysis_names [ ] = {"", "static", "transient", "modal",
                                        "static-thermal", "transient-thermal",
                                        "spectral","static-substitution",
                                        "static-incremental","static","static",

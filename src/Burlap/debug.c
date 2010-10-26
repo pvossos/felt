@@ -37,7 +37,7 @@ int debug;
  *		arguments to the standard error stream.			*
  ************************************************************************/
 
-void eprintf (char *format, ...)
+void eprintf (const char *format, ...)
 {
     va_list ap;
 

@@ -35,14 +35,6 @@
 # include "TabGroup.h"
 # include "util.h"
 
-# if NeedVarargsPrototypes
-# include <stdarg.h>
-# define Va_start(a,b) va_start(a,b)
-# else
-# include <varargs.h>
-# define Va_start(a,b) va_start(a)
-# endif
-
 # define MaxButtons 4
 # define Waiting ((String) 1)
 
@@ -399,7 +391,7 @@ void OutputDialogView (OutputDialog outputd, String file_name, Cardinal max_line
  * Description: Uses OutputDialogVprintf() to simulate printf().	*
  ************************************************************************/
 
-void OutputDialogPrintf (OutputDialog outputd, String format, ...)
+void OutputDialogPrintf (OutputDialog outputd, const String format, ...)
 {
     va_list	     ap;
 
@@ -431,7 +423,7 @@ void OutputDialogPrintf (OutputDialog outputd, String format, ...)
  *		importantly allows a file to viewed efficiently.	*
  ************************************************************************/
 
-void OutputDialogVprintf (OutputDialog outputd, String format, va_list ap)
+void OutputDialogVprintf (OutputDialog outputd, const String format, va_list ap)
 {
     Arg		     args [4];
     char	     buffer [2048];

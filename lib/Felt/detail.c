@@ -43,7 +43,7 @@ GetDetailStream(void)
 }
 
 void
-detail(char *format, ...)
+detail(const char *format, ...)
 {
     va_list ap;
 

@@ -87,7 +87,7 @@ static int constant_handler (descriptor *dest, descriptor **src)
  *		address).						*
  ************************************************************************/
 
-ste *add_literal (st *table, char *name, Opcode op)
+ste *add_literal (st *table, const char *name, Opcode op)
 {
     ste *s;
 

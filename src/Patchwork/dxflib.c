@@ -30,7 +30,7 @@
 # include <string.h>
 # include "dxf.h"
 
-extern void error (char *format, ...);
+extern void error (const char *format, ...);
 
 int WriteDXFHeader (FILE *output)
 {

@@ -111,9 +111,7 @@ static void InitData( data)
  * Description:	Parses the felt specific command line options.		*
  ************************************************************************/
 
-static int ParseFeltOptions (argc, argv)
-    int  *argc;
-    char *argv [ ];
+static int ParseFeltOptions (int *argc, char *argv[])
 {
     int   i;
     int   j;
@@ -187,9 +185,7 @@ static int ParseFeltOptions (argc, argv)
  * Description:	 Main is the driver function for the felt package.	*
  ************************************************************************/
 
-int main (argc, argv)
-    int   argc;
-    char *argv [ ];
+int main (int argc, char *argv[])
 {
     int		  status;		/* return status		*/
 

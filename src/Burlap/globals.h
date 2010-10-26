@@ -50,7 +50,7 @@ extern char	 **str_array;		/* array of string literals	  */
 extern double	  *dbl_array;		/* array of double literals	  */
 
 
-ste *add_literal (st *table, char *name, Opcode op);
+ste *add_literal (st *table, const char *name, Opcode op);
 void global_init (void);
 int is_global (descriptor *var);
 

@@ -81,7 +81,7 @@ int PNormMatrix (double *result, Matrix a, char *p)
    return 0;
 }
 
-int PNormVector (double *result, Matrix a, char *p)
+int PNormVector (double *result, Matrix a, const char *p)
 {
    unsigned	i;
    double	data;

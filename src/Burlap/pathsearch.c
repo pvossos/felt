@@ -45,7 +45,7 @@
  *		"~" then a lookup of the user name is performed.	*
  ************************************************************************/
 
-char *pathsearch (char *path, char *file, char *suffix, int def_flag)
+char *pathsearch (char *path, char *file, const char *suffix, int def_flag)
 {
     char	   old;
     char	  *ptr;
@@ -78,11 +78,11 @@ char *pathsearch (char *path, char *file, char *suffix, int def_flag)
 	*ptr = old;
 
     } else if (file [0] == '/')
-	path = "/";
+       strcpy(path, "/");
 
 
     if (!path)
-	path = "./";
+       strcpy(path, "./");
 
 
     ptr = path;
@@ -93,7 +93,7 @@ char *pathsearch (char *path, char *file, char *suffix, int def_flag)
 
     while (*ptr) {
 	name = file;
-	suff = suffix;
+	strcpy(suff, suffix);
 	copy = buffer;
 
 	while (*ptr && *ptr != ':')

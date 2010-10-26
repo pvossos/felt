@@ -34,7 +34,7 @@
 # include "interactive.h"
 
 
-static char *start_up_message = "\
+static const char *start_up_message = "\
 This is burlap, copyright 1995 by Jason I. Gobat and Darren C. Atkinson.\n\
 This is free software, and you are welcome to redistribute it under certain\n\
 conditions, but there is absolutely no warranty.  Type help (\"copyright\")\n\
@@ -54,8 +54,8 @@ static int num_aliases;
 # define NumDefaults (sizeof (default_aliases) / sizeof (*default_aliases))
 
 static struct {
-    char *alias_name;
-    char *real_name;
+    const char *alias_name;
+    const char *real_name;
 } default_aliases [ ] = {
 # ifdef READLINE
     {"exit",	"exit (!*)"},

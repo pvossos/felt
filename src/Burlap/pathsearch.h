@@ -27,6 +27,6 @@
 # ifndef _PATHSEARCH_H
 # define _PATHSEARCH_H
 
-char *pathsearch (char *path, char *file, char *suffix, int def_flag);
+char *pathsearch (char *path, char *file, const char *suffix, int def_flag);
 
 # endif /* _PATHSEARCH_H */

@@ -28,7 +28,7 @@
 # define _DEBUG_H
 
 extern int  debug;
-extern void eprintf (char *, ...);
+extern void eprintf (const char *, ...);
 
 # ifdef EXECDEBUG
 

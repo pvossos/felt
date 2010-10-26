@@ -74,7 +74,7 @@ WriteStructuralResults(FILE *output, char *title,
 		numnodes;
     unsigned	i,j,k;
     unsigned	count;
-    static char	*dof_names [ ] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
+    static const char	*dof_names [ ] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
 
     element = problem.elements;
     node    = problem.nodes;
@@ -245,8 +245,8 @@ PlotModeShapes(Matrix x, FILE *output)
    return;
 }
 
-static char symbols[] = {0,'x','o','=','*','?','#','v','$','&','@'};
-static char *labels [] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
+static const char symbols[] = {0,'x','o','=','*','?','#','v','$','&','@'};
+static const char *labels [] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
 
 /******************************************************************************
  *
@@ -468,7 +468,7 @@ PlotTransientTable(Matrix dtable, Matrix ttable, double dt, FILE *fp)
    return;
 }
 
-static char *spectra_labels [] = {"","S_Tx","S_Ty","S_Tz","S_Rx","S_Ry","S_Rz"};
+static const char *spectra_labels [] = {"","S_Tx","S_Ty","S_Tz","S_Rx","S_Ry","S_Rz"};
 
 /*****************************************************************************
  *

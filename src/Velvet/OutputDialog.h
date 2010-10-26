@@ -41,9 +41,9 @@ void OutputDialogPopdown (OutputDialog outputd);
 
 void OutputDialogView (OutputDialog outputd, String file_name, Cardinal max_lines, Cardinal max_columns);
 
-void OutputDialogPrintf (OutputDialog outputd, String format, ...);
+void OutputDialogPrintf (OutputDialog outputd, const String format, ...);
 
-void OutputDialogVprintf (OutputDialog outputd, String format, va_list ap);
+void OutputDialogVprintf (OutputDialog outputd, const String format, va_list ap);
 
 Widget OutputDialogShell (OutputDialog outputd);
 

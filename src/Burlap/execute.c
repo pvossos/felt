@@ -123,17 +123,17 @@ int execute (Code code, descriptor *vars, descriptor *args)
  * Description:	Reports a type error for an operator or function.	*
  ************************************************************************/
 
-void TypeError (char *op, descriptor *a, descriptor *b, descriptor *c, int is_func)
+void TypeError (const char *op, const descriptor *a, const descriptor *b, const descriptor *c, int is_func)
 {
-    char *a_type;
-    char *b_type;
-    char *c_type;
-    char *msg = "type error in expression";
+    char a_type[128];
+    char b_type[128];
+    char c_type[128];
+    char msg[] = "type error in expression";
 
 
-    a_type = a ? D_TypeName (a) : "";
-    b_type = b ? D_TypeName (b) : "";
-    c_type = c ? D_TypeName (c) : "";
+    strcpy(a_type, a ? D_TypeName (a) : "");
+    strcpy(b_type, b ? D_TypeName (b) : "");
+    strcpy(c_type, c ? D_TypeName (c) : "");
 
 
     if (is_func == F_False) {
@@ -169,7 +169,7 @@ void TypeError (char *op, descriptor *a, descriptor *b, descriptor *c, int is_fu
  * Description:	Reports a matrix error.					*
  ************************************************************************/
 
-void MatrixError (char *op, Matrix a, Matrix b, int s, int is_func)
+void MatrixError (const char *op, const Matrix a, const Matrix b, int s, int is_func)
 {
     char *msg;
     char  a_size [32];
@@ -187,8 +187,7 @@ void MatrixError (char *op, Matrix a, Matrix b, int s, int is_func)
 	sprintf (b_size, "(1 x 1)");
 
 
-    msg = is_func == F_True ? "() function" : " expression";
-
+    strcpy(msg,is_func == F_True ? "() function" : " expression");
 
     switch (s) {
     case M_RDONLY:
@@ -277,7 +276,7 @@ void MatrixError (char *op, Matrix a, Matrix b, int s, int is_func)
  * Description:	Reports a mathematic exception.				*
  ************************************************************************/
 
-void MathException (char *s)
+void MathException (const char *s)
 {
     rterror ("exception in expression: %s", s);
 }

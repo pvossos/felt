@@ -27,8 +27,8 @@
 # ifndef _ERROR_H
 # define _ERROR_H
 
-void error (char *format, ...);
+void error (const char *format, ...);
 
-void Fatal (char *format, ...);
+void Fatal (const char *format, ...);
 
 # endif /* _ERROR_H */

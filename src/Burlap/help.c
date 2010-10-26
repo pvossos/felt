@@ -35,7 +35,7 @@
 # include "helptab.h"
 # include "functab.h"
 
-static char *copyright = "\
+static const char *copyright = "\
 \n\
     This file is part of the FElt finite element analysis package.\n\
     Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson\n\

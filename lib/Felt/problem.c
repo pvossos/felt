@@ -441,7 +441,7 @@ ReadFeltFile(const char *filename)
 {
     unsigned i;
     char     buffer [2048];
-    char    *plural;
+    const char    *plural;
     FILE    *input;
 
 

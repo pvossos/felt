@@ -65,10 +65,10 @@ void SaveState (ExecState *state);
 
 void RestoreState (ExecState *state);
 
-void TypeError (char *op, descriptor *a, descriptor *b, descriptor *c, int is_func);
+void TypeError (const char *op, const descriptor *a, const descriptor *b, const descriptor *c, int is_func);
 
-void MatrixError (char *op, Matrix a, Matrix b, int s, int is_func);
+void MatrixError (const char *op, const Matrix a, const Matrix b, int s, int is_func);
 
-void MathException (char *s);
+void MathException (const char *s);
 
 # endif /* _EXECUTE_H */

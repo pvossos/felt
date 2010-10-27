@@ -50,7 +50,7 @@ typedef enum {
 
 typedef struct {
     char	*name;
-    WidgetClass *class;
+    WidgetClass *klass;
     Cardinal	 numentries;
     struct {
 	char	*name;

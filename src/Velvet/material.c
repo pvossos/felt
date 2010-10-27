@@ -55,7 +55,7 @@ struct material_dialog {
     Widget         name;	/*	     AsciiText  name	*/
     Widget         E;		/*	     AsciiText  E	*/
     Widget         A;		/*	     AsciiText  A	*/
-    Widget         nu;		/*	     AsciiText  nu	*/
+    Widget         nu_;		/*	     AsciiText  nu	*/
     Widget         t;		/*	     AsciiText  t	*/
     Widget         Ix;		/*	     AsciiText  Ix	*/
     Widget         Iy;		/*	     AsciiText  Iy	*/
@@ -76,8 +76,8 @@ struct material_dialog {
     Widget         help;	/*	     MenuButton  help	*/
     Widget         accept;	/*	     Command  accept	*/
     Widget         dismiss;	/*	     Command  dismiss	*/
-    Widget         delete;	/*	     Command  delete	*/
-    Widget         new;		/*	     Command  new	*/
+    Widget         nuke;	/*	     Command  delete	*/
+    Widget         nu;		/*	     Command  new	*/
     Widget         copy;	/*	     Command  copy	*/
     XtCallbackProc callback;
     XtPointer	   closure;
@@ -504,7 +504,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     SetTextString (materiald -> A, buffer);
 
     sprintf (buffer, (active -> nu ? "%g" : ""), active -> nu);
-    SetTextString (materiald -> nu, buffer);
+    SetTextString (materiald -> nu_, buffer);
 
     sprintf (buffer, (active -> t ? "%g" : ""), active -> t);
     SetTextString (materiald -> t, buffer);
@@ -612,7 +612,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	active = materiald -> active;
 	active -> E	= exptod (GetTextString (materiald -> E), NULL);
 	active -> A	= exptod (GetTextString (materiald -> A), NULL);
-	active -> nu	= exptod (GetTextString (materiald -> nu), NULL);
+	active -> nu	= exptod (GetTextString (materiald -> nu_), NULL);
 	active -> t	= exptod (GetTextString (materiald -> t), NULL);
 	active -> Ix	= exptod (GetTextString (materiald -> Ix), NULL);
 	active -> Iy	= exptod (GetTextString (materiald -> Iy), NULL);
@@ -735,7 +735,7 @@ static void New (Widget w, XtPointer client_data, XtPointer call_data)
     Copy (NULL, client_data, NULL);
     SetTextString (materiald -> E, "");
     SetTextString (materiald -> A, "");
-    SetTextString (materiald -> nu, "");
+    SetTextString (materiald -> nu_, "");
     SetTextString (materiald -> t, "");
     SetTextString (materiald -> Ix, "");
     SetTextString (materiald -> Iy, "");
@@ -833,7 +833,7 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
 			 asciiTextWidgetClass, materiald -> layout,
 			 text_args, XtNumber (text_args));
 
-    materiald -> nu  = XtCreateManagedWidget ("nu",
+    materiald -> nu_  = XtCreateManagedWidget ("nu",
 			 asciiTextWidgetClass, materiald -> layout,
 			 text_args, XtNumber (text_args));
 
@@ -905,11 +905,11 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
 			 commandWidgetClass, materiald -> layout,
 			 NULL, 0);
 
-    materiald -> delete   = XtCreateManagedWidget ("delete",
+    materiald -> nuke   = XtCreateManagedWidget ("delete",
 			 commandWidgetClass, materiald -> layout,
 			 NULL, 0);
 
-    materiald -> new      = XtCreateManagedWidget ("new",
+    materiald -> nu      = XtCreateManagedWidget ("new",
 			 commandWidgetClass, materiald -> layout,
 			 NULL, 0);
 
@@ -951,7 +951,7 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
     group [i++]  = materiald -> viewport;
     group [i++]  = materiald -> E;
     group [i++]  = materiald -> A;
-    group [i++]  = materiald -> nu;
+    group [i++]  = materiald -> nu_;
     group [i++]  = materiald -> t;
     group [i++]  = materiald -> kappa;
     group [i++]  = materiald -> rho;
@@ -970,8 +970,8 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
     group [i++]  = materiald -> help;
     group [i++]  = materiald -> accept;
     group [i++] = materiald -> dismiss;
-    group [i++] = materiald -> delete;
-    group [i++] = materiald -> new;
+    group [i++] = materiald -> nuke;
+    group [i++] = materiald -> nu;
     group [i++] = materiald -> copy;
 
     XtSetSensitive (materiald -> Y, False);
@@ -998,7 +998,7 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
     XtOverrideTranslations (materiald -> name,	text_translations);
     XtOverrideTranslations (materiald -> E,	text_translations);
     XtOverrideTranslations (materiald -> A,	text_translations);
-    XtOverrideTranslations (materiald -> nu,	text_translations);
+    XtOverrideTranslations (materiald -> nu_,	text_translations);
     XtOverrideTranslations (materiald -> t,	text_translations);
     XtOverrideTranslations (materiald -> Ix,	text_translations);
     XtOverrideTranslations (materiald -> Iy,	text_translations);
@@ -1016,8 +1016,8 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
     XtOverrideTranslations (materiald -> c,	text_translations);
     XtOverrideTranslations (materiald -> dismiss,command_translations);
     XtOverrideTranslations (materiald -> accept, command_translations);
-    XtOverrideTranslations (materiald -> delete, command_translations);
-    XtOverrideTranslations (materiald -> new, 	 command_translations);
+    XtOverrideTranslations (materiald -> nuke, command_translations);
+    XtOverrideTranslations (materiald -> nu, 	 command_translations);
     XtOverrideTranslations (materiald -> copy,	 command_translations);
     XtOverrideTranslations (materiald -> viewport,	viewport_translations);
     XtOverrideTranslations (materiald -> help, help_translations);
@@ -1028,8 +1028,8 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
     XtAddCallback(materiald->list,   XtNcallback,Change, (XtPointer) materiald);
     XtAddCallback(materiald->accept, XtNcallback,Accept, (XtPointer) materiald);
     XtAddCallback(materiald->dismiss,XtNcallback,Dismiss,(XtPointer) materiald);
-    XtAddCallback(materiald->delete, XtNcallback,Delete, (XtPointer) materiald);
-    XtAddCallback(materiald->new,    XtNcallback,New,    (XtPointer) materiald);
+    XtAddCallback(materiald->nuke, XtNcallback,Delete, (XtPointer) materiald);
+    XtAddCallback(materiald->nu,    XtNcallback,New,    (XtPointer) materiald);
     XtAddCallback(materiald->copy,   XtNcallback,Copy,   (XtPointer) materiald);
 
     return materiald;

@@ -66,8 +66,8 @@ struct force_dialog {
     Widget         help;	/*	     MenuButton  help	*/
     Widget         accept;	/*	     Command  accept	*/
     Widget         dismiss;	/*	     Command  dismiss	*/
-    Widget         delete;	/*	     Command  delete	*/
-    Widget         new;		/*	     Command  new	*/
+    Widget         nuke;	/*	     Command  delete	*/
+    Widget         nu;		/*	     Command  new	*/
     Widget         copy;	/*	     Command  copy	*/
     XtCallbackProc callback;
     XtPointer	   closure;
@@ -903,11 +903,11 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
 			 commandWidgetClass, forced -> layout,
 			 NULL, 0);
 
-    forced -> delete   = XtCreateManagedWidget ("delete",
+    forced -> nuke   = XtCreateManagedWidget ("delete",
 			 commandWidgetClass, forced -> layout,
 			 NULL, 0);
 
-    forced -> new      = XtCreateManagedWidget ("new",
+    forced -> nu      = XtCreateManagedWidget ("new",
 			 commandWidgetClass, forced -> layout,
 			 NULL, 0);
 
@@ -953,8 +953,8 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
     group [i++]  = forced -> help;
     group [i++]  = forced -> accept;
     group [i++] = forced -> dismiss;
-    group [i++] = forced -> delete;
-    group [i++] = forced -> new;
+    group [i++] = forced -> nuke;
+    group [i++] = forced -> nu;
     group [i++] = forced -> copy;
 
     XtGetValues (forced -> layout, color_args, XtNumber (color_args));
@@ -988,8 +988,8 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
     XtOverrideTranslations (forced -> plot_force,  command_translations);
     XtOverrideTranslations (forced -> accept,	command_translations);
     XtOverrideTranslations (forced -> dismiss,	command_translations);
-    XtOverrideTranslations (forced -> delete,	command_translations);
-    XtOverrideTranslations (forced -> new,	command_translations);
+    XtOverrideTranslations (forced -> nuke,	command_translations);
+    XtOverrideTranslations (forced -> nu,	command_translations);
     XtOverrideTranslations (forced -> copy,	command_translations);
     XtOverrideTranslations (forced -> viewport,	viewport_translations);
     XtOverrideTranslations (forced -> help,	help_translations);
@@ -1000,8 +1000,8 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
     XtAddCallback (forced -> list,    XtNcallback, Change,  (XtPointer) forced);
     XtAddCallback (forced -> accept,  XtNcallback, Accept,  (XtPointer) forced);
     XtAddCallback (forced -> dismiss, XtNcallback, Dismiss, (XtPointer) forced);
-    XtAddCallback (forced -> delete,  XtNcallback, Delete,  (XtPointer) forced);
-    XtAddCallback (forced -> new,     XtNcallback, New,     (XtPointer) forced);
+    XtAddCallback (forced -> nuke,  XtNcallback, Delete,  (XtPointer) forced);
+    XtAddCallback (forced -> nu,     XtNcallback, New,     (XtPointer) forced);
     XtAddCallback (forced -> copy,    XtNcallback, Copy,    (XtPointer) forced);
     XtAddCallback (forced -> time_domain, XtNcallback, Toggle, (XtPointer) forced);
     XtAddCallback (forced -> freq_domain, XtNcallback, Toggle, (XtPointer) forced);

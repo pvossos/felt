@@ -72,8 +72,8 @@ struct node_dialog {
     Widget         help;	/*	     MenuButton  help		  */
     Widget         accept;	/*	     Command  accept		  */
     Widget         dismiss;	/*	     Command  dismiss		  */
-    Widget         delete;	/*	     Command  delete		  */
-    Widget         new;		/*	     Command  new		  */
+    Widget         nuke;	/*	     Command  delete		  */
+    Widget         nu;		/*	     Command  new		  */
     Widget         copy;	/*	     Command  copy		  */
     XtCallbackProc callback;
     XtPointer	   closure;
@@ -1004,11 +1004,11 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
 			commandWidgetClass, noded -> layout,
 			NULL, 0);
 
-    noded -> delete   = XtCreateManagedWidget ("delete",
+    noded -> nuke   = XtCreateManagedWidget ("delete",
 			commandWidgetClass, noded -> layout,
 			NULL, 0);
 
-    noded -> new      = XtCreateManagedWidget ("new",
+    noded -> nu      = XtCreateManagedWidget ("new",
 			commandWidgetClass, noded -> layout,
 			NULL, 0);
 
@@ -1061,8 +1061,8 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
     group [i++] = noded -> help;
     group [i++] = noded -> accept;
     group [i++] = noded -> dismiss;
-    group [i++] = noded -> delete;
-    group [i++] = noded -> new;
+    group [i++] = noded -> nuke;
+    group [i++] = noded -> nu;
     group [i++] = noded -> copy;
 
     XtGetValues (noded -> layout, color_args, XtNumber (color_args));
@@ -1091,7 +1091,7 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
     XtOverrideTranslations (noded -> c_button, button_translations);
     XtOverrideTranslations (noded -> accept,   command_translations);
     XtOverrideTranslations (noded -> dismiss,  command_translations);
-    XtOverrideTranslations (noded -> new,      command_translations);
+    XtOverrideTranslations (noded -> nu,      command_translations);
     XtOverrideTranslations (noded -> copy,     command_translations);
     XtOverrideTranslations (noded -> up,       repeater_translations);
     XtOverrideTranslations (noded -> down,     repeater_translations);
@@ -1104,8 +1104,8 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
     XtAddCallback (noded -> down,    XtNcallback, Down,    (XtPointer) noded);
     XtAddCallback (noded -> accept,  XtNcallback, Accept,  (XtPointer) noded);
     XtAddCallback (noded -> dismiss, XtNcallback, Dismiss, (XtPointer) noded);
-    XtAddCallback (noded -> delete,  XtNcallback, Delete,  (XtPointer) noded);
-    XtAddCallback (noded -> new,     XtNcallback, New,     (XtPointer) noded);
+    XtAddCallback (noded -> nuke,  XtNcallback, Delete,  (XtPointer) noded);
+    XtAddCallback (noded -> nu,     XtNcallback, New,     (XtPointer) noded);
     XtAddCallback (noded -> copy,    XtNcallback, Copy,    (XtPointer) noded);
 
     XtAddCallback (noded -> f_menu, XtNpopupCallback,

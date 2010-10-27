@@ -72,8 +72,8 @@ struct element_dialog {
     Widget	   help;	/*	     MenuButton  help		*/
     Widget	   accept;	/*	     Command  accept		*/
     Widget	   dismiss;	/*	     Command  dismiss		*/
-    Widget	   delete;	/*	     Command  delete		*/
-    Widget	   new;		/*	     Command  new		*/
+    Widget	   nuke;	/*	     Command  delete		*/
+    Widget	   nu;		/*	     Command  new		*/
     Widget	   copy;	/*	     Command  copy		*/
     XtCallbackProc callback;
     XtPointer	   closure;
@@ -1274,11 +1274,11 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
 			commandWidgetClass, eltd -> layout,
 			NULL, 0);
 
-    eltd -> delete    = XtCreateManagedWidget ("delete",
+    eltd -> nuke    = XtCreateManagedWidget ("delete",
 			commandWidgetClass, eltd -> layout,
 			NULL, 0);
 
-    eltd -> new       = XtCreateManagedWidget ("new",
+    eltd -> nu       = XtCreateManagedWidget ("new",
 			commandWidgetClass, eltd -> layout,
 			NULL, 0);
 
@@ -1351,8 +1351,8 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     group [19] = eltd -> help;
     group [20] = eltd -> accept;
     group [21] = eltd -> dismiss;
-    group [22] = eltd -> delete;
-    group [23] = eltd -> new;
+    group [22] = eltd -> nuke;
+    group [23] = eltd -> nu;
     group [24] = eltd -> copy;
 
 
@@ -1390,8 +1390,8 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     XtOverrideTranslations (eltd -> l_button [2], button_translations);
     XtOverrideTranslations (eltd -> accept,	  command_translations);
     XtOverrideTranslations (eltd -> dismiss,	  command_translations);
-    XtOverrideTranslations (eltd -> delete,	  command_translations);
-    XtOverrideTranslations (eltd -> new,	  command_translations);
+    XtOverrideTranslations (eltd -> nuke,	  command_translations);
+    XtOverrideTranslations (eltd -> nu,	  command_translations);
     XtOverrideTranslations (eltd -> copy,	  command_translations);
     XtOverrideTranslations (eltd -> viewport,	  viewport_translations);
     XtOverrideTranslations (eltd -> help,	  help_translations);
@@ -1408,8 +1408,8 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     XtAddCallback (eltd -> right,   XtNcallback, Right,   (XtPointer) eltd);
     XtAddCallback (eltd -> accept,  XtNcallback, Accept,  (XtPointer) eltd);
     XtAddCallback (eltd -> dismiss, XtNcallback, Dismiss, (XtPointer) eltd);
-    XtAddCallback (eltd -> delete,  XtNcallback, Delete,  (XtPointer) eltd);
-    XtAddCallback (eltd -> new,     XtNcallback, New,     (XtPointer) eltd);
+    XtAddCallback (eltd -> nuke,  XtNcallback, Delete,  (XtPointer) eltd);
+    XtAddCallback (eltd -> nu,     XtNcallback, New,     (XtPointer) eltd);
     XtAddCallback (eltd -> copy,    XtNcallback, Copy,    (XtPointer) eltd);
 
     XtAddCallback (eltd -> m_menu, XtNpopupCallback,

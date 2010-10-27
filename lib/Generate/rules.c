@@ -51,7 +51,7 @@ RuleFunction AssignRule (Rule type)
    else
       func = linear_rule;
 
-   return (void *) func;
+   return func;
 }
  
 double linear_rule (int i, int ne, double L)

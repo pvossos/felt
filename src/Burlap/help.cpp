@@ -72,7 +72,8 @@ static void list_topics (void)
     int   width;
     int   across;
     int   last_type;
-    char *pager;
+    char pager[256];
+    char *tmps;
     FILE *stream;
 
 
@@ -81,8 +82,8 @@ static void list_topics (void)
     across = 0;
     last_type = -1;
 
-    if (!(pager = getenv ("PAGER")))
-	pager = "more";
+    tmps = getenv("PAGER");
+    strcpy(pager, tmps ? tmps : "more");
 
     if (!(stream = popen (pager, "w")))
 	stream = stdout;

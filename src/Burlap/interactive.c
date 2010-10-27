@@ -397,7 +397,7 @@ void init_interactive (char *argv0, char *s_file, int q_flag, int a_flag)
 # ifdef READLINE
 	if ((rl_instream = fopen (s_file, "r"))) {
 	    rl_outstream = fopen ("/dev/null", "w");
-	    bfinclude (NULL);
+	    burlap_yyinclude (NULL);
 	    fclose (rl_instream);
 	    fclose (rl_outstream);
 	}
@@ -405,7 +405,7 @@ void init_interactive (char *argv0, char *s_file, int q_flag, int a_flag)
 	rl_outstream = stdout;
 # else
 	if ((stream = fopen (s_file, "r"))) {
-	    bfinclude (NULL);
+	    burlap_yyinclude (NULL);
 	    fclose (stream);
 	}
 	stream = stdin;

@@ -92,9 +92,7 @@ char *copy_input (int flag);
 /*!
   Initializes the lexer for a new file.			
 */
-void init_lexer (FILE *fp);
-
-int yyparse (void);
+void init_felt_lexer (FILE *fp);
 
 Definition defnlookup(char *name);
 

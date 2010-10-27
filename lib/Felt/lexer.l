@@ -72,7 +72,7 @@ eq	[ \t]*=
 
 problem\ description		{return PROBLEM;}
 nodes				{return NODES;}
-{id}\ elements			{yylval.s = strdup (yytext); return ELEMENTS;}
+{id}\ elements			{felt_yylval.s = strdup (yytext); return ELEMENTS;}
 material\ properties		{return MATERIALS;}
 distributed\ loads		{return LOADS;}
 forces				{return FORCES;}
@@ -103,35 +103,35 @@ floor				{return FLOOR;}
 ceil				{return CEIL;}
 fmod				{return FMOD;}
 fabs				{return FABS;}
-static				{yylval.i = Static; return ANALYSIS_TYPE;}
-transient			{yylval.i = Transient; return ANALYSIS_TYPE;}
-modal				{yylval.i = Modal; return ANALYSIS_TYPE;}
-static-thermal			{yylval.i = StaticThermal; return ANALYSIS_TYPE;}
-transient-thermal		{yylval.i = TransientThermal; return ANALYSIS_TYPE;}
-static-incremental		{yylval.i = StaticSubstitution; return ANALYSIS_TYPE;}
-static-substitution		{yylval.i = StaticSubstitution; return ANALYSIS_TYPE;}
-spectral			{yylval.i = Spectral; return ANALYSIS_TYPE;}
-localx				{yylval.i = LocalX; return DIRECTION;}
-localy				{yylval.i = LocalY; return DIRECTION;}
-localz				{yylval.i = LocalZ; return DIRECTION;}
-globalx				{yylval.i = GlobalX; return DIRECTION;}
-globaly				{yylval.i = GlobalY; return DIRECTION;}
-globalz				{yylval.i = GlobalZ; return DIRECTION;}
-par(allel)?			{yylval.i = Parallel; return DIRECTION;}
-perp(endicular)?		{yylval.i = Perpendicular; return DIRECTION;}
-axial				{yylval.i = Axial; return DIRECTION;}
-radial				{yylval.i = Radial; return DIRECTION;}
-u(nconstrained)?		{yylval.i = 0; return CONSTRAINT;}
-c(onstrained)?			{yylval.i = 1; return CONSTRAINT;}
-h(inged)?			{yylval.i = 'h'; return HINGED;}
-lumped				{yylval.i = 'l'; return MASS_MODE;}
-consistent			{yylval.i = 'c'; return MASS_MODE;}
-tx				{yylval.i = Tx; return NODE_DOF;}
-ty				{yylval.i = Ty; return NODE_DOF;}
-tz				{yylval.i = Tz; return NODE_DOF;}
-rx				{yylval.i = Rx; return NODE_DOF;}
-ry				{yylval.i = Ry; return NODE_DOF;}
-rz				{yylval.i = Rz; return NODE_DOF;}
+static				{felt_yylval.i = Static; return ANALYSIS_TYPE;}
+transient			{felt_yylval.i = Transient; return ANALYSIS_TYPE;}
+modal				{felt_yylval.i = Modal; return ANALYSIS_TYPE;}
+static-thermal			{felt_yylval.i = StaticThermal; return ANALYSIS_TYPE;}
+transient-thermal		{felt_yylval.i = TransientThermal; return ANALYSIS_TYPE;}
+static-incremental		{felt_yylval.i = StaticSubstitution; return ANALYSIS_TYPE;}
+static-substitution		{felt_yylval.i = StaticSubstitution; return ANALYSIS_TYPE;}
+spectral			{felt_yylval.i = Spectral; return ANALYSIS_TYPE;}
+localx				{felt_yylval.i = LocalX; return DIRECTION;}
+localy				{felt_yylval.i = LocalY; return DIRECTION;}
+localz				{felt_yylval.i = LocalZ; return DIRECTION;}
+globalx				{felt_yylval.i = GlobalX; return DIRECTION;}
+globaly				{felt_yylval.i = GlobalY; return DIRECTION;}
+globalz				{felt_yylval.i = GlobalZ; return DIRECTION;}
+par(allel)?			{felt_yylval.i = Parallel; return DIRECTION;}
+perp(endicular)?		{felt_yylval.i = Perpendicular; return DIRECTION;}
+axial				{felt_yylval.i = Axial; return DIRECTION;}
+radial				{felt_yylval.i = Radial; return DIRECTION;}
+u(nconstrained)?		{felt_yylval.i = 0; return CONSTRAINT;}
+c(onstrained)?			{felt_yylval.i = 1; return CONSTRAINT;}
+h(inged)?			{felt_yylval.i = 'h'; return HINGED;}
+lumped				{felt_yylval.i = 'l'; return MASS_MODE;}
+consistent			{felt_yylval.i = 'c'; return MASS_MODE;}
+tx				{felt_yylval.i = Tx; return NODE_DOF;}
+ty				{felt_yylval.i = Ty; return NODE_DOF;}
+tz				{felt_yylval.i = Tz; return NODE_DOF;}
+rx				{felt_yylval.i = Rx; return NODE_DOF;}
+ry				{felt_yylval.i = Ry; return NODE_DOF;}
+rz				{felt_yylval.i = Rz; return NODE_DOF;}
 
 
 %{
@@ -227,12 +227,12 @@ element-loads{eq}		{return ELEMENT_LOADS_EQ;}
 
 canvas\ configuration		{return CANVAS;}
 figure\ list			{return FIGURES;}
-true				{yylval.i = 1; return BOOLEAN;}
-false				{yylval.i = 0; return BOOLEAN;}
-rectangle			{yylval.i = RECTANGLE; return FIGURE_TYPE;}
-polyline			{yylval.i = POLYLINE; return FIGURE_TYPE;}
-text				{yylval.i = TEXT; return FIGURE_TYPE;}
-arc				{yylval.i = ARC; return FIGURE_TYPE;}
+true				{felt_yylval.i = 1; return BOOLEAN;}
+false				{felt_yylval.i = 0; return BOOLEAN;}
+rectangle			{felt_yylval.i = RECTANGLE; return FIGURE_TYPE;}
+polyline			{felt_yylval.i = POLYLINE; return FIGURE_TYPE;}
+text				{felt_yylval.i = TEXT; return FIGURE_TYPE;}
+arc				{felt_yylval.i = ARC; return FIGURE_TYPE;}
 
 node-numbers{eq}		{return NODE_NUM_EQ;}
 element-numbers{eq}		{return ELT_NUM_EQ;}
@@ -279,14 +279,14 @@ points{eq}			{return POINTS_EQ;}
 /* Numbers and names */
 %}
 
-{digit}+			{yylval.i = atoi (yytext); return INTEGER;}
-{digit}+{exp}			{yylval.d = atof (yytext); return DOUBLE;}
-{digit}+\.{digit}*{exp}?	{yylval.d = atof (yytext); return DOUBLE;}
-{digit}*\.{digit}+{exp}?	{yylval.d = atof (yytext); return DOUBLE;}
+{digit}+			{felt_yylval.i = atoi (yytext); return INTEGER;}
+{digit}+{exp}			{felt_yylval.d = atof (yytext); return DOUBLE;}
+{digit}+\.{digit}*{exp}?	{felt_yylval.d = atof (yytext); return DOUBLE;}
+{digit}*\.{digit}+{exp}?	{felt_yylval.d = atof (yytext); return DOUBLE;}
 
-{id}				{yylval.s = strdup (yytext); return NAME;}
-\"[^"]*\"			{yylval.s = strdup (yytext + 1);
-				 yylval.s [yyleng - 2] = 0; return NAME;}
+{id}				{felt_yylval.s = strdup (yytext); return NAME;}
+\"[^"]*\"			{felt_yylval.s = strdup (yytext + 1);
+				 felt_yylval.s [yyleng - 2] = 0; return NAME;}
 
 
 %{
@@ -316,13 +316,13 @@ points{eq}			{return POINTS_EQ;}
  *		token only if input if being read from a file.		*
  ************************************************************************/
 
-void yyerror (char *msg)
+void felt_yyerror (const char *msg)
 {
-    extern int yychar;
+    extern int felt_yychar;
 
 
     if (!problem.input)
-	if (yychar)
+	if (felt_yychar)
 	    error ("parse error before `%s'", yytext);
 	else
 	    error ("parse error before end of input");
@@ -332,12 +332,12 @@ void yyerror (char *msg)
 
 
 /************************************************************************
- * Function:	init_lexer						*
+ * Function:	init_felt_lexer						*
  *									*
  * Description:	Initializes the lexer for a new file.			*
  ************************************************************************/
 
-void init_lexer (FILE *fp)
+void init_felt_lexer (FILE *fp)
 {
     static int first_time = 1;
 
@@ -428,7 +428,7 @@ char *copy_input (int flag)
 
 #if 0
 # undef yywrap
-int yywrap ( )
+int yywrap (void)
 {
     if (0) unput (0);
     return 1;

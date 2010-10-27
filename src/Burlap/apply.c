@@ -843,7 +843,7 @@ static int function_search (descriptor *object, int num_args)
 
     if ((file = pathsearch (path, name, ".b", F_False))) {
 	printf ("including %s\n", file);
-	bfinclude (file);
+	burlap_yyinclude (file);
 	if ((s = st_lookup (&var_st, name))) {
 	    d = global (s -> idx);
 	    d = deref (d);

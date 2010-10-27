@@ -30,7 +30,7 @@
 # define _TOKTAB_H
 # include "opcodes.h"		/* need Address definition for %union	 */
 # include "descriptor.h"	/* need descriptor definition for %union */
-# include "tokens.h"		/* need BREAK for table offset		 */
+# include "y.tab.h"		    /* need BREAK for table offset		 */
 
 static struct {
     char begin;

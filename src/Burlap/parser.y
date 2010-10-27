@@ -43,7 +43,7 @@
 static st  *vars;
 static st   local_st;
 
-static void emitloc (yyloc);
+static void emitloc (burlap_yyloc loc);
 
 static char arg_types [256];		/* should be plenty */
 static int  last_line_num = -1;
@@ -56,7 +56,7 @@ static int  syntax_error;
     Address	addr;
     char       *sval;
     descriptor *desc;
-    yyloc	loc;
+    burlap_yyloc	loc;
     void       *ptr;
 }
 
@@ -593,7 +593,7 @@ do_for
  *		changed since the last time that they were emitted.	*
  ************************************************************************/
 
-static void emitloc (yyloc loc)
+static void emitloc (burlap_yyloc loc)
 {
     if (last_file_num != loc.file)
 	emit (FileOp, last_file_num = loc.file);

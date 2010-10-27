@@ -268,7 +268,7 @@ int include_func (int n)
 	strcpy (*D_String (result), name);
 	RecycleData (arg);
 
-	if (bfinclude (name)) {
+	if (burlap_yyinclude (name)) {
 	    rterror ("unable to include '%s'", name);
 	    **D_String (result) = 0;
 	}

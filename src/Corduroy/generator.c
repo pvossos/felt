@@ -112,8 +112,8 @@ int ReadCorduroyFile (char *input_name)
     /* Parse the input. */
     
     if (input_name) {
-	init_lexer (input);
-	yyparse ( );
+	init_cord_lexer (input);
+	cord_yyparse ( );
 	generator.line = 0;
 
 	if (cpp)

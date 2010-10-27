@@ -30,6 +30,6 @@
 # include "codegen.h"			/* Code type definition */
 
 Code global_cs;
-int bfparse (void);
+int burlap_yyparse (void);
 
 # endif /* _PARSER_H */

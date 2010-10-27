@@ -37,8 +37,8 @@
 # define alloca malloc		/* prevents alloca from being called */
 # endif
 
-extern void yyerror ( );
-extern int  yylex   ( );
+extern void cord_yyerror (const char *msg);
+extern int  cord_yylex   (void);
 
 
 typedef double xy_pair [2];

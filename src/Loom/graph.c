@@ -75,7 +75,8 @@ void WriteLineGraph (Matrix d, char *alt_title,
    return;
 }
 
-void WriteLineGraphTransferFunctions (Matrix *H, unsigned *forced, unsigned numforced, char *output)
+
+void WriteLineGraphTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, char *output)
 {
    static char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    unsigned	i,j,l;
@@ -103,7 +104,7 @@ void WriteLineGraphTransferFunctions (Matrix *H, unsigned *forced, unsigned numf
    fprintf(fp, "%d\n", numcurves);
    fprintf(fp, "%d\n", numpoints);
    for (i = 1 ; i <= numforced ; i++) {
-      LocalDOF (forced [i], &inode, &idof);
+      LocalDOF (forced[i]->dof, &inode, &idof);
       for (j = 1 ; j <= nn ; j++) 
          fprintf (fp, "%s(%d)->%s(%d)\n",
                   symbols[idof], inode, 

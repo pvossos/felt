@@ -730,7 +730,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     XtGetValues (analysisd -> input_node, args, 1);
     if (strcmp(value, "") != 0) {
        n.number = atoi(value);
-       analysis.input_node = TreeSearch (problem.node_tree, &n);
+       analysis.input_node = (Node) TreeSearch (problem.node_tree, &n);
 
        if (analysis.input_node == NULL) 
           error ("node %d not defined in current problem", n.number);
@@ -804,7 +804,7 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
        XtGetValues (analysisd -> node[i], args, 1);
        n.number = atoi (value);
        if (n.number != 0) {
-          node = TreeSearch (problem.node_tree, &n);
+          node = (Node) TreeSearch (problem.node_tree, &n);
           if (node == NULL) {
              error ("node %d is not defined", n.number);
              return;

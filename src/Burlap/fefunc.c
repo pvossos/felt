@@ -148,7 +148,8 @@ static int is_permutation (const char *func, Array array)
  *		from C objects into burlap descriptors.			*
  ************************************************************************/
 
-static int element_set_up (Element element, int mass_mode)
+/* ATTN: changed arg list from (Element element, int mass_mode) */
+static int element_set_up (Element element, char mass_mode, int tangent)
 {
     int		i;
     int		status;
@@ -156,9 +157,10 @@ static int element_set_up (Element element, int mass_mode)
     descriptor *arg2;
     descriptor *function;
     descriptor *result;
-
+    int imass_mode;
 
     status = 1;
+    imass_mode = mass_mode;
 
     for (i = 0; i < num_defs; i ++)
 	if (burlap_defs [i].definition == element -> definition) {
@@ -179,7 +181,7 @@ static int element_set_up (Element element, int mass_mode)
 	    D_Type    (arg2) = T_Int;
 	    D_Temp    (arg2) = F_False;
 	    D_Trapped (arg2) = F_False;
-	    D_Int     (arg2) = &mass_mode;
+	    D_Int     (arg2) = &imass_mode;
 
 	    if (!function_call (function, 2)) {
 		result = pop ( );
@@ -644,7 +646,7 @@ int add_definition_func (int n)
 	    definition -> name	      = *D_String (arg1);
 	    definition -> setup	      = element_set_up;
 	    definition -> stress      = element_stress;
-	    definition -> shape	      = *D_Int (arg4);
+	    definition -> shape	      = (Shape) *D_Int (arg4);
 	    definition -> numnodes    = *D_Int (arg5);
 	    definition -> shapenodes  = *D_Int (arg6);
 	    definition -> numstresses = *D_Int (arg7);

@@ -1202,7 +1202,7 @@ FindForcedDOF(NodeDOF **forced, unsigned int *numforced)
                    node [i] -> force -> spectrum [dofs[j]].value ||
                    node [i] -> force -> spectrum [dofs[j]].expr) {
 
-                  (*forced) [n] -> dof = dofs[j];
+                  (*forced) [n] -> dof = (DOF) dofs[j];
                   (*forced) [n++] -> node = node[i];
                }
             }

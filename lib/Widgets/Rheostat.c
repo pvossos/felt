@@ -25,8 +25,13 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <X11/Intrinsic.h>
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
+#ifdef MOTIF
+#	include <Xm/XmP.h>
+#	include <Xm/PrimitiveP.h>
+#endif
 
 #include "RheostatP.h"
 #include "Rheostat.h"
@@ -99,11 +104,11 @@
 /*
  * Method functions:
  */
-static void     Initialize(RheostatWidget request, RheostatWidget new);
-static void     Redisplay(RheostatWidget w, XEvent *event, Region region);
-static void     Resize(RheostatWidget w);
-static void     Destroy(RheostatWidget w);
-static Boolean  SetValues(RheostatWidget current, RheostatWidget request, RheostatWidget new);
+static void     Initialize(Widget request, Widget nu, ArgList args, Cardinal *num_args);
+static void     Redisplay(Widget w, XEvent *event, Region region);
+static void     Resize(Widget w);
+static void     Destroy(Widget w);
+static Boolean  SetValues(Widget current, Widget request, Widget nu, ArgList args, Cardinal *num_args);
 
 /*
  * Action functions:
@@ -121,7 +126,7 @@ static void     draw_dial      	(RheostatWidget w, GC gc);
 static void     calculate_position	(RheostatWidget w);
 static void     get_GCs     	(RheostatWidget w);
 static void     free_GCs     	(RheostatWidget w);
-static void	call_callbacks	(RheostatWidget w, char *callback_name, XEvent *event);
+static void	call_callbacks	(RheostatWidget w, const char *callback_name, XEvent *event);
 
 /***********************************************************************
  *
@@ -292,14 +297,17 @@ WidgetClass     rheostatWidgetClass = (WidgetClass) &rheostatClassRec;
 /*
  * Initialize method:
  */
-static void Initialize(RheostatWidget request, RheostatWidget new)
+static void Initialize(Widget request_, Widget nu_, ArgList args, Cardinal *num_args)
 {
-    int margin = MARGIN(new);
-    int user_radius = new->rheostat.radius;	/* request from user */
+    RheostatWidget request = (RheostatWidget) request_;
+    RheostatWidget nu = (RheostatWidget) nu_;
+
+    int margin = MARGIN(nu);
+    int user_radius = nu->rheostat.radius;	/* request from user */
     int size_radius = 				/* calculated from size */
-	MIN(new->core.height,new->core.width)/2 - margin;
+	MIN(nu->core.height,nu->core.width)/2 - margin;
     int min_radius = 			/* from arrow dimens */
-	MAX(new->rheostat.inner_arrow_length,new->rheostat.outer_arrow_length);
+	MAX(nu->rheostat.inner_arrow_length,nu->rheostat.outer_arrow_length);
     int min_dimen;
 
     /*
@@ -310,51 +318,53 @@ static void Initialize(RheostatWidget request, RheostatWidget new)
      * Make sure width and height are >= 2*(radius + margins)
      */
     if (user_radius != 0)
-	new->rheostat.radius = user_radius;
-    else if (new->core.width != 0 && new->core.height != 0)
-	new->rheostat.radius = size_radius;
+	nu->rheostat.radius = user_radius;
+    else if (nu->core.width != 0 && nu->core.height != 0)
+	nu->rheostat.radius = size_radius;
     else
-        new->rheostat.radius = DFLT_RADIUS;
+        nu->rheostat.radius = DFLT_RADIUS;
 
     /* Make sure radius is large enough: */
-    if (new->rheostat.radius < min_radius)
-	new->rheostat.radius = min_radius;
+    if (nu->rheostat.radius < min_radius)
+	nu->rheostat.radius = min_radius;
 
     /* Make sure widget is large enough: */
-    min_dimen = 2*(new->rheostat.radius+margin);
-    if (new->core.width < min_dimen)
-	new->core.width = min_dimen;
-    if (new->core.height < min_dimen)
-	new->core.height = min_dimen;
+    min_dimen = 2*(nu->rheostat.radius+margin);
+    if (nu->core.width < min_dimen)
+	nu->core.width = min_dimen;
+    if (nu->core.height < min_dimen)
+	nu->core.height = min_dimen;
 
 #ifdef MOTIF
-    if (new->rheostat.use_shadow_colors) {
-	new->rheostat.arrow_pixel = new->primitive.bottom_shadow_color;
-	new->rheostat.dial_pixel = new->primitive.top_shadow_color;
+    if (nu->rheostat.use_shadow_colors) {
+	nu->rheostat.arrow_pixel = nu->primitive.bottom_shadow_color;
+	nu->rheostat.dial_pixel = nu->primitive.top_shadow_color;
     }
 #endif
-    get_GCs(new);
-    calculate_position(new);
+    get_GCs(nu);
+    calculate_position(nu);
 
-    new->rheostat.orig_radius = new->rheostat.radius;
-    new->rheostat.orig_outer_length = new->rheostat.outer_arrow_length;
-    new->rheostat.orig_inner_length = new->rheostat.inner_arrow_length;
-    new->rheostat.orig_width = new->rheostat.arrow_width;
+    nu->rheostat.orig_radius = nu->rheostat.radius;
+    nu->rheostat.orig_outer_length = nu->rheostat.outer_arrow_length;
+    nu->rheostat.orig_inner_length = nu->rheostat.inner_arrow_length;
+    nu->rheostat.orig_width = nu->rheostat.arrow_width;
 }
 
 /*
  * Destroy method:
  */
-static void Destroy(RheostatWidget w)
+static void Destroy(Widget w_)
 {
+    RheostatWidget w = (RheostatWidget) w_;
     free_GCs(w);
 }
 
 /*
  * Resize method:
  */
-static void Resize(RheostatWidget w)
+static void Resize(Widget w_)
 {
+    RheostatWidget w = (RheostatWidget) w_;
     int newr;
 
     newr =
@@ -381,8 +391,10 @@ static void Resize(RheostatWidget w)
 /*
  * Expose method:
  */
-static void Redisplay(RheostatWidget w, XEvent *event, Region region)
+static void Redisplay(Widget w_, XEvent *event, Region region)
 {
+        RheostatWidget w = (RheostatWidget) w_;
+
 #	ifdef MOTIF
 	int hlt = w->primitive.highlight_thickness;
 	_XmDrawShadow(XtDisplay(w), XtWindow(w),
@@ -399,11 +411,15 @@ static void Redisplay(RheostatWidget w, XEvent *event, Region region)
 /*
  * SetValues:
  */
-static Boolean SetValues(RheostatWidget current, RheostatWidget request, RheostatWidget new)
+static Boolean SetValues(Widget current_, Widget request_, Widget nu_, ArgList args, Cardinal *num_args)
 {
+    RheostatWidget current = (RheostatWidget) current_;
+    RheostatWidget request = (RheostatWidget) request_;
+    RheostatWidget nu = (RheostatWidget) nu_;
+
     Boolean redraw = FALSE;		/* TRUE=>widget needs to be redrawn */
     Boolean recalc = FALSE;		/* TRUE=>arrow position changed */
-#   define  CHECK(fld)  (new->fld != current->fld)
+#   define  CHECK(fld)  (nu->fld != current->fld)
 
     /*
      * Check rheostat parameters:
@@ -420,10 +436,10 @@ static Boolean SetValues(RheostatWidget current, RheostatWidget request, Rheosta
     /*
      * Bounds check:
      */
-    if (new->rheostat.value > new->rheostat.maximum_value)
-        new->rheostat.value = new->rheostat.maximum_value;
-    if (new->rheostat.value < new->rheostat.minimum_value)
-        new->rheostat.value = new->rheostat.minimum_value;
+    if (nu->rheostat.value > nu->rheostat.maximum_value)
+        nu->rheostat.value = nu->rheostat.maximum_value;
+    if (nu->rheostat.value < nu->rheostat.minimum_value)
+        nu->rheostat.value = nu->rheostat.minimum_value;
 
     /*
      * Margin, geometry parameters -- may affect radius;
@@ -438,11 +454,11 @@ static Boolean SetValues(RheostatWidget current, RheostatWidget request, Rheosta
     )
     {
 	int newr =
-	   (new->core.height < new->core.width
-	  ? new->core.height : new->core.width) / 2 - MARGIN(new);
+	   (nu->core.height < nu->core.width
+	  ? nu->core.height : nu->core.width) / 2 - MARGIN(nu);
 	if (newr < MIN_RADIUS)
 	    newr = MIN_RADIUS;
-	new->rheostat.radius = newr;
+	nu->rheostat.radius = newr;
 	recalc=TRUE;
     }
 
@@ -455,10 +471,10 @@ static Boolean SetValues(RheostatWidget current, RheostatWidget request, Rheosta
 	|| CHECK(rheostat.arrow_width)
     )
     {
-	new->rheostat.orig_radius = new->rheostat.radius;
-	new->rheostat.orig_outer_length = new->rheostat.outer_arrow_length;
-	new->rheostat.orig_inner_length = new->rheostat.inner_arrow_length;
-	new->rheostat.orig_width = new->rheostat.arrow_width;
+	nu->rheostat.orig_radius = nu->rheostat.radius;
+	nu->rheostat.orig_outer_length = nu->rheostat.outer_arrow_length;
+	nu->rheostat.orig_inner_length = nu->rheostat.inner_arrow_length;
+	nu->rheostat.orig_width = nu->rheostat.arrow_width;
 	recalc = TRUE;
 	redraw = TRUE;
     }
@@ -474,7 +490,7 @@ static Boolean SetValues(RheostatWidget current, RheostatWidget request, Rheosta
 	|| CHECK(rheostat.dial_thickness)
     )
     {
-        get_GCs(new);
+        get_GCs(nu);
 	free_GCs(current);
         redraw = TRUE;
     }
@@ -494,7 +510,7 @@ static Boolean SetValues(RheostatWidget current, RheostatWidget request, Rheosta
      */
 #   undef CHECK
     if (recalc)
-	calculate_position(new);
+	calculate_position(nu);
     return redraw;
 }
 
@@ -618,7 +634,7 @@ static void Notify(RheostatWidget w, XEvent *event, String *params, Cardinal *np
  * Utility routines:
  *
  ***********************************************************************/
-static void call_callbacks(RheostatWidget w, char *callback_name, XEvent *event)
+static void call_callbacks(RheostatWidget w, const char *callback_name, XEvent *event)
 {
     RheostatCallbackStruct cb;
 

@@ -162,7 +162,7 @@ void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoApplyForce (found);
+    DoApplyForce ((Node) found);
 }
 
 
@@ -299,7 +299,7 @@ void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoApplyConstraint (found);
+    DoApplyConstraint ((Node) found);
 }
 
 
@@ -449,7 +449,7 @@ void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoApplyLoad (found);
+    DoApplyLoad ((Element) found);
 }
 
 
@@ -586,7 +586,7 @@ void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoApplyMaterial (found);
+    DoApplyMaterial ((Element) found);
 }
 
 

@@ -34,13 +34,13 @@
 # include "y.tab.h"
 
 
-struct break_node {
+struct break_node_ {
     break_node link;
     Address    addr;
     int        type;
 };
 
-struct loop_node {
+struct loop_node_ {
     loop_node  link;
     break_node queue;
     int        type;
@@ -90,7 +90,7 @@ void end_break (int type, loop_node lnode)
 
     if (lnode) {
 	loop_stack = lnode;
-	bnode = New (struct break_node);
+	bnode = New (struct break_node_);
 	bnode -> link  = lnode -> queue;
 	bnode -> type  = type;
 	bnode -> addr  = ip;
@@ -112,7 +112,7 @@ void enter_loop (int type)
     loop_node node;
 
 
-    node = New (struct loop_node);
+    node = New (struct loop_node_);
     node -> type  = type;
     node -> queue = NULL;
     node -> link  = loop_stack;

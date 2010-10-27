@@ -826,7 +826,7 @@ void VelvetPlotSpectra (Matrix P, char *xlabel, char *ylabel, char *alt_title, B
    PlaceTitles (alt_title, xlabel, ylabel, fp_dw, 0);
 }
 
-void VelvetPlotTransferFunctions (Matrix *H, unsigned int *forced, unsigned int numforced, char *xlabel, char *ylabel, char *alt_title)
+void VelvetPlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned int numforced, char *xlabel, char *ylabel, char *alt_title)
 {
    Arg		args [1];
    int		depth;
@@ -899,7 +899,7 @@ void VelvetPlotTransferFunctions (Matrix *H, unsigned int *forced, unsigned int 
             prev = data;
          }
 
-         DrawTransferLegend (forced [i], l, curve, fp_dw);
+         DrawTransferLegend (forced [i]->dof, l, curve, fp_dw);
       }
    }
 

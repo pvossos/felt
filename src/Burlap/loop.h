@@ -29,8 +29,8 @@
 # define _LOOP_H
 # include "opcodes.h"			/* Address type definition */
 
-typedef struct loop_node  *loop_node;
-typedef struct break_node *break_node;
+typedef struct loop_node_  *loop_node;
+typedef struct break_node_ *break_node;
 
 loop_node start_break (int type);
 void end_break (int type, loop_node lnode);

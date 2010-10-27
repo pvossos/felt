@@ -129,7 +129,7 @@ static void list_topics (void)
 
 int help_func (int n)
 {
-    char       *string;
+    char       string[256];
     descriptor *arg;
     descriptor *result;
     descriptor	temp;
@@ -152,9 +152,9 @@ int help_func (int n)
     case T_String:
     case T_Intrinsic:
 	if (D_Type (arg) == T_Intrinsic)
-	    string = functab [D_Intrinsic (arg)].name;
+         strcpy(string, functab [D_Intrinsic (arg)].name);
 	else
-	    string = *D_String (arg);
+         strcpy(string, *D_String (arg));
 
 	if (!strcmp (string, "copyright"))
 	    fputs (copyright, stdout);

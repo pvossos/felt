@@ -36,6 +36,8 @@
  *		default the array is not temporary.			*
  ************************************************************************/
 
+struct unsigned_double {unsigned u; double m;};
+
 Array CreateArray (void *ptr, int type, int length, int handler)
 {
     Array array;
@@ -90,7 +92,7 @@ Array CreateArray (void *ptr, int type, int length, int handler)
 
 
     case T_Pair:
-	array -> elt_size = sizeof (struct {unsigned u; double m;});
+	array -> elt_size = sizeof (struct unsigned_double);
 	break;
 
 

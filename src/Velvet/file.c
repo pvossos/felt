@@ -339,25 +339,25 @@ static int UpdateMaterial (Item item)
 {
     Item     found;
     Material old;
-    Material new;
+    Material nu;
 
 
     found = TreeInsert (saved.material_tree, item);
     if (found != item) {
-	new = (Material) item;
+	nu = (Material) item;
 	old = (Material) found;
-	old -> E = new -> E;
-	old -> A = new -> A;
-	old -> Ix = new -> Ix;
-	old -> Iy = new -> Iy;
-	old -> Iz = new -> Iz;
-	old -> J = new -> J;
-	old -> G = new -> G;
-	old -> nu = new -> nu;
-	old -> t = new -> t;
-	old -> rho = new -> rho;
-	old -> kappa = new -> kappa;
-	DestroyMaterial (new);
+	old -> E = nu -> E;
+	old -> A = nu -> A;
+	old -> Ix = nu -> Ix;
+	old -> Iy = nu -> Iy;
+	old -> Iz = nu -> Iz;
+	old -> J = nu -> J;
+	old -> G = nu -> G;
+	old -> nu = nu -> nu;
+	old -> t = nu -> t;
+	old -> rho = nu -> rho;
+	old -> kappa = nu -> kappa;
+	DestroyMaterial (nu);
     }
     return 0;
 }

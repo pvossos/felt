@@ -22,7 +22,7 @@
 # include <string.h>
 # include "matrix.h"
 
-int GaussSeidel(Matrix x, Matrix A, Matrix b)
+int GaussSeidel(Matrix x, const Matrix A, const Matrix b)
 {
    static int	   maxits = 5000;
    static double   tol = 0.0001;

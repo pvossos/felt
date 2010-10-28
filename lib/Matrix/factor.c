@@ -76,7 +76,7 @@ static void HouseHolder (double *v, Matrix a, unsigned int j, unsigned int m)
    return;
 }
 
-int QRFactorMatrix (Matrix q, Matrix r, Matrix a)
+int QRFactorMatrix (Matrix q, Matrix r, const Matrix a)
 {
    unsigned	i, j;
    unsigned	m , n;
@@ -144,7 +144,7 @@ int QRFactorMatrix (Matrix q, Matrix r, Matrix a)
    return 0;
 }
 
-int CholeskyFactorMatrix (Matrix b, Matrix a)
+int CholeskyFactorMatrix (Matrix b, const Matrix a)
 {
    unsigned	i, j, k;
    unsigned	n;
@@ -208,7 +208,7 @@ int CholeskyFactorMatrix (Matrix b, Matrix a)
    return 0;
 }
 
-int InvertMatrix (Matrix b, Matrix a, Matrix p)
+int InvertMatrix (Matrix b, const Matrix a, const Matrix p)
 {
    unsigned	i, j;
    unsigned	n;
@@ -244,7 +244,7 @@ int InvertMatrix (Matrix b, Matrix a, Matrix p)
    return 0;
 }
 
-int DeterminantMatrix (double *result, Matrix a, Matrix p)
+int DeterminantMatrix (double *result, const Matrix a, const Matrix p)
 {
    unsigned	i;
    double	x, y;
@@ -285,7 +285,7 @@ int DeterminantMatrix (double *result, Matrix a, Matrix p)
    return 0;
 }
 
-int LUFactorMatrix (Matrix b, Matrix a, Matrix p, int *info)
+int LUFactorMatrix (Matrix b, const Matrix a, const Matrix p, int *info)
 {
    double	t;
    unsigned	i, j, k;
@@ -369,7 +369,7 @@ int LUFactorMatrix (Matrix b, Matrix a, Matrix p, int *info)
    return 0; 
 }
 
-int FormLUPMatrices (Matrix L, Matrix U, Matrix P, Matrix a, Matrix p)
+int FormLUPMatrices (Matrix L, Matrix U, Matrix P, const Matrix a, const Matrix p)
 {
    unsigned	i, j;
    unsigned	n;
@@ -429,7 +429,7 @@ int FormLUPMatrices (Matrix L, Matrix U, Matrix P, Matrix a, Matrix p)
    return 0;
 }
 
-int LUBackSolveMatrix (Matrix c, Matrix a, Matrix b, Matrix p)
+int LUBackSolveMatrix (Matrix c, const Matrix a, const Matrix b, const Matrix p)
 {
    unsigned	i, k;
    unsigned	n;
@@ -568,7 +568,7 @@ int CroutFactorMatrix (Matrix A)
    return 0;
 }
 
-int CroutBackSolveMatrix (Matrix A, Matrix b)
+int CroutBackSolveMatrix (const Matrix A, Matrix b)
 {
    unsigned	 jj,j,jjlast,
 		 jcolht,jjnext,

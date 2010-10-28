@@ -55,7 +55,7 @@ int MirrorMatrix (Matrix a)
    return 0;
 }
 
-int CopyMatrix (Matrix b, Matrix a)
+int CopyMatrix (Matrix b, const Matrix a)
 {
    unsigned	i, j;
 
@@ -125,7 +125,7 @@ int RandomMatrix (Matrix a, int seed)
    return 0;
 }
 
-int MultiplyMatrices (Matrix c, Matrix a, Matrix b)
+int MultiplyMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i,j,k;
 
@@ -148,7 +148,7 @@ int MultiplyMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int AddMatrices (Matrix c, Matrix a, Matrix b)
+int AddMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i,j;
 
@@ -168,7 +168,7 @@ int AddMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int SubtractMatrices (Matrix c, Matrix a, Matrix b)
+int SubtractMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i,j;
 
@@ -188,7 +188,7 @@ int SubtractMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int ModMatrices (Matrix c, Matrix a, Matrix b)
+int ModMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i,j;
 
@@ -208,7 +208,7 @@ int ModMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int Saxpy (Matrix c, Matrix a, Matrix b, double alpha)
+int Saxpy (Matrix c, const Matrix a, const Matrix b, double alpha)
 {
    unsigned	i;
 
@@ -227,7 +227,7 @@ int Saxpy (Matrix c, Matrix a, Matrix b, double alpha)
    return 0;
 }
 
-int Gaxpy (Matrix c, Matrix a, Matrix b, Matrix A)
+int Gaxpy (Matrix c, const Matrix a, const Matrix b, const Matrix A)
 {
    unsigned	i,j;
 
@@ -253,7 +253,7 @@ int Gaxpy (Matrix c, Matrix a, Matrix b, Matrix A)
    return 0;
 }
 
-int ScaleMatrix(Matrix b, Matrix a, double factor, double offset)
+int ScaleMatrix(Matrix b, const Matrix a, double factor, double offset)
 {
    unsigned	i,j;
 
@@ -282,7 +282,7 @@ int ScaleMatrix(Matrix b, Matrix a, double factor, double offset)
    return 0;
 }
 
-int SqrtMatrix(Matrix b, Matrix a)
+int SqrtMatrix(Matrix b, const Matrix a)
 {
    unsigned	i,j;
 
@@ -299,7 +299,7 @@ int SqrtMatrix(Matrix b, Matrix a)
    return 0;
 }
 
-int DotBProduct(double *x, Matrix a, Matrix b)
+int DotBProduct(double *x, const Matrix a, const Matrix b)
 {
    unsigned	i;
    double	result;
@@ -315,7 +315,7 @@ int DotBProduct(double *x, Matrix a, Matrix b)
    return 0;
 }
 
-int TransposeMatrix(Matrix b, Matrix a)
+int TransposeMatrix(Matrix b, const Matrix a)
 {
    unsigned	i, j;
 
@@ -335,7 +335,7 @@ int TransposeMatrix(Matrix b, Matrix a)
    return 0;
 }
 
-int CompareEQMatrices (Matrix c, Matrix a, Matrix b)
+int CompareEQMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i, j;
   
@@ -355,7 +355,7 @@ int CompareEQMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int CompareNEQMatrices (Matrix c, Matrix a, Matrix b)
+int CompareNEQMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i, j;
   
@@ -375,7 +375,7 @@ int CompareNEQMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int CompareGTMatrices (Matrix c, Matrix a, Matrix b)
+int CompareGTMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i, j;
   
@@ -395,7 +395,7 @@ int CompareGTMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int CompareLTMatrices (Matrix c, Matrix a, Matrix b)
+int CompareLTMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i, j;
   
@@ -415,7 +415,7 @@ int CompareLTMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int CompareLTEMatrices (Matrix c, Matrix a, Matrix b)
+int CompareLTEMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i, j;
   
@@ -435,7 +435,7 @@ int CompareLTEMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int CompareGTEMatrices (Matrix c, Matrix a, Matrix b)
+int CompareGTEMatrices (Matrix c, const Matrix a, const Matrix b)
 {
    unsigned	i, j;
   
@@ -455,7 +455,7 @@ int CompareGTEMatrices (Matrix c, Matrix a, Matrix b)
    return 0;
 }
 
-int PrintMatrix (Matrix m, FILE *fp)
+int PrintMatrix (const Matrix m, FILE *fp)
 {
    double       val;
    unsigned	start, end;
@@ -489,7 +489,7 @@ int PrintMatrix (Matrix m, FILE *fp)
    return 0;
 }
 
-int PrintMatrixSubsection (Matrix m, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec, FILE *fp)
+int PrintMatrixSubsection (const Matrix m, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec, FILE *fp)
 {
    double       val;
    unsigned     i, j;

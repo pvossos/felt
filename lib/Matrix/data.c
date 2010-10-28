@@ -23,7 +23,7 @@
 # include "matrix.h"
 # include "error.h"
 
-double mdata (Matrix A, unsigned int row, unsigned int col)
+double mdata (const Matrix A, unsigned int row, unsigned int col)
 {
    unsigned	height;
    unsigned	temp;
@@ -51,7 +51,7 @@ double mdata (Matrix A, unsigned int row, unsigned int col)
    return 0;
 }
 
-Matrix CreateSubsectionMatrix (Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec)
+Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec)
 {
    Matrix	b;
    unsigned	i;
@@ -195,7 +195,7 @@ Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int s
    return A;
 }
 
-Matrix CreateCopyMatrix (Matrix a)
+Matrix CreateCopyMatrix (const Matrix a)
 {
    Matrix	b;
    unsigned	size;
@@ -224,7 +224,7 @@ Matrix CreateCopyMatrix (Matrix a)
    return b;
 }
 
-Matrix MakeFullFromCompact (Matrix A)
+Matrix MakeFullFromCompact (const Matrix A)
 {
    unsigned 	i,j;
    Matrix	B;
@@ -238,7 +238,7 @@ Matrix MakeFullFromCompact (Matrix A)
    return B; 
 }
 
-Matrix MakeCompactFromFull (Matrix A)
+Matrix MakeCompactFromFull (const Matrix A)
 {
    unsigned	*diag;
    Matrix	compA;
@@ -312,7 +312,7 @@ Matrix MakeCompactFromFull (Matrix A)
    return compA;
 } 
 
-int ConvertRowColumn (unsigned int row, unsigned int col, Matrix a)
+int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix a)
 {
     unsigned	blanks, address;
     unsigned	height;

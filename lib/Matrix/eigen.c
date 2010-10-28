@@ -198,7 +198,7 @@ static void GeneralShiftedQR (Matrix a, unsigned int maxit, double tol)
    return;
 }
 
-int GeneralMatrixEigenModes (Matrix a, Matrix lambda, double tol, unsigned int maxit)
+int GeneralMatrixEigenModes (const Matrix a, Matrix lambda, double tol, unsigned int maxit)
 {
    unsigned	i, j;
    Matrix	work;
@@ -376,7 +376,7 @@ static int SymmetricImplicitQL (Matrix d, Matrix sd, Matrix x, unsigned int maxi
    return 0; 
 }
 
-int SymmetricMatrixEigenModes (Matrix a, Matrix lambda, Matrix x, unsigned int maxit)
+int SymmetricMatrixEigenModes (const Matrix a, const Matrix lambda, Matrix x, unsigned int maxit)
 {
    Matrix	diag;
    Matrix	sub_diag;
@@ -419,7 +419,7 @@ int SymmetricMatrixEigenModes (Matrix a, Matrix lambda, Matrix x, unsigned int m
    return 0;
 }
 
-int TridiagSymmMatrixEigenModes (Matrix diag, Matrix sub_diag, Matrix lambda, Matrix x, unsigned int maxit)
+int TridiagSymmMatrixEigenModes (const Matrix diag, const Matrix sub_diag, const Matrix lambda, Matrix x, unsigned int maxit)
 {
    unsigned	i;
    int		status;
@@ -522,7 +522,7 @@ SymmetricMatrixGeneralEigenModes(Matrix a, Matrix b, Matrix lambda,
 }
 */
 
-int NormalizeByLength (Matrix b, Matrix a)
+int NormalizeByLength (Matrix b, const Matrix a)
 {
    double	div;
    unsigned	i, j;
@@ -555,7 +555,7 @@ int NormalizeByLength (Matrix b, Matrix a)
    return 0;
 } 
 
-int NormalizeByFirst (Matrix b, Matrix a)
+int NormalizeByFirst (Matrix b, const Matrix a)
 {
    double	div;
    unsigned	i, j;
@@ -583,7 +583,7 @@ int NormalizeByFirst (Matrix b, Matrix a)
    return 0;
 } 
 
-int NormalizeByMaximum (Matrix b, Matrix a, unsigned int keep_sign)
+int NormalizeByMaximum (Matrix b, const Matrix a, unsigned int keep_sign)
 {
    double	max;
    double	div;
@@ -623,7 +623,7 @@ int NormalizeByMaximum (Matrix b, Matrix a, unsigned int keep_sign)
    return 0;
 } 
 
-int BuildTridiagonalVectors (Matrix a, Matrix diag, Matrix sub_diag)
+int BuildTridiagonalVectors (const Matrix a, Matrix diag, Matrix sub_diag)
 {
    unsigned	i;
    unsigned	n;
@@ -651,7 +651,7 @@ int BuildTridiagonalVectors (Matrix a, Matrix diag, Matrix sub_diag)
    return 0;
 }
 
-int TridiagonalReduction (Matrix a, Matrix diag, Matrix sub_diag, Matrix z)
+int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z)
 {
    unsigned	n;
    int		i,j,k,l;

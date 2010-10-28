@@ -64,7 +64,7 @@ int MirrorComplexMatrix (ComplexMatrix a)
    return 0;
 }
 
-int CopyComplexMatrix (ComplexMatrix b, ComplexMatrix a)
+int CopyComplexMatrix (ComplexMatrix b, const ComplexMatrix a)
 {
    unsigned	i, j;
 
@@ -120,7 +120,7 @@ int RandomComplexMatrix (ComplexMatrix a, int seed)
    return 0;
 }
 
-int MultiplyComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
+int MultiplyComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b)
 {
    unsigned	i,j,k;
 
@@ -143,7 +143,7 @@ int MultiplyComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
    return 0;
 }
 
-int AddComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
+int AddComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b)
 {
    unsigned	i,j;
 
@@ -163,7 +163,7 @@ int AddComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
    return 0;
 }
 
-int SubtractComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
+int SubtractComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b)
 {
    unsigned	i,j;
 
@@ -183,7 +183,7 @@ int SubtractComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
    return 0;
 }
 
-int ScaleComplexMatrix(ComplexMatrix b, ComplexMatrix a, complex factor, complex offset)
+int ScaleComplexMatrix(ComplexMatrix b, const ComplexMatrix a, complex factor, complex offset)
 {
    unsigned	i,j;
 
@@ -200,7 +200,7 @@ int ScaleComplexMatrix(ComplexMatrix b, ComplexMatrix a, complex factor, complex
    return 0;
 }
 
-int ModulusComplexMatrix(Matrix b, ComplexMatrix a)
+int ModulusComplexMatrix(Matrix b, const ComplexMatrix a)
 {
    unsigned	i,j;
    
@@ -217,7 +217,7 @@ int ModulusComplexMatrix(Matrix b, ComplexMatrix a)
    return 0;
 }
 
-int TransposeComplexMatrix(ComplexMatrix b, ComplexMatrix a)
+int TransposeComplexMatrix(ComplexMatrix b, const ComplexMatrix a)
 {
    unsigned	i, j;
 
@@ -237,7 +237,7 @@ int TransposeComplexMatrix(ComplexMatrix b, ComplexMatrix a)
    return 0;
 }
 
-int PrintComplexMatrix (ComplexMatrix m, FILE *fp)
+int PrintComplexMatrix (const ComplexMatrix m, FILE *fp)
 {
    complex	val;
    unsigned	start, end;

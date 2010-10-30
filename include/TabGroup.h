@@ -27,6 +27,12 @@
 # ifndef _TabGroup_h
 # define _TabGroup_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void CreateTabGroup (Widget ancestor, WidgetList members, Cardinal num_members, Pixel highlight, Boolean clear_caret);
 
 void SetFocus (Widget member);
@@ -34,5 +40,11 @@ void SetFocus (Widget member);
 Widget GetFocus (Widget member);
 
 Boolean HasFocus (Widget member);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _TabGroup_h */

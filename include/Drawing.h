@@ -20,6 +20,12 @@
 # ifndef _Drawing_h
 # define _Drawing_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 /****************************************************************
  *
  * Drawing widget
@@ -258,5 +264,11 @@ Pixmap DW_CreateBitmap (Widget gw, unsigned int width, unsigned int height);
 void DW_TranslateCoords (Widget gw, int x, int y, float *rx, float *ry);
 
 XtArgVal Float2Arg (float value);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Drawing_h */

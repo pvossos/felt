@@ -16,6 +16,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
+CXXFLAGS = $(CXXOPTS) -I$(TOPDIR)/include
 LDFLAGS	= $(LDOPTS)
 LIBS	= $(LIBFELT) $(LIBELT) $(LIBMTX) -lm
 OBJS	= error.o scale.o yardstick.o

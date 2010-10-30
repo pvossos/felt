@@ -3,6 +3,12 @@
 
 #include "problem.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int WriteAllMatlab(char *filename, Problem *data);
 
 int WriteGraphicsFile (char *filename, double mag);
@@ -42,5 +48,11 @@ void PlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, FILE
 void PrintGlobalMatrices (FILE *fp, Matrix M, Matrix C, Matrix K);
 
 int MatlabGlobalMatrices (char *filename, Matrix M, Matrix C, Matrix K);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif

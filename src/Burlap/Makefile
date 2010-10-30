@@ -16,6 +16,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CFLAGS	= $(CCOPTS) -I. -I$(TOPDIR)/include -DEXECDEBUG
+CXXFLAGS = $(CXXOPTS) -I. -I$(TOPDIR)/include -DEXECDEBUG
 LEX	= flex
 LFLAGS  = -i -Pburlap_yy
 LDFLAGS	= $(LDOPTS)

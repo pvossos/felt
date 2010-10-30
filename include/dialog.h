@@ -27,6 +27,12 @@
 # ifndef _DIALOG_H
 # define _DIALOG_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define Yes	1
 # define No	2
 # define Okay	4
@@ -46,5 +52,11 @@ typedef struct {
     extern Dialog  *CreateDialog  ( );
     extern unsigned PopupDialog   ( );
 # endif
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _DIALOG_H */

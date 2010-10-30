@@ -27,6 +27,9 @@ all::		$(PROG)
 $(PROG)::	$(SRCS) $(OBJS)
 		$(CC) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS)
 
+# use the following if, in the future,  some files are compiled with g++.
+#		$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS)
+
 clean::;	@$(RM) $(OBJS) $(PROG) core
 
 clobber::;	@$(RM) $(OBJS) $(PROG) $(SRCS) core tags

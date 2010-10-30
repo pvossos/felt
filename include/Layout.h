@@ -30,6 +30,12 @@
 #include <X11/Constraint.h>
 #include <X11/Xfuncproto.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 /****************************************************************
  *
  * Layout Widget (SubClass of CompositeClass)
@@ -90,5 +96,11 @@ extern WidgetClass layoutWidgetClass;
 
 typedef struct _LayoutClassRec	*LayoutWidgetClass;
 typedef struct _LayoutRec	*LayoutWidget;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif /* _Layout_h */

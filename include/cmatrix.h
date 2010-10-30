@@ -24,6 +24,12 @@
 # include "complex.h"
 # include "status.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct complex_matrix *ComplexMatrix;
 
 struct complex_matrix {
@@ -249,6 +255,12 @@ int CroutBackSolveComplexMatrix (const ComplexMatrix A, ComplexMatrix b);
   \param a matrix to check for symmetry
 */
 int IsSymmetricComplexMatrix (const ComplexMatrix a);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif	/* _CMATRIX_H */
 

@@ -30,6 +30,12 @@
 # include "Tree.h"
 # include "appearance.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define MaxNodesPerElement 32
 
 
@@ -135,5 +141,11 @@ void detail(const char *format, ...);
 void SetDetailStream(FILE *fp);
 
 FILE* GetDetailStream(void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PROBLEM_H */

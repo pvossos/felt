@@ -28,6 +28,12 @@
 #ifndef DXF_H
 #define DXF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define STRING		0
 # define HEADER		2
 # define LAYER		8
@@ -84,5 +90,11 @@ int WriteDXF3dMeshHeader (int m, int n, char *layer, FILE *output);
 unsigned CheckValidity (unsigned int read, unsigned int wanted);
 
 int WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif

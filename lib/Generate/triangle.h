@@ -245,6 +245,15 @@
 /*                                                                           */
 /*****************************************************************************/
 
+#ifndef TRIANGLE_H
+#define TRIANGLE_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define REAL double
 
 struct triangulateio {
@@ -280,3 +289,11 @@ struct triangulateio {
 
 void triangulate(char *, struct triangulateio *, struct triangulateio *,
                  struct triangulateio *);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
+
+#endif

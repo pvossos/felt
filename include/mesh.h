@@ -28,6 +28,11 @@
 # define _MESH_H
 # include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
 
 typedef enum {
     LinearRule, 
@@ -117,5 +122,11 @@ unsigned
 GenerateTriMesh(TriMesh trimesh, Element **element, Node **node, 
                 unsigned int *numelts, unsigned int *numnodes,
                 unsigned int bnode, unsigned int belement);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _MESH_H */

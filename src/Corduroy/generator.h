@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "mesh.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct {
     char     *filename;			/* file name			*/
     char     *material;			/* material name		*/
@@ -74,5 +80,11 @@ int WriteCorduroyFile (char *filename);
   Looks up an element definition by name.			
 */
 Definition defnlookup(char *name);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _GENERATOR_H */

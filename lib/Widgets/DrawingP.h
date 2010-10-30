@@ -31,6 +31,11 @@
 # include "Figure.h"
 # include <X11/Xaw/SimpleP.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
 
 typedef struct {
     int empty;
@@ -98,5 +103,11 @@ typedef struct _DrawingRec {
     SimplePart		simple;
     DrawingPart		drawing;
 } DrawingRec;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _DrawingP_h */

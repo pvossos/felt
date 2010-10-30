@@ -27,6 +27,18 @@
 # ifndef _post_h
 # define _post_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void AddPostMenuActions(Widget w);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _post_h */

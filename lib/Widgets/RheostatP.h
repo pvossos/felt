@@ -11,6 +11,12 @@
 #ifndef RHEOSTATP_H
 #define RHEOSTATP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct _RheostatClassPart {
     int             hosebrain;
 } RheostatClassPart;
@@ -80,5 +86,11 @@ typedef struct _RheostatRec {
 #   endif
     RheostatPart        rheostat;
 } RheostatRec;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif  /* RHEOSTATP_H */

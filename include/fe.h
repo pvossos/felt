@@ -1,3 +1,4 @@
+
 /*
     This file is part of the FElt finite element analysis package.
     Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
@@ -29,6 +30,11 @@
 # include "code.h"
 # include "matrix.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
 
 # define TINY 1.0e-60
 # define UnspecifiedValue (-99999999)
@@ -635,5 +641,11 @@ int UpdateCoordinates(Matrix d);
 Matrix StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent);
 
 Matrix SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FE_H */

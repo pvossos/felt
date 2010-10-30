@@ -20,6 +20,12 @@
 #ifndef FELTRULES_H
 #define FELTRULES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef double (*RuleFunction) (int, int, double);
 
 RuleFunction AssignRule (Rule type);
@@ -37,5 +43,11 @@ double parabolic_rule (int i, int ne, double L);
 double reverse_log_rule (int i, int ne, double L);
 
 double reverse_parabolic_rule (int i, int ne, double L);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif

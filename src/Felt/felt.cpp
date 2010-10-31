@@ -36,6 +36,7 @@
 # include "definition.h"
 # include "results.h"
 # include "draw.h"
+# include "renumber.hpp"
 
 # define streq(a,b)	!strcmp(a,b)
 

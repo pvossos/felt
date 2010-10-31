@@ -42,6 +42,7 @@
 # include <math.h>
 # include "problem.h"
 # include "allocate.h"
+# include "renumber.hpp"
 
 static int idpth;
 static int *nacum;

@@ -485,13 +485,6 @@ void FindForcedDOF(NodeDOF **forced, unsigned int *numforced);
 int CheckAnalysisParameters(AnalysisType mode);
 
 	/*
-	 * routines for automatic node renumbering in renumber.c
-	 */
-
-unsigned *RenumberNodes	(Node *, Element *, unsigned, unsigned);
-void RestoreNodeNumbers (Node *, unsigned *, unsigned);
-
-	/*
 	 * prototypes of routines in transient.c
 	 */
 

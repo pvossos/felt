@@ -35,6 +35,7 @@
 # include "error.h"
 # include "opengl.h"
 # include "results.h"
+# include "renumber.hpp"
 
 extern ElementDialog element_d;
 extern NodeDialog    node_d;

@@ -25,10 +25,9 @@ include $(TOPDIR)/etc/Makefile.conf
 all::		$(PROG)
 
 $(PROG)::	$(SRCS) $(OBJS)
-		$(CC) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS)
-
+#		$(CC) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS)
 # use the following if, in the future,  some files are compiled with g++.
-#		$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS)
+		$(CXX) -o $(PROG) $(LDFLAGS) $(OBJS) $(LIBS) $(SYSLIBS)
 
 clean::;	@$(RM) $(OBJS) $(PROG) core
 

@@ -39,7 +39,7 @@
 # include "allocate.h"
 # include "definition.h"
 # include "pathsearch.h"
-
+# include "renumber.hpp"
 
 static struct {
     Definition definition;
@@ -51,8 +51,10 @@ static int num_defs;
 
 /* These are only in misc.h. */
 
+extern "C" {
 double ElementArea(Element e, unsigned int n);
 double ElementLength(Element element, unsigned int coords);
+}
 
 /************************************************************************
  * Function:	is_static						*

@@ -50,6 +50,7 @@
 # include "graph.h"
 # include "contour.h"
 # include "results.h"
+# include "renumber.hpp"
 
 typedef int	Boolean;
 
@@ -219,7 +220,7 @@ static void DumpOptions (void)
  * Description:	 							*
  ************************************************************************/
 
-void
+extern "C" void
 ExitLoom(int status)
 {
 

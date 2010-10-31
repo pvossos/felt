@@ -11,7 +11,7 @@
 
 static int args_used = 0;
 
-static int GetArgNumber (int argc, char *argv[], char *name)
+static int GetArgNumber (int argc, char *argv[], const char *name)
 {
    char	buffer [256];
    int	i;
@@ -53,7 +53,7 @@ int ArgsUsed (void)
    return args_used;
 }
 
-int GetIntegerOption(int argc, char **argv, char *name, int **opt)
+int GetIntegerOption(int argc, char **argv, const char *name, int **opt)
 {
    int		n;
    int		c;
@@ -77,7 +77,7 @@ int GetIntegerOption(int argc, char **argv, char *name, int **opt)
    return c;
 }
 
-int GetDoubleOption(int argc, char **argv, char *name, double **opt)
+int GetDoubleOption(int argc, char **argv, const char *name, double **opt)
 {
    int		n;
    int		c;
@@ -101,7 +101,7 @@ int GetDoubleOption(int argc, char **argv, char *name, double **opt)
    return c;
 }
 
-int GetFloatOption(int argc, char **argv, char *name, float **opt)
+int GetFloatOption(int argc, char **argv, const char *name, float **opt)
 {
    int		n;
    int		c;
@@ -125,7 +125,7 @@ int GetFloatOption(int argc, char **argv, char *name, float **opt)
    return c;
 }
 
-int GetBooleanOption(int argc, char **argv, char *name, int *opt)
+int GetBooleanOption(int argc, char **argv, const char *name, int *opt)
 {
    int		n;
    int		c;
@@ -147,7 +147,7 @@ int GetBooleanOption(int argc, char **argv, char *name, int *opt)
    return c;
 }
 
-int GetStringOption(int argc, char **argv, char *name, char ***opt)
+int GetStringOption(int argc, char **argv, const char *name, char ***opt)
 {
    int		n;
    int		c;
@@ -171,7 +171,7 @@ int GetStringOption(int argc, char **argv, char *name, char ***opt)
    return c;
 }
 
-int GetSoloIntegerOption(int argc, char **argv, char *name, int *opt)
+int GetSoloIntegerOption(int argc, char **argv, const char *name, int *opt)
 {
    int		n;
    int		c;
@@ -191,7 +191,7 @@ int GetSoloIntegerOption(int argc, char **argv, char *name, int *opt)
    return c;
 }
 
-int GetSoloFloatOption(int argc, char **argv, char *name, float *opt)
+int GetSoloFloatOption(int argc, char **argv, const char *name, float *opt)
 {
    int		n;
    int		c;
@@ -211,7 +211,7 @@ int GetSoloFloatOption(int argc, char **argv, char *name, float *opt)
    return c;
 }
 
-int GetSoloDoubleOption(int argc, char **argv, char *name, double *opt)
+int GetSoloDoubleOption(int argc, char **argv, const char *name, double *opt)
 {
    int		n;
    int		c;
@@ -231,7 +231,7 @@ int GetSoloDoubleOption(int argc, char **argv, char *name, double *opt)
    return c;
 }
 
-int GetSoloStringOption(int argc, char **argv, char *name, char **opt)
+int GetSoloStringOption(int argc, char **argv, const char *name, char **opt)
 {
    int		n;
    int		c;

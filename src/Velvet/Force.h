@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "Tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct force_dialog *ForceDialog;
 
 typedef struct {
@@ -47,5 +53,11 @@ void ForceDialogUpdate (ForceDialog forced, Tree tree);
 Force ForceDialogActive (ForceDialog forced);
 
 void ForceDialogDisplay (ForceDialog forced, Force force);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Force_h */

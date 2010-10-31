@@ -29,6 +29,12 @@
 # include "descriptor.h"
 # include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int strict_assignment (descriptor *dest, descriptor **src);
 
 int array_assignment (descriptor *dest, descriptor **src);
@@ -36,5 +42,11 @@ int array_assignment (descriptor *dest, descriptor **src);
 int init_felt (int *argc, char **argv);
 
 int read_felt (char *file);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FELT_H */

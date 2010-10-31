@@ -30,6 +30,12 @@
 # define _TRAP_H
 # include "descriptor.h"		/* descriptor type */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef int (*TrapHandler) (descriptor *, descriptor **);
 
 int AddTrap (TrapHandler handler);
@@ -37,5 +43,11 @@ int AddTrap (TrapHandler handler);
 int CallTrap (int index, descriptor *arg1, descriptor **arg2);
 
 int NumTraps (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _TRAP_H */

@@ -27,6 +27,18 @@
 # ifndef _PATHSEARCH_H
 # define _PATHSEARCH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 char *pathsearch (char *path, char *file, const char *suffix, int def_flag);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PATHSEARCH_H */

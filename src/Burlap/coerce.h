@@ -28,6 +28,12 @@
 # define _COERCE_H
 # include "descriptor.h"		/* descriptor type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define CollapseMatrix(d)\
 	(D_Type (d) == T_Matrix || D_Type (d) == T_MatrixPtr ?\
 	CoerceData (d, T_Double) : (d))
@@ -38,5 +44,11 @@
 descriptor *CoerceData (descriptor *d, int type);
 
 descriptor *CoerceToArray (descriptor *d, int type);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _COERCE_H */

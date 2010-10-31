@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "Tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct material_dialog *MaterialDialog;
 
 typedef struct {
@@ -47,5 +53,11 @@ void MaterialDialogUpdate (MaterialDialog materiald, Tree tree);
 Material MaterialDialogActive (MaterialDialog materiald);
 
 void MaterialDialogDisplay (MaterialDialog materiald, Material material);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Material_h */

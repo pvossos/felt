@@ -30,6 +30,12 @@
 # define _CODE_H
 # include "opcodes.h"		/* need Address and Opcode types */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct cs *Code;
 
 typedef union {
@@ -54,5 +60,11 @@ void free_cs (Code cs);
 void reset (void);
 
 Code new_cs (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _CODEGEN_H */

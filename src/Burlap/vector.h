@@ -27,8 +27,20 @@
 # ifndef _VECTOR_H
 # define _VECTOR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int mtx_op (void);
 int range_op (void);
 int row_op   (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _VECTOR_H */

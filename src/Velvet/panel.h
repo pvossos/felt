@@ -27,6 +27,12 @@
 # ifndef _PANEL_H
 # define _PANEL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
     /* Unique ids for each menu item on the control panel */
 
 typedef enum {
@@ -66,5 +72,11 @@ typedef struct {
    char     *name;
    PanelId  id;
 } TextCommand;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PANEL_H */

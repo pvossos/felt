@@ -27,6 +27,12 @@
 # ifndef _ERROR_H
 # define _ERROR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 extern int   curr_line_num;		/* line number during execution	*/
 extern int   curr_file_num;		/* file number during execution	*/
 extern char *curr_file_name;		/* file name during execution	*/
@@ -34,5 +40,11 @@ extern char *curr_file_name;		/* file name during execution	*/
 void rterror (const char *format, ...);
 
 void cterror (const char *format, ...);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _ERROR_H */

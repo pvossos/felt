@@ -20,6 +20,12 @@
 # ifndef _CALLBACKS_H
 # define _CALLBACKS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void ConstraintDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
 void ElementDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
@@ -31,5 +37,11 @@ void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 void MaterialDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
 void NodeDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _CALLBACKS_H */

@@ -27,6 +27,12 @@
 # ifndef _ARITHMETIC_H
 # define _ARITHMETIC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int add_op   (void);
 int bkslv_op (void);
 int div_op   (void);
@@ -38,5 +44,11 @@ int plus_op  (void);
 int pow_op   (void);
 int sub_op   (void);
 int trans_op (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _ARITHMETIC_H */

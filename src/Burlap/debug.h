@@ -27,6 +27,12 @@
 # ifndef _DEBUG_H
 # define _DEBUG_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 extern int  debug;
 extern void eprintf (const char *, ...);
 
@@ -53,5 +59,11 @@ extern void eprintf (const char *, ...);
 # endif /* DEBUG */
 
 # endif /* EXECDEBUG */
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _DEBUG_H */

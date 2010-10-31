@@ -35,6 +35,12 @@
 # ifndef _INTERFACE_H
 # define _INTERFACE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 /* The control panel */
 
 Panel panel [ ] = {
@@ -223,5 +229,11 @@ XtActionsRec actiontable [ ] = {
    {"MenuAction", MenuAction},
    {"SelectGroupAP", SelectGroupAP},
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _INTERFACE_H */

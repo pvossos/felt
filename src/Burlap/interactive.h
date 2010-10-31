@@ -27,8 +27,20 @@
 # ifndef _INTERACTIVE_H
 # define _INTERACTIVE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void init_interactive (char *argv0, char *s_file, int q_flag, int a_flag);
 int readchar (void);
 int print_history (int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _INTERACTIVE_H */

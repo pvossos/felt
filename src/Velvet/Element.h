@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "Tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct element_dialog *ElementDialog;
 
 typedef struct {
@@ -48,5 +54,11 @@ void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tre
 Element ElementDialogActive (ElementDialog eltd);
 
 void ElementDialogDisplay (ElementDialog eltd, Element element);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Element_h */

@@ -27,6 +27,12 @@
 # ifndef _MATRIXFUNC_H
 # define _MATRIXFUNC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int chol_func	(int n);
 int cols_func	(int n);
 int compact_func	(int n);
@@ -41,5 +47,11 @@ int qr_func	(int n);
 int rand_func	(int n);
 int rows_func	(int n);
 int zeros_func	(int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _MATRIXFUNC_H */

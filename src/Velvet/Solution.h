@@ -27,6 +27,12 @@
 # ifndef _Solution_h
 # define _Solution_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct solution_dialog *SolutionDialog;
 
 typedef struct solution {
@@ -69,5 +75,11 @@ SolutionDialog SolutionDialogCreate (Widget parent, String name, String title);
 void SolutionDialogPopup (SolutionDialog solutiond);
 
 void SolutionDialogUpdate (SolutionDialog solutiond);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Solution_h */

@@ -29,6 +29,12 @@
 # define _WRITETAB_H
 # include "descriptor.h"		/* descriptor type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 static void write_null	     (descriptor *);
 static void write_variable   (descriptor *);
 static void write_function   (descriptor *);
@@ -80,5 +86,11 @@ static void (*(writetab [ ])) (descriptor *) = {
     write_stress,	/* T_Stress	*/
     write_external,	/* T_External	*/
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _WRITETAB_H */

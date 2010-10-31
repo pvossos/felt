@@ -27,6 +27,12 @@
 # ifndef _OPCODES_H
 # define _OPCODES_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef enum {
     AddOp,		/* add				*/
     ApplyOp,		/* application			*/
@@ -72,5 +78,11 @@ typedef enum {
 } Opcode;
 
 typedef int Address;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _OPCODES_H */

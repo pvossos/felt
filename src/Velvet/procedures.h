@@ -33,6 +33,12 @@
 #include "Item.h"
 #include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 	/*
  	 * a bunch of routines that I'm too busy to classify
 	 */
@@ -252,5 +258,11 @@ InitializeDrawingShell(Widget shell, Widget dw,
                        Dimension *wx, Dimension *hy);
 
 int  WritePostscriptFigures (Figure *f, unsigned int n, Widget widget, double xmin, double xmax, double ymin, double ymax, char *ps_filename);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PROCEDURES_H */

@@ -29,6 +29,12 @@
 # include "Tree.h"
 # include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct node_dialog *NodeDialog;
 
 typedef struct {
@@ -49,5 +55,11 @@ void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constrain
 Node NodeDialogActive (NodeDialog noded);
 
 void NodeDialogDisplay (NodeDialog noded, Node node);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Node_h */

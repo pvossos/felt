@@ -29,6 +29,12 @@
 # include "Tree.h"
 # include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct constraint_dialog *ConstraintDialog;
 
 typedef struct {
@@ -48,5 +54,11 @@ void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree);
 Constraint ConstraintDialogActive (ConstraintDialog constraintd);
 
 void ConstraintDialogDisplay (ConstraintDialog constraintd, Constraint constraint);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Constraint_h */

@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "Tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct loadcase_dialog *LoadCaseDialog;
 
 LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title);
@@ -40,5 +46,11 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree,
 LoadCase LoadCaseDialogActive (LoadCaseDialog loadcased);
 
 void LoadCaseDialogDisplay (LoadCaseDialog loadcased, LoadCase loadcase);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _LoadCase_h */

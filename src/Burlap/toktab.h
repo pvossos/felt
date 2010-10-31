@@ -32,6 +32,12 @@
 # include "descriptor.h"	/* need descriptor definition for %union */
 # include "y.tab.h"		    /* need BREAK for table offset		 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 static struct {
     char begin;
     char end;
@@ -82,5 +88,11 @@ static struct {
     {1, 1},	/* NUMLIT   */
     {1, 1},	/* CONSTANT */
 }, *toktab = _toktab - BREAK;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _TOKTAB_H */

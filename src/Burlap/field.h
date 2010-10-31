@@ -29,8 +29,20 @@
 # define _FIELD_H
 # include "trap.h"			/* TrapHandler type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void add_field (int rtype, const char *name, int ftype, unsigned int offset, TrapHandler handler);
 
 int field_op (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FIELD_H */

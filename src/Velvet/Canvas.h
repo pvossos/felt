@@ -27,6 +27,12 @@
 # ifndef _Canvas_h
 # define _Canvas_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct canvas_dialog *CanvasDialog;
 
 typedef struct canvas {
@@ -55,5 +61,11 @@ CanvasDialog CanvasDialogCreate (Widget parent, Widget dw, String name, String t
 void CanvasDialogPopup (CanvasDialog canvasd);
 
 void CanvasDialogSet (CanvasDialog canvasd);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Canvas_h */

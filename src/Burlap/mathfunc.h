@@ -27,6 +27,12 @@
 # ifndef _MATHFUNC_H
 # define _MATHFUNC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int ceil_func  (int n);
 int cos_func   (int n);
 int exp_func   (int n);
@@ -40,5 +46,11 @@ int pow_func   (int n);
 int sin_func   (int n);
 int sqrt_func  (int n);
 int tan_func   (int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _MATHFUNC_H */

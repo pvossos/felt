@@ -27,6 +27,12 @@
 # ifndef _Wireframe_h
 # define _Wireframe_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct wireframe_dialog *WireframeDialog;
 
 WireframeDialog WireframeDialogCreate (Widget parent, String name, String title);
@@ -34,5 +40,11 @@ WireframeDialog WireframeDialogCreate (Widget parent, String name, String title)
 void WireframeDialogPopup (WireframeDialog wireframed);
 
 void WireframeDialogUpdate (WireframeDialog wireframed);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Wireframe_h */

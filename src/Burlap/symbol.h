@@ -29,6 +29,12 @@
 # define _SYMBOL_H
 # include "opcodes.h"		/* Opcode type		 */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define ST_SIZE 211
 
 typedef struct ste {
@@ -55,5 +61,11 @@ char **st_names (st *table);
 void st_init (st *table);
 
 void st_fini (st *table);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _SYMBOL_H */

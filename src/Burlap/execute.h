@@ -30,6 +30,12 @@
 # include "globals.h"		/* global variable array declaration */
 # include "descriptor.h"	/* Code and descriptor types	     */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define top()		sp
 # define pop()		sp --
 # define push()		++ sp
@@ -70,5 +76,11 @@ void TypeError (const char *op, const descriptor *a, const descriptor *b, const 
 void MatrixError (const char *op, const Matrix a, const Matrix b, int s, int is_func);
 
 void MathException (const char *s);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _EXECUTE_H */

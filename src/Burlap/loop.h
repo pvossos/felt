@@ -29,6 +29,12 @@
 # define _LOOP_H
 # include "opcodes.h"			/* Address type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct loop_node_  *loop_node;
 typedef struct break_node_ *break_node;
 
@@ -37,5 +43,11 @@ void end_break (int type, loop_node lnode);
 void enter_loop (int type);
 void exit_loop (Address start, Address end);
 void exit_all (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _LOOP_H */

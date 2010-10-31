@@ -27,9 +27,21 @@
 # ifndef _ASSIGNMENT_H
 # define _ASSIGNMENT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int asgn_op (void);
 int copy_op (void);
 int pop_op  (void);
 int test_op (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _ASSIGNMENT_H */

@@ -1543,7 +1543,6 @@ int remove_constrained_func (int n)
 
 int renumber_nodes_func (int n)
 {
-    unsigned   *v;
     unsigned	num_elts;
     unsigned	num_nodes;
     descriptor *result;
@@ -1558,7 +1557,9 @@ int renumber_nodes_func (int n)
 
     num_elts = problem.num_elements;
     num_nodes = problem.num_nodes;
-    v = RenumberNodes (problem.nodes, problem.elements, num_nodes, num_elts);
+    
+    cvector1u cv = RenumberNodes (problem.nodes, problem.elements, num_nodes, num_elts);
+    unsigned  *v = cv.release1();
 
     result = push ( );
     handler = AddTrap (strict_assignment);

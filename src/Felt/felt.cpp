@@ -170,7 +170,7 @@ int main (int argc, char *argv[])
     unsigned	  numreactions;		/* the number of reactions	*/
     Matrix	  dtable;		/* time-displacement table	*/
     Matrix	  ttable;		/* time step table		*/
-    unsigned	 *old_numbers;		/* original node numbering	*/
+    cvector1u old_numbers;		/* original node numbering	*/
     AnalysisType  mode;			/* current analysis type	*/
 
         /*
@@ -241,10 +241,8 @@ int main (int argc, char *argv[])
 	 * renumber the nodes if desired
 	 */
 
-    old_numbers = NULL;
-
     if (renumber) 
-	old_numbers = RenumberNodes (problem.nodes, problem.elements, 
+        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
                                      problem.num_nodes, problem.num_elements);
 
 	/*
@@ -278,8 +276,7 @@ int main (int argc, char *argv[])
           else
              dtable = RosenbrockHyperbolicDE (K, M, C, &ttable);
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (dtable == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
@@ -316,8 +313,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (dotable)
              WriteTransientTable (dtable, NullMatrix, stdout);
@@ -351,10 +347,9 @@ int main (int argc, char *argv[])
           if (status) 
              Fatal ("%d Fatal errors found computing element stresses", status);
     
-          numreactions = SolveForReactions (K, d, old_numbers, &R);
+          numreactions = SolveForReactions (K, d, old_numbers.c_ptr1(), &R);
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           WriteStructuralResults (stdout, title, R, numreactions);
 
@@ -388,8 +383,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (dotable)
              if (mode == StaticLoadCases)
@@ -426,8 +420,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
                 
           if (dotable)
              WriteLoadRangeTable (dtable, stdout);
@@ -457,8 +450,7 @@ int main (int argc, char *argv[])
           if (d == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
                 
           WriteStructuralResults (stdout, title, NULL, 0);
 
@@ -485,8 +477,7 @@ int main (int argc, char *argv[])
           if (d == NullVector)
              exit (1);
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           WriteTemperatureResults (stdout, title);
 
@@ -562,8 +553,7 @@ int main (int argc, char *argv[])
                 break; 
           }
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (!dospectra) {
              if (dotable)

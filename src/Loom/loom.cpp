@@ -262,7 +262,7 @@ int main (int argc, char **argv)
     Reaction	 *R;			/* reaction force vector	*/
     unsigned	 numreactions;		/* the number of reactions	*/
     Matrix	 dtable;		/* time-displacement table	*/
-    unsigned	 *old_numbers;		/* original node numbering	*/
+    cvector1u    old_numbers;		/* original node numbering	*/
     AnalysisType mode;
 
 
@@ -364,10 +364,8 @@ int main (int argc, char **argv)
 	 * renumber the nodes if desired
 	 */
 
-    old_numbers = NULL;
-
     if (renumber) 
-	old_numbers = RenumberNodes (problem.nodes, problem.elements, 
+        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
                                      problem.num_nodes, problem.num_elements);
 
 	/*
@@ -455,10 +453,9 @@ int main (int argc, char **argv)
           if (status) 
              Fatal ("%d Fatal errors found computing element stresses", status);
 
-          numreactions = SolveForReactions (K, d, old_numbers, &R);
+          numreactions = SolveForReactions (K, d, old_numbers.c_ptr1(), &R);
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (table)
              WriteStructuralResults (fp_out, title, R, numreactions);
@@ -504,8 +501,7 @@ int main (int argc, char **argv)
           if (d == NullVector)
              Fatal("could not solve for displacements, probably a singularity");
 
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (table)
              WriteTemperatureResults (fp_out, title);
@@ -546,8 +542,7 @@ int main (int argc, char **argv)
           if (dtable == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (table)
              if (mode == StaticLoadCases)
@@ -581,8 +576,7 @@ int main (int argc, char **argv)
           if (dtable == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
                 
           if (table)
              WriteLoadRangeTable (dtable, fp_out);
@@ -612,8 +606,7 @@ int main (int argc, char **argv)
           if (d == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          if (old_numbers != NULL)
-             RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
                 
           if (table)
              WriteStructuralResults (fp_out, title, NULL, 0);

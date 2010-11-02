@@ -132,7 +132,7 @@ int SolveProblem (void)
     unsigned	 numreactions;		/* the number of reactions	*/
     char	*temp_out;
     FILE	*output;
-    unsigned	*old_numbers;
+    cvector1u	old_numbers;
     Matrix	 dtable;
     Matrix	 ttable;
     int		 error_flag;
@@ -210,9 +210,7 @@ int SolveProblem (void)
     FindDOFS ( );
 
     if (solution -> renumber)
-       old_numbers = RenumberNodes (node, element, numnodes, numelts);
-    else
-       old_numbers = NULL;
+        old_numbers = RenumberNodes (node, element, numnodes, numelts);
 
     error_flag = 0;
 
@@ -254,8 +252,7 @@ int SolveProblem (void)
           break;
        }
       
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (node, old_numbers, numnodes);
+       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
        
        WriteTransientTable (dtable, ttable, output);
 
@@ -295,8 +292,7 @@ int SolveProblem (void)
        if (!solution -> transfer)
           S = ComputeOutputSpectra (H, forced, numforced);
 
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (node, old_numbers, numnodes);
+       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
        
        if (solution -> transfer) {
           WriteTransferFunctions (H, forced, numforced, output);
@@ -346,7 +342,7 @@ int SolveProblem (void)
           break;
        }    
 
-       numreactions = SolveForReactions (K, d, old_numbers, &R);
+       numreactions = SolveForReactions (K, d, old_numbers.c_ptr1(), &R);
 
        status = ElementStresses ( );
        if (status) {
@@ -355,8 +351,7 @@ int SolveProblem (void)
           break;
         }   
 
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (node, old_numbers, numnodes);
+       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
 
        WriteStructuralResults (output, solution -> title, R, numreactions);
 
@@ -403,8 +398,7 @@ int SolveProblem (void)
           break;
        }    
          
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
        if (mode == StaticLoadCases)
           WriteLoadCaseTable (dtable, output);
@@ -446,8 +440,7 @@ int SolveProblem (void)
           break;
        }    
          
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
        WriteLoadRangeTable (dtable, output);
 
@@ -485,8 +478,7 @@ int SolveProblem (void)
           break;
        }    
         
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (problem.nodes, old_numbers, problem.num_nodes);
+       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
        WriteStructuralResults (output, solution -> title, NULL, 0);
 
@@ -539,8 +531,7 @@ int SolveProblem (void)
           WriteModalResults (output, Mm, Cm, Km, lambda);
        }
 
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (node, old_numbers, numnodes);
+       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
                     
        break;
 
@@ -574,8 +565,7 @@ int SolveProblem (void)
           break;
        }
       
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (node, old_numbers, numnodes);
+       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
 
        WriteTransientTable (dtable, NullMatrix, output);
 
@@ -606,16 +596,15 @@ int SolveProblem (void)
           break;
        }    
 
-       if (old_numbers != NULL)
-          RestoreNodeNumbers (node, old_numbers, numnodes);
+       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
 
        WriteTemperatureResults (output, problem.title);
 
        break;
     }
    
-    if (error_flag && old_numbers != NULL)
-       RestoreNodeNumbers (node, old_numbers, numnodes);
+    if (error_flag && !old_numbers.empty())
+        RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
     
     if (!error_flag && solution -> summary)
        WriteMaterialStatistics (output);
@@ -657,11 +646,6 @@ int SolveProblem (void)
        DestroyVector (Fcond);
     else if (d != NullVector) 
        DestroyVector (d);
-
-    if (old_numbers) {
-       ZeroOffset (old_numbers); 
-       Deallocate (old_numbers);
-    }
 
     fclose (output);
    
@@ -771,7 +755,7 @@ void SetupAnimate (void)
     Matrix		M, C, K;
     unsigned		numnodes, numelts;
     Matrix		dtable;
-    unsigned		*old_numbers;
+    cvector1u	old_numbers;
     Node		*anodes;
     char		adofs [7];
     unsigned		anumnodes;
@@ -835,10 +819,8 @@ void SetupAnimate (void)
 
 
     if (solution -> renumber)
-       old_numbers = RenumberNodes (problem.nodes, problem.elements, 
-                                    numnodes, numelts);
-    else
-       old_numbers = NULL;
+        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
+                                     numnodes, numelts);
 
     K = M = C = dtable = NullMatrix;
  
@@ -862,8 +844,7 @@ void SetupAnimate (void)
           AnimateStructure (dtable, problem.nodes, problem.elements,
                             numnodes, numelts);
 
-       if (old_numbers)
-          RestoreNodeNumbers (problem.nodes, old_numbers, numnodes);
+       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), numnodes);
     }
 
     analysis.nodes = anodes;
@@ -873,11 +854,6 @@ void SetupAnimate (void)
     for (i = 1 ; i <= analysis.numdofs ; i++) 
        analysis.dofs [i] = adofs [i];
 
-    if (old_numbers) {
-       ZeroOffset (old_numbers);
-       Deallocate (old_numbers);
-    }
-      
     if (K != NullMatrix) 
        DestroyVector (K);
     if (M != NullMatrix) 
@@ -1081,8 +1057,8 @@ void OptimizeNumbering (void)
     for (i = 1 ; i <= numnodes ; i++) 
        TreeDelete (problem.node_tree, problem.nodes [i]);
 
-    (unsigned *) RenumberNodes (problem.nodes, problem.elements, 
-                                numnodes, numelts);
+    RenumberNodes (problem.nodes, problem.elements, 
+                   numnodes, numelts);
 
     DW_SetAutoRedraw (drawing, False);
     for (i = 1 ; i <= numnodes ; i++) {

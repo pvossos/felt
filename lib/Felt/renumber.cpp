@@ -38,54 +38,59 @@
  *		
  ************************************************************************/
 
+# include <vector>
 # include <stdio.h>
 # include <math.h>
 # include "problem.h"
-# include "allocate.h"
 # include "renumber.hpp"
+# include "cvector1.hpp"
+
+using std::vector;
 
 static int idpth;
-static int *nacum;
-static int *nhigh;
-static int *nlow;
+static cvector1i nacum;
+static cvector1i nhigh;
+static cvector1i nlow;
 
-static unsigned *Reduce (unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof);
+static cvector1u Reduce (vector<cvector1u> &ndstk, const unsigned *nd_degrees, unsigned *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof);
 static int      SortBySize (int *size, int *stpt, int xc);
-static int	 FindDiameter (int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst);
-static void     PickLevel(int *lvls1, int *lvls2, int *ccstor, int idflt, int *isdir, int xc, int *size, int *stpt);
-static void     SortByDegree(int *stk1, int *stk2, int *x1, int x2, unsigned int *nd_degrees);
+static int	 FindDiameter (int *snd1, int *snd2, vector<cvector1u> &ndstk, unsigned int numnodes, const unsigned *nd_degrees,
+                           int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst);
+static void     PickLevel(int *lvls1, int *lvls2, int *ccstor, int idflt, int *isdir, int xc,
+                          int *size, int *stpt);
+static void     SortByDegree(int *stk1, int *stk2, int *x1, int x2, const unsigned *nd_degrees);
 static void     SetupLevels (int *lvl, int *lvls1, int *lvls2, unsigned int numnodes);
-static void     ProduceNumbering (int snd, int *num, unsigned int **ndstk, int *lvls2, unsigned int *nd_degrees, unsigned int *renum, int *lvlst, int *lstpt, unsigned int numnodes, int nflg, int *ibw2, int *ipf2, int *ipfa, int isdir, unsigned int ideg, int *stkd);
-static void     ReduceProfile (unsigned int numnodes, unsigned int **ndstk, unsigned int *new_numbers, unsigned int *nd_degrees, int *lvls2, int *lvlst, int *lstpt, int *nxtnum, int *conect, int *smlst);
-static int      MinimumConnection (int *x, int xsze, int *y, int ysze, int *conlst, int *consze, unsigned int **ndstk, unsigned int *nd_degrees, int *smlst);
+static void     ProduceNumbering (int snd, int *num, vector<cvector1u> &ndstk, int *lvls2, const unsigned *nd_degrees,
+                                  unsigned *renum, int *lvlst, int *lstpt, unsigned int numnodes,
+                                  int nflg, int *ibw2, int *ipf2, int *ipfa, int isdir, unsigned int ideg, int *stkd);
+static void     ReduceProfile (unsigned int numnodes, vector<cvector1u> &ndstk, unsigned *new_numbers, const unsigned *nd_degrees,
+                               int *lvls2, int *lvlst, int *lstpt, int *nxtnum, int *conect, int *smlst);
+static int      MinimumConnection (int *x, int xsze, int *y, int ysze, int *conlst, int *consze, vector<cvector1u> &ndstk, 
+                                   const unsigned *nd_degrees, int *smlst);
 static void     DeleteGraphElement (int *set, int *setsze, int elemnt);
 static void     FormLevel (int *set, int *setsze, int *lstpt, int *lvlst, int level);
-static void     CheckReverse (int *bestbw, int *bestpf, unsigned int *new_numbers, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *iwk);
-static void     ComputeBandwidth (unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *old_numbers, int *ibw1, int *ipf1);
-static void     DropTree (int iroot, unsigned int **ndstk, int *lvl, int *iwk, unsigned int *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort);
+static void     CheckReverse (int *bestbw, int *bestpf, unsigned *new_numbers, vector<cvector1u> &ndstk, unsigned int numnodes,
+                              const unsigned *nd_degrees, unsigned *iwk);
+static void     ComputeBandwidth (vector<cvector1u> &ndstk, unsigned int numnodes,
+                                  const unsigned *nd_degrees, const unsigned *old_numbers, int *ibw1, int *ipf1);
+static void     DropTree (int iroot, vector<cvector1u> &ndstk, int *lvl, int *iwk, 
+                          const unsigned *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort);
 
 void
-RestoreNodeNumbers(Node *node, unsigned int *old_numbers, unsigned int numnodes)
+RestoreNodeNumbers(Node *node, unsigned *old_numbers, unsigned int numnodes)
 {
-   unsigned	i;
+   if (!(old_numbers != NULL))
+       return;
 
-   if (old_numbers == NULL)
-      return;
-
-   for (i = 1 ; i <= numnodes ; i++)
+   for (size_t i = 1 ; i <= numnodes ; i++)
       node [i] -> number = old_numbers [i]; 
 
    return;
 }
 
-unsigned*
+cvector1u
 RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
-   unsigned	*old_numbers;
-   unsigned	*new_numbers;
-   unsigned	**ndstk;
-   unsigned	*nd_degrees;
-   char		*flags;
    char		flag;
    unsigned	i,j;
    unsigned	size_deg;
@@ -95,23 +100,19 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
    unsigned	n;
    unsigned	number;
 
-   old_numbers = Allocate (unsigned, numnodes);
-   UnitOffset (old_numbers);
+   cvector1u old_numbers(numnodes);
    for (i = 1 ; i <= numnodes ; i++)
       old_numbers [i] = node [i] -> number;
 
-   flags = Allocate (char, numnodes);
-   UnitOffset (flags);
+   cvector1<char> flags(numnodes);
 
-   nd_degrees = Allocate (unsigned, numnodes); 
-   UnitOffset (nd_degrees);
+   cvector1<unsigned> nd_degrees(numnodes);
 
-   ndstk = Allocate (unsigned *, numnodes);
-   UnitOffset (ndstk);
-   for (i = 1 ; i <= numnodes ; i++) {
-      ndstk [i] = Allocate (unsigned, 10);
-      UnitOffset (ndstk [i]);
-   }
+   // this struct is quite weird, so it's simpler to waste one empty
+   // cvector1u for simplicity.
+   vector<cvector1u> ndstk(numnodes+1);
+   for (i = 1 ; i <= numnodes ; i++)
+       ndstk[i] = cvector1u(10);
 
 	/*
 	 * these need to be dimensioned to the maximum
@@ -119,9 +120,9 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
 	 * levels
 	 */
 
-   nacum = Allocate (int, numnodes); UnitOffset (nacum);
-   nhigh = Allocate (int, numnodes); UnitOffset (nhigh);
-   nlow = Allocate (int, numnodes); UnitOffset (nlow); 
+   nacum.resize(numnodes);
+   nhigh.resize(numnodes);
+   nlow.resize(numnodes);
 
 	/* 
 	 * form the connectivity table, ndstk, from the node and 
@@ -155,9 +156,7 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
                   degree ++;
                   if (degree > size_deg) {
                      size_deg += 10;
-                     ZeroOffset (ndstk [number]);
-                     ndstk[number] = Reallocate(ndstk[number],unsigned,size_deg);
-                     UnitOffset (ndstk [number]);
+                     ndstk[number].resize(size_deg);
                   } 
  
                   ndstk [number][degree] = connect;
@@ -176,7 +175,7 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
 	 * call the main renumbering routine
 	 */
                
-   new_numbers = Reduce (ndstk,nd_degrees,old_numbers,numnodes,max_degree,1);
+   cvector1u new_numbers = Reduce (ndstk,nd_degrees.c_ptr1(),old_numbers.c_ptr1(),numnodes,max_degree,1);
 
 	/*
 	 * Renumber the nodes and free the new_numbers array if we got
@@ -187,47 +186,25 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
 	 * has been done.
 	 */
 
-   if (new_numbers != NULL) {
+   if (!new_numbers.empty()) {
       for (i = 1 ; i <= numnodes ; i++) 
          node[i] -> number = new_numbers [i];
-   }
-   else {
-      ZeroOffset (old_numbers); Deallocate (old_numbers);
-      old_numbers = NULL;
-   }
-      
-
-	/*
-	 * free the memory that we don't need anymore
-	 */
-
-   ZeroOffset (new_numbers); Deallocate (new_numbers);
-   ZeroOffset (flags); Deallocate (flags);
-   ZeroOffset (nd_degrees); Deallocate (nd_degrees);
-
-   for (i = 1 ; i <= numnodes ; i++) {
-      ZeroOffset (ndstk [i]); 
-      Deallocate (ndstk [i]);
+   } else {
+       old_numbers.resize(0);
    }
    
-   ZeroOffset (ndstk); Deallocate (ndstk);
-
-   ZeroOffset (nacum); Deallocate (nacum);
-   ZeroOffset (nhigh); Deallocate (nhigh);
-   ZeroOffset (nlow); Deallocate (nlow);
+   // not strictly necessary, but free up some space till next call
+   nacum.resize(0);
+   nhigh.resize(0);
+   nlow.resize(0);
 
    return old_numbers;
 }
 
-static unsigned*
-Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof)
+static cvector1u
+Reduce(vector<cvector1u> &ndstk, const unsigned *nd_degrees, unsigned *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof)
 {
    unsigned	i;
-   unsigned	*new_numbers;
-   int		*lvl,*lvls1,*lvls2;
-   int		*ccstor;
-   int		*stpt, *size;
-   unsigned	*iwk;
    unsigned	flag;
    int		stnode, rvnode, xc,
 		stnum, sbnum;
@@ -238,40 +215,28 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
    int		lroot;
    int		lvln, lvlwth, lvlbot, maxlw;
    int		idflt,lowdg;
-   int		*ccblock;
 
-   new_numbers = Allocate (unsigned, numnodes+1);
-   UnitOffset (new_numbers);
-
-   ccstor = Allocate (int, numnodes);
-   UnitOffset (ccstor);
-
-   lvl = Allocate (int, numnodes+1);
-   lvls1 = Allocate (int, numnodes);
-   lvls2 = Allocate (int, numnodes);
-   UnitOffset (lvl);
-   UnitOffset (lvls1);
-   UnitOffset (lvls2);
+   cvector1u new_numbers(numnodes+1);
+   cvector1i ccstor(numnodes);
+   cvector1i lvl(numnodes+1);
+   cvector1i lvls1(numnodes);
+   cvector1i lvls2(numnodes);
 
 	/*
 	 * these are working arrays that other routines will need
 	 */
 
-   iwk = Allocate (unsigned, numnodes); 
-   UnitOffset (iwk);
-   ccblock = Allocate (int, numnodes);
-   UnitOffset (ccblock);
+   cvector1u iwk(numnodes);
+   cvector1i ccblock(numnodes);
 
 	/*
 	 * these need to be as large as the number of connected components;
 	 * there shouldn't be more than numnodes components
 	 */
 
-   stpt = Allocate (int, numnodes);
-   size = Allocate (int, numnodes);
-   UnitOffset (stpt);
-   UnitOffset (size);
-    
+   cvector1i stpt(numnodes);
+   cvector1i size(numnodes);
+
    ibw2 = ipf2 = 0;
 
    for (i = 1 ; i <= numnodes ; i++)
@@ -303,7 +268,7 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
       }
 
       idflt = FindDiameter (&stnode, &rvnode, ndstk, numnodes, nd_degrees, 
-                            lvl, lvls1, lvls2, ccstor, ccblock);
+                            lvl.c_ptr1(), lvls1.c_ptr1(), lvls2.c_ptr1(), ccstor.c_ptr1(), ccblock.c_ptr1());
 
       if (!prof) {
          if (nd_degrees [stnode] > nd_degrees [rvnode]) {
@@ -312,7 +277,7 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
          }
       }
 
-      SetupLevels (lvl, lvls1, lvls2, numnodes);
+      SetupLevels (lvl.c_ptr1(), lvls1.c_ptr1(), lvls2.c_ptr1(), numnodes);
 
       xc = 0;
       lroot = 1;
@@ -323,7 +288,7 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
       
          xc++;
          stpt [xc] = lroot;
-         DropTree (i, ndstk, lvl, ccstor, nd_degrees, 
+         DropTree (i, ndstk, lvl.c_ptr1(), ccstor.c_ptr1(), nd_degrees, 
                    &lvlwth, &lvlbot, &lvln, &maxlw, numnodes);
 
          size [xc] = lvlbot + lvlwth - lroot;
@@ -331,23 +296,23 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
          lvln = lroot;
       }
 
-      if (SortBySize (size, stpt, xc) != 0) 
-         PickLevel (lvls1, lvls2, ccstor, idflt, &isdir, xc, size, stpt);
+      if (SortBySize (size.c_ptr1(), stpt.c_ptr1(), xc) != 0) 
+          PickLevel (lvls1.c_ptr1(), lvls2.c_ptr1(), ccstor.c_ptr1(), idflt, &isdir, xc, size.c_ptr1(), stpt.c_ptr1());
 
       isdir *= nflg;
       num = sbnum;
    
       if (prof) {
-         ReduceProfile (numnodes, ndstk, new_numbers, nd_degrees,
-                           lvls2, lvls1, lvl, &num, ccblock, ccstor);
+          ReduceProfile (numnodes, ndstk, new_numbers.c_ptr1(), nd_degrees,
+                         lvls2.c_ptr1(), lvls1.c_ptr1(), lvl.c_ptr1(), &num, ccblock.c_ptr1(), ccstor.c_ptr1());
 
          sbnum = num;
 
          if (sbnum <= stnum)
             continue; 
 
-         CheckReverse (&ibw2, &ipf2, new_numbers, ndstk, 
-                       numnodes, nd_degrees, iwk);
+         CheckReverse (&ibw2, &ipf2, new_numbers.c_ptr1(), ndstk, 
+                       numnodes, nd_degrees, iwk.c_ptr1());
 
          flag = 0;
       }
@@ -355,9 +320,9 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
          if (isdir < 0)
             num = stnum;
 
-         ProduceNumbering (stnode, &num, ndstk, lvls2, nd_degrees, new_numbers,
-                           lvls1,lvl,numnodes,nflg,&ibw2,&ipf2,ccstor,isdir,
-                           max_degree,ccblock);
+         ProduceNumbering (stnode, &num, ndstk, lvls2.c_ptr1(), nd_degrees, new_numbers.c_ptr1(),
+                           lvls1.c_ptr1(), lvl.c_ptr1(), numnodes,nflg,&ibw2,&ipf2,ccstor.c_ptr1(),isdir,
+                           max_degree,ccblock.c_ptr1());
 
          if (isdir < 0)
             stnum = num;
@@ -374,23 +339,14 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
    detail ("Final Bandwidth   = %d",ibw2);
    detail ("Final Profile     = %d",ipf2);
 
-   ZeroOffset (lvl); Deallocate (lvl);
-   ZeroOffset (lvls1); Deallocate (lvls1);
-   ZeroOffset (lvls2); Deallocate (lvls2);
-   ZeroOffset (stpt); Deallocate (stpt);
-   ZeroOffset (size); Deallocate (size);
-   ZeroOffset (ccstor); Deallocate (ccstor);
-   ZeroOffset (iwk); Deallocate (iwk);
-   ZeroOffset (ccblock); Deallocate (ccblock);
-
    if ((!prof && ibw2 < ibw1) || (prof && ipf2 < ipf1))
       return new_numbers;
    else 
-      return NULL;
+      return cvector1u(0);
 }
 
 static void
-ComputeBandwidth(unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *old_numbers, int *ibw1, int *ipf1)
+ComputeBandwidth(vector<cvector1u> &ndstk, unsigned int numnodes, const unsigned *nd_degrees, const unsigned *old_numbers, int *ibw1, int *ipf1)
 {
    unsigned	i,j;
    int		itst,idif,irw;
@@ -417,7 +373,8 @@ ComputeBandwidth(unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_d
 }
 
 static int
-FindDiameter(int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst)
+FindDiameter(int *snd1, int *snd2, vector<cvector1u> &ndstk, unsigned int numnodes, const unsigned *nd_degrees, 
+             int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst)
 {
    int		idflt;
    int		snd, mtw1, mtw2;
@@ -506,7 +463,8 @@ FindDiameter(int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, 
 }
 
 static void
-DropTree(int iroot, unsigned int **ndstk, int *lvl, int *iwk, unsigned int *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort)
+DropTree(int iroot, vector<cvector1u> &ndstk, int *lvl, int *iwk,
+         const unsigned *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort)
 {
    unsigned	j;
    int		itop; 
@@ -559,7 +517,7 @@ DropTree(int iroot, unsigned int **ndstk, int *lvl, int *iwk, unsigned int *nd_d
 }
   
 static void
-SortByDegree(int *stk1, int *stk2, int *x1, int x2, unsigned int *nd_degrees)
+SortByDegree(int *stk1, int *stk2, int *x1, int x2, const unsigned *nd_degrees)
 {
        
    int		ind, istk2, jstk2;
@@ -738,7 +696,9 @@ PickLevel(int *lvls1, int *lvls2, int *ccstor, int idflt, int *isdir, int xc, in
 }
 
 static void
-ProduceNumbering(int snd, int *num, unsigned int **ndstk, int *lvls2, unsigned int *nd_degrees, unsigned int *renum, int *lvlst, int *lstpt, unsigned int numnodes, int nflg, int *ibw2, int *ipf2, int *ipfa, int isdir, unsigned int ideg, int *stkd)
+ProduceNumbering(int snd, int *num, vector<cvector1u> &ndstk, int *lvls2, const unsigned *nd_degrees, 
+                 unsigned *renum, int *lvlst, int *lstpt, unsigned int numnodes,
+                 int nflg, int *ibw2, int *ipf2, int *ipfa, int isdir, unsigned int ideg, int *stkd)
 {
    int		*stka, *stkb, *stkc;
    int 		xa, xb, xc, xd, cx;
@@ -749,9 +709,9 @@ ProduceNumbering(int snd, int *num, unsigned int **ndstk, int *lvls2, unsigned i
    unsigned	i,j;
    int 		max;
 
-   stka = nhigh;
-   stkb = nlow;
-   stkc = nacum;
+   stka = nhigh.c_ptr1();
+   stkb = nlow.c_ptr1();
+   stkc = nacum.c_ptr1();
 
    for (i = 1 ; i <= numnodes ; i++)
       ipfa [i] = 0;
@@ -885,7 +845,8 @@ ProduceNumbering(int snd, int *num, unsigned int **ndstk, int *lvls2, unsigned i
 }
 
 static void
-ReduceProfile(unsigned int numnodes, unsigned int **ndstk, unsigned int *new_numbers, unsigned int *nd_degrees, int *lvls2, int *lvlst, int *lstpt, int *nxtnum, int *conect, int *smlst)
+ReduceProfile(unsigned int numnodes, vector<cvector1u> &ndstk, unsigned *new_numbers, const unsigned *nd_degrees,
+              int *lvls2, int *lvlst, int *lstpt, int *nxtnum, int *conect, int *smlst)
 {
    int		*s2,*s3,*q;
    int		s2sze, s3sze, qptr, consze;
@@ -896,9 +857,9 @@ ReduceProfile(unsigned int numnodes, unsigned int **ndstk, unsigned int *new_num
    int		iq, ns2;
    int		m;
 
-   s2 = nhigh;
-   s3 = nlow;
-   q = nacum;
+   s2 = nhigh.c_ptr1();
+   s3 = nlow.c_ptr1();
+   q = nacum.c_ptr1();
 
    nstpt = 1;
    for (i = 1 ; i <= idpth ; i++) {
@@ -984,7 +945,8 @@ ReduceProfile(unsigned int numnodes, unsigned int **ndstk, unsigned int *new_num
 }
          
 static int
-MinimumConnection(int *x, int xsze, int *y, int ysze, int *conlst, int *consze, unsigned int **ndstk, unsigned int *nd_degrees, int *smlst)
+MinimumConnection(int *x, int xsze, int *y, int ysze, int *conlst, int *consze, vector<cvector1u> &ndstk,
+                  const unsigned *nd_degrees, int *smlst)
 {
    unsigned	i,j,k;
    int		ix;
@@ -1081,7 +1043,8 @@ FormLevel(int *set, int *setsze, int *lstpt, int *lvlst, int level)
 }   
      
 static void
-CheckReverse(int *bestbw, int *bestpf, unsigned int *new_numbers, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *iwk)
+CheckReverse(int *bestbw, int *bestpf, unsigned *new_numbers, vector<cvector1u> &ndstk, unsigned int numnodes, 
+             const unsigned *nd_degrees, unsigned *iwk)
 {
    unsigned	i;
    int		rev_bw, rev_pf;

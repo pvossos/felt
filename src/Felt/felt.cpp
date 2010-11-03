@@ -34,7 +34,7 @@
 # include "allocate.h"
 # include "version.h"
 # include "definition.h"
-# include "results.h"
+# include "results.hpp"
 # include "draw.h"
 # include "renumber.hpp"
 

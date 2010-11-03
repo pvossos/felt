@@ -38,7 +38,7 @@
 # include "fe.h"
 # include "error.h"
 
-Matrix ZeroRowCol(Matrix K, unsigned int dof);
+extern "C" Matrix ZeroRowCol(Matrix K, unsigned int dof);
 
 int
 FindDOFS(void)

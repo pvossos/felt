@@ -34,7 +34,7 @@
 # include "procedures.h"
 # include "error.h"
 # include "opengl.h"
-# include "results.h"
+# include "results.hpp"
 # include "renumber.hpp"
 
 extern ElementDialog element_d;

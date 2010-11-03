@@ -28,14 +28,13 @@
 
 # include <stdio.h>
 # include <math.h>
-# include "results.h"
+# include "results.hpp"
 # include "allocate.h"
 # include "problem.h"
 # include "fe.h"
 # include "error.h"
 
-
-double ElementArea (Element e, unsigned int n);
+extern "C" double ElementArea(Element e, unsigned int n);
 
 /**************************************************************************
  *

@@ -49,7 +49,7 @@
 # include "wireframe.h"
 # include "graph.h"
 # include "contour.h"
-# include "results.h"
+# include "results.hpp"
 # include "renumber.hpp"
 
 typedef int	Boolean;

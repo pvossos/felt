@@ -40,6 +40,7 @@
 # include "definition.h"
 # include "pathsearch.h"
 # include "renumber.hpp"
+# include "transient.hpp"
 
 static struct {
     Definition definition;

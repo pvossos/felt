@@ -36,6 +36,7 @@
 # include "opengl.h"
 # include "results.hpp"
 # include "renumber.hpp"
+# include "transient.hpp"
 
 extern ElementDialog element_d;
 extern NodeDialog    node_d;
@@ -128,15 +129,13 @@ int SolveProblem (void)
     unsigned	 numforced;
     NodeDOF	*forced;
     int		 status;		/* return status		*/
-    Reaction	*R;			/* reaction force vector	*/
-    unsigned	 numreactions;		/* the number of reactions	*/
+    cvector1<Reaction>	R;			/* reaction force vector	*/
     char	*temp_out;
     FILE	*output;
     cvector1u	old_numbers;
     Matrix	 dtable;
     Matrix	 ttable;
     int		 error_flag;
-    unsigned	 i;
     AnalysisType mode;
 
    	/*
@@ -342,7 +341,7 @@ int SolveProblem (void)
           break;
        }    
 
-       numreactions = SolveForReactions (K, d, old_numbers.c_ptr1(), &R);
+       R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
        status = ElementStresses ( );
        if (status) {
@@ -353,14 +352,7 @@ int SolveProblem (void)
 
        RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
 
-       WriteStructuralResults (output, solution -> title, R, numreactions);
-
-       if (numreactions) {
-   	  for (i = 1; i <= numreactions; i ++)
-	     XtFree ((char *) R [i]);
-
-	  XtFree ((char *) (R + 1));
-       }
+       WriteStructuralResults (output, solution -> title, R);
 
        break;
 
@@ -480,7 +472,7 @@ int SolveProblem (void)
         
        RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
-       WriteStructuralResults (output, solution -> title, NULL, 0);
+       WriteStructuralResults (output, solution -> title, cvector1<Reaction>(0));
 
        break;
 

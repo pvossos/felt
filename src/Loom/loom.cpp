@@ -51,6 +51,7 @@
 # include "contour.h"
 # include "results.hpp"
 # include "renumber.hpp"
+# include "transient.hpp"
 
 typedef int	Boolean;
 
@@ -259,8 +260,7 @@ int main (int argc, char **argv)
     NodeDOF	 *forced;		/* array of forced DOF numbers  */
     unsigned	 numforced;		/* number of forced DOF		*/
     int		 status;		/* return status		*/
-    Reaction	 *R;			/* reaction force vector	*/
-    unsigned	 numreactions;		/* the number of reactions	*/
+    cvector1<Reaction>	 R;			/* reaction force vector	*/
     Matrix	 dtable;		/* time-displacement table	*/
     cvector1u    old_numbers;		/* original node numbering	*/
     AnalysisType mode;
@@ -453,12 +453,12 @@ int main (int argc, char **argv)
           if (status) 
              Fatal ("%d Fatal errors found computing element stresses", status);
 
-          numreactions = SolveForReactions (K, d, old_numbers.c_ptr1(), &R);
+          R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
           RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
           if (table)
-             WriteStructuralResults (fp_out, title, R, numreactions);
+             WriteStructuralResults (fp_out, title, R);
 
           if (displaced_out) 
              WriteWireframeFile (displaced_out, displaced_mag, 
@@ -609,7 +609,7 @@ int main (int argc, char **argv)
           RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
                 
           if (table)
-             WriteStructuralResults (fp_out, title, NULL, 0);
+              WriteStructuralResults (fp_out, title, cvector1<Reaction>(0));
 
           if (contour_out) {
              if (strcmp(contour_result, "displacement") == 0)

@@ -33,10 +33,13 @@
 
 # include <stdio.h>
 # include <math.h>
+# include "cvector1.hpp"
 # include "allocate.h"
 # include "problem.h"
 # include "fe.h"
+# include "fe.hpp"
 # include "error.h"
+# include "transient.hpp"
 
 extern "C" Matrix ZeroRowCol(Matrix K, unsigned int dof);
 
@@ -111,7 +114,6 @@ ConstructStiffness(int *status)
 		base_col,
 		affected_row_dof,
 		affected_col_dof;
-   unsigned	*ht,*dg;
    unsigned	address;
    double	value;
    Vector 	K;
@@ -134,20 +136,8 @@ ConstructStiffness(int *status)
 
    size = numnodes*active;
 
-   ht = Allocate (unsigned, size);
-   if (ht == NULL)
-      Fatal ("allocation error setting up compact column heights");
-
-   UnitOffset (ht);
-
-   dg = Allocate (unsigned, size);
-   if (dg == NULL)
-      Fatal ("allocation error setting up compact column diagonal addresses");
-
-   UnitOffset (dg);
-
-   for (i = 1; i <= size ; i++) 
-      ht[i] = dg[i] = 0;
+   cvector1u ht(size, 0);
+   cvector1u dg(size, 0);
 
    for (i = 1 ; i <= numelts ; i++) {
       err = ElementSetup (element [i], 0);
@@ -219,10 +209,7 @@ ConstructStiffness(int *status)
       dg [i] = ht [i] + dg [i-1];
    }
 
-   ZeroOffset (ht);
-   Deallocate (ht);
-
-   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg);
+   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
 
    detail ("stiffness matrix size is %d", size);
 
@@ -293,10 +280,8 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
    unsigned	orig_dofs;
    unsigned	new_dofs;
    unsigned	height;
-   char		*dof_map;
    Matrix	Kc, Mc, Cc;
    unsigned	size;
-   unsigned	*diag;
    unsigned	start;
    unsigned	i, j, n, m,
 		affected_dof,
@@ -309,12 +294,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
    
    orig_dofs = numnodes * active;
 
-   dof_map = Allocate (char, orig_dofs);
-   UnitOffset (dof_map);
-
-   for (i = 1 ; i <= orig_dofs ; i++) 
-      dof_map [i] = 1;
-
+   cvector1c dof_map(orig_dofs, 1);
    size = K -> size;
    new_dofs = orig_dofs;
 
@@ -351,8 +331,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
    if (C != NullMatrix)
       Cc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
 
-   diag = Allocate (unsigned, new_dofs);
-   UnitOffset (diag);
+   cvector1u diag(new_dofs);
 
    n = 1;
    m = 1;
@@ -395,7 +374,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
       }
    }
 
-   Kc -> diag = diag;
+   Kc -> diag = diag.release1();
 
 	/*
 	 * allocate, copy and assign a different diag pointer for the mass
@@ -403,18 +382,16 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 	 * mass matrices will be destroyed at different times
 	 */
 
-   Mc -> diag = Allocate (unsigned, new_dofs);
-   UnitOffset (Mc -> diag);
+   Mc -> diag = cvector1u(new_dofs).release1();
  
    for (i = 1 ; i <= new_dofs ; i++)
-      Mc -> diag [i] = diag [i];
+      Mc -> diag [i] = Kc -> diag [i];
 
    if (C != NullMatrix) {
-      Cc -> diag = Allocate (unsigned, new_dofs);
-      UnitOffset (Cc -> diag);
+       Cc -> diag = cvector1u(new_dofs).release1();
  
       for (i = 1 ; i <= new_dofs ; i++)
-         Cc -> diag [i] = diag [i];
+         Cc -> diag [i] = Kc -> diag [i];
    }
 
 
@@ -426,10 +403,6 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
    *Mcond = Mc;
    if (C != NullMatrix)
       *Ccond = Cc;
-
-   ZeroOffset (dof_map); 
-   Deallocate (dof_map);
-
    return;
 }
 
@@ -654,14 +627,13 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
    Matrix	 dtable;
    Matrix	 F;
    LoadCase	 lc;
-   int		*mask;
 
    if (FactorStiffnessMatrix (K))
       return NullMatrix;
 
    F = CreateColumnVector (Mrows(Fbase));
 
-   mask     = BuildConstraintMask ( );
+   cvector1i mask     = BuildConstraintMask ( );
 
    dtable = CreateFullMatrix (problem.num_loadcases, 
                               analysis.numnodes * analysis.numdofs);
@@ -698,8 +670,6 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
       }
    }
 
-   ZeroOffset (mask);      Deallocate (mask);
-
    return dtable;
 }
 
@@ -708,7 +678,6 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
-   int		*mask;
    unsigned	 num_cases;
    double	 force;
    unsigned	 input_pos;
@@ -717,7 +686,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
    if (FactorStiffnessMatrix (K))
       return NullMatrix;
 
-   mask     = BuildConstraintMask ( );
+   cvector1i mask     = BuildConstraintMask ( );
 
    num_cases = (fabs(analysis.stop - analysis.start) + 0.5*fabs(analysis.step)) 
                / fabs(analysis.step) + 1;
@@ -749,8 +718,6 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
          }
       }
    }
-
-   ZeroOffset (mask);      Deallocate (mask);
 
    return dtable;
 }
@@ -819,8 +786,8 @@ ApplyNodalDisplacements(Matrix d)
    return;
 }
 
-unsigned
-SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac)
+cvector1<Reaction>
+SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
 {
    Node		*node;
    unsigned	numnodes,
@@ -846,6 +813,8 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac
 	 */
 
    num_reactions = 0; 
+   cvector1<Reaction> reac(0);
+   
    for (i = 1 ; i <= numnodes ; i++) {
       for (j = 1 ; j <= active ; j++) {
          if (node[i] -> constraint -> constraint[dofs[j]] == 1) 
@@ -854,17 +823,9 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac
    }
 
    if (num_reactions == 0) 
-      return 0;
+      return reac;
 
-   if (!(*reac = Allocate(Reaction, num_reactions))) 
-      Fatal ("allocation error finding reactions");
-
-   UnitOffset (*reac);
-
-   for (i = 1 ; i <= num_reactions ; i++) {
-      if (!((*reac) [i] = Allocate (struct reaction, 1)))
-         Fatal ("allocation error finding reactions");
-   }    
+   reac.resize(num_reactions);
 
    m = 1;
    for (i = 1 ; i <= numnodes ; i++) {
@@ -883,20 +844,20 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac
             }
 
             if (old_numbers == NULL)
-               (*reac) [m] -> node = node[i] -> number;
+                reac[m].node = node[i] -> number;
             else
-               (*reac) [m] -> node = old_numbers [i];
+                reac[m].node = old_numbers [i];
 
-            (*reac) [m] -> dof = dofs[j];
+            reac[m].dof = dofs[j];
             if (node [i] -> eq_force != NULL)
                sum -= node [i] -> eq_force [dofs[j]];
 
-            (*reac) [m++] -> force = sum; 
+            reac[m++].force = sum; 
          }
       }
    }
 
-   return num_reactions;
+   return reac;
 }
 
 int
@@ -1225,10 +1186,8 @@ RemoveConstrainedMatrixDOF(Matrix a)
    unsigned	orig_dofs;
    unsigned	new_dofs;
    unsigned	height;
-   char		*dof_map;
    Matrix	b;
    unsigned	size;
-   unsigned	*diag;
    unsigned	start;
    unsigned	i, j, n, m,
 		affected_dof,
@@ -1242,11 +1201,7 @@ RemoveConstrainedMatrixDOF(Matrix a)
    orig_dofs = numnodes * active;
    j = 0;  /* gcc -Wall */
 
-   dof_map = Allocate (char, orig_dofs);
-   UnitOffset (dof_map);
-
-   for (i = 1 ; i <= orig_dofs ; i++) 
-      dof_map [i] = 1;
+   cvector1c dof_map(orig_dofs, 1);
 
    size = a -> size;
    new_dofs = orig_dofs;
@@ -1283,8 +1238,7 @@ RemoveConstrainedMatrixDOF(Matrix a)
 
    if (IsCompact(a)) {
       b = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
-      diag = Allocate (unsigned, new_dofs);
-      UnitOffset (diag);
+      cvector1u diag(new_dofs);
   
       n = 1;
       m = 1;
@@ -1323,7 +1277,7 @@ RemoveConstrainedMatrixDOF(Matrix a)
          }
       }
 
-      b -> diag = diag;
+      b -> diag = diag.release1();
 
    }
    else if (IsColumnVector(a)) {
@@ -1355,9 +1309,6 @@ RemoveConstrainedMatrixDOF(Matrix a)
          }
       } 
    }
-
-   ZeroOffset (dof_map); 
-   Deallocate (dof_map);
 
    return b;
 }

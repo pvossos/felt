@@ -37,6 +37,7 @@
 # include "results.hpp"
 # include "draw.h"
 # include "renumber.hpp"
+# include "transient.hpp"
 
 # define streq(a,b)	!strcmp(a,b)
 
@@ -166,8 +167,7 @@ int main (int argc, char *argv[])
     NodeDOF	 *forced;		/* array of forced nodal DOF    */
     unsigned	  numforced;		/* number of forced DOF		*/
     int		  status;		/* return status		*/
-    Reaction	 *R;			/* reaction force vector	*/
-    unsigned	  numreactions;		/* the number of reactions	*/
+    cvector1<Reaction>	 R;			/* reaction force vector	*/
     Matrix	  dtable;		/* time-displacement table	*/
     Matrix	  ttable;		/* time step table		*/
     cvector1u old_numbers;		/* original node numbering	*/
@@ -347,11 +347,11 @@ int main (int argc, char *argv[])
           if (status) 
              Fatal ("%d Fatal errors found computing element stresses", status);
     
-          numreactions = SolveForReactions (K, d, old_numbers.c_ptr1(), &R);
+          R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
           RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
 
-          WriteStructuralResults (stdout, title, R, numreactions);
+          WriteStructuralResults (stdout, title, R);
 
           break;
 
@@ -452,7 +452,7 @@ int main (int argc, char *argv[])
          
           RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
                 
-          WriteStructuralResults (stdout, title, NULL, 0);
+          WriteStructuralResults (stdout, title, cvector1<Reaction>(0));
 
           break;
 

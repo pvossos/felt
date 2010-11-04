@@ -2,10 +2,8 @@
 #define RESULTS_H
 
 #include "problem.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
+#include "cvector1.hpp"
+#include "fe.hpp"
 
 /*----------------------------------------------------------------------*/
 
@@ -25,7 +23,7 @@ void WriteTransientTable (Matrix dtable, Matrix ttable, FILE *fp);
 
 void WriteTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp);
 
-void WriteStructuralResults (FILE *output, char *title, Reaction *R, unsigned numreactions);
+void WriteStructuralResults (FILE *output, char *title, const cvector1<Reaction> &R);
 
 void WriteTemperatureResults (FILE *fp, char *title);
 
@@ -50,9 +48,5 @@ void PrintGlobalMatrices (FILE *fp, Matrix M, Matrix C, Matrix K);
 int MatlabGlobalMatrices (char *filename, Matrix M, Matrix C, Matrix K);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 #endif

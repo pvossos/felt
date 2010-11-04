@@ -29,7 +29,6 @@
 # include <stdio.h>
 # include <math.h>
 # include "results.hpp"
-# include "allocate.h"
 # include "problem.h"
 # include "fe.h"
 # include "error.h"
@@ -44,15 +43,13 @@ extern "C" double ElementArea(Element e, unsigned int n);
  *		element		array of elements
  *		node		array of nodes
  *		R		array of reaction forces
- *		numreactions	number of reactions
  *
  * Return value:none
  *
  ***************************************************************************/
 
 void
-WriteStructuralResults(FILE *output, char *title,
-                        Reaction *R, unsigned numreactions)
+WriteStructuralResults(FILE *output, char *title, const cvector1<Reaction> &R)
 {
     FILE       *fd;
     Element    *element;
@@ -116,15 +113,15 @@ WriteStructuralResults(FILE *output, char *title,
         }
     }    
 
-    if (numreactions) {
+    if (0 != R.size()) {
        fprintf (output,"\n\nReaction Forces\n");
        fprintf (output,"-----------------------------------\n");
        fprintf (output,"Node #     DOF     Reaction Force\n");
        fprintf (output,"-----------------------------------\n");
 
-       for (i = 1 ; i <= numreactions ; i++)
-          fprintf (output,"%3d        %s        % 11.5g\n",R[i] -> node, 
-                   dof_names [R[i] -> dof], R[i] -> force);
+       for (i = 1 ; i <= R.size(); i++)
+          fprintf (output,"%3d        %s        % 11.5g\n",
+                   R[i].node, dof_names [R[i].dof], R[i].force);
     }
 
     if (fd)

@@ -39,6 +39,7 @@
 # include "allocate.h"
 # include "error.h"
 # include "problem.h"
+# include "transient.hpp"
 
 int
 ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
@@ -64,7 +65,6 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 		base_col,
 		affected_row_dof,
 		affected_col_dof;
-   unsigned	*ht,*dg;
    unsigned	address;
    double	mvalue;
    double	kvalue;
@@ -88,20 +88,8 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 
    size = numnodes*active;
 
-   ht = Allocate (unsigned, size);
-   if (ht == NULL)
-      Fatal ("allocation error setting up compact column heights");
-
-   UnitOffset (ht);
-
-   dg = Allocate (unsigned, size);
-   if (dg == NULL)
-      Fatal ("allocation error setting up compact column diagonal addresses");
-
-   UnitOffset (dg);
-
-   for (i = 1; i <= size ; i++) 
-      ht[i] = dg[i] = 0;
+   cvector1u ht(size, 0);
+   cvector1u dg(size, 0);
 
    for (i = 1 ; i <= numelts ; i++) {
       err = ElementSetup (element [i], analysis.mass_mode);
@@ -181,12 +169,9 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
       dg [i] = ht [i] + dg [i-1];
    }
 
-   ZeroOffset (ht);
-   Deallocate (ht);
-
-   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg);
-   M = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg);
-   C = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg);
+   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
+   M = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
+   C = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
 
    ZeroMatrix (K);
    ZeroMatrix (M);
@@ -349,7 +334,6 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
    Matrix	Kp;
    Matrix	Kp_fact;
    Matrix	Mt;
-   int	       *constraint_mask;
    double	vpred, dpred, value;
    unsigned	size;
    double	c1,c2, c3, c4, c5, c6;
@@ -418,7 +402,7 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 * initial conditions	
  	 */
 
-   constraint_mask = BuildConstraintMask ( );
+   cvector1i constraint_mask = BuildConstraintMask ( );
    build_a0 = BuildHyperbolicIC (d, v, a);
 
 	/*
@@ -562,8 +546,6 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
    if (Mt)
       DestroyMatrix (Mt);
 
-   ZeroOffset (constraint_mask); Deallocate (constraint_mask);
-
    return dtable;
 }
 
@@ -585,7 +567,6 @@ IntegrateParabolicDE(Vector K, Vector M)
    unsigned	nsteps;
    int		address;
    double	curr_time;
-   int		*constraint_mask;
 
    count = problem.num_dofs;
    node  = problem.nodes;
@@ -638,7 +619,7 @@ IntegrateParabolicDE(Vector K, Vector M)
 	 * initial conditions	
  	 */
 
-   constraint_mask = BuildConstraintMask ( );
+   cvector1i constraint_mask = BuildConstraintMask ( );
    BuildParabolicIC (d);
 
 	/*
@@ -729,8 +710,6 @@ IntegrateParabolicDE(Vector K, Vector M)
    DestroyMatrix (Kp);
    DestroyMatrix (Kp_fact);
 
-   ZeroOffset (constraint_mask); Deallocate (constraint_mask);
-
    return dtable;
 }
 
@@ -813,7 +792,7 @@ BuildParabolicIC(Vector d)
    return;
 }
 
-int*
+cvector1i
 BuildConstraintMask(void)
 {
    Node		*node;
@@ -822,7 +801,6 @@ BuildConstraintMask(void)
    unsigned	*dofs;
    unsigned	i, j;
    unsigned	base_dof;
-   int		*mask;
    int		numdofs;
 
    node = problem.nodes;
@@ -832,11 +810,7 @@ BuildConstraintMask(void)
 
    numdofs = numnodes * active;
    
-   mask = Allocate(int, numdofs);
-   UnitOffset(mask);
-
-   for (i = 1 ; i <= numdofs ; i++)
-      mask [i] = 0;
+   cvector1i mask(numdofs, 0);
 
    for (i = 1 ; i <= numnodes ; i++) {
       base_dof = active*(node[i] -> number - 1);

@@ -33,9 +33,9 @@
 # include <stdio.h>
 # include <math.h>
 # include "fe.h"
-# include "allocate.h"
 # include "error.h"
 # include "problem.h"
+# include "transient.hpp"
 
 /*--------------------------------------------*
  * called only from IntegrateHyperbolicDE2()  * 
@@ -91,7 +91,6 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
                 k0v1_i, k0d2_i, me1_i, b1_i, me2_i, r1_i; 
                 
   Matrix        M0, M0_fact;
-  int          *constraint_mask;
   unsigned      size;
   double        gamma, e32, gh, h; 
   const double  beta1= 0.0, beta2= 1.0; 
@@ -166,7 +165,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
          * build the initial displacement and velocity vectors from the
          * initial conditions
          */
-  constraint_mask= BuildConstraintMask();
+  cvector1i constraint_mask = BuildConstraintMask();
   build_a0 = BuildHyperbolicIC(y0, v0, a_dummy);
 
 
@@ -461,8 +460,6 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
   DestroyVector(bhalf);   DestroyVector(err); 
 
   DestroyMatrix(M0_fact); DestroyMatrix(M0); 
-
-  ZeroOffset(constraint_mask); Deallocate(constraint_mask);
 
   return(dtable);
 } /* eo IntegrateHyperbolicDE2() */

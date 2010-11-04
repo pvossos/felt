@@ -59,11 +59,12 @@ public:
             if (!m && n != 0) throw std::bad_alloc();
             N = n;
         }
-    cvector1(size_type n, int cb) 
+    cvector1(size_type n, const Value_T &val) 
         {
             m = (Value_T *) std::malloc(n * sizeof(Value_T));
             if (!m && n != 0) throw std::bad_alloc();
-            std::memset(m, cb, n * sizeof(Value_T));
+            for (size_t i = 0; i < n; i++)
+                m[i] = val;
             N = n;
         }
     cvector1(Value_T *ptr, size_type n)
@@ -160,6 +161,7 @@ private:
 
 // useful typedefs
 
+typedef cvector1<char>     cvector1c;
 typedef cvector1<unsigned> cvector1u;
 typedef cvector1<int>      cvector1i;
 typedef cvector1<double>   cvector1d;

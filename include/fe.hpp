@@ -1,0 +1,43 @@
+/*
+    This file is part of the FElt finite element analysis package.
+    Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
+    Copyright (C) 2010 Panagiotis Vossos
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#ifndef FE_HPP
+#define FE_HPP
+
+#include "cvector1.hpp"
+
+/* A reaction force */
+
+struct Reaction {
+    double   force;			/* reaction force             */
+    unsigned node;			/* node number                */
+    unsigned dof;			/* affected degree of freedom */
+};
+
+/*!
+  Pretty simple really, first we find how many reaction forces there
+  should be, then we allocate space for them, then we multiply rows of
+  the stiffness matrix by the global displacement vector to get an
+  entry that was previously unknown in the global force vector
+*/
+
+cvector1<Reaction> SolveForReactions(Vector K, Vector d, unsigned int *old_numbers);
+
+#endif

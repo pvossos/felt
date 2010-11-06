@@ -28,16 +28,13 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "problem.h"
 # include "objects.h"
 # include "mesh.h"
 # include "patchwork.h"
 # include "definition.h"
 # include "error.h"
-
-# undef atof
-extern double atof (const char *);
-extern double strtod (const char *, char **);
 
 extern int InitializeProblem (void);
 

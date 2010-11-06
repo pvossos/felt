@@ -48,7 +48,7 @@ Generator generator;
 static char *cpp;
 static char  cpp_command [2048];
 
-int ReadCorduroyFile (char *input_name)
+int ReadCorduroyFile (const char *input_name)
 {
     char  buffer [2048];
     char *plural;

@@ -72,7 +72,7 @@ int CorduroyCppOptions (int *argc, char **argv);
   NULL filename indicates no file (an empty generation instance is
   created).
 */
-int ReadCorduroyFile (char *input_name);
+int ReadCorduroyFile (const char *input_name);
 
 int WriteCorduroyFile (char *filename);
 

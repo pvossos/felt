@@ -74,55 +74,6 @@ typedef struct _grid {
    Rule		zrule;		/* scale rule for z-axis		*/
 } *Grid;
 
-Node* CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts);
-
-/*!
-A simple procedure to generate a 1-d line of line elements with all
-the elements along a single line.
-*/
-unsigned 
-GenerateLine (Line line, Element **element, Node **node,
-              unsigned int *numelts, unsigned int *numnodes,
-              unsigned int bnode, unsigned int belement);
-
-/*!
-  A simple procedure to generate a 3-d grid of line elements with all
-  the elements running parallel to one of the axes.
-*/
-unsigned
-GenerateGrid(Grid grid, Element **element, Node **node,
-             unsigned int *numelts, unsigned int *numnodes, 
-             unsigned int bnode, unsigned int belement);
-
-/*!
-  A simple procedure to generate a 2-d grid of quadrilateral (four
-  shape nodes) elements with all the elements running parallel to one
-  of the axes.
-*/
-unsigned
-GenerateQuadGrid(Grid grid, Element **element, Node **node,
-                 unsigned int *numelts, unsigned int *numnodes, 
-                 unsigned int bnode, unsigned int belement);
-
-/*!
-  A simple procedure to generate a 3-d grid of solid brick (eight
-  shape nodes) elements with all the elements running parallel to one
-  of the axes.
- */
-unsigned
-GenerateBrickGrid(Grid grid, Element **element, Node **node, 
-                  unsigned int *numelts, unsigned int *numnodes, 
-                  unsigned int bnode, unsigned int belement);
-
-/*!
- A procedure to interface to Triangle and generate a mesh of
- triangular elements. 
- */
-unsigned
-GenerateTriMesh(TriMesh trimesh, Element **element, Node **node, 
-                unsigned int *numelts, unsigned int *numnodes,
-                unsigned int bnode, unsigned int belement);
-
 /*----------------------------------------------------------------------*/
 
 #ifdef __cplusplus

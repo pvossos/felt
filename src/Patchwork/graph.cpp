@@ -31,7 +31,7 @@
 # include <stdlib.h>
 # include "problem.h"
 # include "objects.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "patchwork.h"
 # include "definition.h"
 # include "error.h"
@@ -96,9 +96,16 @@ int ReadGraphFile (char *filename)
       }
    }
 
+   cvector1<Node> pn(problem.nodes, problem.num_nodes);
+   cvector1<Element> pe(problem.elements, problem.num_elements);
+   pn = CoalesceNodes(pn, pe);
+   problem.nodes = pn.release1();
+   pe.release1();
+
+   /*
    problem.nodes = CoalesceNodes (problem.nodes, problem.elements,
                                   &(problem.num_nodes), problem.num_elements);
-
+   */
    if (fp != stdin)
       fclose (fp);
 

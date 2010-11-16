@@ -28,7 +28,7 @@
 # include <ctype.h>
 # include <string.h>
 # include "allocate.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "generator.h"
 # include "error.h"
 # include "definition.h"
@@ -72,26 +72,24 @@ static char *Quote (char *s)
 /************************************************************************
  ************************************************************************/
 
-static void AddNewArrays (Node *node, Element *element, unsigned int numnodes, unsigned int numelts, Node **all_nodes, Element **all_elements, unsigned int *nn, unsigned int *ne)
+static void AddNewArrays (cvector1<Node> &node, cvector1<Element> &element,
+                          cvector1<Node> &all_nodes, cvector1<Element> &all_elements)
 {
    unsigned	i;
-
-   ZeroOffset (*all_nodes);
-   *all_nodes = Reallocate (*all_nodes, Node, *nn + numnodes);
-   UnitOffset (*all_nodes);
-
-   ZeroOffset (*all_elements);
-   *all_elements = Reallocate (*all_elements, Element, *ne + numelts);
-   UnitOffset (*all_elements);
+   
+   const size_t numnodes = node.size();
+   const size_t nn = all_nodes.size();
+   all_nodes.resize(nn + numnodes);
+   
+   const size_t numelts = element.size();
+   const size_t ne = all_elements.size();
+   all_elements.resize(ne + numelts);
 
    for (i = 1 ; i <= numnodes ; i++) 
-      (*all_nodes) [i + *nn] = node [i];
+      all_nodes[i + nn] = node [i];
 
    for (i = 1 ; i <= numelts ; i++) 
-      (*all_elements) [i + *ne] = element [i];
-
-   *nn += numnodes;
-   *ne += numelts;
+       all_elements[i + ne] = element [i];
 }
 
 
@@ -110,17 +108,12 @@ int main (int argc, char **argv)
    Node		*node;
    unsigned	start_node;
    unsigned	start_element;
-   unsigned	numnodes;
-   unsigned	numelts;
    Line		*line;
    Grid		*grid;
    Grid		*quadgrid;
    Grid		*brickgrid;
    TriMesh	*trimesh;
    unsigned	i,j;
-   unsigned	nn, ne;
-   Node		*all_nodes;
-   Element	*all_elements;
    int		 debug = 0;
    unsigned	 code;
 
@@ -171,30 +164,26 @@ int main (int argc, char **argv)
    brickgrid = generator.brickgrids;
    trimesh = generator.trimeshes;
 
-   nn = 0;
-   ne = 0;
    start_node = generator.start_node - 1;
    start_element = generator.start_element - 1;
    
-   all_nodes = NULL;
-   all_elements = NULL;
+   cvector1<Node> all_nodes;
+   cvector1<Element> all_elements;
 
 	/*
 	 * generate along lines
 	 */
 
    for (i = 0 ; i < generator.num_lines ; i++) {
-      GenerateLine (line[i], &element, &node, 
-                    &numelts, &numnodes, start_node, start_element);
+      cvector1<Node> node;
+      cvector1<Element> element;
 
-      start_node += numnodes;
-      start_element += numelts;
+      GenerateLine (line[i], element, node,start_node, start_element);
 
-      AddNewArrays (node, element, numnodes, numelts, 
-                    &all_nodes, &all_elements, &nn, &ne);
+      start_node += node.size();
+      start_element += element.size();
 
-      ZeroOffset (node); Deallocate (node);
-      ZeroOffset (element); Deallocate (element);
+      AddNewArrays (node, element, all_nodes, all_elements);
    }
 
 	/*
@@ -202,17 +191,15 @@ int main (int argc, char **argv)
 	 */
 
    for (i = 0 ; i < generator.num_grids ; i++) {
-      GenerateGrid (grid[i], &element, &node, 
-                    &numelts, &numnodes, start_node, start_element);
+      cvector1<Node> node;
+      cvector1<Element> element;
 
-      AddNewArrays (node, element, numnodes, numelts, 
-                    &all_nodes, &all_elements, &nn, &ne);
+      GenerateGrid (grid[i], element, node, start_node, start_element);
 
-      start_node += numnodes;
-      start_element += numelts;
+      AddNewArrays (node, element, all_nodes, all_elements);
 
-      ZeroOffset (node); Deallocate (node);
-      ZeroOffset (element); Deallocate (element);
+      start_node += node.size();
+      start_element += element.size();
    }
 
 	/*
@@ -220,17 +207,15 @@ int main (int argc, char **argv)
 	 */
 
    for (i = 0 ; i < generator.num_quadgrids ; i++) {
-      GenerateQuadGrid (quadgrid[i], &element, &node, 
-                        &numelts, &numnodes, start_node, start_element);
+      cvector1<Node> node;
+      cvector1<Element> element;
+      
+      GenerateQuadGrid (quadgrid[i], element, node, start_node, start_element);
 
-      AddNewArrays (node, element, numnodes, numelts, 
-                    &all_nodes, &all_elements, &nn, &ne);
+      AddNewArrays (node, element, all_nodes, all_elements);
 
-      start_node += numnodes;
-      start_element += numelts;
-
-      ZeroOffset (node); Deallocate (node);
-      ZeroOffset (element); Deallocate (element);
+      start_node += node.size();
+      start_element += element.size();
    }
 
 	/*
@@ -238,17 +223,15 @@ int main (int argc, char **argv)
 	 */
 
    for (i = 0 ; i < generator.num_brickgrids ; i++) {
-      GenerateBrickGrid (brickgrid[i], &element, &node, 
-                         &numelts, &numnodes, start_node, start_element);
+      cvector1<Node> node;
+      cvector1<Element> element;
 
-      AddNewArrays (node, element, numnodes, numelts, 
-                    &all_nodes, &all_elements, &nn, &ne);
+      GenerateBrickGrid (brickgrid[i], element, node, start_node, start_element);
 
-      start_node += numnodes;
-      start_element += numelts;
+      AddNewArrays (node, element, all_nodes, all_elements);
 
-      ZeroOffset (node); Deallocate (node);
-      ZeroOffset (element); Deallocate (element);
+      start_node += node.size();
+      start_element += element.size();
    }
 
 	/*
@@ -256,29 +239,29 @@ int main (int argc, char **argv)
 	 */
 
    for (i = 0 ; i < generator.num_trimeshes ; i++) {
-      code = GenerateTriMesh (trimesh[i], &element, &node, 
-                              &numelts, &numnodes, start_node, start_element);
+      cvector1<Node> node;
+      cvector1<Element> element;
+      code = GenerateTriMesh (trimesh[i], element, node, start_node, start_element);
       if (code)
          continue;
 
-      AddNewArrays (node, element, numnodes, numelts, 
-                    &all_nodes, &all_elements, &nn, &ne);
+      AddNewArrays (node, element, all_nodes, all_elements);
 
-      start_node += numnodes;
-      start_element += numelts;
-
-      ZeroOffset (node); Deallocate (node);
-      ZeroOffset (element); Deallocate (element);
+      start_node += node.size();
+      start_element += element.size();
    }
 
 	/*
 	 * coalesce the nodes
 	 */
 
-   if (nn == 0 || ne == 0)
+   if (all_nodes.empty() || all_elements.empty())
 	exit (1);
 
-   all_nodes = CoalesceNodes (all_nodes, all_elements, &nn, ne);
+   all_nodes = CoalesceNodes (all_nodes, all_elements);
+
+   const size_t nn = all_nodes.size();
+   const size_t ne = all_elements.size();
 
 	/*	
 	 * write everything out

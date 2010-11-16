@@ -250,7 +250,7 @@ int main (int argc, char **argv)
     Matrix	 M, K, C;		/* global matrices		*/
     Matrix	 Mcond, Ccond, Kcond;	/* condensed matrices		*/
     Matrix	 Mm, Km, Cm;		/* modal matrices		*/
-    Matrix	 *H;			/* transfer function matrices   */
+    cvector1<Matrix>	 H;			/* transfer function matrices   */
     Matrix	 S;			/* output spectra		*/
     Vector	 F,			/* force vector			*/
 		 Fcond;			/* condensed force vector	*/
@@ -684,12 +684,12 @@ int main (int argc, char **argv)
 
           if (transfer) {
              if (table)
-                WriteTransferFunctions (H, forced, numforced, fp_out);
+                 WriteTransferFunctions (H.c_ptr1(), forced, numforced, fp_out);
              if (graph_out)
-                WriteLineGraphTransferFunctions (H, forced, numforced, graph_out);
+                 WriteLineGraphTransferFunctions (H.c_ptr1(), forced, numforced, graph_out);
           }
           else {
-             S = ComputeOutputSpectra (H, forced, numforced);
+              S = ComputeOutputSpectra (H.c_ptr1(), forced, numforced);
              if (S == NullMatrix)
                 break; 
 

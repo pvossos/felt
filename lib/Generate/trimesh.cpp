@@ -23,7 +23,7 @@
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "triangle.h"
 
 typedef double dbl_pair [2];
@@ -44,8 +44,7 @@ static double PolygonArea (double (*vcl)[2], int n)
 }
 
 unsigned
-GenerateTriMesh(TriMesh trimesh, Element **element, Node **node, 
-                unsigned int *numelts, unsigned int *numnodes,
+GenerateTriMesh(TriMesh trimesh, cvector1<Element> &element, cvector1<Node> &node, 
                 unsigned int bnode, unsigned int belement)
 {
    unsigned	i,j;
@@ -183,23 +182,15 @@ GenerateTriMesh(TriMesh trimesh, Element **element, Node **node,
 	 * allocate some memory to hold everything that we will generate
 	 */
 
-   if (!(*node = Allocate(Node, nn)))
-      Fatal ("allocation error in TriMesh generation");
-
-   UnitOffset (*node);
-
+   node.resize(nn);
    for (i = 1 ; i <= nn ; i++) {
-      if (!((*node) [i] = CreateNode (0)))
+      if (!(node [i] = CreateNode (0)))
          Fatal ("allocation error in TriMesh generation");
    }
 
-   if (!(*element = Allocate(Element, ne)))
-      Fatal ("allocation error in TriMesh generation");
-
-   UnitOffset (*element);
-
+   element.resize(ne);
    for (i = 1 ; i <= ne ; i++) {
-      if (!((*element) [i] = CreateElement (0, trimesh -> definition)))
+      if (!(element [i] = CreateElement (0, trimesh -> definition)))
          Fatal ("allocation error in TriMesh generation");
    }
 
@@ -209,10 +200,10 @@ GenerateTriMesh(TriMesh trimesh, Element **element, Node **node,
 
    for (i = 1 ; i <= nn ; i++) {
  
-      (*node) [i] -> number = i + bnode;
-      (*node) [i] -> x = out.pointlist [2*i - 2];
-      (*node) [i] -> y = out.pointlist [2*i - 1];
-      (*node) [i] -> z = 0;
+      node [i] -> number = i + bnode;
+      node [i] -> x = out.pointlist [2*i - 2];
+      node [i] -> y = out.pointlist [2*i - 1];
+      node [i] -> z = 0;
 
    }
 
@@ -222,15 +213,12 @@ GenerateTriMesh(TriMesh trimesh, Element **element, Node **node,
 
    for (i = 1 ; i <= ne ; i++) {
 
-      (*element) [i] -> number = i + belement;
-      (*element) [i] -> node [1] = (*node) [out.trianglelist [3*(i - 1) + 0] + 1];
-      (*element) [i] -> node [2] = (*node) [out.trianglelist [3*(i - 1) + 1] + 1];
-      (*element) [i] -> node [3] = (*node) [out.trianglelist [3*(i - 1) + 2] + 1];
+      element [i] -> number = i + belement;
+      element [i] -> node [1] = node [out.trianglelist [3*(i - 1) + 0] + 1];
+      element [i] -> node [2] = node [out.trianglelist [3*(i - 1) + 1] + 1];
+      element [i] -> node [3] = node [out.trianglelist [3*(i - 1) + 2] + 1];
 
    } 
-
-   *numnodes = nn;
-   *numelts  = ne;
 
    Deallocate(in.pointlist);
    Deallocate(in.pointmarkerlist);

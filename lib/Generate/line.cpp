@@ -22,16 +22,14 @@
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "rules.h"
 
 unsigned 
-GenerateLine (Line line, Element **element, Node **node,
-              unsigned int *numelts, unsigned int *numnodes,
+GenerateLine (Line line, cvector1<Element> &element, cvector1<Node> &node,
               unsigned int bnode, unsigned int belement)
 {
    RuleFunction rule_func;
-   unsigned	ne, nn;
    unsigned	i;
    double	L;
    double	Lx;
@@ -41,8 +39,8 @@ GenerateLine (Line line, Element **element, Node **node,
    double	phi;
    double      *x;
 
-   ne = line -> number;
-   nn = ne + 1;
+   size_t ne = line -> number;
+   size_t nn = ne + 1;
 
    if (ne <= 0) {
       error ("nothing to generate");
@@ -58,23 +56,15 @@ GenerateLine (Line line, Element **element, Node **node,
 	 * allocate some memory to hold everything that we will generate
 	 */
 
-   if (!(*node = Allocate(Node, nn)))
-      Fatal ("allocation error in line generation");
-
-   UnitOffset (*node);
-
+   node.resize(nn);
    for (i = 1 ; i <= nn ; i++) {
-      if (!((*node) [i] = CreateNode (0)))
+      if (!(node [i] = CreateNode (0)))
          Fatal ("allocation error in line generation");
    }
 
-   if (!(*element = Allocate(Element, ne)))
-      Fatal ("allocation error in line generation");
-
-   UnitOffset (*element);
-
+   element.resize(ne);
    for (i = 1 ; i <= ne ; i++) {
-      if (!((*element) [i] = CreateElement (0, line -> definition)))
+      if (!(element [i] = CreateElement (0, line -> definition)))
          Fatal ("allocation error in line generation");
    }
 
@@ -107,10 +97,10 @@ GenerateLine (Line line, Element **element, Node **node,
 	 */
    
    for (i = 1 ; i <= nn ; i++) {
-      (*node) [i] -> number = i + bnode;
-      (*node) [i] -> x = line -> xs + x[i]*sin(phi)*cos(theta);
-      (*node) [i] -> y = line -> ys + x[i]*sin(phi)*sin(theta);
-      (*node) [i] -> z = line -> zs + x[i]*cos(phi); 
+      node [i] -> number = i + bnode;
+      node [i] -> x = line -> xs + x[i]*sin(phi)*cos(theta);
+      node [i] -> y = line -> ys + x[i]*sin(phi)*sin(theta);
+      node [i] -> z = line -> zs + x[i]*cos(phi); 
    }
 
 	/*
@@ -119,14 +109,11 @@ GenerateLine (Line line, Element **element, Node **node,
 
    for (i = 1 ; i <= ne ; i++) {
 
-      (*element) [i] -> number = i + belement;
-      (*element) [i] -> node [1] = (*node) [i];
-      (*element) [i] -> node [2] = (*node) [i + 1];
+      element [i] -> number = i + belement;
+      element [i] -> node [1] = node [i];
+      element [i] -> node [2] = node [i + 1];
 
    } 
-
-   *numnodes = nn;
-   *numelts  = ne;
 
    return 0;
 }

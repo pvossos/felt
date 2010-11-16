@@ -29,7 +29,7 @@
 
 # include <math.h>
 # include "fe.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "rules.h"
 
 RuleFunction AssignRule (Rule type)

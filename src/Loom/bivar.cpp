@@ -34,8 +34,8 @@
 # include <math.h>
 # include <stdio.h>
 # include "bivar.h"
-# include "allocate.h"
 # include "error.h"
+# include "cvector1.hpp"
 
 # define EPSILON 1.0e-6
 # define NREP 100
@@ -95,8 +95,6 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
                      int nxi, int nyi, float *xi, float *yi, float **zi,
                      unsigned char **mask)
 {
-   float	*wk;
-   int		*iwk;
    int		ndp0,nxi0,nyi0;
    int		nt,nl,ngp0,ngp1;
    int		jwiwl,jwngp0,jwipt,jwipl,jwiwp,jwigp0,jwwpd,jwngp;
@@ -114,11 +112,8 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
    nxi0 = nxi;
    nyi0 = nyi;
 
-   iwk = Allocate (int, 31*ndp + nxi*nyi);
-   UnitOffset (iwk);
-
-   wk = Allocate (float, 6*ndp);
-   UnitOffset (wk);
+   cvector1i iwk(31*ndp + nxi*nyi);
+   cvector1f wk(6*ndp);
 
    iwk[1] = ndp0;
    iwk[3] = nxi0;
@@ -140,8 +135,11 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
 	 * triangulates the x-y plane. 
 	 */
 
-   status = idtang(ndp0,xd,yd,&nt,&(iwk[jwipt-1]),&nl,&(iwk[jwipl-1]),
-                   &(iwk[jwiwl-1]),&(iwk[jwiwp-1]),wk);
+   int *iwk_ = iwk.c_ptr1();
+   float *wk_ = wk.c_ptr1();
+   
+   status = idtang(ndp0,xd,yd,&nt,&(iwk_[jwipt-1]),&nl,&(iwk_[jwipl-1]),
+                   &(iwk_[jwiwl-1]),&(iwk_[jwiwp-1]),wk_);
 
    if (status)
       return 1;
@@ -164,7 +162,7 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
 	 * estimates partial derivatives at all data points.
 	 */
 
-  idpdrv(ndp0,xd,yd,zd,nt,&(iwk[jwipt-1]),wk,&(wk[jwwpd-1]));
+  idpdrv(ndp0,xd,yd,zd,nt,&(iwk_[jwipt-1]),wk_,&(wk_[jwwpd-1]));
 
 	/*
 	 * interpolates the zi values.  
@@ -194,8 +192,8 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
            ixi=izi-nxi0*(iyi-1);
         
            if (mask[iyi-1][ixi-1])
-              zi[iyi-1][ixi-1]=idptip(xd,yd,zd,nt,&(iwk[jwipt-1]),nl,
-                                   &(iwk[jwipl-1]),wk,iti,xi [ixi],yi [iyi]);
+              zi[iyi-1][ixi-1]=idptip(xd,yd,zd,nt,&(iwk_[jwipt-1]),nl,
+                                   &(iwk_[jwipl-1]),wk_,iti,xi [ixi],yi [iyi]);
         }
      }
      jwngp=jwngp0+2*nngp+1-jngp;
@@ -210,15 +208,12 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
            ixi=izi-nxi0*(iyi-1);
 
            if (mask[iyi-1][ixi-1])
-              zi[iyi-1][ixi-1]=idptip(xd,yd,zd,nt,&(iwk[jwipt-1]),nl,
-                                   &(iwk[jwipl-1]),wk,iti,xi [ixi],yi [iyi]);
+              zi[iyi-1][ixi-1]=idptip(xd,yd,zd,nt,&(iwk_[jwipt-1]),nl,
+                                   &(iwk_[jwipl-1]),wk_,iti,xi [ixi],yi [iyi]);
         }
      }
   }
  
-   ZeroOffset (iwk); Deallocate (iwk);
-   ZeroOffset (wk); Deallocate (wk);
-
   return 0;
 }
 

@@ -22,17 +22,15 @@
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "rules.h"
 
 unsigned
-GenerateQuadGrid(Grid grid, Element **element, Node **node,
-                 unsigned int *numelts, unsigned int *numnodes, 
+GenerateQuadGrid(Grid grid, cvector1<Element> &element, cvector1<Node> &node,
                  unsigned int bnode, unsigned int belement)
 {
    RuleFunction xrule_func;
    RuleFunction yrule_func;
-   unsigned	ne, nn;
    unsigned	ecount, ncount;
    unsigned	node1, node2, node3, node4;
    unsigned	i, j;
@@ -43,7 +41,7 @@ GenerateQuadGrid(Grid grid, Element **element, Node **node,
    xnum = grid -> xnumber;
    ynum = grid -> ynumber;
 
-   ne = xnum*ynum;
+   const size_t ne = xnum*ynum;
 
    if (ne <= 0) {
       error ("nothing to generate");
@@ -55,30 +53,21 @@ GenerateQuadGrid(Grid grid, Element **element, Node **node,
       return 1;
    }
 
-   nn = (xnum + 1)*(ynum + 1);
+   const size_t nn = (xnum + 1)*(ynum + 1);
 
 	/*
 	 * allocate some memory to hold everything that we will generate
 	 */
 
-   
-   if (!(*node = Allocate(Node, nn)))
-      Fatal ("allocation error in grid generation");
-
-   UnitOffset (*node);
-   
+   node.resize(nn);
    for (i = 1 ; i <= nn ; i++) {
-      if (!((*node) [i] = CreateNode (0)))
+      if (!(node [i] = CreateNode (0)))
          Fatal ("allocation error in quadrilateral grid generation");
    }
 
-   if (!(*element = Allocate(Element, ne)))
-      Fatal ("allocation error in quadrilateral grid generation");
-
-   UnitOffset (*element);
-
+   element.resize(ne);
    for (i = 1 ; i <= ne ; i++) {
-      if (!((*element) [i] = CreateElement (0, grid -> definition)))
+      if (!(element [i] = CreateElement (0, grid -> definition)))
          Fatal ("allocation error in grid generation");
    }
 
@@ -101,11 +90,11 @@ GenerateQuadGrid(Grid grid, Element **element, Node **node,
       for (i = 1 ; i <= xnum + 1 ; i++) {
  
          ncount++;
-         (*node) [ncount] -> number = bnode + ncount;
+         node [ncount] -> number = bnode + ncount;
 
-         (*node) [ncount] -> x = grid -> xs + xrule_func(i, xnum, x_length);
-         (*node) [ncount] -> y = grid -> ys + yrule_func(j, ynum, y_length);
-         (*node) [ncount] -> z = 0.0;
+         node [ncount] -> x = grid -> xs + xrule_func(i, xnum, x_length);
+         node [ncount] -> y = grid -> ys + yrule_func(j, ynum, y_length);
+         node [ncount] -> z = 0.0;
 
       }
    }
@@ -120,22 +109,19 @@ GenerateQuadGrid(Grid grid, Element **element, Node **node,
       for (i = 1 ; i <= xnum ; i++) {
 
          ecount++;
-         (*element) [ecount] -> number = belement + ecount;
+         element [ecount] -> number = belement + ecount;
 
          node1 = i + (j - 1)*(xnum + 1);
          node2 = node1 + 1; 
          node4 = node1 + (xnum + 1);
          node3 = node4 + 1;
 
-         (*element) [ecount] -> node [1] = (*node) [node1];
-         (*element) [ecount] -> node [2] = (*node) [node2];
-         (*element) [ecount] -> node [3] = (*node) [node3];
-         (*element) [ecount] -> node [4] = (*node) [node4];
+         element [ecount] -> node [1] = node [node1];
+         element [ecount] -> node [2] = node [node2];
+         element [ecount] -> node [3] = node [node3];
+         element [ecount] -> node [4] = node [node4];
       }
    }
-
-   *numnodes = nn;
-   *numelts  = ne;
 
    return 0;
 }

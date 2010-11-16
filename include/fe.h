@@ -506,14 +506,6 @@ int Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft);
 */
 int ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft);
 
-
-/*!
-  Computes the frequency domain transfer function between inputs at
-  forced DOF and the output at the DOF described by nodes= and dofs=
-  in the analysis parameters.
-*/
-Matrix* ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced);
-
 Matrix ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced);
 
 	/*

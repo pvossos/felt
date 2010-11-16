@@ -36,9 +36,9 @@
 # include "fe.h"
 # include "Drawing.h"
 # include "draw3d.h"
-# include "allocate.h"
 # include "error.h"
 # include "procedures.h"
+# include "cvector1.hpp"
 
 extern Widget toplevel;
 
@@ -197,6 +197,11 @@ void VisualizeStructure (Element *element, unsigned int numelts)
    DW_SetAutoRedraw (struct_dw, True);
 }
 
+struct s_pair {
+    float	xd[MaxNodesPerElement], yd[MaxNodesPerElement];
+    float    	x[MaxNodesPerElement], y[MaxNodesPerElement]; 
+};
+
 void VisualizeStructure3D (Element *element, unsigned int numelts)
 {
    Point	points [MaxNodesPerElement];
@@ -210,10 +215,6 @@ void VisualizeStructure3D (Element *element, unsigned int numelts)
    float	x,y,z,
 		sx,sy;
    Dimension	width, height;
-   struct s_pair {
-      float	xd[MaxNodesPerElement], yd[MaxNodesPerElement];
-      float    	x[MaxNodesPerElement], y[MaxNodesPerElement]; 
-   } *s_element;
 
    if (first_time) {
       structShell = CreateDrawingShell ("structShell", "Structure Plot", 
@@ -221,11 +222,7 @@ void VisualizeStructure3D (Element *element, unsigned int numelts)
       first_time = 0;
    }
 
-   s_element = Allocate (struct s_pair, numelts);
-   if (s_element == NULL)
-      Fatal ("allocation error creating 3d plot");
-
-   UnitOffset (s_element);
+   cvector1<s_pair> s_element(numelts);
 
    maxX = minX = element[1] -> node[1] -> x +
                  (element[1] -> node[1] -> dx[1] * solution -> magnify);
@@ -434,7 +431,4 @@ void VisualizeStructure3D (Element *element, unsigned int numelts)
          break;
       }
    }
-   
-   ZeroOffset (s_element);
-   Deallocate (s_element);
 }

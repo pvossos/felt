@@ -22,18 +22,16 @@
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "rules.h"
 
 unsigned
-GenerateGrid(Grid grid, Element **element, Node **node,
-             unsigned int *numelts, unsigned int *numnodes, 
+GenerateGrid(Grid grid, cvector1<Element> &element, cvector1<Node> &node,
              unsigned int bnode, unsigned int belement)
 {
    RuleFunction xrule_func;
    RuleFunction yrule_func;
    RuleFunction zrule_func;
-   unsigned	ne, nn;
    unsigned	ecount, ncount;
    unsigned	node1, node2;
    unsigned	i, j, k;
@@ -46,10 +44,10 @@ GenerateGrid(Grid grid, Element **element, Node **node,
    ynum = grid -> ynumber;
    znum = grid -> znumber;
 
-   ne = xnum*(ynum + 1)*(znum + 1) + 
-        ynum*(xnum + 1)*(znum + 1) +
-        znum*(xnum + 1)*(ynum + 1);
-
+   const size_t ne = xnum*(ynum + 1)*(znum + 1) + 
+       ynum*(xnum + 1)*(znum + 1) +
+       znum*(xnum + 1)*(ynum + 1);
+   
    if (ne <= 0) {
       error ("nothing to generate");
       return 1;
@@ -60,29 +58,21 @@ GenerateGrid(Grid grid, Element **element, Node **node,
       return 1;
    }
 
-   nn = (xnum + 1)*(ynum + 1)*(znum + 1);
+   const size_t nn = (xnum + 1)*(ynum + 1)*(znum + 1);
 
 	/*
 	 * allocate some memory to hold everything that we will generate
 	 */
    
-   if (!(*node = Allocate(Node, nn)))
-      Fatal ("allocation error in grid generation");
-
-   UnitOffset (*node);
-   
+   node.resize(nn);
    for (i = 1 ; i <= nn ; i++) {
-      if (!((*node) [i] = CreateNode (0)))
+      if (!(node [i] = CreateNode (0)))
          Fatal ("allocation error in grid generation");
    }
 
-   if (!(*element = Allocate(Element, ne)))
-      Fatal ("allocation error in grid generation");
-
-   UnitOffset (*element);
-
+   element.resize(ne);
    for (i = 1 ; i <= ne ; i++) {
-      if (!((*element) [i] = CreateElement (0, grid -> definition)))
+      if (!(element [i] = CreateElement (0, grid -> definition)))
          Fatal ("allocation error in grid generation");
    }
 
@@ -108,10 +98,10 @@ GenerateGrid(Grid grid, Element **element, Node **node,
          for (i = 1 ; i <= xnum + 1 ; i++) {
  
             ncount++;
-            (*node) [ncount] -> number = bnode + ncount;
-            (*node) [ncount] -> x = grid -> xs + xrule_func(i, xnum, x_length);
-            (*node) [ncount] -> y = grid -> ys + yrule_func(j, ynum, y_length);
-            (*node) [ncount] -> z = grid -> zs + zrule_func(k, znum, z_length);
+            node [ncount] -> number = bnode + ncount;
+            node [ncount] -> x = grid -> xs + xrule_func(i, xnum, x_length);
+            node [ncount] -> y = grid -> ys + yrule_func(j, ynum, y_length);
+            node [ncount] -> z = grid -> zs + zrule_func(k, znum, z_length);
 
          }
       }
@@ -128,13 +118,13 @@ GenerateGrid(Grid grid, Element **element, Node **node,
          for (i = 1 ; i <= xnum ; i++) {
 
             ecount++;
-            (*element) [ecount] -> number = belement + ecount;
+            element [ecount] -> number = belement + ecount;
 
             node1 = i + (j - 1)*(xnum + 1) + (k - 1)*(ynum + 1)*(xnum + 1);
             node2 = node1 + 1; 
 
-            (*element) [ecount] -> node [1] = (*node) [node1];
-            (*element) [ecount] -> node [2] = (*node) [node2];
+            element [ecount] -> node [1] = node [node1];
+            element [ecount] -> node [2] = node [node2];
 
          }
       }
@@ -149,13 +139,13 @@ GenerateGrid(Grid grid, Element **element, Node **node,
          for (i = 1 ; i <= xnum + 1 ; i++) {
 
             ecount++;
-            (*element) [ecount] -> number = belement + ecount;
+            element [ecount] -> number = belement + ecount;
 
             node1 = i + (j - 1)*(xnum + 1) + (k - 1)*(ynum + 1)*(xnum + 1);
             node2 = node1 + (xnum + 1); 
 
-            (*element) [ecount] -> node [1] = (*node) [node1];
-            (*element) [ecount] -> node [2] = (*node) [node2];
+            element [ecount] -> node [1] = node [node1];
+            element [ecount] -> node [2] = node [node2];
 
          }
       }
@@ -170,20 +160,17 @@ GenerateGrid(Grid grid, Element **element, Node **node,
          for (i = 1 ; i <= xnum + 1 ; i++) {
 
             ecount++;
-            (*element) [ecount] -> number = belement + ecount;
+            element [ecount] -> number = belement + ecount;
  
             node1 = i + (j - 1)*(xnum + 1) + (k - 1)*(ynum + 1)*(xnum + 1);
             node2 = node1 + (xnum + 1)*(ynum + 1); 
 
-            (*element) [ecount] -> node [1] = (*node) [node1];
-            (*element) [ecount] -> node [2] = (*node) [node2];
+            element [ecount] -> node [1] = node [node1];
+            element [ecount] -> node [2] = node [node2];
 
          }
       }
    }
-
-   *numnodes = nn;
-   *numelts  = ne;
 
    return 0;
 }

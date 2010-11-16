@@ -157,7 +157,7 @@ int main (int argc, char *argv[])
     Matrix	  M, K, C;		/* global matrices		*/
     Matrix	  Mcond, Ccond, Kcond;	/* condensed matrices		*/
     Matrix	  Mm, Km, Cm;		/* modal matrices		*/
-    Matrix	 *H;			/* transfer function matrices   */
+    cvector1<Matrix> H;			/* transfer function matrices   */
     Matrix	  S;			/* output spectra		*/
     Vector	  F,			/* force vector			*/
 		  Fcond;		/* condensed force vector	*/
@@ -548,7 +548,7 @@ int main (int argc, char *argv[])
           H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced, numforced);
 
           if (dospectra) {
-             S = ComputeOutputSpectra (H, forced, numforced);
+              S = ComputeOutputSpectra (H.c_ptr1(), forced, numforced);
              if (S == NullMatrix)
                 break; 
           }
@@ -557,9 +557,9 @@ int main (int argc, char *argv[])
 
           if (!dospectra) {
              if (dotable)
-                WriteTransferFunctions (H, forced, numforced, stdout);
+                 WriteTransferFunctions (H.c_ptr1(), forced, numforced, stdout);
              if (doplot)
-                PlotTransferFunctions (H, forced, numforced, stdout);
+                 PlotTransferFunctions (H.c_ptr1(), forced, numforced, stdout);
 
              break;
           }

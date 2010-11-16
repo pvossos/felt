@@ -29,9 +29,9 @@
 # include <stdio.h>
 # include <math.h>
 # include "fe.h"
-# include "allocate.h"
 # include "error.h"
 # include "problem.h"
+# include "cvector1.hpp"
 
 /****************************************************************************
  *
@@ -247,21 +247,19 @@ FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, Matrix *Mr, Matrix *Cr
    unsigned	i, j;
    double	factor;
    Matrix	M, C, K;
-   unsigned	*diag;
 
    n = Mrows(m);
 
-   diag = Allocate (unsigned, n);
-   UnitOffset (diag);
+   cvector1u diag(n);
 
    for (i = 1 ; i <= n ; i++)
       diag [i] = i;
 
    M = CreateCompactMatrix (n, n, n, NULL);
-   M -> diag = diag;
+   M -> diag = diag.release1();
 
-   C = CreateCompactMatrix (n, n, n, diag);
-   K = CreateCompactMatrix (n, n, n, diag);
+   C = CreateCompactMatrix (n, n, n, diag.c_ptr1());
+   K = CreateCompactMatrix (n, n, n, diag.c_ptr1());
 
    if (ortho) {
       MultiplyUTmU (M, u, m);

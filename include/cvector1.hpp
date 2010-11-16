@@ -164,6 +164,7 @@ private:
 typedef cvector1<char>     cvector1c;
 typedef cvector1<unsigned> cvector1u;
 typedef cvector1<int>      cvector1i;
+typedef cvector1<float>   cvector1f;
 typedef cvector1<double>   cvector1d;
 
 //----------------------------------------------------------------------!

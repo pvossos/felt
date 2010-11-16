@@ -119,7 +119,7 @@ int SolveProblem (void)
     Matrix	 Ccond;
     Matrix	 Mcond;			/* condensed mass matrix	*/
     Matrix	 Mm, Cm, Km;
-    Matrix	*H;			/* matrix of transfer functions */
+    cvector1<Matrix>	H;			/* matrix of transfer functions */
     Matrix	 S;
     Vector	 F,			/* force vector			*/
 		 Fcond,			/* condensed force vector	*/
@@ -289,15 +289,15 @@ int SolveProblem (void)
        H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced, numforced);
 
        if (!solution -> transfer)
-          S = ComputeOutputSpectra (H, forced, numforced);
+           S = ComputeOutputSpectra (H.c_ptr1(), forced, numforced);
 
        RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
        
        if (solution -> transfer) {
-          WriteTransferFunctions (H, forced, numforced, output);
+           WriteTransferFunctions (H.c_ptr1(), forced, numforced, output);
 
           if (solution -> plot)
-             VelvetPlotTransferFunctions (H, forced, numforced, 
+              VelvetPlotTransferFunctions (H.c_ptr1(), forced, numforced, 
                                           "frequency", "H", 
                                           "Spectral Transfer Function");
 

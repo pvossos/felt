@@ -18,11 +18,11 @@
 */
 
 # include <math.h>
-# include "allocate.h"
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
 # include "mesh.h"
+# include "cvector1.hpp"
 
 # define TOLERANCE	0.001
 # define DIST(a,b)	(sqrt(((a) -> x - (b) -> x)*((a) -> x - (b) -> x) + \
@@ -30,13 +30,13 @@
                               ((a) -> z - (b) -> z)*((a) -> z - (b) -> z)))
 
 static int
-CheckConnections(Node n1, Node n2, Element *element, unsigned numelts)
+CheckConnections(Node n1, Node n2, const cvector1<Element> &element)
 {
    unsigned	i, j, k;
    int		status;
 
    status = 0;
-   for (i = 1 ; i <= numelts ; i++) {
+   for (i = 1 ; i <= element.size(); i++) {
       for (j = 1 ; j <= element[i] -> definition -> numnodes ; j++) {
 
          if (element[i] -> node[j] == n1) {
@@ -56,12 +56,10 @@ CheckConnections(Node n1, Node n2, Element *element, unsigned numelts)
 }
 
 static void
-Reconnect(Node nu, Node old, Element *element, unsigned numelts)
+Reconnect(Node nu, Node old, cvector1<Element> &element)
 {
-   unsigned	i,j;
-
-   for (i = 1 ; i <= numelts ; i++) {
-      for (j = 1 ; j <= element[i] -> definition -> numnodes ; j++) {
+   for (size_t i = 1 ; i <= element.size(); i++) {
+      for (size_t j = 1 ; j <= element[i] -> definition -> numnodes ; j++) {
 
          if (element[i] -> node[j] == old) {
             element[i] -> node[j] = nu;
@@ -73,23 +71,18 @@ Reconnect(Node nu, Node old, Element *element, unsigned numelts)
    return;
 }
       
-static Node*
-MergeNodes(Node *node, Element *element,
-           unsigned numnodes, unsigned numelts,
-           unsigned *merges, unsigned merge_count)
+static cvector1<Node>
+MergeNodes(cvector1<Node> &node, cvector1<Element> &element,
+           cvector1<size_t> &merges, unsigned merge_count)
 {
-   Node		*new_nodes;
-   unsigned	i;
-   unsigned	count;
+   const size_t numnodes = node.size();
+   cvector1<Node> new_nodes(numnodes - merge_count);
 
-   new_nodes = Allocate (Node, (numnodes - merge_count));
-   UnitOffset (new_nodes);
-
-   count = 0;
-   for (i = 1 ; i <= numnodes ; i++) {
+   size_t count = 0;
+   for (size_t i = 1 ; i <= numnodes ; i++) {
       if (merges [i]) {
-         Reconnect (node [merges[i]], node[i], element, numelts);
-         DestroyNode (node [i]);
+          Reconnect (node [merges[i]], node[i], element);
+          DestroyNode (node [i]);
       }
       else {
          count++;
@@ -97,27 +90,22 @@ MergeNodes(Node *node, Element *element,
          node [i] -> number = count;
       }
    }
-         
-   ZeroOffset (node);
-   Deallocate (node);
 
    return new_nodes;
 }
 
-Node*
-CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts)
+cvector1<Node>
+CoalesceNodes(cvector1<Node> &node, cvector1<Element> &element)
 {
    double	maxX, maxY, maxZ;
    double	minX, minY, minZ;
    double	tol;
    unsigned	i,j;
    unsigned	merge_count;
-   unsigned	numnodes;
-   unsigned	*merges;
-   Node		*new_nodes;
    int		status;
 
-   numnodes = *nn;
+   const size_t numelts = element.size();
+   const size_t numnodes = node.size();
 
    if (numnodes == 0 || numelts == 0) {
       error ("nothing to coalesce");
@@ -149,12 +137,7 @@ CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts)
                            (maxY - minY)*(maxY - minY) +
                            (maxZ - minZ)*(maxZ - minZ));
 
-   merges = Allocate (unsigned, numnodes);
-   UnitOffset (merges);
-
-   for (i = 1 ; i <= numnodes ; i++)
-      merges [i] = 0;
-
+   cvector1<size_t> merges(numnodes, 0);
    merge_count = 0;
 
    for (i = 1 ; i <= numnodes ; i++) {
@@ -162,7 +145,7 @@ CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts)
       
          if (!merges [j]) {
             if (DIST(node[i], node[j]) < tol) {
-               status = CheckConnections (node[i], node[j], element, numelts);
+                status = CheckConnections (node[i], node[j], element);
                if (!status) {
                   merge_count++;
                   merges [j] = i;
@@ -172,16 +155,13 @@ CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts)
       }
    } 
 
+   cvector1<Node> new_nodes;
+   
    if (merge_count) {
-      new_nodes = MergeNodes(node,element,numnodes,numelts,merges,merge_count);
-      numnodes -= merge_count;
+      new_nodes = MergeNodes(node,element,merges,merge_count);
    }
    else
       new_nodes = node;
 
-   ZeroOffset (merges);
-   Deallocate (merges);
-
-   *nn = numnodes;
    return new_nodes;
 }

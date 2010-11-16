@@ -34,6 +34,7 @@
 # include "bivar.h"
 # include "colormap.h"
 # include "bmp.h"
+# include "cvector1.hpp"
 
 # define HORIZ	1
 # define VERT	2
@@ -301,8 +302,7 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
    float	maxX,maxY,	
 		minX,minY;
    float	Xscale, Yscale;
-   float	*xd,*yd,*zd;
-   float	*xi,*yi,**zi;
+   float	**zi;
    unsigned	result;
    unsigned char		**mask;
    unsigned	wedge_orient;
@@ -380,24 +380,15 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
       mask [i] = Allocate (unsigned char, width);
    }
 
-   xi = Allocate (float, width);
-   UnitOffset (xi);
-   yi = Allocate (float, height);
-   UnitOffset (yi);
+   cvector1f xi(width);
+   cvector1f yi(height);
 
    if (numnodes != 0 && node != NULL)
       nd = numnodes;
 
-   xd = Allocate (float, nd);
-   yd = Allocate (float, nd);
-   zd = Allocate (float, nd);
-
-   if (xd == NULL || yd == NULL || zd == NULL) 
-      Fatal ("allocation error plotting contour field");   
-
-   UnitOffset (xd);
-   UnitOffset (yd);
-   UnitOffset (zd);
+   cvector1f xd(nd);
+   cvector1f yd(nd);
+   cvector1f zd(nd);
 
    global = XCreateRegion ();
 
@@ -449,7 +440,7 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
    for (j = 1 ; j <= width ; j++) 
       xi [j] = (float) j - 1.0;
 
-   result = BivariateInterp (nd, xd, yd, zd, width, height,xi,yi,zi,mask);
+   result = BivariateInterp (nd, xd.c_ptr1(), yd.c_ptr1(), zd.c_ptr1(), width, height,xi.c_ptr1(),yi.c_ptr1(),zi,mask);
 
    if (result) {
       error ("could not interpolate to form stress field"); 
@@ -479,13 +470,6 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
 	/*
 	 * cleanup
 	 */
-
-   ZeroOffset (xd); Deallocate (xd);
-   ZeroOffset (yd); Deallocate (yd);
-   ZeroOffset (zd); Deallocate (zd);
-
-   ZeroOffset (xi); Deallocate (xi);
-   ZeroOffset (yi); Deallocate (yi);
 
    for (i = 0 ; i < height ; i++) {
       Deallocate (zi [i]);

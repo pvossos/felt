@@ -30,6 +30,7 @@
  *
  ***************************************************************************/
 
+# include <vector>
 # include <stdio.h>
 # include <math.h>
 # include "fe.h"
@@ -37,6 +38,7 @@
 # include "error.h"
 # include "problem.h"
 # include "cmatrix.h"
+# include "cvector1.hpp"
 
 # define BLACKMAN	1
 # define HAMMING	2
@@ -45,6 +47,8 @@
 # define SQUARE		5
 # define TRIANGULAR	6
 # define WELCH		7
+
+using std::vector;
 
 static int
 RoundToPowerOf2(int n, int *exponent)
@@ -79,19 +83,18 @@ RoundToPowerOf2(int n, int *exponent)
  *
  ***************************************************************************/
 
-static double*
+static vector<double>
 ZeroPadData(Vector x, int *length, int *length2)
 {
    int		n;
    int		i;
-   double	*xt;
 
    n = RoundToPowerOf2 (Mrows(x), &i);
 
    *length2 = i;
    *length = n;
 
-   xt = Allocate(double, n);
+   vector<double> xt(n);
    
    for (i = 1 ; i <= n ; i++) {
       if (i <= Mrows(x))
@@ -227,13 +230,12 @@ FastFourierTransform(double *Xr, double *Xi, int n, int n2, int direction)
    return 0;
 }
 
-static double*
+static vector<double>
 WindowFunction(unsigned win, unsigned n)
 {
    unsigned	i;
-   double	*w;
 
-   w = Allocate(double, n);
+   vector<double> w(n);
 
    for (i = 0 ; i < n ; i++) {
       switch (win) {
@@ -273,10 +275,6 @@ WindowFunction(unsigned win, unsigned n)
 int 
 Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
 {
-   double	*Xr;
-   double	*p;
-   double	*xr, *xi;
-   double	*w;
    int		n, nt, n2;
    int		nfft2;
    int		np;
@@ -285,7 +283,7 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
    double	factor;
    unsigned	i, j;
 
-   Xr = ZeroPadData (x, &n, &n2);
+   vector<double> Xr = ZeroPadData (x, &n, &n2);
 
 	/*
 	 * figure out the things we need to window the data
@@ -300,22 +298,17 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
 
    windows = (int) ((n - overlap) / (nfft - overlap));
 
-   xr = Allocate(double, nfft);
-   xi = Allocate(double, nfft);
-   p = Allocate(double, nfft);
+   vector<double> xr(nfft);
+   vector<double> xi(nfft, 0);
+   vector<double> p(nfft, 0);
 
-   for (i = 0 ; i < nfft ; i++) {
-      xi [i] = 0.0;
-      p [i] = 0.0;
-   }
- 
-   w = WindowFunction(HANNING, nfft);
+   vector<double> w = WindowFunction(HANNING, nfft);
 
    for (i = 0 ; i < windows ; i++) {
       for (j = 0 ; j < nfft ; j++)
          xr [j] = Xr[i*(nfft - overlap) + j] * w[j];
 
-      FastFourierTransform(xr, xi, nfft, nfft2, 1);
+      FastFourierTransform(&xr[0], &xi[0], nfft, nfft2, 1);
       
       for (j = 0 ; j < nfft ; j++) 
          p [j] += xr[j]*xr[j] + xi[j]*xi[j];
@@ -351,16 +344,6 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
       if (F != NULL)
          sdata((*F), j+1, 1) = j/delta_t/nfft;
    }
-
-	/*
-	 * cleanup time
-	 */
-
-   free(w);
-   free(p);
-   free(xr);
-   free(xi);
-   free(Xr);
 
    return 0;
 }
@@ -402,11 +385,10 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
    return 0; 
 }
 
-Matrix*
+cvector1<Matrix>
 ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced)
 {
    ComplexMatrix	Z;
-   Matrix		*H;
    ComplexMatrix	Ht;
    double		w;
    unsigned		i,j,k;
@@ -424,8 +406,7 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned
    nsteps = (analysis.stop - analysis.start + analysis.step/2.0) / 
             analysis.step + 1.0;
 
-   H = Allocate(Matrix, numforced);
-   UnitOffset (H);
+   cvector1<Matrix> H(numforced);
 
    for (i = 1 ; i <= numforced ; i++)
       H [i] = CreateFullMatrix(nsteps, analysis.numdofs * analysis.numnodes);

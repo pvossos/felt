@@ -28,8 +28,8 @@
 
 # include <stdio.h>
 # include <math.h>
+# include "cvector1.hpp"
 # include "fe.h"
-# include "allocate.h"
 # include "error.h"
 # include "problem.h"
 
@@ -55,7 +55,6 @@ CreateNonlinearStiffness(int *status)
 		 base_col,
 		 affected_row_dof,
 		 affected_col_dof;
-   unsigned	*ht,*dg;
    Vector 	 K;
    int	 	 err_count;
 
@@ -74,20 +73,8 @@ CreateNonlinearStiffness(int *status)
 
    size = nn*active;
 
-   ht = Allocate (unsigned, size);
-   if (ht == NULL)
-      Fatal ("allocation error setting up compact column heights");
-
-   UnitOffset (ht);
-
-   dg = Allocate (unsigned, size);
-   if (dg == NULL)
-      Fatal ("allocation error setting up compact column diagonal addresses");
-
-   UnitOffset (dg);
-
-   for (i = 1; i <= size ; i++) 
-      ht[i] = dg[i] = 0;
+   cvector1u ht(size, 0);
+   cvector1u dg(size, 0);
 
    for (i = 1 ; i <= ne ; i++) {
       ndofs = e [i] -> definition -> numdofs;
@@ -139,10 +126,7 @@ CreateNonlinearStiffness(int *status)
       dg [i] = ht [i] + dg [i-1];
    }
 
-   ZeroOffset (ht);
-   Deallocate (ht);
-
-   K = CreateCompactMatrix (nn*active, nn*active, size, dg);
+   K = CreateCompactMatrix (nn*active, nn*active, size, dg.c_ptr1());
    ZeroMatrix (K);
 
    *status = err_count;

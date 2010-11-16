@@ -28,18 +28,16 @@
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
-# include "mesh.h"
+# include "meshgen.hpp"
 # include "rules.h"
 
 unsigned 
-GenerateBrickGrid(Grid grid, Element **element, Node **node, 
-                  unsigned int *numelts, unsigned int *numnodes, 
+GenerateBrickGrid(Grid grid, cvector1<Element> &element, cvector1<Node> &node, 
                   unsigned int bnode, unsigned int belement)
 {
    RuleFunction xrule_func;
    RuleFunction yrule_func;
    RuleFunction zrule_func;
-   unsigned	ne, nn;
    unsigned	ecount, ncount;
    unsigned	nodenum [9];
    unsigned	i, j, k;
@@ -53,7 +51,7 @@ GenerateBrickGrid(Grid grid, Element **element, Node **node,
    ynum = grid -> ynumber;
    znum = grid -> znumber;
 
-   ne = xnum*ynum*znum;
+   const size_t ne = xnum*ynum*znum;
 
    if (ne <= 0) {
       error ("nothing to generate");
@@ -65,30 +63,23 @@ GenerateBrickGrid(Grid grid, Element **element, Node **node,
       return 1;
    }
 
-   nn = (xnum + 1)*(ynum + 1)*(znum + 1);
+   const size_t nn = (xnum + 1)*(ynum + 1)*(znum + 1);
 
 	/*
 	 * allocate some memory to hold everything that we will generate
 	 */
 
-   
-   if (!(*node = Allocate(Node, nn)))
-      Fatal ("allocation error in grid generation");
+   node.resize(nn);
 
-   UnitOffset (*node);
-   
    for (i = 1 ; i <= nn ; i++) {
-      if (!((*node) [i] = CreateNode (0)))
+      if (!(node [i] = CreateNode (0)))
          Fatal ("allocation error in quadrilateral grid generation");
    }
 
-   if (!(*element = Allocate(Element, ne)))
-      Fatal ("allocation error in quadrilateral grid generation");
-
-   UnitOffset (*element);
+   element.resize(ne);
 
    for (i = 1 ; i <= ne ; i++) {
-      if (!((*element) [i] = CreateElement (0, grid -> definition)))
+      if (!(element [i] = CreateElement (0, grid -> definition)))
          Fatal ("allocation error in grid generation");
    }
 
@@ -114,11 +105,11 @@ GenerateBrickGrid(Grid grid, Element **element, Node **node,
          for (i = 1 ; i <= xnum + 1 ; i++) {
  
             ncount++;
-            (*node) [ncount] -> number = bnode + ncount;
+            node [ncount] -> number = bnode + ncount;
 
-            (*node) [ncount] -> x = grid -> xs + xrule_func(i, xnum, x_length);
-            (*node) [ncount] -> y = grid -> ys + yrule_func(j, ynum, y_length);
-            (*node) [ncount] -> z = grid -> zs + zrule_func(k, znum, z_length);
+            node [ncount] -> x = grid -> xs + xrule_func(i, xnum, x_length);
+            node [ncount] -> y = grid -> ys + yrule_func(j, ynum, y_length);
+            node [ncount] -> z = grid -> zs + zrule_func(k, znum, z_length);
 
          }
       }
@@ -135,7 +126,7 @@ GenerateBrickGrid(Grid grid, Element **element, Node **node,
          for (i = 1 ; i <= xnum ; i++) {
 
             ecount++;
-            (*element) [ecount] -> number = belement + ecount;
+            element [ecount] -> number = belement + ecount;
 
             nodenum[1] = i + (j - 1)*(xnum + 1) + (k - 1)*(xnum + 1)*(ynum + 1);
             nodenum[2] = nodenum[1] + 1; 
@@ -145,13 +136,10 @@ GenerateBrickGrid(Grid grid, Element **element, Node **node,
                nodenum[m] = nodenum[m-4] + (xnum + 1)*(ynum + 1);
 
             for (m = 1 ; m <= 8 ; m++)
-               (*element) [ecount] -> node [m] = (*node) [nodenum[m]];
+               element [ecount] -> node [m] = node [nodenum[m]];
          }
       }
    }
-
-   *numnodes = nn;
-   *numelts  = ne;
 
    return 0;
 }

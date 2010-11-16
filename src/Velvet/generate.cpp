@@ -42,6 +42,7 @@
 # include "text_entry.h"
 # include "error.h"
 # include "util.h"
+# include "meshgen.hpp"
 
 extern ConstraintDialog constraint_d;
 extern MaterialDialog	material_d;
@@ -79,16 +80,21 @@ static void VelvetCoalesceNodes (void)
    for (i = 1 ; i <= nn ; i++) 
       TreeDelete (problem.node_tree, problem.nodes [i]);
 
-   new_nodes = CoalesceNodes (problem.nodes, problem.elements, &nn, ne);
+   cvector1<Node> pn(problem.nodes, problem.num_nodes);
+   cvector1<Element> pe(problem.elements, problem.num_elements);
+   pn = CoalesceNodes(pn, pe);
+   problem.nodes = pn.release1();
+   problem.elements = pe.release1();
 
-   if (new_nodes == problem.nodes) {
+   if (pn.c_ptr1() == problem.nodes) {
       for (i = 1 ; i <= nn ; i++) 
          TreeInsert (problem.node_tree, problem.nodes [i]);
 
       return;
    }
 
-   problem.nodes = new_nodes;
+   problem.nodes = pn.release1();
+   pe.release1();
 
    DW_SetAutoRedraw (drawing, False);
 
@@ -162,11 +168,8 @@ void SetupGridGeneration (void)
    static GridDialog	grid_d = NULL;
    Element	mxelt;
    Node		mxnode;
-   Element	*element;
-   Node		*node;
    unsigned	mxnode_number,
 		mxelt_number;
-   unsigned	nn, ne;
    unsigned	i;
    Grid	    	grid;
 
@@ -191,24 +194,25 @@ void SetupGridGeneration (void)
 
    grid -> definition = ElementListDefinition (element_l);
 
+   cvector1<Element> element;
+   cvector1<Node> node;
+   
    if (grid_type == LINES) {
-      if (GenerateGrid (grid,&element,&node, 
-                        &ne,&nn,mxnode_number,mxelt_number))
+      if (GenerateGrid (grid,element,node,mxnode_number,mxelt_number))
          return;
    }
    else if (grid_type == QUADS) {
-      if (GenerateQuadGrid (grid,&element,&node, 
-                            &ne,&nn,mxnode_number,mxelt_number))
+      if (GenerateQuadGrid (grid,element,node,mxnode_number,mxelt_number))
          return;
    }
 
-   for (i = 1 ; i <= ne ; i++) {
+   for (i = 1 ; i <= element.size(); i++) {
       element [i] -> material = MaterialDialogActive (material_d);
 
       DrawElement (element [i]);
    }
 
-   for (i = 1 ; i <= nn ; i++) {
+   for (i = 1 ; i <= node.size(); i++) {
       node[i] -> constraint = ConstraintDialogActive (constraint_d);
 
       DrawNode (node [i]);
@@ -216,7 +220,7 @@ void SetupGridGeneration (void)
 
    VelvetCoalesceNodes ( );
 
-   OutputDialogPrintf (error_dialog,"Generated %d nodes and %d elements",nn,ne);
+   OutputDialogPrintf (error_dialog,"Generated %d nodes and %d elements",node.size(), element.size());
    CenterOnWidget (OutputDialogShell (error_dialog), toplevel, True);
    WarpToCenter (OutputDialogShell (error_dialog));
    OutputDialogSelect (error_dialog, "Generation status", "okay");
@@ -337,9 +341,6 @@ void DoAddCurvePoint (float x, float y)
 static void
 DoTriMeshGeneration(void)
 {
-   Element	*element;
-   Node		*node;
-   unsigned	ne,nn;
    Element	mxelt;
    Node		mxnode;
    unsigned	maxnode;
@@ -367,8 +368,11 @@ DoTriMeshGeneration(void)
    DW_SetAutoRedraw (drawing, True);
 
    trimesh -> definition = ElementListDefinition (element_l);
-      
-   if (GenerateTriMesh (trimesh,&element,&node,&ne,&nn,maxnode,maxelt)) {
+
+   cvector1<Element> element;
+   cvector1<Node> node;
+   
+   if (GenerateTriMesh (trimesh,element,node,maxnode,maxelt)) {
       for (i = 0 ; i < trimesh -> numcurves ; i++) {
          Deallocate (trimesh -> curves [i] -> vcl);
          Deallocate (trimesh -> curves [i]);
@@ -378,13 +382,13 @@ DoTriMeshGeneration(void)
       return;
    }
 
-   for (i = 1 ; i <= ne ; i++) {
+   for (i = 1 ; i <= element.size(); i++) {
       element [i] -> material = MaterialDialogActive (material_d);
 
       DrawElement (element [i]);
    }     
  
-   for (i = 1 ; i <= nn ; i++) {
+   for (i = 1 ; i <= node.size() ; i++) {
       node[i] -> constraint = ConstraintDialogActive (constraint_d);
 
       DrawNode (node [i]);
@@ -399,7 +403,7 @@ DoTriMeshGeneration(void)
 
    VelvetCoalesceNodes ( );
 
-   OutputDialogPrintf (error_dialog,"Generated %d nodes and %d elements",nn,ne);
+   OutputDialogPrintf (error_dialog,"Generated %d nodes and %d elements",node.size(), element.size());
    CenterOnWidget (OutputDialogShell (error_dialog), toplevel, True);
    WarpToCenter (OutputDialogShell (error_dialog));
    OutputDialogSelect (error_dialog, "Generation status", "okay");

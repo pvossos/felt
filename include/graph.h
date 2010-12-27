@@ -10,11 +10,11 @@ extern "C" {
 
 /*----------------------------------------------------------------------*/
 
-void WriteLineGraph (Matrix d, char *alt_title,
-                     char *xlabel, char *ylabel, char *output);
+void WriteLineGraph (Matrix d, const char *alt_title,
+                     const char *xlabel, const char *ylabel, const char *output);
 
 void WriteLineGraphTransferFunctions (Matrix *H, NodeDOF *forced,
-                                      unsigned numforced, char *output);
+                                      unsigned numforced, const char *output);
 
 /*----------------------------------------------------------------------*/
 

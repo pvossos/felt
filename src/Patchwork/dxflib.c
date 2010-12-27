@@ -108,7 +108,7 @@ int ReadDXFTrailer (FILE *input)
    return 0;
 }
 
-int WriteDXFLine (DXFLine *line, char *layer, FILE *output)
+int WriteDXFLine (DXFLine *line, const char *layer, FILE *output)
 {
    fprintf (output,"  %d\nLINE\n",STRING); 
    fprintf (output,"  %d\n%s\n",LAYER,layer);
@@ -168,7 +168,7 @@ int ReadDXFLine (DXFLine *line, char *layer, FILE *input)
    return 0;
 }
 
-int WriteDXFPolyline (DXFPolyline *poly, char *layer, FILE *output)
+int WriteDXFPolyline (DXFPolyline *poly, const char *layer, FILE *output)
 {
    unsigned	i;
 
@@ -284,7 +284,7 @@ int ReadDXFPolyline (DXFPolyline *poly, char *layer, FILE *input)
    return 0;
 }
 
-int WriteDXFPolyHeader (char *layer, FILE *output)
+int WriteDXFPolyHeader (const char *layer, FILE *output)
 {
    fprintf (output,"   %d\nPOLYLINE\n",STRING);
    fprintf (output,"   %d\n%s\n",LAYER,layer);
@@ -297,7 +297,7 @@ int WriteDXFPolyHeader (char *layer, FILE *output)
    return 0;
 }
 
-int WriteDXFPolyTrailer (char *layer, FILE *output)
+int WriteDXFPolyTrailer (const char *layer, FILE *output)
 {
    fprintf (output, "   %d\nSEQEND\n",STRING);
    fprintf (output, "   %d\n%s\n",LAYER,layer);
@@ -305,7 +305,7 @@ int WriteDXFPolyTrailer (char *layer, FILE *output)
    return 0;
 }
 
-int WriteDXFVertex (double x, double y, double z, char *layer, FILE *output)
+int WriteDXFVertex (double x, double y, double z, const char *layer, FILE *output)
 {
    fprintf (output,"   %d\nVERTEX\n",STRING);
    fprintf (output,"   %d\n%s\n",LAYER,layer);
@@ -317,7 +317,7 @@ int WriteDXFVertex (double x, double y, double z, char *layer, FILE *output)
 }
 
 int
-WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output)
+WriteDXF3dMeshVertex(double x, double y, double z, const char *layer, FILE *output)
 {
    WriteDXFVertex (x, y, z, layer, output);
    fprintf (output,"   %d\n%d\n",POLYCODE2,MESHCODE2);
@@ -325,7 +325,7 @@ WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output)
    return 0;
 }
 
-int WriteDXF3dMeshHeader (int m, int n, char *layer, FILE *output)
+int WriteDXF3dMeshHeader (int m, int n, const char *layer, FILE *output)
 {
    fprintf (output,"   %d\nPOLYLINE\n",STRING);
    fprintf (output,"   %d\n%s\n",LAYER,layer);

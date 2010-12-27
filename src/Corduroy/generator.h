@@ -74,7 +74,7 @@ int CorduroyCppOptions (int *argc, char **argv);
 */
 int ReadCorduroyFile (const char *input_name);
 
-int WriteCorduroyFile (char *filename);
+int WriteCorduroyFile (const char *filename);
 
 /*!
   Looks up an element definition by name.			

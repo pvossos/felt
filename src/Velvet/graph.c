@@ -608,7 +608,7 @@ static void DrawForceLegend (int i, char *symbol, Widget graph_dw)
    return;
 }
 
-static void PlaceTitles (char *alt_title, char *xlabel, char *ylabel, Widget graph_dw, int use_alt_title)
+static void PlaceTitles (const char *alt_title, const char *xlabel, const char *ylabel, Widget graph_dw, int use_alt_title)
 {
    int		dr, far, fdr;
    XCharStruct	cstruct;
@@ -657,7 +657,7 @@ static void PlaceTitles (char *alt_title, char *xlabel, char *ylabel, Widget gra
    return;
 }
 
-void VelvetPlotTD (Matrix dtable, Matrix ttable, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names)
+void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char *ylabel, const char *alt_title, Boolean print_dof_names)
 {
    Arg		args [1];
    int		depth;
@@ -753,7 +753,7 @@ void VelvetPlotTD (Matrix dtable, Matrix ttable, char *xlabel, char *ylabel, cha
    PlaceTitles (alt_title, xlabel, ylabel, td_dw, 0);
 }
 
-void VelvetPlotSpectra (Matrix P, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names)
+void VelvetPlotSpectra (Matrix P, const char *xlabel, const char *ylabel, const char *alt_title, Boolean print_dof_names)
 {
    Arg		args [1];
    int		depth;
@@ -826,7 +826,7 @@ void VelvetPlotSpectra (Matrix P, char *xlabel, char *ylabel, char *alt_title, B
    PlaceTitles (alt_title, xlabel, ylabel, fp_dw, 0);
 }
 
-void VelvetPlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned int numforced, char *xlabel, char *ylabel, char *alt_title)
+void VelvetPlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title)
 {
    Arg		args [1];
    int		depth;

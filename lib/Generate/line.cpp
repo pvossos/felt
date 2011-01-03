@@ -37,7 +37,6 @@ GenerateLine (Line line, cvector1<Element> &element, cvector1<Node> &node,
    double	Lz;
    double	theta;
    double	phi;
-   double      *x;
 
    size_t ne = line -> number;
    size_t nn = ne + 1;
@@ -86,9 +85,7 @@ GenerateLine (Line line, cvector1<Element> &element, cvector1<Node> &node,
    theta = atan2(Ly, Lx);
    phi   = atan2(sqrt(Lx*Lx + Ly*Ly), Lz);
 
-   x = Allocate(double, nn);
-   UnitOffset (x);
-
+   cvector1<double> x(nn);
    for (i = 1 ; i <= nn ; i++) 
       x [i] = rule_func(i, ne, L);
 

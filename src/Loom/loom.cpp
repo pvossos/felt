@@ -46,7 +46,7 @@
 # include "allocate.h"
 # include "definition.h"
 # include "options.h"
-# include "wireframe.h"
+# include "wireframe.hpp"
 # include "graph.h"
 # include "contour.h"
 # include "results.hpp"

@@ -26,9 +26,10 @@
  *
  ***************************************************************************/
 
+# include <vector>
 # include <stdio.h>
 # include <math.h>
-# include "draw.h"
+# include "draw.hpp"
 # include "allocate.h"
 # include "problem.h"
 # include "fe.h"
@@ -48,7 +49,7 @@
  *****************************************************************************/
 
 static void
-Line(char **b, int xs, int ys, int xe, int ye)
+Line(std::vector< std::vector<char> >&b, int xs, int ys, int xe, int ye)
 {
    unsigned	i;
    int		x,y,
@@ -115,7 +116,6 @@ Line(char **b, int xs, int ys, int xe, int ye)
 void
 DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
 {
-    char	**b;
     unsigned	  i, j;
     Node	 *n;
     Element	 *e;
@@ -140,13 +140,9 @@ DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
     w = cols - 1;
     h = rows - 1; 
 
-    b = Allocate (char *, rows);
+    std::vector< std::vector<char> > b(rows);
     for (i = 0 ; i < rows ; i++)
-        b [i] = Allocate (char, cols);
-
-    for (i = 0 ; i < rows ; i++)
-        for (j = 0 ; j < cols ; j++)
-            b [i][j] = ' ';
+        b [i] = std::vector<char>(cols, ' ');
 
     	/*
 	 * figure out the scaling
@@ -214,15 +210,6 @@ DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
 
         fprintf (fp, "\n");
     }
-    
-	/*
-	 * clean-up
-	 */
-
-    for (i = 0 ; i < rows ; i++)
-        Deallocate (b [i]);
-   
-    Deallocate (b);
 
     return;
 }

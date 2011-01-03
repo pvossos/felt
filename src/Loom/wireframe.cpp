@@ -25,12 +25,14 @@
  *
  *****************************************************************************/
 
+# include <vector>
 # include <stdio.h>
-# include "wireframe.h"
+# include "cvector1.hpp"
+# include "wireframe.hpp"
 # include "problem.h"
 # include "allocate.h"
 # include "error.h"
-# include "draw.h"
+# include "draw.hpp"
 
 # define min(a,b) ((a) < (b) ? (a) : (b))
 # define max(a,b) ((a) > (b) ? (a) : (b))
@@ -44,11 +46,9 @@ void WriteWireframeFile (char *filename, double mag,
     unsigned	n1, n2;
     double	zplane;
     char	draw3d;
-    char      **adjacency;
     unsigned    count;	
     Element    *e;
     unsigned    ne;
-    Node      **cnxtable;
 
     fp = fopen(filename, "w");
     if (fp == NULL) 
@@ -60,16 +60,11 @@ void WriteWireframeFile (char *filename, double mag,
     draw3d = 0;
     zplane = e [1] -> node [1] -> z;
 
-    adjacency = Allocate(char *, problem.num_nodes);
-    UnitOffset (adjacency);
+  
+    std::vector<cvector1c> adjacency(problem.num_nodes+1);
    
-    for (i = 1 ; i <= problem.num_nodes ; i++) {
-       adjacency [i] = Allocate(char, i);
-       UnitOffset (adjacency [i]);
-
-       for (j = 1 ; j <= i ; j++)
-          adjacency [i][j] = 0;
-    }
+    for (i = 1 ; i <= problem.num_nodes ; i++)
+        adjacency[i] = cvector1c(i, 0);
 
     count = 0;
 
@@ -109,13 +104,11 @@ void WriteWireframeFile (char *filename, double mag,
        }
     }
 
-    cnxtable = Allocate(Node *, count);
-    UnitOffset (cnxtable);
-   
-    for (i = 1 ; i <= count ; i++) {
-       cnxtable [i] = Allocate (Node, 2);
-       UnitOffset (cnxtable [i]);
-    } 
+    // waste the first one, it's not actually allocated so it's ok.
+    std::vector< cvector1<Node> > cnxtable(count+1);
+    
+    for (i = 1 ; i <= count ; i++)
+        cnxtable[i] = cvector1<Node>(2);
 
     k = 1;
     for (i = 1 ; i <= problem.num_nodes ; i++) {
@@ -130,24 +123,11 @@ void WriteWireframeFile (char *filename, double mag,
     }
    
     if (draw3d)
-       WriteWireframe3D (fp, cnxtable, count, mag, xrot, yrot, zrot, zsc);
+       WriteWireframe3D (fp, cnxtable, mag, xrot, yrot, zrot, zsc);
     else
-       WriteWireframe2D (fp, cnxtable, count, mag);
+       WriteWireframe2D (fp, cnxtable, mag);
 
    fclose(fp);
-
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
-      ZeroOffset (adjacency [i]); 
-      Deallocate (adjacency [i]);
-   }
-
-   for (i = 1 ; i <= count ; i++) {
-      ZeroOffset (cnxtable [i]);  
-      Deallocate (cnxtable [i]);
-   }
-
-   ZeroOffset (adjacency); Deallocate (adjacency);
-   ZeroOffset (cnxtable); Deallocate (cnxtable);
 
    return;
 }

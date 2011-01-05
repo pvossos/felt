@@ -229,7 +229,7 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
 
 void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char *ylabel, const char *alt_title, Boolean print_dof_names);
 void VelvetPlotSpectra(Matrix P, const char *xlabel, const char *ylabel, const char *alt_title, Boolean print_dof_names);
-void VelvetPlotTransferFunctions(Matrix *H, NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title);
+void VelvetPlotTransferFunctions(const Matrix *H, const struct NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title);
 void VelvetPlotForce(Force force, char *quantity);
 void VelvetPlotLoadRange(Matrix dtable);
 void DrawModeShapes (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);

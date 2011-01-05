@@ -164,8 +164,6 @@ int main (int argc, char *argv[])
     Vector	  d;			/* displacement vectors		*/
     Matrix	  x;			/* eigenvectors			*/
     Vector	  lambda;		/* eigenvalues			*/
-    NodeDOF	 *forced;		/* array of forced nodal DOF    */
-    unsigned	  numforced;		/* number of forced DOF		*/
     int		  status;		/* return status		*/
     cvector1<Reaction>	 R;			/* reaction force vector	*/
     Matrix	  dtable;		/* time-displacement table	*/
@@ -543,12 +541,12 @@ int main (int argc, char *argv[])
           if (matlab) 
              MatlabGlobalMatrices (matlab, Mcond, Ccond, Kcond);
 
-          FindForcedDOF (&forced, &numforced);
+          const cvector1<NodeDOF> forced = FindForcedDOF();
 
-          H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced, numforced);
+          H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced);
 
           if (dospectra) {
-              S = ComputeOutputSpectra (H.c_ptr1(), forced, numforced);
+              S = ComputeOutputSpectra (H, forced);
              if (S == NullMatrix)
                 break; 
           }
@@ -557,9 +555,9 @@ int main (int argc, char *argv[])
 
           if (!dospectra) {
              if (dotable)
-                 WriteTransferFunctions (H.c_ptr1(), forced, numforced, stdout);
+                 WriteTransferFunctions (H, forced, stdout);
              if (doplot)
-                 PlotTransferFunctions (H.c_ptr1(), forced, numforced, stdout);
+                 PlotTransferFunctions (H, forced,  stdout);
 
              break;
           }

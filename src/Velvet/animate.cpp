@@ -32,6 +32,7 @@
  *
  ****************************************************************************/
 
+# include <vector>
 # include <stdio.h>
 # include <math.h>
 # include <unistd.h>
@@ -48,7 +49,6 @@
 # include "problem.h"
 # include "Drawing.h"
 # include "util.h"
-# include "allocate.h"
 # include "draw3d.h"
 # include "procedures.h"
 
@@ -80,16 +80,15 @@ static XtWorkProcId wpid = 0;
 static int delay = INITIAL_DELAY;
 
 static unsigned step;
-static unsigned nsteps = 0;
-static unsigned nelts = 0;
 
-static struct s_record {
+struct s_record {
    float	x;
    float	y;
-} **s_table;
+};
 
-static unsigned **connect = NULL;
-static unsigned *num_connections = NULL;
+static std::vector< std::vector<s_record> > s_table;
+static std::vector< std::vector<unsigned> > connect;
+static std::vector<unsigned> num_connections;
 
 static char layout_string [ ] =
 "vertical { \
@@ -152,7 +151,7 @@ static Boolean AnimateOneStep (XtPointer client_data)
 
    DW_SetAutoRedraw (animate_dw, False);
 
-   for (i = 0 ; i < nelts ; i++) {
+   for (i = 0 ; i < connect.size() ; i++) {
       if (num_connections [i] == 2) {
          DW_DrawLine (animate_dw, s_table [step - 1][connect [i][0] - 1].x,
                                   s_table [step - 1][connect [i][0] - 1].y,
@@ -178,10 +177,10 @@ static Boolean AnimateOneStep (XtPointer client_data)
    XtSetValues (step_label, args, 1);
 
    step += direction;
-   if (step > nsteps)
+   if (step > s_table.size())
      step = 1;
    else if (step < 1)
-     step = nsteps;
+     step = s_table.size();
 
    return False;
 }
@@ -381,24 +380,16 @@ static void SetupArrays (Matrix dtable, Element *element, unsigned int numelts, 
 	 * create space for the connectivity table
 	 */
 
-   if (nelts > 0) {
-      Deallocate (num_connections);
-
-      for (i = 0 ; i < nelts ; i++) 
-         Deallocate (connect [i]);
-
-      Deallocate (connect);
-   }
-
-   nelts = numelts;
-  
-   num_connections = Allocate (unsigned, numelts);
-   connect = Allocate (unsigned *, numelts);
+   num_connections.clear();
+   connect.clear();
+   
+   num_connections.resize(numelts);
+   connect.resize(numelts);
 
    for (i = 0 ; i < numelts ; i++) {
       num_connections [i] = element [i+1] -> definition -> shapenodes;
 
-      connect [i] = Allocate (unsigned, num_connections [i]);
+      connect[i].resize(num_connections[i]);
 
       for (j = 0 ; j < num_connections [i] ; j++)
          connect [i][j] = element[i+1] -> node[j+1] -> number;
@@ -408,18 +399,12 @@ static void SetupArrays (Matrix dtable, Element *element, unsigned int numelts, 
 	 * set-up the record of node-time displacements
 	 */
 	
-   if (nsteps > 0) {
-      for (i = 0 ; i < nsteps ; i++)
-         Deallocate (s_table [i]);
+   s_table.clear();
+   unsigned nsteps = MatrixRows (dtable);
 
-     Deallocate (s_table);
-   }
-
-   nsteps = MatrixRows (dtable);
-
-   s_table = Allocate (struct s_record *, nsteps);
-   for (i = 0 ; i < nsteps ; i++)
-      s_table [i] = Allocate (struct s_record, numnodes);
+   s_table.resize(nsteps);
+   for (i =0; i < nsteps; i++)
+       s_table[i].resize(numnodes);
 
    return;
 }
@@ -494,7 +479,7 @@ void AnimateStructure (Matrix dtable, Node *node, Element *element, unsigned int
 
    SetupArrays (dtable, element, numelts, numnodes);
 
-   for (i = 1 ; i <= nsteps ; i++) {
+   for (i = 1 ; i <= s_table.size() ; i++) {
       for (j = 1 ; j <= numnodes ; j++) {
          x = node[j] -> x +
              MatrixData (dtable) [i][2*j - 1]*solution -> magnify;
@@ -564,7 +549,7 @@ void AnimateStructure3D (Matrix dtable, Node *node, Element *element, unsigned i
 
    SetupArrays (dtable, element, numelts, numnodes);
 
-   for (i = 1 ; i <= nsteps ; i++) {
+   for (i = 1 ; i <= s_table.size() ; i++) {
       for (j = 1 ; j <= numnodes ; j++) {
          x = node[j] -> x +
              MatrixData (dtable) [i][3*j - 2]*solution -> magnify;

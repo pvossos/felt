@@ -29,6 +29,7 @@
  *
  ****************************************************************************/
 
+# include <vector>
 # include <stdio.h>
 # include <math.h>
 # include <X11/Xos.h>
@@ -67,16 +68,17 @@ static unsigned	mode = 0;
 static unsigned nmodes = 0;
 static unsigned nelts = 0;
 
-typedef struct s_record {
+struct s_record {
    float	x;
    float	y;
-} screen_record;
+};
 
-static screen_record **s_table;
-static screen_record *orig_s_table;
+static std::vector< std::vector<s_record> > s_table;
+static std::vector<s_record> orig_s_table;
 
-static unsigned **connect = NULL;
-static unsigned *num_connections = NULL;
+static std::vector< std::vector<unsigned> > connect;
+static std::vector<unsigned> num_connections;
+
 static Matrix	freq;
 
 static char layout_string [ ] =
@@ -338,24 +340,18 @@ static void SetupArrays (Matrix phi, Element *element, unsigned int numelts, uns
 	 * create space for the connectivity table
 	 */
 
-   if (nelts > 0) {
-      Deallocate (num_connections);
-
-      for (i = 0 ; i < nelts ; i++) 
-         Deallocate (connect [i]);
-
-      Deallocate (connect);
-   }
+   num_connections.clear();
+   connect.clear();
 
    nelts = numelts;
-  
-   num_connections = Allocate (unsigned, numelts);
-   connect = Allocate (unsigned *, numelts);
+ 
+   num_connections.resize(numelts);
+   connect.resize(numelts);
 
    for (i = 0 ; i < numelts ; i++) {
       num_connections [i] = element [i+1] -> definition -> shapenodes;
 
-      connect [i] = Allocate (unsigned, num_connections [i]);
+      connect[i].resize(num_connections[i]);
 
       for (j = 0 ; j < num_connections [i] ; j++)
          connect [i][j] = element[i+1] -> node[j+1] -> number;
@@ -365,21 +361,16 @@ static void SetupArrays (Matrix phi, Element *element, unsigned int numelts, uns
 	 * set-up the record of the nodal locations in each mode
 	 */
 	
-   if (nmodes > 0) {
-      for (i = 0 ; i < nmodes ; i++)
-         Deallocate (s_table [i]);
+   s_table.clear();
+   orig_s_table.clear();
 
-     Deallocate (s_table);
-     Deallocate (orig_s_table);
-   }
-
-   orig_s_table = Allocate (struct s_record, numnodes);
+   orig_s_table.resize(numnodes);
 
    nmodes = MatrixRows (phi);
 
-   s_table = Allocate (struct s_record *, nmodes);
+   s_table.resize(nmodes);
    for (i = 0 ; i < nmodes ; i++)
-      s_table [i] = Allocate (struct s_record, numnodes);
+       s_table[i].resize(numnodes);
 
    return;
 }

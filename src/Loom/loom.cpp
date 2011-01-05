@@ -47,7 +47,7 @@
 # include "definition.h"
 # include "options.h"
 # include "wireframe.hpp"
-# include "graph.h"
+# include "graph.hpp"
 # include "contour.h"
 # include "results.hpp"
 # include "renumber.hpp"
@@ -678,18 +678,18 @@ int main (int argc, char **argv)
           if (matrices)
              PrintGlobalMatrices (fp_out, Mcond, Ccond, Kcond);
 
-          FindForcedDOF (&forced, &numforced);
+          const cvector1<NodeDOF> forced = FindForcedDOF();
 
-          H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced, numforced);
+          H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced);
 
           if (transfer) {
              if (table)
-                 WriteTransferFunctions (H.c_ptr1(), forced, numforced, fp_out);
+                 WriteTransferFunctions (H, forced, fp_out);
              if (graph_out)
-                 WriteLineGraphTransferFunctions (H.c_ptr1(), forced, numforced, graph_out);
+                 WriteLineGraphTransferFunctions (H.c_ptr1(), forced.c_ptr1(), forced.size(), graph_out);
           }
           else {
-              S = ComputeOutputSpectra (H.c_ptr1(), forced, numforced);
+              S = ComputeOutputSpectra (H, forced);
              if (S == NullMatrix)
                 break; 
 

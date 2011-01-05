@@ -119,7 +119,6 @@ int SolveProblem (void)
     Matrix	 Ccond;
     Matrix	 Mcond;			/* condensed mass matrix	*/
     Matrix	 Mm, Cm, Km;
-    cvector1<Matrix>	H;			/* matrix of transfer functions */
     Matrix	 S;
     Vector	 F,			/* force vector			*/
 		 Fcond,			/* condensed force vector	*/
@@ -197,7 +196,6 @@ int SolveProblem (void)
     K = Kcond = Km = C = Ccond = Cm = M = Mcond = Mm = NullMatrix;
     x = NullMatrix;
     dtable = ttable = S = NullMatrix;
-    H = NULL;
     F = Fcond = d = lambda = NullVector;
    
     
@@ -284,31 +282,34 @@ int SolveProblem (void)
        if (solution -> matrices)
           PrintGlobalMatrices (output, Mcond, Ccond, Kcond);
 
-       FindForcedDOF (&forced, &numforced);
+       { // put local variables in temp scope
+           
+           const cvector1<NodeDOF> forced = FindForcedDOF();
 
-       H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced, numforced);
+           const cvector1<Matrix> H = ComputeTransferFunctions (Mcond, Ccond, Kcond, forced);
 
-       if (!solution -> transfer)
-           S = ComputeOutputSpectra (H.c_ptr1(), forced, numforced);
+           if (!solution -> transfer)
+               S = ComputeOutputSpectra (H, forced);
 
-       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+           RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
        
-       if (solution -> transfer) {
-           WriteTransferFunctions (H.c_ptr1(), forced, numforced, output);
+           if (solution -> transfer) {
+               WriteTransferFunctions (H, forced, output);
 
-          if (solution -> plot)
-              VelvetPlotTransferFunctions (H.c_ptr1(), forced, numforced, 
-                                          "frequency", "H", 
-                                          "Spectral Transfer Function");
+               if (solution -> plot)
+                   VelvetPlotTransferFunctions (H.c_ptr1(), forced.c_ptr1(), forced.size(), 
+                                                "frequency", "H", 
+                                                "Spectral Transfer Function");
 
-          break;
+               break;
+           }
+
+           WriteOutputSpectra (S, output);
+
+           if (solution -> plot)
+               VelvetPlotSpectra (S, "frequency", "S", "Output Power Spectra", True);
        }
-
-       WriteOutputSpectra (S, output);
-
-       if (solution -> plot)
-          VelvetPlotSpectra (S, "frequency", "S", "Output Power Spectra", True);
-
+       
        break;
 
     case Static:

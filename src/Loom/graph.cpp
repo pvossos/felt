@@ -26,7 +26,7 @@
 
 # include <stdio.h>
 # include <string.h>
-# include "graph.h"
+# include "graph.hpp"
 # include "fe.h"
 # include "error.h"
 # include "problem.h"
@@ -76,7 +76,7 @@ void WriteLineGraph (Matrix d, const char *alt_title,
 }
 
 
-void WriteLineGraphTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, const char *output)
+void WriteLineGraphTransferFunctions (const Matrix *H, const NodeDOF *forced, unsigned numforced, const char *output)
 {
    static char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    unsigned	i,j,l;
@@ -104,7 +104,7 @@ void WriteLineGraphTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numfo
    fprintf(fp, "%d\n", numcurves);
    fprintf(fp, "%d\n", numpoints);
    for (i = 1 ; i <= numforced ; i++) {
-      LocalDOF (forced[i]->dof, &inode, &idof);
+      LocalDOF (forced[i].dof, &inode, &idof);
       for (j = 1 ; j <= nn ; j++) 
          fprintf (fp, "%s(%d)->%s(%d)\n",
                   symbols[idof], inode, 

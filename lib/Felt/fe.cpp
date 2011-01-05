@@ -1111,8 +1111,8 @@ LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_dof)
    return;
 }
  
-void
-FindForcedDOF(NodeDOF **forced, unsigned int *numforced)
+cvector1<NodeDOF>
+FindForcedDOF()
 {
    Node		*node;
    unsigned	numnodes;
@@ -1145,15 +1145,10 @@ FindForcedDOF(NodeDOF **forced, unsigned int *numforced)
       }
    }
 
-   *numforced = n;
-
-   if (n > 0) {
-      *forced = Allocate (NodeDOF, n);
-      UnitOffset (*forced);
+   cvector1<NodeDOF> forced(n);
    
-      for (i = 1 ; i <= n ; i++)
-         (*forced) [i] = AllocNew (struct nodeDOF);
-
+   if (n > 0) {
+   
       n = 1;
       for (i = 1 ; i <= numnodes ; i++) {
          for (j = 1 ; j <= active ; j++) {
@@ -1163,17 +1158,15 @@ FindForcedDOF(NodeDOF **forced, unsigned int *numforced)
                    node [i] -> force -> spectrum [dofs[j]].value ||
                    node [i] -> force -> spectrum [dofs[j]].expr) {
 
-                  (*forced) [n] -> dof = (DOF) dofs[j];
-                  (*forced) [n++] -> node = node[i];
+                  forced[n].dof = (DOF) dofs[j];
+                  forced[n++].node = node[i];
                }
             }
          }
       }
    }
-   else
-      *forced = NULL;
 
-   return;
+   return forced;
 } 
 
 Matrix

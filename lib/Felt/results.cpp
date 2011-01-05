@@ -670,7 +670,7 @@ PlotOutputSpectra(Matrix P, FILE *fp)
  *****************************************************************************/
 
 void
-WriteTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
+WriteTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced, FILE *fp)
 {
    double	w;
    unsigned	i,j,k,l,m,n;
@@ -684,6 +684,7 @@ WriteTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
    unsigned	inode;
    unsigned	input;
 
+   const size_t numforced = forced.size();
    ntables = (unsigned) (numforced*analysis.numnodes*analysis.numdofs / 4);
    if ((numforced * analysis.numdofs * analysis.numnodes) % 4 != 0)
       ntables++;
@@ -705,8 +706,8 @@ WriteTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
       number = 1;
       for (i = input ; i <= numforced && number <= 4 ; i++) {
 
-         inode = forced [i] -> node -> number;
-         idof = forced [i] -> dof;
+         inode = forced [i].node -> number;
+         idof = forced [i].dof;
 
          for (m = node ; m <= analysis.numnodes && number <= 4 ; m++) {
             for (n = dof ; n <= analysis.numdofs && number <= 4 ; n++) {
@@ -760,7 +761,7 @@ WriteTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
 }
 
 void
-PlotTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
+PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced, FILE *fp)
 {
    unsigned	i,j,k,l;
    unsigned	m,n,o;
@@ -778,6 +779,7 @@ PlotTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
    int		position;
    double	freq;
 
+   const size_t numforced = forced.size();
    ngraphs = (unsigned) (analysis.numnodes * analysis.numdofs * numforced / 10);
    if ((analysis.numdofs * analysis.numnodes * numforced) % 10 != 0)
       ngraphs++;
@@ -877,8 +879,8 @@ PlotTransferFunctions(Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp)
       node = start_node;
       for (l = input ; l <= numforced && number <= 10 ; l++) {
 
-         inode = forced [i] -> node -> number;
-         idof = forced [i] -> dof;
+         inode = forced [i].node -> number;
+         idof = forced [i].dof;
 
          for (i = node ; i <= analysis.numnodes && number <= 10 ; i++) {
             for (j = dof ; j <= analysis.numdofs && number <= 10 ; j++) {

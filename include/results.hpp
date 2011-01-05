@@ -21,7 +21,7 @@ void WriteModalResults (FILE *fp, Matrix M, Matrix C, Matrix K, Matrix lambda);
 
 void WriteTransientTable (Matrix dtable, Matrix ttable, FILE *fp);
 
-void WriteTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp);
+void WriteTransferFunctions (const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced, FILE *fp);
 
 void WriteStructuralResults (FILE *output, char *title, const cvector1<Reaction> &R);
 
@@ -41,7 +41,7 @@ void PlotOutputSpectra (Matrix P, FILE *fp);
 
 void PlotModeShapes (Matrix x, FILE *output);
 
-void PlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned numforced, FILE *fp);
+void PlotTransferFunctions (const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced, FILE *fp);
 
 void PrintGlobalMatrices (FILE *fp, Matrix M, Matrix C, Matrix K);
 

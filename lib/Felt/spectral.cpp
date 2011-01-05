@@ -386,7 +386,7 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
 }
 
 cvector1<Matrix>
-ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced)
+ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &forced)
 {
    ComplexMatrix	Z;
    ComplexMatrix	Ht;
@@ -406,6 +406,7 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned
    nsteps = (analysis.stop - analysis.start + analysis.step/2.0) / 
             analysis.step + 1.0;
 
+   const size_t numforced = forced.size();
    cvector1<Matrix> H(numforced);
 
    for (i = 1 ; i <= numforced ; i++)
@@ -423,8 +424,8 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned
       for (input = 1 ; input <= numforced ; input++) {
 
          InvertCroutComplexMatrix (Ht, Z, 
-                    GlobalDOF(forced [input] -> node -> number, 
-                              forced [input] -> dof));
+                    GlobalDOF(forced [input].node -> number, 
+                              forced [input].dof));
 
          for (i = 1 ; i <= analysis.numnodes ; i++) {
             for (k = 1 ; k <= analysis.numdofs ; k++) {
@@ -488,7 +489,7 @@ AlignSpectra(Matrix S1, Matrix S2, Matrix freq2)
 */
 
 Matrix
-ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced)
+ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
 {
    Matrix	So;
    Matrix	Si;
@@ -511,10 +512,10 @@ ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced)
 
    ZeroMatrix (So);
 
-   for (i = 1 ; i <= numforced ; i++) {
+   for (i = 1 ; i <= forced.size() ; i++) {
 
-      inode = forced [i] -> node;
-      idof = forced [i] -> dof;
+      inode = forced [i].node;
+      idof = forced [i].dof;
 
       f = inode -> force;
 

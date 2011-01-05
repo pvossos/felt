@@ -41,10 +41,19 @@ struct Reaction {
 cvector1<Reaction> SolveForReactions(Vector K, Vector d, unsigned int *old_numbers);
 
 /*!
+  Builds a list of global DOF numbers which have some sort of input
+  applied to them.  We make two passes rather than dealing with
+  reallocation (and deallocation in the case of no forcing)
+ */
+cvector1<NodeDOF> FindForcedDOF();
+
+/*!
   Computes the frequency domain transfer function between inputs at
   forced DOF and the output at the DOF described by nodes= and dofs=
   in the analysis parameters.
 */
-cvector1<Matrix> ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced);
+cvector1<Matrix> ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &forced);
+
+Matrix ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced);
 
 #endif

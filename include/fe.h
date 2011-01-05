@@ -252,10 +252,10 @@ typedef struct element {
 
 /* A nodal DOF */
 
-typedef struct nodeDOF {
+struct NodeDOF {
     DOF		dof;
     Node	node;
-} *NodeDOF;
+};
 
 
 typedef struct casepair {
@@ -454,13 +454,6 @@ int ZeroConstrainedMatrixDOF(Matrix b, Matrix a);
 Matrix RemoveConstrainedMatrixDOF(Matrix a);
 
 /*!
-  Builds a list of global DOF numbers which have some sort of input
-  applied to them.  We make two passes rather than dealing with
-  reallocation (and deallocation in the case of no forcing)
- */
-void FindForcedDOF(NodeDOF **forced, unsigned int *numforced);
-
-/*!
  Verifies that everything in the analysis parameters section is set
  (or at least the minimum number of things that we need) for the given
  analysis type.
@@ -505,8 +498,6 @@ int Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft);
  the end of a run and only for a few selected DOFs).
 */
 int ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft);
-
-Matrix ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced);
 
 	/*
 	 * routines in nonlinear.c

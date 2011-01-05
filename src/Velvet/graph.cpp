@@ -641,8 +641,9 @@ static void PlaceTitles (const char *alt_title, const char *xlabel, const char *
    x = WIDTH / 2 - width / 2;
    y = -25 - height;
 
-   DW_SetFont (graph_dw, axis_font_name);
-   DW_DrawText (graph_dw, False, x, y, xlabel);
+   char buf[128];
+   strcpy(buf, xlabel);
+   DW_DrawText (graph_dw, False, x, y, buf);
 
    XTextExtents (axis_font, ylabel, 4, &dr, &far, &fdr, &cstruct);
 
@@ -652,7 +653,8 @@ static void PlaceTitles (const char *alt_title, const char *xlabel, const char *
    x = -BUFFER + 10;
    y = HEIGHT / 2 - height / 2;
 
-   DW_DrawText (graph_dw, False, x, y, ylabel);
+   strcpy(buf, ylabel);
+   DW_DrawText (graph_dw, False, x, y, buf);
 
    return;
 }
@@ -826,7 +828,7 @@ void VelvetPlotSpectra (Matrix P, const char *xlabel, const char *ylabel, const 
    PlaceTitles (alt_title, xlabel, ylabel, fp_dw, 0);
 }
 
-void VelvetPlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title)
+void VelvetPlotTransferFunctions (const Matrix *H, const NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title)
 {
    Arg		args [1];
    int		depth;
@@ -899,7 +901,7 @@ void VelvetPlotTransferFunctions (Matrix *H, NodeDOF *forced, unsigned int numfo
             prev = data;
          }
 
-         DrawTransferLegend (forced [i]->dof, l, curve, fp_dw);
+         DrawTransferLegend (forced [i].dof, l, curve, fp_dw);
       }
    }
 

@@ -91,7 +91,6 @@ static int
 QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 {
    unsigned		numnodes;
-   unsigned		i,j;
    int			ninteg;
    Matrix		B;
    Matrix		D;
@@ -148,7 +147,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
    if (D == NullMatrix)
       return 1;
    
-   for (i = 1 ; i <= ninteg ; i++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
       if (VectorData (jac) [i] <= 0.0) {
          error ("det |J| for elt %d is <= 0, check elt distortion",element -> number);
          return 1;
@@ -173,7 +172,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
    MatrixRows (tempK) = 2*numnodes;
    MatrixCols (tempK) = 2*numnodes;
 
-   for (i = 1 ; i <= ninteg ; i++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
       B = IsoQuadLocalB (element, numnodes, dNdx, dNdy, i);
       if (B == NullMatrix)
          return 1;
@@ -196,12 +195,12 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 	 */
 
    if (numnodes == 3) {
-      for (i = 1 ; i <= 8 ; i++) 
-         for (j = 7 ; j <= 8 ; j++) 
+      for (size_t i = 1 ; i <= 8 ; i++) 
+         for (size_t j = 7 ; j <= 8 ; j++) 
             MatrixData (element -> K) [i][j] = 0.0;
 
-      for (i = 7 ; i <= 8 ; i++) 
-         for (j = 1 ; j <= 6 ; j++) 
+      for (size_t i = 7 ; i <= 8 ; i++) 
+         for (size_t j = 1 ; j <= 6 ; j++) 
             MatrixData (element -> K) [i][j] = 0.0;
    }
 
@@ -219,7 +218,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
       if (equiv == NullMatrix)
          return count;
 
-       for (i = 1; i <= numnodes ; i++) {
+       for (size_t i = 1; i <= numnodes ; i++) {
           element -> node[i] -> eq_force[1] += VectorData (equiv) [2*i - 1];
           element -> node[i] -> eq_force[2] += VectorData (equiv) [2*i];
        }
@@ -299,13 +298,13 @@ QuadElementStress(Element element, unsigned int type)
    element -> ninteg = ninteg;
    SetupStressMemory (element);
 
-   for (i = 1 ; i <= ninteg ; i++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
       B = IsoQuadLocalB (element, numnodes, dNdx, dNdy, i);
       if (B == NullMatrix)
          return 1;
 
       x = y = 0.0;
-      for (j = 1 ; j <= numnodes ; j++) {
+      for (size_t j = 1 ; j <= numnodes ; j++) {
          x += MatrixData (N)[j][i]*element -> node[j] -> x;
          y += MatrixData (N)[j][i]*element -> node[j] -> y;
       }
@@ -412,7 +411,7 @@ GlobalQuadShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx
       VectorData (jac) [i] = 0.0;
    }
 
-   for (i = 1 ; i <= ninteg ; i++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
       for (j = 1 ; j <= nodes ; j++) {
 
          VectorData (dxdxi) [i] += MatrixData (dNdxi) [j][i]*

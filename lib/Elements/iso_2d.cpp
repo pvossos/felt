@@ -87,7 +87,6 @@ static int
 iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 {
    unsigned		numnodes;
-   unsigned		i,j;
    int			ninteg;
    Matrix		B;
    Matrix		D;
@@ -157,7 +156,7 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
    if (D == NullMatrix)
       return 1;
 
-   for (i = 1 ; i <= ninteg ; i++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
       if (VectorData (jac)[i] <= 0.0) {
          error ("det |J| for elt %d is <= 0, check elt distortion",element -> number);
          return 1;
@@ -185,7 +184,7 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
    MatrixRows (tempK) = 2*numnodes;
    MatrixCols (tempK) = 2*numnodes;
 
-   for (i = 1 ; i <= ninteg ; i++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
       B = Iso2dLocalB (element, numnodes, dNdx, dNdy, i);
       if (B == NullMatrix)
          return 1;
@@ -209,12 +208,12 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
 	 */
 
    if (numnodes == 3) {
-      for (i = 1 ; i <= 8 ; i++) 
-         for (j = 7 ; j <= 8 ; j++) 
+      for (size_t i = 1 ; i <= 8 ; i++) 
+         for (size_t j = 7 ; j <= 8 ; j++) 
             MatrixData (element -> K) [i][j] = 0.0;
 
-      for (i = 7 ; i <= 8 ; i++) 
-         for (j = 1 ; j <= 6 ; j++) 
+      for (size_t i = 7 ; i <= 8 ; i++) 
+         for (size_t j = 1 ; j <= 6 ; j++) 
             MatrixData (element -> K) [i][j] = 0.0;
    }
 
@@ -255,7 +254,6 @@ Iso2dLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, un
 static Vector
 GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes)
 {
-   unsigned		i,j;
    static Vector	jac,
 			dxdxi, dxde,
 			dydxi, dyde = NullMatrix;
@@ -269,7 +267,7 @@ GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Ma
       jac = CreateVector (9);
    }
  
-   for (i = 1 ; i <= 9 ; i++) {
+   for (size_t i = 1 ; i <= 9 ; i++) {
       VectorData (dxdxi) [i] = 0.0; 
       VectorData (dxde) [i] = 0.0; 
       VectorData (dydxi) [i] = 0.0; 
@@ -277,8 +275,8 @@ GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Ma
       VectorData (jac) [i] = 0.0;
    }
 
-   for (i = 1 ; i <= ninteg ; i++) {
-      for (j = 1 ; j <= nodes ; j++) {
+   for (int i = 1 ; i <= ninteg ; i++) {
+      for (size_t j = 1 ; j <= nodes ; j++) {
 
          if (element -> node[j] != NULL) {
             VectorData (dxdxi) [i] += MatrixData (dNdxi) [j][i]*
@@ -298,7 +296,7 @@ GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Ma
       VectorData (jac) [i] = VectorData (dxdxi)[i] * VectorData (dyde)[i] -
                          VectorData (dxde)[i] * VectorData (dydxi)[i];
 
-      for (j = 1 ; j <= nodes ; j++) {
+      for (size_t j = 1 ; j <= nodes ; j++) {
          if (element -> node[j] != NULL) {
             MatrixData (dNdx) [j][i] = (MatrixData (dNdxi) [j][i]*VectorData (dyde)[i] -
                                   MatrixData (dNde)[j][i]*VectorData (dydxi)[i])/
@@ -335,7 +333,6 @@ GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Ma
 static unsigned
 LocalIsoShapeFunctions(Element element, Matrix N, Matrix dNdx, Matrix dNde, Vector weights)
 {
-   unsigned		i,j,k;
    int			ninteg;
    double		eta,xi;
    double		Nt[10];
@@ -349,7 +346,7 @@ LocalIsoShapeFunctions(Element element, Matrix N, Matrix dNdx, Matrix dNde, Vect
 
    same_flag = 1;
    numnodes = 4;
-   for (i = 5 ; i <= 9 ; i++) {
+   for (size_t i = 5 ; i <= 9 ; i++) {
       points [i] = 0;
 
       if (element -> node[i] != NULL) {
@@ -369,15 +366,15 @@ LocalIsoShapeFunctions(Element element, Matrix N, Matrix dNdx, Matrix dNde, Vect
    else
       ninteg = 3;
 
-   for (i = 5 ; i <= 9 ; i++)
+   for (size_t i = 5 ; i <= 9 ; i++)
       prev_points [i] = points [i];
    
    ninteg = 2;
    GaussPoints (ninteg, &gauss_points, &gauss_wts);
 
-   for (i = 0 ; i < ninteg ; i++) {
+   for (int i = 0 ; i < ninteg ; i++) {
       xi  = gauss_points [i];
-      for (j = 0 ; j < ninteg ; j++) {
+      for (int j = 0 ; j < ninteg ; j++) {
 
          eta = gauss_points [j];
 
@@ -411,7 +408,7 @@ LocalIsoShapeFunctions(Element element, Matrix N, Matrix dNdx, Matrix dNde, Vect
                Nt [9] = (1 - eta*eta)*(1 - xi*xi);
                dx [9] = 2*xi*(eta*eta - 1);
                de [9] = 2*eta*(xi*xi - 1);
-               for (k = 1 ; k <= 4 ; k++) {
+               for (size_t k = 1 ; k <= 4 ; k++) {
                   Nt [k] -= 0.25*Nt [9];
                   dx [k] -= 0.25*dx [9];
                   de [k] -= 0.25*de [9];
@@ -466,7 +463,7 @@ LocalIsoShapeFunctions(Element element, Matrix N, Matrix dNdx, Matrix dNde, Vect
             de [4] -= 0.5*(de[7] + de[8]);
          }
 
-         for (k = 1 ; k <= 9 ; k++) {
+         for (size_t k = 1 ; k <= 9 ; k++) {
             MatrixData (N) [k][i*ninteg + j+1] = Nt [k];
             MatrixData (dNdx) [k][i*ninteg + j+1] = dx [k];
             MatrixData (dNde) [k][i*ninteg + j+1] = de [k];

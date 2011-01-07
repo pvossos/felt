@@ -138,7 +138,7 @@ struct element;
 /* An element definition */
 
 typedef struct definition {
-    char    *name;		/* element name			      */
+    const char    *name;		/* element name			      */
     int    (*setup) (struct element*, char, int);	/* initialization function	      */
     int    (*stress) (struct element*);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */

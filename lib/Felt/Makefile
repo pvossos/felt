@@ -33,8 +33,8 @@ TOPDIR	= ../..
 include $(TOPDIR)/etc/Makefile.lib
 
 
-problem.o:	problem.c
-		$(CC) $(CFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c problem.c
+problem.o:	problem.cpp
+		$(CXX) $(CXXFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c problem.cpp
 
-initialize.o:	initialize.c
-		$(CC) $(CFLAGS) $(CONTRIBFLAGS) -c initialize.c
+initialize.o:	initialize.cpp
+		$(CXX) $(CXXFLAGS) $(CONTRIBFLAGS) -c initialize.cpp

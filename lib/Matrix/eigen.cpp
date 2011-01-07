@@ -653,9 +653,6 @@ int BuildTridiagonalVectors (const Matrix a, Matrix diag, Matrix sub_diag)
 
 int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z)
 {
-   unsigned	n;
-   int		i,j,k,l;
-   int		ii;
    int		jp1;
    double	h, f, g, hh;
    double	scale;
@@ -675,27 +672,27 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
 
    if (Mrows(a) != Mrows(diag) || Mrows(a) != Mrows(sub_diag))
       return M_SIZEMISMATCH;
+   
+   const unsigned n = Mrows(a);
 
-   n = Mrows(a);
-
-   for (i = 1 ; i <= n ; i++) {
-      for (j = i ; j <= n ; j++) 
+   for (size_t i = 1 ; i <= n ; i++) {
+      for (size_t j = i ; j <= n ; j++) 
          sdata(z, j, i) = mdata(a,j,i);
 
       sdata(diag, i, 1) = mdata(a,n,i);
    }
 
-   for (ii = 2 ; ii <= n ; ii++) {
+   for (size_t ii = 2 ; ii <= n ; ii++) {
 
-      i = n + 2 - ii;
-      l = i - 1;
+      size_t i = n + 2 - ii;
+      size_t l = i - 1;
       h = 0.0;
       scale = 0.0;
 
       flag = 0;
 
       if (l >= 2) {
-         for (k = 1 ; k <= l ; k++)
+         for (size_t k = 1 ; k <= l ; k++)
             scale += fabs (mdata(diag,k,1));
 
          if (scale != 0.0)
@@ -705,7 +702,7 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
       if (!flag) {
          sdata(sub_diag, i, 1) = mdata(diag, l, 1);
 
-         for (j = 1 ; j <= l ; j++) {
+         for (size_t j = 1 ; j <= l ; j++) {
             sdata(diag, j, 1) = mdata(z,l,j);
             sdata(z, i, j) = 0.0;
             sdata(z, j, i) = 0.0;
@@ -715,7 +712,7 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
          continue;
       }
 
-      for (k = 1 ; k <= l ; k++) {
+      for (size_t k = 1 ; k <= l ; k++) {
          sdata(diag, k, 1) = mdata(diag,k,1) / scale;
          h += mdata(diag,k,1)*mdata(diag,k,1);
       }
@@ -726,10 +723,10 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
       h -= f * g;
       sdata(diag, l, 1) = f - g;
 
-      for (j = 1 ; j <= l ; j++) 
+      for (size_t j = 1 ; j <= l ; j++) 
          sdata(sub_diag, j, 1) = 0.0;
 
-      for (j = 1 ; j <= l ; j++) {
+      for (size_t j = 1 ; j <= l ; j++) {
          f = mdata(diag,j,1);
          sdata(z, j, i) = f;
          g = mdata(sub_diag,j,1) + mdata(z,j,j) * f;
@@ -741,7 +738,7 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
             continue;
          }
 
-         for (k = jp1 ; k <= l ; k++) {
+         for (size_t k = jp1 ; k <= l ; k++) {
             g += mdata(z,k,j) * mdata(diag,k,1);
             sdata(sub_diag, k, 1) = mdata(sub_diag,k,1) + mdata(z,k,j) * f;
          }
@@ -751,21 +748,21 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
 
       f = 0.0;
 
-      for (j = 1 ; j <= l ; j++) {
+      for (size_t j = 1 ; j <= l ; j++) {
          sdata(sub_diag, j, 1) = mdata(sub_diag,j,1) / h;
          f += mdata(sub_diag,j,1) * mdata(diag,j,1);
       }
 
       hh = f / (h + h);
 
-      for (j = 1 ; j <= l ; j++)
+      for (size_t j = 1 ; j <= l ; j++)
          sdata(sub_diag, j, 1) = mdata(sub_diag,j,1) - hh * mdata(diag,j,1);
 
-      for (j = 1 ; j <= l ; j++) {
+      for (size_t j = 1 ; j <= l ; j++) {
          f = mdata(diag,j,1);
          g = mdata(sub_diag,j,1);
 
-         for (k = j ; k <= l ; k++) 
+         for (size_t k = j ; k <= l ; k++) 
             sdata(z, k, j) = mdata(z,k,j) - 
                              f*mdata(sub_diag,k,1) - g*mdata(diag,k,1);
 
@@ -776,44 +773,44 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
       sdata(diag, i, 1) = h;
    }
 
-   for (i = 2 ; i <= n ; i++) {
-      l = i - 1;
+   for (size_t i = 2 ; i <= n ; i++) {
+      size_t l = i - 1;
       sdata(z, n, l) = mdata(z,l,l);
       sdata(z, l, l) = 1.0;
       h = mdata(diag,i,1);         
 
       if (h == 0.0) {
-         for (k = 1 ; k <= l ; k++)
+         for (size_t k = 1 ; k <= l ; k++)
             sdata(z, k, i) = 0.0;
 
          continue;
       }
 
-      for (k = 1 ; k <= l ; k++)
+      for (size_t k = 1 ; k <= l ; k++)
          sdata(diag, k, 1) = mdata(z,k,i) / h;
 
-      for (j = 1 ; j <= l ; j++) {
+      for (size_t j = 1 ; j <= l ; j++) {
          g = 0.0;
 
-         for (k = 1 ; k <= l ; k++)  
+         for (size_t k = 1 ; k <= l ; k++)  
             g += mdata(z,k,i) * mdata(z,k,j);
 
-         for (k = 1 ; k <= l ; k++)
+         for (size_t k = 1 ; k <= l ; k++)
             sdata(z, k, j) = mdata(z,k,j) - g*mdata(diag,k,1);
       }
 
-      for (k = 1 ; k <= l ; k++)
+      for (size_t k = 1 ; k <= l ; k++)
          sdata(z, k, i) = 0.0;
    }
 
-   for (i = 1 ; i <= n ; i++) {
+   for (size_t i = 1 ; i <= n ; i++) {
       sdata(diag, i, 1) = mdata(z,n,i);
       sdata(z, n, i) = 0.0;
    }
 
    sdata(z, n, n) = 1.0;
 
-   for (i = 2 ; i <= n ; i++)
+   for (size_t i = 2 ; i <= n ; i++)
       sdata(sub_diag, i-1, 1) = mdata(sub_diag, i, 1);
 
    sdata(sub_diag, n, 1) = 0.0;

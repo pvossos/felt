@@ -458,7 +458,7 @@ int LUBackSolveMatrix (Matrix c, const Matrix a, const Matrix b, const Matrix p)
 	 * pivot the RHS vector to form x = Pb
 	 */
 
-   for (i = 1 ; i <= n ; i++) {
+   for (size_t i = 1 ; i <= n ; i++) {
       mu = (int) mdata(p, i, 1);
       if (mu != i) {
          t = mdata(c, i, 1);

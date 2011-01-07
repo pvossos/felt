@@ -140,7 +140,6 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
    int		loc_arch;
    int		rem_arch; 
    int		m, o, p, t;
-   unsigned	i, j;
    DataVal	x;
    char		buffer [256];
 
@@ -181,8 +180,8 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
    switch (p) {
 
    case 0:	/* double */
-      for (i = 1 ; i <= h.ncols ; i++) {
-         for (j = 1 ; j <= h.mrows ; j++) {
+      for (int i = 1 ; i <= h.ncols ; i++) {
+         for (int j = 1 ; j <= h.mrows ; j++) {
             fread (&(x.r8), sizeof(double), 1, fp);
             if (loc_arch != rem_arch)
                x.r8 = SwapDouble (x.r8);
@@ -193,8 +192,8 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
       break;
 
    case 1:	/* float */
-      for (i = 1 ; i <= h.ncols ; i++) {
-         for (j = 1 ; j <= h.mrows ; j++) {
+      for (int i = 1 ; i <= h.ncols ; i++) {
+         for (int j = 1 ; j <= h.mrows ; j++) {
             fread (&(x.r4), sizeof(float), 1, fp);
             if (loc_arch != rem_arch)
                x.r4 = SwapFloat (x.r4);
@@ -205,8 +204,8 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
       break;
 
    case 2:	/* int */
-      for (i = 1 ; i <= h.ncols ; i++) {
-         for (j = 1 ; j <= h.mrows ; j++) {
+      for (int i = 1 ; i <= h.ncols ; i++) {
+         for (int j = 1 ; j <= h.mrows ; j++) {
             fread (&(x.i4), sizeof(int), 1, fp);
             if (loc_arch != rem_arch)
                x.i4 = SwapFloat (x.i4);
@@ -217,8 +216,8 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
       break;
  
    case 3:	/* short */
-      for (i = 1 ; i <= h.ncols ; i++) {
-         for (j = 1 ; j <= h.mrows ; j++) {
+      for (int i = 1 ; i <= h.ncols ; i++) {
+         for (int j = 1 ; j <= h.mrows ; j++) {
             fread (&(x.i2), sizeof(short), 1, fp);
             if (loc_arch != rem_arch)
                x.i2 = SwapFloat (x.i2);
@@ -229,8 +228,8 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
       break;
  
    case 4:	/* unsigned short */ 
-      for (i = 1 ; i <= h.ncols ; i++) {
-         for (j = 1 ; j <= h.mrows ; j++) {
+      for (int i = 1 ; i <= h.ncols ; i++) {
+         for (int j = 1 ; j <= h.mrows ; j++) {
             fread (&(x.u2), sizeof(unsigned short), 1, fp);
             if (loc_arch != rem_arch)
                x.u2 = SwapFloat (x.u2);
@@ -241,8 +240,8 @@ static int ReadMAT (FILE *fp, Matrix *a, char **name)
       break;
 
    case 5:	/* unsigned char */
-      for (i = 1 ; i <= h.ncols ; i++) {
-         for (j = 1 ; j <= h.mrows ; j++) {
+      for (int i = 1 ; i <= h.ncols ; i++) {
+         for (int j = 1 ; j <= h.mrows ; j++) {
             fread (&(x.b), sizeof(unsigned char), 1, fp);
             if (loc_arch != rem_arch)
                x.b = SwapFloat (x.b);

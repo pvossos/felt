@@ -86,10 +86,8 @@ RoundToPowerOf2(int n, int *exponent)
 static vector<double>
 ZeroPadData(Vector x, int *length, int *length2)
 {
-   int		n;
-   int		i;
-
-   n = RoundToPowerOf2 (Mrows(x), &i);
+   int i;
+   int n = RoundToPowerOf2 (Mrows(x), &i);
 
    *length2 = i;
    *length = n;
@@ -281,7 +279,6 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
    int		overlap;
    int		windows;
    double	factor;
-   unsigned	i, j;
 
    vector<double> Xr = ZeroPadData (x, &n, &n2);
 
@@ -304,13 +301,13 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
 
    vector<double> w = WindowFunction(HANNING, nfft);
 
-   for (i = 0 ; i < windows ; i++) {
-      for (j = 0 ; j < nfft ; j++)
+   for (int i = 0 ; i < windows ; i++) {
+      for (int j = 0 ; j < nfft ; j++)
          xr [j] = Xr[i*(nfft - overlap) + j] * w[j];
 
       FastFourierTransform(&xr[0], &xi[0], nfft, nfft2, 1);
       
-      for (j = 0 ; j < nfft ; j++) 
+      for (int j = 0 ; j < nfft ; j++) 
          p [j] += xr[j]*xr[j] + xi[j]*xi[j];
    }
 
@@ -319,7 +316,7 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
 	 */
 
    factor = 0.0;
-   for (i = 0 ; i < nfft ; i++)
+   for (int i = 0 ; i < nfft ; i++)
       factor += w[i]*w[i];
 
    factor *= windows;
@@ -338,7 +335,7 @@ Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft)
    if (F != NULL)
       *F = CreateVector (np);
 
-   for (j = 0 ; j < np ; j++) {
+   for (int j = 0 ; j < np ; j++) {
       sdata((*P), j+1, 1) = p[j] / factor;
 
       if (F != NULL)

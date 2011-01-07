@@ -46,7 +46,7 @@
 # define Array	 3
 
 static struct {
-    char *opcode;
+    const char *opcode;
     int   arg_type;
 } data [ ] = {
     {"jmp",   Integer},

@@ -51,7 +51,6 @@
 static void
 Line(std::vector< std::vector<char> >&b, int xs, int ys, int xe, int ye)
 {
-   unsigned	i;
    int		x,y,
 		dx,dy,
 		e;
@@ -81,7 +80,7 @@ Line(std::vector< std::vector<char> >&b, int xs, int ys, int xe, int ye)
    x = xs;
    y = ys;
 
-   for (i = 0 ; i <= dx ; i++) {
+   for (int i = 0 ; i <= dx ; i++) {
       b [y][x] = '+';
 
       while (e >= 0) {

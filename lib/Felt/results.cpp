@@ -26,6 +26,7 @@
  *
  ***************************************************************************/
 
+# include <string>
 # include <stdio.h>
 # include <math.h>
 # include "results.hpp"
@@ -926,7 +927,7 @@ WriteMaterialStatistics(FILE *output)
    unsigned	i,j,
  		num_materials,
 		number [50];
-   char		*names [50];
+   std::string names[50];
    unsigned	flag;
    double	length [50],
                 volume [50],
@@ -943,13 +944,12 @@ WriteMaterialStatistics(FILE *output)
 
    for (i = 0 ; i < 50 ; i++) {
       number [i] = length [i] = area [i] = volume [i] = mass [i] = 0;
-      names [i] = NULL;
    }
 
    for (i = 1 ; i <= numelts ; i++) {
       flag = 0;
       for (j = 0 ; j < num_materials ; j++) {
-         if (element [i] -> material -> name == names [j]) {
+         if (names[j] == element [i] -> material -> name) {
             flag = 1;
             break;
           }
@@ -967,7 +967,7 @@ WriteMaterialStatistics(FILE *output)
    for (i = 1 ; i <= numelts ; i++) {
 
       for (j = 0 ; j < num_materials ; j++) {
-         if (element [i] -> material -> name == names [j]) {
+         if (names[j] == element [i] -> material -> name) {
             flag = j;
             break;
          }
@@ -1016,7 +1016,7 @@ WriteMaterialStatistics(FILE *output)
    tot_mass = 0;
    for (i = 0 ; i < num_materials ; i++) {
 
-      fprintf (output,"Material: %s\n",names [i]);
+      fprintf (output,"Material: %s\n",names [i].c_str());
       fprintf (output,"Number:   %d\n", number[i]);
       if (length [i] > 0)
          fprintf (output,"Length:   %8.4f\n",length [i]);

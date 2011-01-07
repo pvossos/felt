@@ -239,7 +239,6 @@ AssembleCurrentForce(Matrix F, Matrix Fnodal)
 int
 RestoreCoordinates(Matrix d)
 {
-   int		i, j;
    int		base_dof;
    int		prob_dof;
    Node	       *node;
@@ -250,7 +249,7 @@ RestoreCoordinates(Matrix d)
    dofs   = problem.dofs_pos; 
    node   = problem.nodes;
 
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (size_t i = 1 ; i <= problem.num_nodes ; i++) {
       base_dof = active*(node[i] -> number - 1);
       prob_dof = 1;
 
@@ -281,7 +280,7 @@ RestoreCoordinates(Matrix d)
 	 * rotational DOF
 	 */
 
-      for (j = 4 ; j <= 6 ; j++) {
+      for (size_t j = 4 ; j <= 6 ; j++) {
          if (dofs [j]) {
             node [i] -> dx [j] = sdata(d, base_dof + prob_dof, 1);
             prob_dof++;
@@ -295,7 +294,6 @@ RestoreCoordinates(Matrix d)
 int
 UpdateCoordinates(Matrix d)
 {
-   int		i;
    int		base_dof;
    int		prob_dof;
    Node	       *node;
@@ -306,7 +304,7 @@ UpdateCoordinates(Matrix d)
    dofs   = problem.dofs_pos; 
    node   = problem.nodes;
 
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (size_t i = 1 ; i <= problem.num_nodes ; i++) {
       base_dof = active*(node[i] -> number - 1);
       prob_dof = 1;
       if (dofs [1]) {
@@ -335,10 +333,8 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
    Matrix	  d_cum;
    Matrix	  F;
    int		  converged;
-   int		  iter;
    int		  n;
    double	  norm;
-   int		  step;
 
    n = Mrows(K);
 
@@ -357,11 +353,12 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
    ScaleMatrix (Fnodal, Fnodal, 1.0 / (double) analysis.load_steps, 0.0);
 
    converged = 0; /* gcc -Wall */
-   for (step = 1 ; step <= analysis.load_steps ; step ++) {
+   for (unsigned step = 1 ; step <= analysis.load_steps ; step ++) {
 
       ZeroMatrix (d);
 
       converged = 0;
+      unsigned iter;
       for (iter = 1; iter <= analysis.iterations ; iter++) {
          AssembleCurrentForce (F, Fnodal);   
          AssembleCurrentState (K, Felement, tangent);
@@ -392,7 +389,7 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
       if (!converged)
          return NullMatrix;
 
-      detail("step %d converged in %d iterations", step, iter);
+      detail("step %u converged in %u iterations", step, iter);
 
       AddMatrices (d_cum, d, d_cum);
    }
@@ -417,13 +414,9 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
    Matrix	  Felement;
    double	  Fidof;
    int		  converged;
-   int		  iter;
    int		  n;
    double	  norm;
-   int		  step;
    int		  idof;
-   int		  ca;
-   int		  k, j;
   
    num_cases = (fabs(analysis.stop - analysis.start) + 0.5*fabs(analysis.step))
                 / fabs(analysis.step) + 1;
@@ -447,18 +440,19 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
 
 
    converged = 0;  /* gcc -Wall */
-   for (ca = 1 ; ca <= num_cases ; ca ++) {
+   for (unsigned ca = 1 ; ca <= num_cases ; ca ++) {
       sdata(Fnodal, idof, 1) = Fidof + 
                                (analysis.start + (ca - 1)*analysis.step) / 
                                analysis.load_steps;
 
       ZeroMatrix (d_cum);
 
-      for (step = 1 ; step <= analysis.load_steps ; step ++) {
+      for (unsigned step = 1 ; step <= analysis.load_steps ; step ++) {
 
          ZeroMatrix (d);
 
          converged = 0;
+         unsigned iter;
          for (iter = 1; iter <= analysis.iterations ; iter++) {
             AssembleCurrentForce (F, Fnodal);
             AssembleCurrentState (K, Felement, tangent);
@@ -487,18 +481,18 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
          }
 
          if (!converged) {
-            detail("convergence failure at force level %d, step %d", ca, step);
+            detail("convergence failure at force level %u, step %u", ca, step);
             return NullMatrix;
          }
 
-         detail("force level %d, step %d converged in %d iterations", 
+         detail("force level %u, step %u converged in %u iterations", 
                 ca, step, iter);
 
          AddMatrices (d_cum, d, d_cum);
       }
 
-      for (k = 1 ; k <= analysis.numnodes ; k++) {
-         for (j = 1 ; j <= analysis.numdofs ; j++) {
+      for (size_t k = 1 ; k <= analysis.numnodes ; k++) {
+         for (size_t j = 1 ; j <= analysis.numdofs ; j++) {
             sdata(dtable, ca, (k-1)*analysis.numdofs + j) =
               mdata(d_cum, GlobalDOF (analysis.nodes [k] -> number, analysis.dofs[j]), 1);
          }

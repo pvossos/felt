@@ -51,7 +51,6 @@ static char  cpp_command [2048];
 int ReadCorduroyFile (const char *input_name)
 {
     char  buffer [2048];
-    char *plural;
     FILE *input;
 
 	/* open the file and send it through the pre-processor */
@@ -124,7 +123,7 @@ int ReadCorduroyFile (const char *input_name)
 	/* Report any errors. */
 
 	if (generator.num_errors) {
-	    plural = generator.num_errors != 1 ? "errors" : "error";
+	    const char *plural = generator.num_errors != 1 ? "errors" : "error";
 	    error ("%u %s found in input", generator.num_errors, plural);
 	    return generator.num_errors;
 	}

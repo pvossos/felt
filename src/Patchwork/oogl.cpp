@@ -170,7 +170,7 @@ int WriteOoglFile (char *filename)
    		scalefz,
    		scale;
    		
-   char		*element_name,*element_color;
+   char *element_color;
 
    if (strcmp (filename, "-") == 0)
       output = stdout;
@@ -181,7 +181,8 @@ int WriteOoglFile (char *filename)
          return 1;
       }
    }
-   element_name = problem.elements [1] -> definition -> name;
+
+   const char *element_name = problem.elements [1] -> definition -> name;
    
    fprintf (output,"LIST\n");
    

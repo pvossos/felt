@@ -29,7 +29,7 @@
 # include "error.h"
 # include "problem.h"
 
-extern void ExitLoom (int status);
+extern "C" void ExitLoom (int status);
 
 /************************************************************************
  * Function:	error							*

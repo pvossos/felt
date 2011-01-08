@@ -35,7 +35,7 @@ extern "C" {
 /*----------------------------------------------------------------------*/
 
 typedef struct {
-   char		*name;		/* unit symbolic name			*/
+   const char		*name;		/* unit symbolic name			*/
    double	scale;		/* conversion factor to ref state	*/
 } Unit;
 

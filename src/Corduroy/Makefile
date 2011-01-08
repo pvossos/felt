@@ -32,6 +32,6 @@ TOPDIR	= ../..
 
 include $(TOPDIR)/etc/Makefile.bin
 
-generator.o:	generator.c
-		$(CC) $(CFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c generator.c
+generator.o:	generator.cpp
+		$(CXX) $(CXXFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c generator.cpp
 

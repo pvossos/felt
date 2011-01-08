@@ -52,7 +52,6 @@ WriteLoganFile(char *name)
     int		 nummat;		/* number of material props.    */
     int		 numst;			/* number of surface tractions  */
     Material	 *material;		/* array of all materials used	*/
-    char	 *element_name;
 
     if (strcmp (name, "-") == 0)
        fp = stdout;
@@ -63,7 +62,8 @@ WriteLoganFile(char *name)
           return 1;
        }
     }
-    element_name = problem.elements [1] -> definition -> name;
+
+    const char *element_name = problem.elements [1] -> definition -> name;
 
     if (strcmp (element_name, "truss") == 0) {
        fprintf (fp, "%s\n", problem.title);

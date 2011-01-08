@@ -37,7 +37,7 @@ extern int InitializeProblem (void);
  
 static void
 place_symbol(FILE *output, int direct, double scale, 
-             double x, double y, double z, char *symbol)
+             double x, double y, double z, const char *symbol)
 {
   fprintf (output, "\n{");
   fprintf (output, "\nINST\ntransform\n");

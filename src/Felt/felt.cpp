@@ -41,7 +41,7 @@
 
 # define streq(a,b)	!strcmp(a,b)
 
-static char *usage = "\
+static const char *usage = "\
 usage: felt [options] [filename]\n\
        -debug              write debugging output\n\
        -preview            write a simple ASCII rendering of the problem\n\

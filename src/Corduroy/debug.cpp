@@ -36,7 +36,7 @@ int WriteCorduroyFile (const char *filename)
     Grid	 grid;
     TriMesh	 mesh;
     Curve	 curve;
-    static char	*rules [ ] = {"linear", "cosinusoidal", "sinusoidal", 
+    static const char	*rules [ ] = {"linear", "cosinusoidal", "sinusoidal", 
                               "logarithmic", "reverse-logarithmic",
                               "parabolic", "reverse-parabolic"};
 

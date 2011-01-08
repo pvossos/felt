@@ -42,7 +42,7 @@
 # define GRAPH 4
 # define OOGL  5
 
-static char *usage = "\
+static const char *usage = "\
 usage: patchwork -[in format] [filename] -[out format] [filename] [options]\n\
 \n\
        Available input formats:\n\

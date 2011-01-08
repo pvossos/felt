@@ -853,7 +853,7 @@ WriteFile(char *flag)
 }
 
 static int
-OpenFile(char *filename)
+OpenFile(const char *filename)
 {
     if (strcmp (filename, "-")) {
 	if (!(fp = fopen (filename, "w"))) {
@@ -876,7 +876,7 @@ CloseFile(void)
 }
 
 int
-WriteFeltFile(char *filename)
+WriteFeltFile(const char *filename)
 {
     if (OpenFile (filename))
        return 1;
@@ -890,7 +890,7 @@ WriteFeltFile(char *filename)
 }
 
 int
-DumpFeltFile(char *filename)
+DumpFeltFile(const char *filename)
 {
     if (OpenFile (filename))
        return 1;

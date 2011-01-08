@@ -193,7 +193,6 @@ static void Setup3D (double min_x, double max_x, double min_y, double max_y, dou
 void WriteWireframe3D (FILE *fp, const std::vector< cvector1<Node> > &table, double mag, 
                        double xrot, double yrot, double zrot, double zsc)
 {
-   int		i, j;
    double	maxX, minX, maxY, minY, maxZ, minZ;
    double	Xscale, Yscale;
    int		height, width;
@@ -213,8 +212,8 @@ void WriteWireframe3D (FILE *fp, const std::vector< cvector1<Node> > &table, dou
    if (zsc == 0.0)
       zsc = 1.0;
 
-   for (i = 1 ; i <= table.size(); i++) {
-      for (j = 1 ; j <= 2 ; j++) {
+   for (size_t i = 1 ; i <= table.size(); i++) {
+      for (size_t j = 1 ; j <= 2 ; j++) {
 
          x = table [i][j] -> x + table [i][j] -> dx [1] * mag;
          y = table [i][j] -> y + table [i][j] -> dx [2] * mag;
@@ -236,8 +235,8 @@ void WriteWireframe3D (FILE *fp, const std::vector< cvector1<Node> > &table, dou
    xdiff = maxX - minX;
    ydiff = maxY - minY;
 
-   for (i = 1 ; i <= table.size(); i++) {
-      for (j = 1 ; j <= 2; j++) {
+   for (size_t i = 1 ; i <= table.size(); i++) {
+      for (size_t j = 1 ; j <= 2; j++) {
 
          x = table [i][j] -> x + table [i][j] -> dx [1] * mag;
          y = table [i][j] -> y + table [i][j] -> dx [2] * mag;
@@ -283,7 +282,7 @@ void WriteWireframe3D (FILE *fp, const std::vector< cvector1<Node> > &table, dou
 
    fprintf (fp, "%d, %d\n", width, height);
 
-   for (i = 1 ; i <= table.size(); i++) {
+   for (size_t i = 1 ; i <= table.size(); i++) {
       x = table [i][1] -> x + table [i][1] -> dx [1] * mag;
       y = table [i][1] -> y + table [i][1] -> dx [2] * mag;
       z = table [i][1] -> z + table [i][1] -> dx [3] * mag;

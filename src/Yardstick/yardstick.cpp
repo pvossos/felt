@@ -37,7 +37,7 @@
 
 # define streq(a,b)	!strcmp(a,b)
 
-static char *usage = "\
+static const char *usage = "\
 unit conversion: yardstick -if [force units] -il [length units]\n\
                            -of [force units] -ol [length units]\n\
                            [Cpp options] [filename]\n\

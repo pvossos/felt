@@ -108,13 +108,13 @@ int ReadFeltFile(const char *filename);
 /*!
   Writes a felt file -- only referenced objects will be written.
 */
-int WriteFeltFile(char *filename);
+int WriteFeltFile(const char *filename);
 
 /*!
  Dumps a felt file -- referenced and unreferenced objects will be
  written.
 */
-int DumpFeltFile(char *filename);
+int DumpFeltFile(const char *filename);
 
 /*!
   Writes a felt file -- only referenced objects will be written.

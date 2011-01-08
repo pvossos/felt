@@ -36,7 +36,7 @@
 
 # define streq(a,b)	!strcmp(a,b)
 
-static char *usage = "\
+static const char *usage = "\
 usage: corduroy [options] [filename]\n\
        -debug           write debugging output\n\
        -nocpp           do not use a preprocessor\n\
@@ -104,8 +104,6 @@ static void AddNewArrays (cvector1<Node> &node, cvector1<Element> &element,
 int main (int argc, char **argv)
 {
    Definition	definition;
-   Element	*element;
-   Node		*node;
    unsigned	start_node;
    unsigned	start_element;
    Line		*line;

@@ -54,7 +54,6 @@ static unsigned char	  white, black;
 
 static void BresenhamLine (int xs, int ys, int xe, int ye, unsigned char **image, int nrows, int ncols)
 {
-   unsigned	i;
    int		x,y,
 		dx,dy,
 		e;
@@ -84,7 +83,7 @@ static void BresenhamLine (int xs, int ys, int xe, int ye, unsigned char **image
    x = xs;
    y = ys;
  
-   for (i = 0 ; i <= dx ; i++) {
+   for (int i = 0 ; i <= dx ; i++) {
       if (y > 0 && y < nrows && x > 0 && x < ncols)
          image [y][x] = black;
 
@@ -139,7 +138,6 @@ static void InitializeColormapTable (void)
 
 static void HequalImageData (unsigned char **image, int nrows, int ncols)
 {
-   unsigned		i,j;
    unsigned char			point;
    int	   	        histogram [NUMCELLS];
    float		p [NUMCELLS],
@@ -147,12 +145,12 @@ static void HequalImageData (unsigned char **image, int nrows, int ncols)
 			vstar [NUMCELLS],
 			vmin, area, sum;
    
-   for (i = 0 ; i < NUMCELLS ; i++)
+   for (int i = 0 ; i < NUMCELLS ; i++)
       histogram [i] = 0;
 
    area = 0;
-   for (i = 0 ; i < nrows ; i++) {
-      for (j = 0 ; j < ncols ; j++) {
+   for (int i = 0 ; i < nrows ; i++) {
+      for (int j = 0 ; j < ncols ; j++) {
 
          point = image [i][j];
 
@@ -163,23 +161,23 @@ static void HequalImageData (unsigned char **image, int nrows, int ncols)
       }
    }
 
-   for (i = 0 ; i < NUMCELLS ; i++)
+   for (int i = 0 ; i < NUMCELLS ; i++)
       p [i] = histogram [i] / area;
 
    sum = 0.0;
    vmin = p[0];
-   for (i = 0 ; i < NUMCELLS ; i++) {
+   for (int i = 0 ; i < NUMCELLS ; i++) {
       sum += p[i];
       v[i] = sum;
       if (v[i] < vmin)
          vmin = v[i];
    }
 
-   for (i = 0 ; i < NUMCELLS ; i++)
+   for (int i = 0 ; i < NUMCELLS ; i++)
       vstar[i] = ((((v[i] - vmin)/(1.0 - vmin))*(NUMCELLS - 1.0)) + 0.5);
 
-   for (i = 0 ; i < nrows ; i++) {
-      for (j = 0 ; j < ncols ; j++) {
+   for (int i = 0 ; i < nrows ; i++) {
+      for (int j = 0 ; j < ncols ; j++) {
 
          point = image [i][j];
          if (point != white) {
@@ -194,7 +192,6 @@ static unsigned char **LoadImage (float **z, int width, int height, unsigned cha
 {
    unsigned		x_max,y_max,x_min,y_min;
    float		max,min;
-   unsigned		i,j;
    float		slope;
    int			point;
    unsigned 		flag;
@@ -207,8 +204,8 @@ static unsigned char **LoadImage (float **z, int width, int height, unsigned cha
    max = min = max_width = min_width = 0;
 
    flag = 0;
-   for (i = 0 ; i < height ; i++) {
-      for (j = 0 ; j < width ; j++) {
+   for (unsigned i = 0 ; i < height ; i++) {
+      for (unsigned j = 0 ; j < width ; j++) {
  
          if (mask[i][j]) {
             if (!flag) {
@@ -238,13 +235,13 @@ static unsigned char **LoadImage (float **z, int width, int height, unsigned cha
    }
 
    image = Allocate (unsigned char *, height);
-   for (i = 0 ; i < height ; i++)
+   for (int i = 0 ; i < height ; i++)
       image [i] = Allocate (unsigned char, width);
 
    slope = (float) NUMCELLS / (max - min);
 
-   for (i = 0 ; i < height ; i++) {
-      for (j = 0 ; j < width ; j++) {
+   for (int i = 0 ; i < height ; i++) {
+      for (int j = 0 ; j < width ; j++) {
      
          if (mask[i][j]) {
             if (z[i][j] != max)
@@ -260,12 +257,12 @@ static unsigned char **LoadImage (float **z, int width, int height, unsigned cha
    }
 
    if (wedge_orient == HORIZ) {
-      for (j = x_min ; j <= x_max ; j++) {
+      for (unsigned j = x_min ; j <= x_max ; j++) {
 
          point = (int) ((float) (j-x_min)/
                         (float) (x_max - x_min)*(NUMCELLS - 1.0)); 
 
-         for (i = (int) (0.88*height) ; i < height - 12 ; i++)
+         for (unsigned i = (int) (0.88*height) ; i < height - 12 ; i++)
             image [i][j] = point;
       }
       sx1 = x_min;
@@ -273,12 +270,12 @@ static unsigned char **LoadImage (float **z, int width, int height, unsigned cha
       sy1 = sy2 = height - 2;
    }
    else {
-      for (i = y_min ; i <= y_max ; i++) {
+      for (unsigned i = y_min ; i <= y_max ; i++) {
 
          point = (int) ((float) (i-y_min)/
                         (float) (y_max - y_min)*(NUMCELLS - 1.0)); 
 
-         for (j = (int) (0.9*width) ; j < (int) (0.98*width) ; j++) 
+         for (unsigned j = (int) (0.9*width) ; j < (int) (0.98*width) ; j++) 
             image [height - i - 1][j] = point;
       }
       sy1 = y_max + 10;
@@ -375,7 +372,7 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
 
    zi = Allocate (float *, height); 
    mask = Allocate (unsigned char *, height);
-   for (i = 0 ; i < height ; i++) {
+   for (int i = 0 ; i < height ; i++) {
       zi [i] = Allocate (float, width); 
       mask [i] = Allocate (unsigned char, width);
    }
@@ -422,8 +419,8 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
      }
    }
 
-   for (i = 0 ; i < height ; i++) {
-      for (j = 0 ; j < width ; j++) {
+   for (int i = 0 ; i < height ; i++) {
+      for (int j = 0 ; j < width ; j++) {
  
          if (XPointInRegion(global,j,i))
             mask[i][j] = 1;
@@ -434,10 +431,10 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
 
    XDestroyRegion (global);
 
-   for (i = 1 ; i <= height; i++) 
+   for (int i = 1 ; i <= height; i++) 
       yi [i] = (float) i - 1.0;
 
-   for (j = 1 ; j <= width ; j++) 
+   for (int j = 1 ; j <= width ; j++) 
       xi [j] = (float) j - 1.0;
 
    result = BivariateInterp (nd, xd.c_ptr1(), yd.c_ptr1(), zd.c_ptr1(), width, height,xi.c_ptr1(),yi.c_ptr1(),zi,mask);
@@ -471,7 +468,7 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
 	 * cleanup
 	 */
 
-   for (i = 0 ; i < height ; i++) {
+   for (int i = 0 ; i < height ; i++) {
       Deallocate (zi [i]);
       Deallocate (mask [i]);
    }
@@ -489,12 +486,11 @@ void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
                       int equalize, int plot_elt, int width, int height)
 {
    int		nd;
-   int		i, j;
    int		flag;
 
    nd = 0;
    flag = 1;
-   for (i = 1; i <= numelts ; i++) {
+   for (unsigned i = 1; i <= numelts ; i++) {
       if (element [i] -> definition -> shape != Planar) {
           error ("cannot plot stresses for non-planar elements");
           return;
@@ -504,12 +500,12 @@ void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
         return;
       }
       if (comp > element [i] -> definition -> numstresses) {
-         error ("invalid stress component for element %d",i);
+         error ("invalid stress component for element %u",i);
          return;
       }
 
       if (flag) {
-         for (j = 1 ; j <= element [i] -> ninteg ; j++) {
+         for (unsigned j = 1 ; j <= element [i] -> ninteg ; j++) {
             if (element [i] -> stress [j] -> values [comp] != 0)
                flag = 0;
          }
@@ -531,18 +527,15 @@ void PlotDisplacementField (char *out, Node *node, unsigned numnodes,
                             Element *element, unsigned numelts, int comp, 
                             int equalize, int plot_elt, int width, int height)
 {
-   int		i;
-   int		flag;
-
-   for (i = 1; i <= numelts ; i++) {
+   for (unsigned i = 1; i <= numelts ; i++) {
       if (element [i] -> definition -> shape != Planar) {
           error ("cannot plot stresses for non-planar elements");
           return;
       }
    }
 
-   flag = 1;
-   for (i = 1 ; i <= numnodes ; i++) {
+   int flag = 1;
+   for (unsigned i = 1 ; i <= numnodes ; i++) {
       if (node [i] -> dx [comp] != 0) {
          flag = 0;
          break;

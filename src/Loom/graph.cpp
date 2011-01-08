@@ -35,7 +35,7 @@
 void WriteLineGraph (Matrix d, const char *alt_title,
                      const char *xlabel, const char *ylabel, const char *output)
 {
-   static char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
+   static const char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    unsigned	i,j;
    unsigned	numcurves;
    unsigned	numpoints;
@@ -78,7 +78,7 @@ void WriteLineGraph (Matrix d, const char *alt_title,
 
 void WriteLineGraphTransferFunctions (const Matrix *H, const NodeDOF *forced, unsigned numforced, const char *output)
 {
-   static char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
+   static const char *symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
    unsigned	i,j,l;
    unsigned	nn;
    unsigned	numcurves;

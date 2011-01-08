@@ -41,7 +41,6 @@
 
 void WriteWireframe2D (FILE *fp, const std::vector< cvector1<Node> > &table, double mag)
 {
-   int		i, j;
    double	maxX, minX, maxY, minY, Xscale, Yscale;
    double	x, y;
    double	w, h;
@@ -52,8 +51,8 @@ void WriteWireframe2D (FILE *fp, const std::vector< cvector1<Node> > &table, dou
    maxX = minX = table [1][1] -> x;
    maxY = minY = table [1][1] -> y;
 
-   for (i = 1 ; i <= table.size(); i++) {
-      for (j = 1 ; j <= 2; j++) {
+   for (size_t i = 1 ; i <= table.size(); i++) {
+      for (size_t j = 1 ; j <= 2; j++) {
          x = table [i][j] -> x + table [i][j] -> dx [1] * mag;
          y = table [i][j] -> y + table [i][j] -> dx [2] * mag;
 
@@ -89,7 +88,7 @@ void WriteWireframe2D (FILE *fp, const std::vector< cvector1<Node> > &table, dou
 
    fprintf (fp, "%d, %d\n", width, height);
 
-   for (i = 1 ; i <= table.size(); i++) {
+   for (size_t i = 1 ; i <= table.size(); i++) {
       sx1 = (int) ((table [i][1] -> x + table [i][1] -> dx [1] * mag  - minX) * Xscale);
       sy1 = (int) (height - (table [i][1] -> y + table [i][1] -> dx [2] * mag - minY) * Yscale);
       sx2 = (int) ((table [i][2] -> x + table [i][2] -> dx [1] * mag - minX) * Xscale);

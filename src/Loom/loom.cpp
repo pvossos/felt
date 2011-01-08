@@ -257,8 +257,6 @@ int main (int argc, char **argv)
     Vector	 d;			/* displacement vector		*/
     Matrix	 x;			/* eigenvectors			*/
     Vector	 lambda;		/* eigenvalues			*/
-    NodeDOF	 *forced;		/* array of forced DOF numbers  */
-    unsigned	 numforced;		/* number of forced DOF		*/
     int		 status;		/* return status		*/
     cvector1<Reaction>	 R;			/* reaction force vector	*/
     Matrix	 dtable;		/* time-displacement table	*/

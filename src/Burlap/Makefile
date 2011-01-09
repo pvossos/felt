@@ -38,7 +38,7 @@ TOPDIR	= ../..
 include $(TOPDIR)/etc/Makefile.bin
 
 
-interactive.o:	interactive.c
-		$(CC) $(CFLAGS) $(READLINE) -c interactive.c
+interactive.o:	interactive.cpp
+		$(CXX) $(CXXFLAGS) $(READLINE) -c interactive.cpp
 
-help.o:		help.c helptab.h
+help.o:		help.cpp helptab.h

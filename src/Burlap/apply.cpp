@@ -917,7 +917,7 @@ static int external_call (descriptor *object, int num_args)
 	CreateData (result, NULL, NULL, T_Double);
 	ptr = (void **) D_Pointer (arg1);
 	mode = arg2 && D_Type (arg2) == T_Int ? *D_Int (arg2) : 0;
-	*D_Double (result) = (*D_External (object)) (*ptr, mode);
+	*D_Double (result) = (*D_External (object)) () /*FIXME: (*ptr, mode)*/;
     } else
 	type_error = F_True;
 

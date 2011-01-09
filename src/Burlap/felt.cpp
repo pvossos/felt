@@ -41,15 +41,15 @@
    the same size all over the world. */
 
 extern Code   InCore;
+
+extern "C" {
 int CompileCode(char *text);
 int IsConstant(Code code);
 double EvalCode(Code code, double time);
 void FreeCode(Code code);
 Code CopyCode(Code code);
-
-/* This is only in misc.h. */
-
 void SetupStressMemory(Element element);
+}
 
 # define NUMBER(x)	(sizeof (x) / sizeof (*x))
 # define OFFSET(x,y)	((unsigned) (((char *) (&(((x)0)->y))) - ((char *) 0)))
@@ -1848,6 +1848,7 @@ void error (const char *format, ...)
  *		library compatibility only).				*
  ************************************************************************/
 
+extern "C"
 void Fatal (const char *format, ...)
 {
     va_list ap;

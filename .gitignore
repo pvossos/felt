@@ -9,3 +9,5 @@ tokens.h
 TAGS
 CMakeFiles
 *.cmake
+Makefile
+CMakeCache.txt

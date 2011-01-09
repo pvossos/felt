@@ -7,3 +7,5 @@ parser.c
 y.tab.h
 tokens.h
 TAGS
+CMakeFiles
+*.cmake

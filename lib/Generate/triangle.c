@@ -1,3 +1,8 @@
+/* cmake doesn't (?) support per-file compile flags */
+#define ANSI_DECLARATORS
+#define TRILIBRARY
+#define REDUCED
+
 /*****************************************************************************/
 /*                                                                           */
 /*      888888888        ,o,                          / 888                  */

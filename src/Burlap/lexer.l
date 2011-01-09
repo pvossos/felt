@@ -51,7 +51,7 @@
 # include <unistd.h>
 # include "error.h"
 # include "lexer.h"
-# include "parser.h"
+# include "parseraux.h"
 # include "toktab.h"
 # include "execute.h"
 # include "globals.h"

@@ -11,3 +11,4 @@ CMakeFiles
 *.cmake
 Makefile
 CMakeCache.txt
+include/config.h

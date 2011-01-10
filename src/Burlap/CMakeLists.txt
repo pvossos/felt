@@ -11,3 +11,5 @@ add_executable(burlap
   predicate.cpp relational.cpp symbol.cpp trap.cpp vector.cpp write.cpp)
 
 target_link_libraries(burlap felt elt mtx)
+
+install(TARGETS burlap DESTINATION bin)

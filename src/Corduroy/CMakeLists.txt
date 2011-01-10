@@ -6,3 +6,5 @@ add_executable(corduroy
   ${FLEX_CorduroyLexer_OUTPUTS} ${BISON_CorduroyParser_OUTPUTS})
 
 target_link_libraries(corduroy gen felt elt mtx)
+
+install(TARGETS corduroy DESTINATION bin)

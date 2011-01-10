@@ -1,0 +1,11 @@
+/* hey emacs, bring this up in -*- c -*- mode */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#define FELT_VERSION_MAJOR @felt_VERSION_MAJOR@
+#define FELT_VERSION_MINOR @felt_VERSION_MINOR@
+#define FELT_VERSION_MICRO @felt_VERSION_MICRO@
+#define CPP "@CPP_LOCATION@"
+
+#endif

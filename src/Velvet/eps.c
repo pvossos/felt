@@ -22,8 +22,8 @@
 # include <X11/Intrinsic.h>
 # include "eps.h"
 # include "error.h"
-# include "version.h"
 # include "xwd.h"
+# include "config.h"
 
 #define MARGIN 0.95
 
@@ -226,7 +226,8 @@ putinit(char* name, int cols, int rows, int padright, int bps, float scale,
     lly = ( pagehgt - srows ) / 2;
 
     fprintf(output, "%%!PS-Adobe-2.0 EPSF-2.0\n" );
-    fprintf(output, "%%%%Creator: Velvet %s\n", VERSION );
+    fprintf(output, "%%%%Creator: Velvet %d.%d.%d\n",
+            FELT_VERSION_MAJOR, FELT_VERSION_MINOR, FELT_VERSION_MICRO );
     fprintf(output, "%%%%Title: %s\n", name );
     fprintf(output, "%%%%Pages: 1\n" );
     fprintf(output,

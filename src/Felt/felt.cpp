@@ -31,12 +31,12 @@
 # include "problem.h"
 # include "fe.h"
 # include "error.h"
-# include "version.h"
 # include "definition.h"
 # include "results.hpp"
 # include "draw.hpp"
 # include "renumber.hpp"
 # include "transient.hpp"
+# include "config.h"
 
 # define streq(a,b)	!strcmp(a,b)
 
@@ -97,7 +97,8 @@ static int ParseFeltOptions (int *argc, char *argv[])
 	    fputs (usage, stderr);
 	    exit (0);
         } else if (streq (arg, "-version")) {
-	    fprintf (stderr, "felt %s\n", VERSION);
+	    fprintf (stderr, "felt %d.%d.%d\n",
+                 FELT_VERSION_MAJOR, FELT_VERSION_MINOR, FELT_VERSION_MICRO);
             exit (0);
 	} else if (streq (arg, "-debug")) {
 	    debug = 1;

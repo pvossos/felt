@@ -34,7 +34,6 @@
 # include <stdio.h>
 # include <math.h>
 # include "fe.h"
-# include "allocate.h"
 # include "error.h"
 # include "problem.h"
 # include "cmatrix.h"

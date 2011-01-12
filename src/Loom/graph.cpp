@@ -30,7 +30,6 @@
 # include "fe.h"
 # include "error.h"
 # include "problem.h"
-# include "allocate.h"
 
 void WriteLineGraph (Matrix d, const char *alt_title,
                      const char *xlabel, const char *ylabel, const char *output)

@@ -20,6 +20,7 @@
 # include <stdio.h>
 # include <math.h>
 # include <stdlib.h>
+# include "cvector1.hpp"
 # include "matrix.h"
 # include "error.h"
 
@@ -35,13 +36,11 @@ static void HessenbergReduction (Matrix a)
    unsigned	i,j,k;
    double	sigma, rho, eta, pi;
    double	sum;
-   double	*v;
 
    n = Mrows(a) - 2;
    sigma = 0.0;
 
-   v = (double *) malloc (sizeof (double) * n);
-   v --;
+   cvector1d v(n);
 
    for (k = 1 ; k <= n-2 ; k++) {
       eta = fabs (mdata(a,k+1,k));
@@ -116,9 +115,6 @@ static void HessenbergReduction (Matrix a)
       for (i = j+2 ; i <= n ; i++)
          sdata(a, i, j) = 0.0; 
 
-   v++;
-   free (v);
-  
    return;
 }
 
@@ -128,15 +124,11 @@ static void GeneralShiftedQR (Matrix a, unsigned int maxit, double tol)
    unsigned	n;
    double	eta, alpha, beta, delta, kappa, nu;
    double	temp;
-   double	*gamma;
-   double	*sigma;
 
    n = Mrows(a) - 2;
 
-   sigma = (double *) malloc (sizeof (double) * n);
-   gamma = (double *) malloc (sizeof (double) * n);
-   sigma --;
-   gamma --;
+   cvector1d sigma(n);
+   cvector1d gamma(n);
 
    for (i = 1 ; i <= maxit ; i++) {
 
@@ -189,11 +181,6 @@ static void GeneralShiftedQR (Matrix a, unsigned int maxit, double tol)
       if (n == 1) 
          break;
    }
-
-   gamma ++;
-   sigma ++;
-   free (gamma);
-   free (sigma);
 
    return;
 }

@@ -28,7 +28,6 @@
 
 # include <math.h>
 # include <stdio.h>
-# include "allocate.h"
 # include "fe.h"
 # include "error.h"
 # include "misc.h"

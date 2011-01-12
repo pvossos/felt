@@ -28,9 +28,9 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "problem.h"
 # include "error.h"
-# include "allocate.h"
 # include "definition.h"
 # include "yardstick.h"
 # include "units.h"

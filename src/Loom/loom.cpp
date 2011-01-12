@@ -43,7 +43,6 @@
 # include "problem.h"
 # include "fe.h"
 # include "error.h"
-# include "allocate.h"
 # include "definition.h"
 # include "options.h"
 # include "wireframe.hpp"

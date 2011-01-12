@@ -30,7 +30,6 @@
 # include <stdio.h>
 # include <math.h>
 # include "draw.hpp"
-# include "allocate.h"
 # include "problem.h"
 # include "fe.h"
 # include "error.h"

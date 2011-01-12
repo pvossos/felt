@@ -31,7 +31,6 @@
 # include "problem.h"
 # include "fe.h"
 # include "error.h"
-# include "allocate.h"
 # include "version.h"
 # include "definition.h"
 # include "results.hpp"

@@ -30,7 +30,6 @@
 # include "cvector1.hpp"
 # include "wireframe.hpp"
 # include "problem.h"
-# include "allocate.h"
 # include "error.h"
 # include "draw.hpp"
 

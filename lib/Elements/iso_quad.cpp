@@ -29,7 +29,6 @@
 
 # include <stdio.h>
 # include <math.h>
-# include "allocate.h"
 # include "fe.h"
 # include "error.h"
 # include "misc.h"

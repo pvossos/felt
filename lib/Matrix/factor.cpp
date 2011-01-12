@@ -20,12 +20,13 @@
 # include <stdio.h>
 # include <math.h>
 # include <stdlib.h>
+# include "cvector1.hpp"
 # include "matrix.h"
 # include "error.h"
 
 # define SIGN(x) ((x) < 0 ? -1 : 1)
 
-static void HouseHolderRow (Matrix a, double *v, unsigned int j, unsigned int m, unsigned int n, double *w)
+static void HouseHolderRow (Matrix a, const double *v, unsigned int j, unsigned int m, unsigned int n, double *w)
 {
    unsigned	i, k;
    double	beta;
@@ -80,7 +81,6 @@ int QRFactorMatrix (Matrix q, Matrix r, const Matrix a)
 {
    unsigned	i, j;
    unsigned	m , n;
-   double	*v, *w;
    int		status;
 
    if (IsCompact(q) || IsCompact(r))
@@ -111,18 +111,12 @@ int QRFactorMatrix (Matrix q, Matrix r, const Matrix a)
    m = Mrows(r);
    n = Mcols(r);
 
-   v = (double *) malloc (sizeof(double) * m);
-   if (v == NULL)
-	Fatal ("unable to allocate temporary vector");
-   v --;
-   w = (double *) malloc (sizeof(double) * m);
-   if (w == NULL)
-	Fatal ("unable to allocate temporary vector");
-   w --;
+   cvector1d v(m);
+   cvector1d w(m);
 
    for (j = 1 ; j <= n ; j++) {
-      HouseHolder (v, r, j, m);
-      HouseHolderRow (r, v, j, m, n, w);       
+      HouseHolder (v.c_ptr1(), r, j, m);
+      HouseHolderRow (r, v.c_ptr1(), j, m, n, w.c_ptr1());       
       
       if (j < m) {
          for (i = j+1 ; i <= m ; i++)
@@ -135,11 +129,8 @@ int QRFactorMatrix (Matrix q, Matrix r, const Matrix a)
       for (i = j+1 ; i <= m ; i++)
          v [i] = mdata(r, i, j);
 
-      HouseHolderRow (q, v, j, m, m, w);
+      HouseHolderRow (q, v.c_ptr1(), j, m, m, w.c_ptr1());
    }
-
-   v++; free(v);
-   w++; free(w);
 
    return 0;
 }
@@ -375,7 +366,6 @@ int FormLUPMatrices (Matrix L, Matrix U, Matrix P, const Matrix a, const Matrix 
    unsigned	n;
    unsigned	k_pvt;
    unsigned	temp;
-   unsigned	*pivot;
 
    if (IsCompact(L) || IsCompact(U) || IsCompact(P))
       return M_COMPACT;
@@ -394,7 +384,7 @@ int FormLUPMatrices (Matrix L, Matrix U, Matrix P, const Matrix a, const Matrix 
 
    n = Mrows(a);
 
-   pivot = (unsigned *) malloc (sizeof (unsigned) * n); pivot --;
+   cvector1u pivot(n);
 
    for (i = 1 ; i <= n ; i++) 
       pivot [i] = i;
@@ -423,8 +413,6 @@ int FormLUPMatrices (Matrix L, Matrix U, Matrix P, const Matrix a, const Matrix 
       for (j = i ; j <= n ; j++)
          sdata(U,i,j) = mdata(a,i,j);
    }
-
-   pivot ++; free (pivot);
 
    return 0;
 }

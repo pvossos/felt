@@ -18,7 +18,6 @@
 */
 
 # include <math.h>
-# include "allocate.h"
 # include "error.h"
 # include "fe.h"
 # include "objects.h"

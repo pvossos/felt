@@ -34,7 +34,6 @@
 # include <stdio.h>
 # include <math.h>
 # include "cvector1.hpp"
-# include "allocate.h"
 # include "problem.h"
 # include "fe.h"
 # include "fe.hpp"

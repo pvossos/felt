@@ -290,7 +290,7 @@ static void WriteMAT (Matrix a, FILE *fp, const char *name, int arch)
 }
 
 
-int MatrixToMatlab (Matrix a, FILE *fp, const char *name)
+int MatrixToMatlab (const Matrix a, FILE *fp, const char *name)
 {
    int		arch;
   
@@ -301,7 +301,7 @@ int MatrixToMatlab (Matrix a, FILE *fp, const char *name)
    return 0;
 }
 
-int MatricesToMatlab (Matrix *a, unsigned int n, FILE *fp, char **name)
+int MatricesToMatlab (const Matrix *a, unsigned int n, FILE *fp, const char **name)
 {
    int		arch;
    unsigned	i;

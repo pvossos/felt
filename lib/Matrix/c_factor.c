@@ -24,7 +24,7 @@
 # include "cmatrix.h"
 # include "error.h"
 
-int InvertComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p)
+int InvertComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p)
 {
    unsigned		i, j;
    unsigned		n;
@@ -61,7 +61,7 @@ int InvertComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p)
    return 0;
 }
 
-int LUFactorComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p, int *info)
+int LUFactorComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p, int *info)
 {
    complex	t;
    unsigned	i, j, k;
@@ -210,7 +210,7 @@ int LUBackSolveComplexMatrix (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b,
    return 0;
 }
 
-int DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p)
+int DeterminantComplexMatrix(complex *result, const ComplexMatrix a, const Matrix p)
 {
    unsigned	i;
    complex	x;
@@ -237,7 +237,7 @@ int DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p)
    return 0;
 }
 
-int InvertCroutComplexMatrix (ComplexMatrix b, ComplexMatrix a, unsigned int col)
+int InvertCroutComplexMatrix (ComplexMatrix b, const ComplexMatrix a, unsigned int col)
 {
    static complex	one = {1.0, 0.0};
 
@@ -333,7 +333,7 @@ int CroutFactorComplexMatrix (ComplexMatrix A)
    return 0;
 }
 
-int CroutBackSolveComplexMatrix (ComplexMatrix A, ComplexMatrix b)
+int CroutBackSolveComplexMatrix (const ComplexMatrix A, ComplexMatrix b)
 {
    unsigned	 jj,j,jjlast,
 		 jcolht,jjnext,

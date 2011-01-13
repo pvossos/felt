@@ -24,7 +24,7 @@
 
 double	atof(const char *);
 
-int FrobeniusNormMatrix (double *result, Matrix a)
+int FrobeniusNormMatrix (double *result, const Matrix a)
 {
    unsigned	i, j;
    double	data;
@@ -44,7 +44,7 @@ int FrobeniusNormMatrix (double *result, Matrix a)
    return 0;
 }
 
-int PNormMatrix (double *result, Matrix a, char *p)
+int PNormMatrix (double *result, const Matrix a, const char *p)
 {
    unsigned	i, j;
    double	x;
@@ -81,7 +81,7 @@ int PNormMatrix (double *result, Matrix a, char *p)
    return 0;
 }
 
-int PNormVector (double *result, Matrix a, const char *p)
+int PNormVector (double *result, const Matrix a, const char *p)
 {
    unsigned	i;
    double	data;

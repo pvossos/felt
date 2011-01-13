@@ -24,7 +24,7 @@
 # include "cmatrix.h"
 # include "error.h"
 
-complex cmdata (ComplexMatrix A, unsigned int row, unsigned int col)
+complex cmdata (const ComplexMatrix A, unsigned int row, unsigned int col)
 {
    unsigned	height;
    unsigned	temp;
@@ -193,7 +193,7 @@ ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols, 
    return A;
 }
 
-ComplexMatrix CreateCopyComplexMatrix (ComplexMatrix a)
+ComplexMatrix CreateCopyComplexMatrix (const ComplexMatrix a)
 {
    ComplexMatrix	b;
    unsigned	size;
@@ -222,7 +222,7 @@ ComplexMatrix CreateCopyComplexMatrix (ComplexMatrix a)
    return b;
 }
 
-ComplexMatrix MakeFullFromCompactComplex (ComplexMatrix A)
+ComplexMatrix MakeFullFromCompactComplex (const ComplexMatrix A)
 {
    unsigned 		i,j;
    ComplexMatrix	B;
@@ -236,7 +236,7 @@ ComplexMatrix MakeFullFromCompactComplex (ComplexMatrix A)
    return B; 
 }
 
-ComplexMatrix MakeCompactFromFullComplex (ComplexMatrix A)
+ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A)
 {
    unsigned	*diag;
    ComplexMatrix	compA;

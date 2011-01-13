@@ -152,7 +152,10 @@ void global_init (void)
     add_literal (&field_st, "", FieldOp);
 
     for (i = 0; i < NumIntrinsics; i ++) {
-	d = &var_array [add_literal (&var_st, functab [i].name, GlblOp) -> idx];
+        /* for some reason, the following segfaults on my system. */
+        /* d = &var_array [add_literal (&var_st, functab [i].name, GlblOp) -> idx];*/
+    const size_t idx = add_literal (&var_st, functab [i].name, GlblOp) -> idx;
+    d = &var_array [idx];
 	D_Type	    (d) = T_Intrinsic;
 	D_Temp	    (d) = F_False;
 	D_Trapped   (d) = F_False;

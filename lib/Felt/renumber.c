@@ -245,7 +245,7 @@ Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers
    ccstor = Allocate (int, numnodes);
    UnitOffset (ccstor);
 
-   lvl = Allocate (int, numnodes);
+   lvl = Allocate (int, numnodes+1);
    lvls1 = Allocate (int, numnodes);
    lvls2 = Allocate (int, numnodes);
    UnitOffset (lvl);

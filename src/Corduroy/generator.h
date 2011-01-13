@@ -51,8 +51,8 @@ typedef struct {
 
 extern Generator generator;
 
-void init_lexer (FILE *fp);
-int	 yyparse	(void);
+void init_cord_lexer (FILE *fp);
+int	 cord_yyparse	(void);
 
 /*!
   Parses and removes the preprocesor options from the command line

@@ -17,6 +17,7 @@
 
 CFLAGS	= $(CCOPTS) -I. -I$(TOPDIR)/include -DEXECDEBUG
 LEX	= flex
+LFLAGS  = -i -Pburlap_yy
 LDFLAGS	= $(LDOPTS)
 LIBS	= $(LIBFELT) $(LIBELT) $(LIBMTX) $(READLIBS) -lm
 OBJS	= apply.o arithmetic.o array.o assignment.o burlap.o\
@@ -28,7 +29,7 @@ OBJS	= apply.o arithmetic.o array.o assignment.o burlap.o\
 PROG	= burlap
 SRCS	= lexer.c parser.c
 YACC	= bison
-YFLAGS	= -d -y
+YFLAGS	= -d -y -pburlap_yy
 
 CURDIR	= ./src/Burlap
 TOPDIR	= ../..
@@ -38,16 +39,5 @@ include $(TOPDIR)/etc/Makefile.bin
 
 interactive.o:	interactive.c
 		$(CC) $(CFLAGS) $(READLINE) -c interactive.c
-
-parser.c:	parser.y
-		$(YACC) $(YFLAGS) parser.y
-		sed -e s/yy/bf/g -e s/YY/BF/g y.tab.c > parser.c
-		sed -e s/yy/bf/g -e s/YY/BF/g y.tab.h > tokens.h
-		rm -f y.tab.c y.tab.h
-
-lexer.c:	lexer.l
-		$(LEX) $(LFLAGS) lexer.l
-		sed -e s/yy/bf/g -e s/YY/BF/g lex.yy.c > lexer.c
-		rm -f lex.yy.c
 
 help.o:		help.c helptab.h

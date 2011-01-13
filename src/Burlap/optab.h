@@ -34,7 +34,7 @@
 # define OP_INT		2	/* integer constant operand */
 
 static struct {
-    char *name;
+    const char *name;
     int   type;
 } optab [ ] = {
     {"add",	OP_NONE},

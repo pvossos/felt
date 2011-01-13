@@ -184,7 +184,7 @@ while				{return process_operator (WHILE);}
  * Description:	Reports a syntax error using the error mechanism.	*
  ************************************************************************/
 
-void yyerror (char *message)
+void burlap_yyerror (const char *message)
 {
     int c;
 
@@ -338,7 +338,7 @@ static int process_eof (void)
  *		information is restored.				*
  ************************************************************************/
 
-int yyinclude (char *file)
+int burlap_yyinclude (char *file)
 {
     int		    old_newline;
     int		    old_last_token;
@@ -415,7 +415,7 @@ int yyinclude (char *file)
     file_num = s -> idx;
 
     global_cs = cs = new_cs ( );
-    status = yyparse ( );
+    status = burlap_yyparse ( );
     free_cs (cs);
 
 

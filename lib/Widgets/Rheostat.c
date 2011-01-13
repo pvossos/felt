@@ -161,6 +161,10 @@ static XtActionsRec actions[] = {
     { "increment", (XtActionProc) Increment }
 };
 
+static char trues[] = "True";
+static char falses[] = "False";
+static char MyXtDefaultForeground[] = "XtDefaultForeground";
+
 static XtResource resources[] = {
 #   define OFFSET(x) (XtOffset(RheostatWidget, rheostat.x))
     {XtNvalue, XtCValue, XtRInt, sizeof(int),
@@ -178,7 +182,7 @@ static XtResource resources[] = {
     {XtNnumberIntervals, XtCNumberIntervals, XtRInt, sizeof(int),
         OFFSET(number_intervals), XtRImmediate, (caddr_t) DFLT_NUMTICKS},
     {XtNresizeArrow, XtCBoolean, XtRBoolean, sizeof(Boolean),
-	OFFSET(resize_arrow), XtRString, "True"},
+	OFFSET(resize_arrow), XtRString, trues},
     {XtNsetCallback, XtCCallback, XtRCallback, sizeof(XtPointer),
         OFFSET(set), XtRCallback, NULL},
     {XtNnotify, XtCCallback, XtRCallback, sizeof(XtPointer),
@@ -200,21 +204,21 @@ static XtResource resources[] = {
     {XtNarrowWidth, XtCWidth, XtRDimension, sizeof(Dimension),
 	OFFSET(arrow_width), XtRImmediate, (caddr_t) DFLT_WIDTH},
     {XtNfillArrow, XtCBoolean, XtRBoolean, sizeof(Boolean),
-	OFFSET(fill_arrow), XtRString, "False" },
+	OFFSET(fill_arrow), XtRString, falses},
     {XtNarrowThickness, XtCThickness, XtRDimension, sizeof(Dimension),
 	OFFSET(arrow_thickness), XtRImmediate, (caddr_t) DFLT_ARROWTHICKNESS},
     {XtNtickThickness, XtCThickness, XtRDimension, sizeof(Dimension),
         OFFSET(tick_thickness), XtRImmediate, (caddr_t) DFLT_TICKTHICKNESS},
 #ifdef MOTIF
     {XtNuseShadowColors, XtCBoolean, XtRBoolean, sizeof(Boolean),
-	OFFSET(use_shadow_colors), XtRString, "False"},
+	OFFSET(use_shadow_colors), XtRString, falses},
 #endif
     {XtNarrowColor, XtCForeground, XtRPixel, sizeof(Pixel),
-        OFFSET(arrow_pixel), XtRString, XtDefaultForeground},
+        OFFSET(arrow_pixel), XtRString, MyXtDefaultForeground},
     {XtNdialColor, XtCForeground, XtRPixel, sizeof(Pixel),
-        OFFSET(dial_pixel), XtRString, XtDefaultForeground},
+        OFFSET(dial_pixel), XtRString, MyXtDefaultForeground},
     {XtNtickColor, XtCForeground, XtRPixel, sizeof(Pixel),
-        OFFSET(tick_pixel), XtRString, XtDefaultForeground},
+        OFFSET(tick_pixel), XtRString, MyXtDefaultForeground},
 #   undef OFFSET
 };
 

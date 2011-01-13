@@ -17,14 +17,14 @@
 
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
 LEX	= flex
-LFLAGS	= -i
+LFLAGS	= -i -Pfelt_yy
 LIB	= libfelt.a
 OBJS	= Tree.o code.o definition.o detail.o draw.o fe.o file.o initialize.o\
 	  lexer.o modal.o nonlinear.o objects.o parser.o problem.o renumber.o\
 	  results.o rosenbrock.o spectral.o transient.o
 SRCS	= lexer.c parser.c
 YACC	= bison
-YFLAGS	= -d -y
+YFLAGS	= -d -y -pfelt_yy
 
 CURDIR	= ./lib/Felt
 TOPDIR	= ../..

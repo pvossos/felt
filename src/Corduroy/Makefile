@@ -18,13 +18,13 @@
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
 LEX	= flex
 LDFLAGS	= $(LDOPTS)
-LFLAGS	= -i
+LFLAGS	= -i -Pcord_yy
 LIBS	= $(LIBGEN) $(LIBFELT) $(LIBELT) $(LIBMTX) -lm
 OBJS	= corduroy.o debug.o error.o generator.o lexer.o parser.o
 PROG	= corduroy
 SRCS	= lexer.c parser.c
 YACC	= bison
-YFLAGS	= -d -y
+YFLAGS	= -d -y -pcord_yy
 
 CURDIR	= ./src/Corduroy
 TOPDIR	= ../..

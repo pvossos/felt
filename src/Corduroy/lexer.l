@@ -127,14 +127,14 @@ hole{eq}			{return HOLE_EQ;}
 /* Numbers and names */
 %}
 
-{digit}+			{yylval.i = atoi (yytext); return INTEGER;}
-{digit}+{exp}			{yylval.d = atof (yytext); return DOUBLE;}
-{digit}+\.{digit}*{exp}?	{yylval.d = atof (yytext); return DOUBLE;}
-{digit}*\.{digit}+{exp}?	{yylval.d = atof (yytext); return DOUBLE;}
+{digit}+			{cord_yylval.i = atoi (yytext); return INTEGER;}
+{digit}+{exp}			{cord_yylval.d = atof (yytext); return DOUBLE;}
+{digit}+\.{digit}*{exp}?	{cord_yylval.d = atof (yytext); return DOUBLE;}
+{digit}*\.{digit}+{exp}?	{cord_yylval.d = atof (yytext); return DOUBLE;}
 
-{id}				{yylval.s = strdup (yytext); return NAME;}
-\"[^"]*\"			{yylval.s = strdup (yytext + 1);
-				 yylval.s [yyleng - 2] = 0; return NAME;}
+{id}				{cord_yylval.s = strdup (yytext); return NAME;}
+\"[^"]*\"			{cord_yylval.s = strdup (yytext + 1);
+				 cord_yylval.s [yyleng - 2] = 0; return NAME;}
 
 
 %{
@@ -164,12 +164,12 @@ hole{eq}			{return HOLE_EQ;}
  *		token.							*
  ************************************************************************/
 
-void yyerror (char *msg)
+void cord_yyerror (const char *msg)
 {
-    extern int yychar;
+    extern int cord_yychar;
 
 
-    if (yychar)
+    if (cord_yychar)
 	error ("parse error before `%s'", yytext);
     else
 	error ("parse error before end of input");
@@ -177,12 +177,12 @@ void yyerror (char *msg)
 
 
 /************************************************************************
- * Function:	init_lexer						*
+ * Function:	init_cord_lexer						*
  *									*
  * Description:	Initializes the lexer for a new file.			*
  ************************************************************************/
 
-void init_lexer (FILE *fp)
+void init_cord_lexer (FILE *fp)
 {
     static int first_time = 1;
 
@@ -234,7 +234,7 @@ static void update_line (void)
 
 #if 0
 # undef yywrap
-int yywrap ( ) {
+int yywrap (void) {
     if (0) unput (0);
     return 1;
 }

@@ -31,7 +31,7 @@
 # define NumConstants (sizeof (consttab) / sizeof (*consttab))
 
 static struct {
-    char  *name;
+    const char  *name;
     double value;
 } consttab [ ] = {
 

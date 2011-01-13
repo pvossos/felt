@@ -36,7 +36,7 @@
 # include "interactive.h"
 
 
-static char *usage = "\
+static const char *usage = "\
 usage: burlap [cpp-options] [-f file] [-s file] [-q] [-a] [-n | -i] [file ...]\n\
        -f | -felt file        load FElt file on start-up\n\
        -s | -source file      read commands from file on start-up\n\
@@ -121,7 +121,7 @@ int main (int argc, char **argv)
     init_interactive (argv [0], source_file, q_flag, a_flag);
 
     while (i < argc) {
-	if ((status = bfinclude (argv [i])) == -1) {
+	if ((status = burlap_yyinclude (argv [i])) == -1) {
 	    perror (argv [i]);
 	    exit (errno);
 	}
@@ -133,7 +133,7 @@ int main (int argc, char **argv)
     }
 
     if ((!files && !n_flag) || i_flag) {
-	if (bfinclude (NULL))
+	if (burlap_yyinclude (NULL))
 	    exit (1);
 	printf ("\n");
     }

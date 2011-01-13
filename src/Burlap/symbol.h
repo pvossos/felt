@@ -44,9 +44,9 @@ typedef struct {
 } st;
 
 
-ste *st_lookup (st *table, char *name);
+ste *st_lookup (st *table, const char *name);
 
-ste *st_insert (st *table, char *name, Opcode op);
+ste *st_insert (st *table, const char *name, Opcode op);
 
 ste *st_index (st *table, int idx);
 

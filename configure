@@ -229,7 +229,6 @@ LDOPTS		=
 LIBELT		= \$(TOPDIR)/lib/Elements/libelt.a
 LIBFELT		= \$(TOPDIR)/lib/Felt/libfelt.a
 LIBGEN		= \$(TOPDIR)/lib/Generate/libgen.a
-LIBGEOMPACK	= \$(TOPDIR)/lib/Geompack/libgeompack.a
 LIBMTX		= \$(TOPDIR)/lib/Matrix/libmtx.a
 LIBWIDGETS	= \$(TOPDIR)/lib/Widgets/libwidgets.a
 MKDIR		= sh \$(TOPDIR)/etc/mkdirhier.sh

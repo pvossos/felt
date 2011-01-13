@@ -31,17 +31,19 @@
 typedef struct {
     unsigned short line;		/* line number of instruction */
     unsigned short file;		/* file number of instruction */
-} bfloc;
+} burlap_yyloc;
+
+/*#include "y.tab.h"*/
 
 extern int   line_num;			/* line number during parsing */
 extern int   file_num;			/* file number during parsing */
 extern char *file_name;			/* file name during parsing   */
 extern int   interactive;		/* interactive lexer	      */
 
-int bflex(/*YYSTYPE*/);
+/*int burlap_yylex(YYSTYPE *yylval);*/
 
-void bferror (char *message);
+void burlap_yyerror(const char *message);
 
-int bfinclude (char *file);
+int burlap_yyinclude(char *file);
 
 # endif /* _LEXER_H */

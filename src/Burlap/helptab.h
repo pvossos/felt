@@ -731,7 +731,7 @@ symmetric? (X)\n\
 
 static struct {
     int   type;
-    char *key;
+    const char *key;
     char *message;
 } help [ ] = {
     {0, "!", help_73},
@@ -835,7 +835,7 @@ static struct {
 };
 
 static struct {
-    char *title;
+    const char *title;
     int   across;
     int   width;
 } help_topics [ ] = {

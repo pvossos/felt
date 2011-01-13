@@ -37,14 +37,14 @@
  *		is from p. 436 of Aho, Sehti, and Ullman.		*
  ************************************************************************/
 
-static int st_hash (char *s)
+static int st_hash (const char *s)
 {
     unsigned g;
     unsigned h;
-
-
-    for (h = 0; *s; s ++)
-	if ((g = (h = (h << 4) + *s) & 0xf0000000))
+    size_t ln = strlen(s);
+    size_t i = 0;
+    for (h = 0; i < ln; i++)
+	if ((g = (h = (h << 4) + s[i]) & 0xf0000000))
 	    h ^= (g >> 24) ^ g;
 
     return h % ST_SIZE;
@@ -59,7 +59,7 @@ static int st_hash (char *s)
  *		returned.						*
  ************************************************************************/
 
-ste *st_lookup (st *table, char *name)
+ste *st_lookup (st *table, const char *name)
 {
     ste *head;
     ste *ptr;
@@ -83,7 +83,7 @@ ste *st_lookup (st *table, char *name)
  *		name, and then returned.				*
  ************************************************************************/
 
-ste *st_insert (st *table, char *name, Opcode op)
+ste *st_insert (st *table, const char *name, Opcode op)
 {
     ste *head;
     ste *ptr;

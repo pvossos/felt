@@ -74,7 +74,7 @@ static int is_static (void)
  *		initialized, and zero otherwise.			*
  ************************************************************************/
 
-static int check_analysis (char *func)
+static int check_analysis (const char *func)
 {
     if (CheckAnalysisParameters (problem.mode))
 	return 0;
@@ -100,7 +100,7 @@ static int check_analysis (char *func)
  *		suitable for node renumbering, otherwise zero.		*
  ************************************************************************/
 
-static int is_permutation (char *func, Array array)
+static int is_permutation (const char *func, Array array)
 {
     int  i;
     int  j;
@@ -251,7 +251,7 @@ static int element_stress (Element element)
  *		size and that it is compact, or can be compacted.	*
  ************************************************************************/
 
-static Matrix check_matrix (char *func, Matrix a)
+static Matrix check_matrix (const char *func, Matrix a)
 {
     Matrix   b;
     unsigned size;
@@ -283,7 +283,7 @@ static Matrix check_matrix (char *func, Matrix a)
  *		array of the degrees of freedom.			*
  ************************************************************************/
 
-static unsigned *check_dofs (descriptor *d, char *function, unsigned int *num_dofs)
+static unsigned *check_dofs (descriptor *d, const char *function, unsigned int *num_dofs)
 {
     unsigned  i;
     unsigned *dofs;

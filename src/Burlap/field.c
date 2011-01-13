@@ -50,7 +50,7 @@ static struct field field_table [D_NumTypes] [MaxFields];
  *		dimensional array indexed by type and field number.	*
  ************************************************************************/
 
-void add_field (int rtype, char *name, int ftype, unsigned int offset, TrapHandler handler)
+void add_field (int rtype, const char *name, int ftype, unsigned int offset, TrapHandler handler)
 {
     ste  *s;
     Field f;

@@ -66,8 +66,8 @@ static void LayoutLayout (LayoutWidget l, int attemptResize);
 static void LayoutGetNaturalSize (LayoutWidget l, Dimension *widthp, Dimension *heightp);
 static void LayoutFreeLayout (BoxPtr box);
 
-extern void LayYYsetsource(), LayYYsetdest();
-extern int LayYYparse();
+extern void LayYYsetsource(char *), LayYYsetdest(BoxPtr *);
+extern int LayYYparse(void);
 
 #define SuperClass ((ConstraintWidgetClass)&constraintClassRec)
 

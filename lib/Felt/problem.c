@@ -43,6 +43,7 @@
 # define CPP "/lib/cpp"
 # endif
 
+extern int felt_yyparse (void);
 
 Problem    problem;
 Analysis   analysis;
@@ -441,7 +442,7 @@ ReadFeltFile(const char *filename)
 {
     unsigned i;
     char     buffer [2048];
-    char    *plural;
+    const char    *plural;
     FILE    *input;
 
 
@@ -538,8 +539,8 @@ ReadFeltFile(const char *filename)
     /* Parse the input and resolve the names. */
 
     if (filename) {
-	init_lexer (input);
-	yyparse ( );
+	init_felt_lexer (input);
+	felt_yyparse ( );
 	problem.line = 0;
 
 	if (cpp)
@@ -625,9 +626,9 @@ CompileCode(char *text)
 
     sprintf (input, "x = %s end", text);
 
-    init_lexer (NULL);
+    init_felt_lexer (NULL);
     problem.input = input;
-    return yyparse ( );
+    return felt_yyparse ( );
 }
 
 double

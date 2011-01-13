@@ -73,9 +73,7 @@ char *copy_input (int flag);
 /*!
   Initializes the lexer for a new file.			
 */
-void init_lexer (FILE *fp);
-
-int yyparse (void);
+void init_felt_lexer (FILE *fp);
 
 Definition defnlookup(char *name);
 
@@ -127,7 +125,7 @@ int fDumpFeltFile(FILE *stream);
   Checks the state of the detail print flag and if it	
   is on, prints a message to the current detail stream.
 */
-void detail(char *format, ...);
+void detail(const char *format, ...);
 
 /*!
   Turns on (or off) and sets the stream that describes where detail

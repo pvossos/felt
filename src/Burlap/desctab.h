@@ -28,7 +28,7 @@
 # ifndef _DESCTAB_H
 # define _DESCTAB_H
 
-char *type_names [ ] = {
+const char *type_names [ ] = {
     "null",			/* T_Null	*/
     "variable",			/* T_Variable	*/
     "function",			/* T_Function	*/

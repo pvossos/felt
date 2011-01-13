@@ -56,7 +56,7 @@ void SetupStressMemory(Element element);
 
 
 typedef struct field {
-    char       *name;
+    const char       *name;
     int		type;
     unsigned	offset;
     TrapHandler	handler;
@@ -1823,7 +1823,7 @@ int read_felt (char *file)
  *		only).							*
  ************************************************************************/
 
-void error (char *format, ...)
+void error (const char *format, ...)
 {
     va_list ap;
 
@@ -1848,7 +1848,7 @@ void error (char *format, ...)
  *		library compatibility only).				*
  ************************************************************************/
 
-void Fatal (char *format, ...)
+void Fatal (const char *format, ...)
 {
     va_list ap;
 

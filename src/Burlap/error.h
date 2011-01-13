@@ -31,8 +31,8 @@ extern int   curr_line_num;		/* line number during execution	*/
 extern int   curr_file_num;		/* file number during execution	*/
 extern char *curr_file_name;		/* file name during execution	*/
 
-void rterror (char *format, ...);
+void rterror (const char *format, ...);
 
-void cterror (char *format, ...);
+void cterror (const char *format, ...);
 
 # endif /* _ERROR_H */

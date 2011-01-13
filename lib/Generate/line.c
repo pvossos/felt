@@ -17,12 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	line.c
- *
- ***************************************************************************/
-
 # include <math.h>
 # include "allocate.h"
 # include "error.h"
@@ -31,25 +25,12 @@
 # include "mesh.h"
 # include "rules.h"
 
-/****************************************************************************
- *
- * Function:	GenerateLine	
- *
- * Description:	a simple procedure to generate a 1-d line of line elements
- *		with all the elements along a single line
- *
- ****************************************************************************/
-
-unsigned GenerateLine (line, element, node, numelts, numnodes, bnode, belement)
-   Line		line;
-   Element	**element;
-   Node		**node;
-   unsigned	*numelts;
-   unsigned	*numnodes;
-   unsigned	bnode;
-   unsigned	belement;
+unsigned 
+GenerateLine (Line line, Element **element, Node **node,
+              unsigned int *numelts, unsigned int *numnodes,
+              unsigned int bnode, unsigned int belement)
 {
-   double	(*rule_func) ();
+   RuleFunction rule_func;
    unsigned	ne, nn;
    unsigned	i;
    double	L;

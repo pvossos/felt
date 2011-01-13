@@ -25,7 +25,6 @@
 *
 ***************************************************************************/
 
-char *GetTextCoordinates ();
-char *GetTextNumber ();
-int GetTextNumberArray ();
-String GetText ();
+char *GetTextCoordinates (float *rx, float *ry, float *rz);
+char *GetTextNumber (unsigned int *number);
+String GetText (void);

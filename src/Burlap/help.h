@@ -26,8 +26,7 @@
 
 # ifndef _HELP_H
 # define _HELP_H
-# include "proto.h"			/* function declarations */
 
-extern int help_func PROTO ((int));
+int help_func (int n);
 
 # endif /* _HELP_H */

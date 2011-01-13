@@ -27,21 +27,13 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "error.h"
 # include "generator.h"
-
-# ifdef DOS
-# include "yxtab.h"
-# else
 # include "y.tab.h"
-# endif
-
-# undef atof
-extern double atof ( );
-
 
 static char *filename;
-static void  update_line PROTO ((void));
+static void  update_line (void);
 %}
 
 digit	[0-9]
@@ -51,6 +43,7 @@ id	{letter}({letter}|{digit})*
 eq	[ \t]*=
 
 %x	comment
+%option noyywrap
 %%
 
 
@@ -171,8 +164,7 @@ hole{eq}			{return HOLE_EQ;}
  *		token.							*
  ************************************************************************/
 
-void yyerror (msg)
-    char *msg;
+void yyerror (char *msg)
 {
     extern int yychar;
 
@@ -190,8 +182,7 @@ void yyerror (msg)
  * Description:	Initializes the lexer for a new file.			*
  ************************************************************************/
 
-void init_lexer (fp)
-    FILE *fp;
+void init_lexer (FILE *fp)
 {
     static int first_time = 1;
 
@@ -213,7 +204,7 @@ void init_lexer (fp)
  *		directive.						*
  ************************************************************************/
 
-static void update_line ( )
+static void update_line (void)
 {
     char       *ptr1;
     char       *ptr2;
@@ -241,8 +232,10 @@ static void update_line ( )
     }
 }
 
+#if 0
 # undef yywrap
 int yywrap ( ) {
     if (0) unput (0);
     return 1;
 }
+#endif

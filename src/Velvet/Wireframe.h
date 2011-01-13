@@ -29,24 +29,10 @@
 
 typedef struct wireframe_dialog *WireframeDialog;
 
-WireframeDialog WireframeDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
+WireframeDialog WireframeDialogCreate (Widget parent, String name, String title);
 
-void WireframeDialogPopup (
-# if NeedFunctionPrototypes
-    WireframeDialog		/* wireframe_dialog */
-# endif
-);
+void WireframeDialogPopup (WireframeDialog wireframed);
 
-void WireframeDialogUpdate (
-# if NeedFunctionPrototypes
-    WireframeDialog		/* wireframe_dialog */
-# endif
-);
+void WireframeDialogUpdate (WireframeDialog wireframed);
 
 # endif /* _Wireframe_h */

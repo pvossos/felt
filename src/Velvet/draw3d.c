@@ -31,8 +31,7 @@ static double xscale3d, yscale3d, zscale3d;
 
 static double transform [4][4];
 
-static void CreateUnitMatrix (mat)
-   double 	mat[4][4];
+static void CreateUnitMatrix (double (*mat)[4])
 {
    unsigned	i, j;
 
@@ -47,9 +46,7 @@ static void CreateUnitMatrix (mat)
    }
 }
 
-static void CreateScaleMatrix (sx, sy, sz, mat)
-   double 	sx, sy, sz;
-   double 	mat[4][4];
+static void CreateScaleMatrix (double sx, double sy, double sz, double (*mat)[4])
 {
     CreateUnitMatrix(mat);                              
 
@@ -58,9 +55,7 @@ static void CreateScaleMatrix (sx, sy, sz, mat)
     mat[2][2] = sz;
 }
 
-static void MatrixRotationX (theta, mat)
-   double 	theta;
-   double 	mat[4][4];
+static void MatrixRotationX (double theta, double (*mat)[4])
 {
    theta *= M_PI / 180.0;
 
@@ -71,9 +66,7 @@ static void MatrixRotationX (theta, mat)
    mat[2][2] = cos(theta);
 }
 
-static void MatrixRotationY (theta, mat)
-   double 	theta;
-   double 	mat[4][4];
+static void MatrixRotationY (double theta, double (*mat)[4])
 {
    theta *= M_PI / 180.0;
 
@@ -84,9 +77,7 @@ static void MatrixRotationY (theta, mat)
    mat[2][2] = cos(theta);
 }
 
-static void MatrixRotationZ (theta, mat)
-   double 	theta;
-   double 	mat[4][4];
+static void MatrixRotationZ (double theta, double (*mat)[4])
 {
    theta *= M_PI / 180.0;
 
@@ -97,10 +88,7 @@ static void MatrixRotationZ (theta, mat)
    mat[1][1] = cos(theta);
 }
 
-static void VisMultiplyMatrices (result, mat_a, mat_b)
-   double 	result [4][4], 
-           	mat_a [4][4], 
-           	mat_b [4][4];
+static void VisMultiplyMatrices (double (*result)[4], double (*mat_a)[4], double (*mat_b)[4])
 {
    unsigned	i,j,k;
    double 	temp[4][4];
@@ -118,10 +106,7 @@ static void VisMultiplyMatrices (result, mat_a, mat_b)
          result[i][j] = temp[i][j];
 }
 
-void Convert3Dto2D (x, y, z, xdiff, ydiff, xt, yt)
-   double 	x, y, z;
-   float	xdiff, ydiff;
-   float 	*xt, *yt;
+void Convert3Dto2D (double x, double y, double z, float xdiff, float ydiff, float *xt, float *yt)
 {
    int 		i,j;
    double 	v[4], res[4],		     
@@ -148,10 +133,7 @@ void Convert3Dto2D (x, y, z, xdiff, ydiff, xt, yt)
    *yt = ((res[1] * 10.0*ydiff/xdiff / w));
 }
 
-void Setup3D (min_x, max_x, min_y, max_y, min_z, max_z)
-   double 	min_x, max_x;
-   double 	min_y, max_y;
-   double 	min_z, max_z;
+void Setup3D (double min_x, double max_x, double min_y, double max_y, double min_z, double max_z)
 {
    double 	ztemp, temp;
    double 	mat [4][4];

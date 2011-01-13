@@ -27,27 +27,14 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include <unistd.h>
 # include "error.h"
 # include "problem.h"
-
-# ifdef DOS
-# include "yxtab.h"
-# else
 # include "y.tab.h"
-# endif
-
-# undef atof
-# undef strtol
-extern double atof ( );
-extern long strtol ( );
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif 
-
 
 static char *filename;
-static void  update_line PROTO ((void));
+static void  update_line (void);
 
 static int   copy_flag = 0;
 static char  copied_text [2048];
@@ -75,6 +62,7 @@ id	{letter}({letter}|{digit})*
 eq	[ \t]*=
 
 %x	comment
+%option noyywrap
 %%
 
 
@@ -328,8 +316,7 @@ points{eq}			{return POINTS_EQ;}
  *		token only if input if being read from a file.		*
  ************************************************************************/
 
-void yyerror (msg)
-    char *msg;
+void yyerror (char *msg)
 {
     extern int yychar;
 
@@ -350,8 +337,7 @@ void yyerror (msg)
  * Description:	Initializes the lexer for a new file.			*
  ************************************************************************/
 
-void init_lexer (fp)
-    FILE *fp;
+void init_lexer (FILE *fp)
 {
     static int first_time = 1;
 
@@ -376,7 +362,7 @@ void init_lexer (fp)
  *		directive.						*
  ************************************************************************/
 
-static void update_line ( )
+static void update_line (void)
 {
      char	*ptr1;
      char	*ptr2;
@@ -414,8 +400,7 @@ static void update_line ( )
  *		other sequences of white space are replaced by a space.	*
  ************************************************************************/
 
-char *copy_input (flag)
-    int flag;
+char *copy_input (int flag)
 {
     char       *src;
     char       *dest;
@@ -441,9 +426,11 @@ char *copy_input (flag)
     return copied_text;
 }
 
+#if 0
 # undef yywrap
 int yywrap ( )
 {
     if (0) unput (0);
     return 1;
 }
+#endif

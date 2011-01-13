@@ -79,6 +79,10 @@ typedef struct {
 
 extern Appearance appearance;
 
-extern void InitAppearance PROTO ((void));
+/*!
+  Initializes the appearance structure, first freeing any existing
+  information.
+ */
+void InitAppearance(void);
 
 # endif /* _APPEARANCE_H */

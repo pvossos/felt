@@ -28,6 +28,7 @@
 # include <stdio.h>
 # include <errno.h>
 # include <string.h>
+# include <stdlib.h>
 # include "felt.h"
 # include "debug.h"
 # include "lexer.h"
@@ -52,9 +53,7 @@ usage: burlap [cpp-options] [-f file] [-s file] [-q] [-a] [-n | -i] [file ...]\n
  * Description:	Main function for burlap.				*
  ************************************************************************/
 
-int main (argc, argv)
-    int   argc;
-    char *argv [ ];
+int main (int argc, char **argv)
 {
     int   i;
     int   a_flag;

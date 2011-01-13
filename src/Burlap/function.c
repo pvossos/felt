@@ -35,8 +35,7 @@
  *		The function name is *not* copied.			*
  ************************************************************************/
 
-Function CreateFunction (name)
-    char *name;
+Function CreateFunction (char *name)
 {
     Function func;
 
@@ -60,8 +59,7 @@ Function CreateFunction (name)
  * Description:	Creates a copy of a function.				*
  ************************************************************************/
 
-Function CopyFunction (func)
-    Function func;
+Function CopyFunction (Function func)
 {
     func -> ref_count ++;
     return func;
@@ -75,8 +73,7 @@ Function CopyFunction (func)
  *		deallocated.						*
  ************************************************************************/
 
-void DestroyFunction (func)
-    Function func;
+void DestroyFunction (Function func)
 {
     int i;
 

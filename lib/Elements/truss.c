@@ -32,8 +32,8 @@
 # include "misc.h"
 
 
-int trussEltSetup ( ); 
-int trussEltStress ( ); 
+static int trussEltSetup (Element element, char mass_mode, int tangent); 
+static int trussEltStress (Element element); 
 
 struct definition trussDefinition = {
     "truss", trussEltSetup, trussEltStress, 
@@ -41,9 +41,8 @@ struct definition trussDefinition = {
 };
 
 
-static Matrix TrussMassMatrix (element, mass_mode)
-   Element	element;
-   char		mass_mode;
+static Matrix
+TrussMassMatrix(Element element, char mass_mode)
 {
    static Matrix	me = NullMatrix;
    double		L;
@@ -74,9 +73,8 @@ static Matrix TrussMassMatrix (element, mass_mode)
    return me;
 }
 
-static Matrix TrussTransformMatrix (element, cx, cy, cz)
-   Element	element;
-   double	cx,cy,cz;
+static Matrix
+TrussTransformMatrix(Element element, double cx, double cy, double cz)
 {
    double		L;
    static Matrix	T = NullMatrix;
@@ -102,10 +100,8 @@ static Matrix TrussTransformMatrix (element, cx, cy, cz)
    return T;
 }
 
-static Vector TrussEquivNodalForces (element, T, err_count)
-   Element	element;
-   Matrix	T;
-   int		*err_count;
+static Vector
+TrussEquivNodalForces(Element element, Matrix T, int *err_count)
 {
    double		L;
    double		wa,wb;
@@ -214,11 +210,8 @@ static Vector TrussEquivNodalForces (element, T, err_count)
    return result; 
 }
 
-static double AxialDisplacement (e, cx, cy, cz)
-   Element	e;
-   double	cx;
-   double	cy;
-   double	cz;
+static double
+AxialDisplacement(Element e, double cx, double cy, double cz)
 {
    double	dx1, dx2;
    double	dy1, dy2;
@@ -237,10 +230,8 @@ static double AxialDisplacement (e, cx, cy, cz)
    return stretch;
 }
 
-int trussEltSetup (element, mass_mode, tangent)
-   Element 	element;
-   char		mass_mode;
-   int		tangent;
+static int
+trussEltSetup(Element element, char mass_mode, int tangent)
 {
    double		AEonL,L;
    Matrix		T;
@@ -380,8 +371,8 @@ int trussEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int trussEltStress (element)
-   Element	element;
+static int
+trussEltStress(Element element)
 {
    double	EonL;
    double	cx,cy,cz;

@@ -64,24 +64,10 @@ typedef struct solution {
 extern Solution	solution;
 
 
-SolutionDialog SolutionDialogCreate (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */,
-    String		/* title  */
-# endif
-);
+SolutionDialog SolutionDialogCreate (Widget parent, String name, String title);
 
-void SolutionDialogPopup (
-# if NeedFunctionPrototypes
-    SolutionDialog		/* solution_dialog */
-# endif
-);
+void SolutionDialogPopup (SolutionDialog solutiond);
 
-void SolutionDialogUpdate (
-# if NeedFunctionPrototypes
-    SolutionDialog		/* solution_dialog */
-# endif
-);
+void SolutionDialogUpdate (SolutionDialog solutiond);
 
 # endif /* _Solution_h */

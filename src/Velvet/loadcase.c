@@ -412,8 +412,7 @@ static String help_message ="";
  *		index of the active loadcase is also set.		*
  ************************************************************************/
 
-static int AppendLoadCaseName (item)
-    Item item;
+static int AppendLoadCaseName (Item item)
 {
     if (dialog -> active == (LoadCase) item)
 	list_index = num_loadcases;
@@ -429,11 +428,7 @@ static int AppendLoadCaseName (item)
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -453,10 +448,7 @@ static void Action (w, event, params, num_params)
  * Description:	 
  ************************************************************************/
 
-static void ScrollNode (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ScrollNode (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		    args [1];
     LoadCaseDialog  loadcased;
@@ -552,10 +544,7 @@ static void ScrollNode (w, client_data, call_data)
  * Description:	 
  ************************************************************************/
 
-static void ScrollElement (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ScrollElement (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		    args [1];
     LoadCaseDialog  loadcased;
@@ -651,10 +640,7 @@ static void ScrollElement (w, client_data, call_data)
  * Description:	 
  ************************************************************************/
 
-static void ChangeForceAssignment (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ChangeForceAssignment (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadCaseDialog  loadcased;
     Widget	    current_force;
@@ -688,10 +674,7 @@ static void ChangeForceAssignment (w, client_data, call_data)
  * Description:	 
  ************************************************************************/
 
-static void ChangeLoadAssignment (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void ChangeLoadAssignment (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadCaseDialog  loadcased;
     Widget          current_load;
@@ -729,10 +712,7 @@ static void ChangeLoadAssignment (w, client_data, call_data)
  *		any new/copy operation is canceled.			*
  ************************************************************************/
 
-static void Change (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [10];
     unsigned		 i;
@@ -804,10 +784,7 @@ static void Change (w, client_data, call_data)
  *		entries.						*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     struct loadcase     old;
     struct loadcase     dummy;
@@ -932,10 +909,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadCaseDialog loadcased;
 
@@ -952,10 +926,7 @@ static void Dismiss (w, client_data, call_data)
  *		not in effect.  The dialog is then updated.		*
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadCaseDialog	    loadcased;
 
@@ -979,10 +950,7 @@ static void Delete (w, client_data, call_data)
  *		that a new/copy operation is in effect.			*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadCaseDialog loadcased;
 
@@ -1003,10 +971,7 @@ static void Copy (w, client_data, call_data)
  *		flag indicating that a new/copy operation is in effect.	*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     LoadCaseDialog loadcased;
     unsigned       i;
@@ -1035,10 +1000,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-LoadCaseDialog LoadCaseDialogCreate (parent, name, title)
-    Widget	   parent;
-    String	   name;
-    String	   title;
+LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title)
 {
     Window		window;
     Cardinal		i;
@@ -1335,8 +1297,7 @@ LoadCaseDialog LoadCaseDialogCreate (parent, name, title)
  * Description:	Pops up the specified loadcase dialog.			*
  ************************************************************************/
 
-void LoadCaseDialogPopup (loadcased)
-    LoadCaseDialog loadcased;
+void LoadCaseDialogPopup (LoadCaseDialog loadcased)
 {
     XtPopup (loadcased -> shell, XtGrabNone);
 }
@@ -1348,8 +1309,7 @@ void LoadCaseDialogPopup (loadcased)
  * Description:	Returns the currently active loadcase.			*
  ************************************************************************/
 
-LoadCase LoadCaseDialogActive (loadcased)
-    LoadCaseDialog loadcased;
+LoadCase LoadCaseDialogActive (LoadCaseDialog loadcased)
 {
     return loadcased -> active;
 }
@@ -1361,9 +1321,7 @@ LoadCase LoadCaseDialogActive (loadcased)
  * Description:	Displays a specified loadcase.				*
  ************************************************************************/
 
-void LoadCaseDialogDisplay (loadcased, loadcase)
-    LoadCaseDialog loadcased;
-    LoadCase	loadcase;
+void LoadCaseDialogDisplay (LoadCaseDialog loadcased, LoadCase loadcase)
 {
     loadcased -> active = loadcase;
     LoadCaseDialogUpdate (loadcased, loadcased -> tree, NULL, NULL);
@@ -1383,8 +1341,7 @@ static XtWidgetGeometry preferred;
  *              the specified force.                                    *
  ************************************************************************/
 
-static int SetForceEntry (item)
-    Item item;
+static int SetForceEntry (Item item)
 {
     SetLabelString (children [child_number], ((Force) item) -> name);
 
@@ -1402,8 +1359,7 @@ static int SetForceEntry (item)
  *              the specified load.                                     *
  ************************************************************************/
 
-static int SetLoadEntry (item)
-    Item item;
+static int SetLoadEntry (Item item)
 {
     SetLabelString (children [child_number], ((Distributed) item) -> name);
 
@@ -1424,11 +1380,7 @@ static int SetLoadEntry (item)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadCaseDialogUpdate (loadcased, tree, force_tree, load_tree)
-    LoadCaseDialog loadcased;
-    Tree	tree;
-    Tree	force_tree;
-    Tree	load_tree;
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Tree load_tree)
 {
     char	buffer [32];
     Arg		args [2];

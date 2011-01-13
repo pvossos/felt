@@ -28,7 +28,6 @@
 # ifndef _CODEGEN_H
 # define _CODEGEN_H
 # define _CODE_H
-# include "proto.h"		/* function declarations	 */
 # include "opcodes.h"		/* need Address and Opcode types */
 
 typedef struct cs *Code;
@@ -42,12 +41,18 @@ typedef union {
 extern Code    cs;
 extern Address ip;
 
-extern void emit    PROTO ((Opcode, ...));
-extern void patch   PROTO ((Address, Opcode, ...));
-extern Word fetch   PROTO ((Address));
-extern void dump    PROTO ((Code));
-extern void free_cs PROTO ((Code));
-extern void reset   PROTO ((void));
-extern Code new_cs  PROTO ((void));
+void emit (Opcode op, ...);
+
+void patch (Address addr, Opcode op, ...);
+
+Word fetch (Address addr);
+
+void dump (Code cs);
+
+void free_cs (Code cs);
+
+void reset (void);
+
+Code new_cs (void);
 
 # endif /* _CODEGEN_H */

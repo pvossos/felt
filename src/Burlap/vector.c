@@ -43,7 +43,7 @@
  *		made to coerce all elements to double values.		*
  ************************************************************************/
 
-int mtx_op ( )
+int mtx_op (void)
 {
     int		i;
     int		j;
@@ -196,7 +196,7 @@ int mtx_op ( )
  *		result will be a null descriptor.			*
  ************************************************************************/
 
-int range_op ( )
+int range_op (void)
 {
     Matrix	a;
     descriptor *by;
@@ -299,7 +299,7 @@ int range_op ( )
  * Description:	Pushes a row mark descriptor on the stack.		*
  ************************************************************************/
 
-int row_op ( )
+int row_op (void)
 {
     descriptor *d;
 

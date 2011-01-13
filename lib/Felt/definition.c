@@ -25,6 +25,7 @@
  *		up element definitions.					*
  ************************************************************************/
 
+# include <string.h>
 # include "problem.h"
 # include "definition.h"
 
@@ -36,22 +37,14 @@
  *		items.							*
  ************************************************************************/
 
-static int DefinitionCompare (item1, item2)
-    Item item1;
-    Item item2;
+static int 
+DefinitionCompare(Item item1, Item item2)
 {
     return strcmp (((Definition) item1) -> name, ((Definition) item2) -> name);
 }
 
-
-/************************************************************************
- * Function:	AddDefinition						*
- *									*
- * Description:	Add a definition to the set of definitions.		*
- ************************************************************************/
-
-int AddDefinition (definition)
-    Definition definition;
+int
+AddDefinition(Definition definition)
 {
     if (!problem.definition_tree)
 	problem.definition_tree = TreeCreate (DefinitionCompare);
@@ -59,15 +52,8 @@ int AddDefinition (definition)
     return TreeInsert (problem.definition_tree,definition) != (Item) definition;
 }
 
-
-/************************************************************************
- * Function:	RemoveDefinition					*
- *									*
- * Description:	Remove a definition for the set of definitions.		*
- ************************************************************************/
-
-int RemoveDefinition (definition)
-    Definition definition;
+int 
+RemoveDefinition(Definition definition)
 {
     if (!problem.definition_tree)
 	problem.definition_tree = TreeCreate (DefinitionCompare);
@@ -75,15 +61,8 @@ int RemoveDefinition (definition)
     return TreeDelete (problem.definition_tree,definition) != (Item) definition;
 }
 
-
-/************************************************************************
- * Function:	LookupDefinition					*
- *									*
- * Description:	Look up a definition by name in the set of definitions.	*
- ************************************************************************/
-
-Definition LookupDefinition (name)
-    char *name;
+Definition
+LookupDefinition(char *name)
 {
     struct definition definition;
 

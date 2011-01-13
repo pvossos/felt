@@ -39,10 +39,8 @@
  *
  ***************************************************************************/
 
-static void MultiplyQtKQ (x, Q, K)
-   Matrix	x;
-   Matrix	K;
-   Matrix	Q;
+static void
+MultiplyQtKQ(Matrix x, Matrix Q, Matrix K)
 {
    Matrix	temp;
    double	result;
@@ -70,19 +68,8 @@ static void MultiplyQtKQ (x, Q, K)
    DestroyMatrix (temp);
 }
 
-/****************************************************************************
- *
- * Function:	 ComputeEigenModes 
- *
- * Description: 
- *
- ****************************************************************************/
-
-int ComputeEigenModes (K, M, lambda_r, x_r)
-   Matrix	K;
-   Matrix	M;
-   Matrix	*lambda_r;
-   Matrix	*x_r;
+int
+ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
 {
    int		status;
    Matrix	Q;
@@ -164,21 +151,8 @@ int ComputeEigenModes (K, M, lambda_r, x_r)
    return 0;
 }
 
-/***************************************************************************
- *
- * Function:	ModalNodalDisplacements
- *
- * Description:	Given a table of mode shapes and a list of nodes and active
- *		dofs, put together a table of nodal displacements at each
- *		node (including constrained nodes) for translational DOFs
- *		in each separate mode of vibration.  The resulting table
- *		should be semi-analogous to the displacement table in transient
- *		analysis. 
- *
- ***************************************************************************/
-
-Matrix ModalNodalDisplacements (x)
-   Matrix	x;
+Matrix
+ModalNodalDisplacements(Matrix x)
 {
    Node		*node;
    unsigned	numnodes;
@@ -236,16 +210,8 @@ Matrix ModalNodalDisplacements (x)
    return d;
 }
 
-/****************************************************************************
- *
- * Function:	MultiplyUtMU
- *
- ***************************************************************************/
-
-static void MultiplyUTmU (M, u, m)
-   Matrix	M;
-   Matrix	u;
-   Matrix	m;
+static void
+MultiplyUTmU(Matrix M, Matrix u, Matrix m)
 {
    Matrix	temp;
    double	result;
@@ -274,11 +240,8 @@ static void MultiplyUTmU (M, u, m)
    DestroyMatrix (temp);
 }
 
-int FormModalMatrices (u, m, c, k, Mr, Cr, Kr, ortho)
-   Matrix	u;
-   Matrix	m, c, k;
-   Matrix 	*Mr, *Cr, *Kr;
-   int		ortho;
+int
+FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, Matrix *Mr, Matrix *Cr, Matrix *Kr, int ortho)
 {
    unsigned	n;
    unsigned	i, j;

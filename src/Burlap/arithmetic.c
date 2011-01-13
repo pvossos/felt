@@ -47,7 +47,7 @@
  *		double values.						*
  ************************************************************************/
 
-int add_op ( )
+int add_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -162,7 +162,7 @@ int add_op ( )
  *		double values.						*
  ************************************************************************/
 
-int bkslv_op ( )
+int bkslv_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -359,7 +359,7 @@ int bkslv_op ( )
  *		double values.						*
  ************************************************************************/
 
-int div_op ( )
+int div_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -535,7 +535,7 @@ int div_op ( )
  *		double values.						*
  ************************************************************************/
 
-int mod_op ( )
+int mod_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -663,7 +663,7 @@ int mod_op ( )
  *		only a single scalar then the result will be a scalar.	*
  ************************************************************************/
 
-int mul_op ( )
+int mul_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -782,7 +782,7 @@ int mul_op ( )
  *		double value.						*
  ************************************************************************/
 
-int neg_op ( )
+int neg_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -853,7 +853,7 @@ int neg_op ( )
  *		double value.						*
  ************************************************************************/
 
-int not_op ( )
+int not_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -923,7 +923,7 @@ int not_op ( )
  *		double value.						*
  ************************************************************************/
 
-int plus_op ( )
+int plus_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -993,7 +993,7 @@ int plus_op ( )
  *		double values.						*
  ************************************************************************/
 
-int pow_op ( )
+int pow_op (void)
 {
     double	lvalue;
     double	rvalue;
@@ -1077,7 +1077,7 @@ int pow_op ( )
  *		double values.						*
  ************************************************************************/
 
-int sub_op ( )
+int sub_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -1190,7 +1190,7 @@ int sub_op ( )
  *		double value.						*
  ************************************************************************/
 
-int trans_op ( )
+int trans_op (void)
 {
     Matrix	a;
     Matrix	b;

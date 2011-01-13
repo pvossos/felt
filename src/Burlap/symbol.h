@@ -27,7 +27,6 @@
 
 # ifndef _SYMBOL_H
 # define _SYMBOL_H
-# include "proto.h"		/* function declarations */
 # include "opcodes.h"		/* Opcode type		 */
 
 # define ST_SIZE 211
@@ -45,11 +44,16 @@ typedef struct {
 } st;
 
 
-extern ste   *st_lookup PROTO ((st *, char *name));
-extern ste   *st_insert PROTO ((st *, char *name, Opcode op));
-extern ste   *st_index  PROTO ((st *, int));
-extern char **st_names	PROTO ((st *));
-extern void   st_init   PROTO ((st *));
-extern void   st_fini   PROTO ((st *));
+ste *st_lookup (st *table, char *name);
+
+ste *st_insert (st *table, char *name, Opcode op);
+
+ste *st_index (st *table, int idx);
+
+char **st_names (st *table);
+
+void st_init (st *table);
+
+void st_fini (st *table);
 
 # endif /* _SYMBOL_H */

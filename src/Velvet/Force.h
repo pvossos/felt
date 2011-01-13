@@ -38,45 +38,14 @@ typedef struct {
     Boolean	proceed;
 } ForceDialogInfo;
 
+ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure);
 
-extern ForceDialog ForceDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */,
-    XtCallbackProc		/* callback    */,
-    XtPointer			/* client_data */
-# endif
-);
+void ForceDialogPopup (ForceDialog forced);
 
+void ForceDialogUpdate (ForceDialog forced, Tree tree);
 
-extern void ForceDialogPopup (
-# if NeedFunctionPrototypes
-    ForceDialog			/* force_dialog */
-# endif
-);
+Force ForceDialogActive (ForceDialog forced);
 
-
-extern void ForceDialogUpdate (
-# if NeedFunctionPrototypes
-    ForceDialog			/* force_dialog */,
-    Tree			/* force_tree   */
-# endif
-);
-
-
-extern Force ForceDialogActive (
-# if NeedFunctionPrototypes
-    ForceDialog			/* force_dialog */
-# endif
-);
-
-
-extern void ForceDialogDisplay (
-# if NeedFunctionPrototypes
-    ForceDialog			/* force_dialog */,
-    Force			/* force	*/
-# endif
-);
+void ForceDialogDisplay (ForceDialog forced, Force force);
 
 # endif /* _Force_h */

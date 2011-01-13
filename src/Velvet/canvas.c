@@ -43,12 +43,12 @@
 # include <stdlib.h>
 # endif
 
-extern void ToggleEltNumberStatus ();
-extern void ToggleNodeNumberStatus ();
-extern void ToggleGridStatus ();
-extern void ToggleSnapStatus ();
-extern void SetNodeNumberFlag ();
-extern void SetEltNumberFlag ();
+extern void ToggleEltNumberStatus (void);
+extern void ToggleNodeNumberStatus (void);
+extern void ToggleGridStatus (void);
+extern void ToggleSnapStatus (void);
+extern void SetNodeNumberFlag (void);
+extern void SetEltNumberFlag (void);
 
 Canvas	canvas;
 
@@ -302,11 +302,7 @@ Note that these toggles are also available on the main 'Canvas' menu.";
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -323,10 +319,7 @@ static void Action (w, event, params, num_params)
  * Description:								*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		   args [1];
     CanvasDialog   canvasd;
@@ -401,10 +394,7 @@ static void Accept (w, client_data, call_data)
  * Description:	sets the dismiss flag					*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     CanvasDialog canvasd;
 
@@ -419,8 +409,7 @@ static void Dismiss (w, client_data, call_data)
  * Description:	fills the entry fields based on current canvas settings *
  ************************************************************************/
 
-void CanvasDialogSet (canvasd)
-    CanvasDialog	canvasd;
+void CanvasDialogSet (CanvasDialog canvasd)
 {
     Arg		args [14];
     Cardinal	count;
@@ -510,11 +499,7 @@ void CanvasDialogSet (canvasd)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-CanvasDialog CanvasDialogCreate (parent, dw, name, title)
-    Widget parent;
-    Widget dw;
-    String name;
-    String title;
+CanvasDialog CanvasDialogCreate (Widget parent, Widget dw, String name, String title)
 {
     Cardinal		i;
     Arg			args [1];
@@ -713,8 +698,7 @@ CanvasDialog CanvasDialogCreate (parent, dw, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-void CanvasDialogPopup (canvasd)
-    CanvasDialog canvasd;
+void CanvasDialogPopup (CanvasDialog canvasd)
 {
     XtPopup (canvasd -> shell, XtGrabNone);
 }

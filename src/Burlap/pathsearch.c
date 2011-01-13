@@ -27,9 +27,9 @@
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
+# include <stdlib.h>
 # include <pwd.h>
 # include "allocate.h"
-# include "our-stdlib.h"
 # include "pathsearch.h"
 
 
@@ -45,11 +45,7 @@
  *		"~" then a lookup of the user name is performed.	*
  ************************************************************************/
 
-char *pathsearch (path, file, suffix, def_flag)
-    char *path;
-    char *file;
-    char *suffix;
-    int   def_flag;
+char *pathsearch (char *path, char *file, char *suffix, int def_flag)
 {
     char	   old;
     char	  *ptr;

@@ -26,6 +26,7 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <string.h>
 # include "code.h"
 # include "error.h"
 # include "objects.h"
@@ -38,11 +39,8 @@
 
 # define VariableExpression 2	/* not 0, 1, or, 'h' */
 
-extern void yyerror ( );
-extern int  yylex  ( );
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
+extern void yyerror (char *msg);
+extern int  yylex  (void);
 
 /* Last parameters (default for some parameters is to inherit the last). */
 

@@ -48,27 +48,23 @@ static int *nacum;
 static int *nhigh;
 static int *nlow;
 
-unsigned *RenumberNodes ();
-void     RestoreNodeNumbers ();
-unsigned *Reduce ();
-int      SortBySize ();
-int	 FindDiameter ();
-void     PickLevel();
-void     SortByDegree();
-void     SetupLevels ();
-void     ProduceNumbering ();
-void     ReduceProfile ();
-int      MinimumConnection ();
-void     DeleteGraphElement ();
-void     FormLevel ();
-void     CheckReverse ();
-void     ComputeBandwidth ();
-void     DropTree ();
+static unsigned *Reduce (unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof);
+static int      SortBySize (int *size, int *stpt, int xc);
+static int	 FindDiameter (int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst);
+static void     PickLevel(int *lvls1, int *lvls2, int *ccstor, int idflt, int *isdir, int xc, int *size, int *stpt);
+static void     SortByDegree(int *stk1, int *stk2, int *x1, int x2, unsigned int *nd_degrees);
+static void     SetupLevels (int *lvl, int *lvls1, int *lvls2, unsigned int numnodes);
+static void     ProduceNumbering (int snd, int *num, unsigned int **ndstk, int *lvls2, unsigned int *nd_degrees, unsigned int *renum, int *lvlst, int *lstpt, unsigned int numnodes, int nflg, int *ibw2, int *ipf2, int *ipfa, int isdir, unsigned int ideg, int *stkd);
+static void     ReduceProfile (unsigned int numnodes, unsigned int **ndstk, unsigned int *new_numbers, unsigned int *nd_degrees, int *lvls2, int *lvlst, int *lstpt, int *nxtnum, int *conect, int *smlst);
+static int      MinimumConnection (int *x, int xsze, int *y, int ysze, int *conlst, int *consze, unsigned int **ndstk, unsigned int *nd_degrees, int *smlst);
+static void     DeleteGraphElement (int *set, int *setsze, int elemnt);
+static void     FormLevel (int *set, int *setsze, int *lstpt, int *lvlst, int level);
+static void     CheckReverse (int *bestbw, int *bestpf, unsigned int *new_numbers, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *iwk);
+static void     ComputeBandwidth (unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *old_numbers, int *ibw1, int *ipf1);
+static void     DropTree (int iroot, unsigned int **ndstk, int *lvl, int *iwk, unsigned int *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort);
 
-void RestoreNodeNumbers (node, old_numbers, numnodes)
-   Node		*node;
-   unsigned	*old_numbers;
-   unsigned	numnodes;
+void
+RestoreNodeNumbers(Node *node, unsigned int *old_numbers, unsigned int numnodes)
 {
    unsigned	i;
 
@@ -81,11 +77,8 @@ void RestoreNodeNumbers (node, old_numbers, numnodes)
    return;
 }
 
-unsigned *RenumberNodes (node, element, numnodes, numelts)
-   Node		*node;
-   Element	*element;
-   unsigned	numnodes;
-   unsigned	numelts;
+unsigned*
+RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	*old_numbers;
    unsigned	*new_numbers;
@@ -225,13 +218,8 @@ unsigned *RenumberNodes (node, element, numnodes, numelts)
    return old_numbers;
 }
 
-unsigned *Reduce (ndstk, nd_degrees, old_numbers, numnodes, max_degree, prof)
-   unsigned	**ndstk;
-   unsigned	*nd_degrees;
-   unsigned	*old_numbers;
-   unsigned	numnodes;
-   unsigned	max_degree;
-   unsigned	prof;
+static unsigned*
+Reduce(unsigned int **ndstk, unsigned int *nd_degrees, unsigned int *old_numbers, unsigned int numnodes, unsigned int max_degree, unsigned int prof)
 {
    unsigned	i;
    unsigned	*new_numbers;
@@ -400,12 +388,8 @@ unsigned *Reduce (ndstk, nd_degrees, old_numbers, numnodes, max_degree, prof)
       return NULL;
 }
 
-void ComputeBandwidth (ndstk, numnodes, nd_degrees, old_numbers, ibw1, ipf1)
-   unsigned	**ndstk;
-   unsigned	numnodes;
-   unsigned	*nd_degrees;
-   unsigned	*old_numbers;
-   int		*ibw1, *ipf1;
+static void
+ComputeBandwidth(unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *old_numbers, int *ibw1, int *ipf1)
 {
    unsigned	i,j;
    int		itst,idif,irw;
@@ -431,15 +415,8 @@ void ComputeBandwidth (ndstk, numnodes, nd_degrees, old_numbers, ibw1, ipf1)
    return;
 }
 
-int FindDiameter (snd1,snd2,ndstk,numnodes,nd_degrees,lvl,
-                  lvls1,lvls2, iwk, ndlst)
-   int 		*snd1, *snd2;
-   unsigned	**ndstk;
-   unsigned	numnodes;
-   unsigned	*nd_degrees;
-   int	        *lvl, *lvls1, *lvls2;
-   int		*iwk; 
-   int		*ndlst;
+static int
+FindDiameter(int *snd1, int *snd2, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, int *lvl, int *lvls1, int *lvls2, int *iwk, int *ndlst)
 {
    int		idflt;
    int		snd, mtw1, mtw2;
@@ -450,8 +427,12 @@ int FindDiameter (snd1,snd2,ndstk,numnodes,nd_degrees,lvl,
    unsigned	do_tree;
 
    ndxn = 0;
+   ndxl = 0;
    mtw1 = 0;
-
+   maxlw = 0;
+   lvlwth = 0;
+   lvln = 0;
+   lvlbot = 0;
    mtw2 = numnodes;
    snd = *snd1;
 
@@ -523,15 +504,8 @@ int FindDiameter (snd1,snd2,ndstk,numnodes,nd_degrees,lvl,
    return idflt;
 }
 
-void DropTree (iroot, ndstk, lvl, iwk, nd_degrees, lvlwth,
-               lvlbot, lvln, maxlw, ibort)
-   int		iroot;
-   unsigned	**ndstk;
-   unsigned	*nd_degrees;
-   int		*lvl;
-   int		*iwk; 
-   int		*lvlbot, *lvlwth, *maxlw;
-   int		*lvln, ibort;
+static void
+DropTree(int iroot, unsigned int **ndstk, int *lvl, int *iwk, unsigned int *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort)
 {
    unsigned	j;
    int		itop; 
@@ -583,10 +557,8 @@ void DropTree (iroot, ndstk, lvl, iwk, nd_degrees, lvlwth,
    }
 }
   
-void SortByDegree (stk1, stk2, x1, x2, nd_degrees)
-   int		*stk1, *stk2;
-   int		*x1, x2;
-   unsigned	*nd_degrees;
+static void
+SortByDegree(int *stk1, int *stk2, int *x1, int x2, unsigned int *nd_degrees)
 {
        
    int		ind, istk2, jstk2;
@@ -629,11 +601,8 @@ void SortByDegree (stk1, stk2, x1, x2, nd_degrees)
    return;
 }
 
-void SetupLevels (lvl, lvls1, lvls2, numnodes)
-   int		*lvl;
-   int		*lvls1;
-   int		*lvls2;
-   unsigned	numnodes;
+static void
+SetupLevels(int *lvl, int *lvls1, int *lvls2, unsigned int numnodes)
 {
    unsigned	i;
    int		itemp;
@@ -660,10 +629,8 @@ void SetupLevels (lvl, lvls1, lvls2, numnodes)
    return;
 }
 
-int SortBySize (size, stpt, xc)
-   int		*size;
-   int		*stpt;
-   int		xc;
+static int
+SortBySize(int *size, int *stpt, int xc)
 {
    int		ind, temp, itest;
    unsigned	i,j;
@@ -702,14 +669,8 @@ int SortBySize (size, stpt, xc)
    return 1;
 }
      
-void PickLevel (lvls1, lvls2, ccstor, idflt, isdir, xc, size, stpt)
-   int		*lvls1, *lvls2;
-   int		*ccstor;
-   int		idflt;
-   int		*isdir;
-   int		xc;
-   int		*size;
-   int		*stpt;
+static void
+PickLevel(int *lvls1, int *lvls2, int *ccstor, int idflt, int *isdir, int xc, int *size, int *stpt)
 {
    unsigned	i,k,j;
    int		end, it;
@@ -775,24 +736,8 @@ void PickLevel (lvls1, lvls2, ccstor, idflt, isdir, xc, size, stpt)
    return;
 }
 
-void ProduceNumbering (snd, num, ndstk, lvls2, nd_degrees, renum, lvlst,
-                       lstpt, numnodes, nflg, ibw2, ipf2,ipfa,isdir,ideg,stkd)
-   int		snd;
-   int		*num;
-   int		*lvls2;
-   unsigned	**ndstk;
-   unsigned	*nd_degrees;
-   unsigned	*renum;
-   int		*lvlst;
-   int		*lstpt;
-   unsigned	numnodes;
-   int		nflg;
-   int		*ibw2;
-   int		*ipf2;
-   int		*ipfa;
-   int		isdir;
-   unsigned	ideg;
-   int		*stkd;
+static void
+ProduceNumbering(int snd, int *num, unsigned int **ndstk, int *lvls2, unsigned int *nd_degrees, unsigned int *renum, int *lvlst, int *lstpt, unsigned int numnodes, int nflg, int *ibw2, int *ipf2, int *ipfa, int isdir, unsigned int ideg, int *stkd)
 {
    int		*stka, *stkb, *stkc;
    int 		xa, xb, xc, xd, cx;
@@ -938,18 +883,8 @@ void ProduceNumbering (snd, num, ndstk, lvls2, nd_degrees, renum, lvlst,
    return;
 }
 
-void ReduceProfile (numnodes, ndstk, new_numbers, nd_degrees, 
-                    lvls2, lvlst, lstpt, nxtnum, conect, smlst)
-   unsigned	numnodes;
-   unsigned	**ndstk;
-   unsigned	*new_numbers;
-   unsigned	*nd_degrees;
-   int		*lvls2;
-   int		*lvlst;
-   int		*lstpt;
-   int		*nxtnum;
-   int		*conect;
-   int		*smlst;
+static void
+ReduceProfile(unsigned int numnodes, unsigned int **ndstk, unsigned int *new_numbers, unsigned int *nd_degrees, int *lvls2, int *lvlst, int *lstpt, int *nxtnum, int *conect, int *smlst)
 {
    int		*s2,*s3,*q;
    int		s2sze, s3sze, qptr, consze;
@@ -1047,15 +982,8 @@ void ReduceProfile (numnodes, ndstk, new_numbers, nd_degrees,
    return;
 }
          
-int MinimumConnection (x, xsze, y, ysze, conlst, consze, 
-                       ndstk, nd_degrees, smlst)
-   int		*x,*y;
-   int  	xsze, ysze;
-   int  	*conlst;
-   int  	*consze;
-   unsigned 	**ndstk;
-   unsigned	*nd_degrees;
-   int		*smlst;
+static int
+MinimumConnection(int *x, int xsze, int *y, int ysze, int *conlst, int *consze, unsigned int **ndstk, unsigned int *nd_degrees, int *smlst)
 {
    unsigned	i,j,k;
    int		ix;
@@ -1109,10 +1037,8 @@ int MinimumConnection (x, xsze, y, ysze, conlst, consze,
    return mincon;
 }
 
-void DeleteGraphElement (set, setsze, elemnt)
-   int		*set;
-   int		*setsze;
-   int		elemnt;
+static void
+DeleteGraphElement(int *set, int *setsze, int elemnt)
 {
    unsigned	i,j;
 
@@ -1134,12 +1060,8 @@ void DeleteGraphElement (set, setsze, elemnt)
    return;
 }
   
-void FormLevel (set, setsze, lstpt, lvlst, level)
-   int		*set;
-   int		*setsze;
-   int		*lvlst;
-   int		*lstpt;
-   int		level;
+static void 
+FormLevel(int *set, int *setsze, int *lstpt, int *lvlst, int level)
 {
    int		upper, lower;
    unsigned	i;
@@ -1157,15 +1079,8 @@ void FormLevel (set, setsze, lstpt, lvlst, level)
    return;
 }   
      
-void CheckReverse (bestbw, bestpf, new_numbers, ndstk, 
-                   numnodes, nd_degrees, iwk)
-   int		*bestbw;
-   int		*bestpf;
-   unsigned	*new_numbers;
-   unsigned	**ndstk;
-   unsigned	numnodes;
-   unsigned	*nd_degrees;
-   unsigned	*iwk;
+static void
+CheckReverse(int *bestbw, int *bestpf, unsigned int *new_numbers, unsigned int **ndstk, unsigned int numnodes, unsigned int *nd_degrees, unsigned int *iwk)
 {
    unsigned	i;
    int		rev_bw, rev_pf;

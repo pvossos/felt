@@ -41,12 +41,11 @@
 # include "globals.h"
 # include "procedures.h"
 
-static void    (*function) ( );
+static void    (*function) (Figure *, unsigned);
 
 
-void DoSelectGroup (box, x1, y1, x2, y2)
-    Figure box;
-    float  x1, y1, x2, y2;
+static void
+DoSelectGroup(Figure box, float x1, float y1, float x2, float y2)
 {
     Point    points [4];
     Figure  *figures;
@@ -69,10 +68,8 @@ void DoSelectGroup (box, x1, y1, x2, y2)
 }
 
 
-void SelectGroupCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void
+SelectGroupCB(Widget w, XtPointer client_data, XtPointer call_data)
 {
     static Point     corner;
     static Figure    box;
@@ -110,7 +107,7 @@ void SelectGroupCB (w, client_data, call_data)
 }
 
 
-void SelectGroupAP ( )
+void SelectGroupAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     static unsigned corner_number = 0;
     static float    xl, xr, yb, yt;
@@ -135,9 +132,7 @@ void SelectGroupAP ( )
 }
 
 
-void SelectGroup (call_data, op)
-    XtPointer  call_data;
-    void     (*op) ( );
+void SelectGroup (XtPointer call_data, void (*op) (Figure *, unsigned))
 {
     Arg arglist [1];
 

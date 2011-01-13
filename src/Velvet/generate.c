@@ -62,7 +62,7 @@ typedef double	dbl_pair [2];
 
 static int	grid_type;
 
-static void VelvetCoalesceNodes ( )
+static void VelvetCoalesceNodes (void)
 {
    unsigned		i;
    unsigned		nn, ne;
@@ -122,7 +122,7 @@ static void VelvetCoalesceNodes ( )
    return;
 }
 
-void GenerateElements ( ) 
+void GenerateElements (void)
 { 
    Definition	active_definition;
 
@@ -157,7 +157,7 @@ void GenerateElements ( )
       error ("The current type of element cannot be generated."); 
 }
 
-void SetupGridGeneration ()
+void SetupGridGeneration (void)
 {
    static GridDialog	grid_d = NULL;
    Element	mxelt;
@@ -225,7 +225,7 @@ void SetupGridGeneration ()
 }
    
 
-void SetupTriangleGeneration ( )
+void SetupTriangleGeneration (void)
 {
    static unsigned		flag = 1;
    static TrimeshDialog		trimesh_d;
@@ -252,7 +252,7 @@ void SetupTriangleGeneration ( )
       trimesh -> curves [i] -> numvc = 0;
    }
 
-   AssignQuitAbort (FinishCurve, "FinishCurve", AbortTriMesh, "AbortTriMesh");
+   AssignQuitAbort (FinishCurveCB, "FinishCurve", AbortTriMeshCB, "AbortTriMesh");
 
    XtOverrideTranslations (entry,
       XtParseTranslationTable ("Shift<Key>BackSpace: BackupOnePoint()"));
@@ -276,7 +276,7 @@ void SetupTriangleGeneration ( )
    SetEditMode ();
 }
 
-void AddCurvePointAP ()
+void AddCurvePointAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    char		*status;
    float	x,y;
@@ -288,10 +288,7 @@ void AddCurvePointAP ()
    DoAddCurvePoint (x,y);
 }
 
-void AddCurvePointCB (w, clientData, callData)
-   Widget	w;
-   XtPointer	clientData;
-   XtPointer	callData;
+void AddCurvePointCB (Widget w, XtPointer clientData, XtPointer callData)
 {
    DrawingReport	*report;
 
@@ -300,7 +297,7 @@ void AddCurvePointCB (w, clientData, callData)
       return;
 
    if (report -> event -> xbutton.button == 3) {
-      FinishCurve ( );
+        FinishCurveCB (w, clientData, callData);
       return;
    } 
    else if (report -> event -> xbutton.button != 1)
@@ -313,8 +310,7 @@ static char *ordinals [ ] = {"", "first", "second", "third", "fourth", "fifth",
                         "sixth", "seventh", "eighth", "ninth", "tenth",
                         "eleventh", "twelfth", "thirteenth", "fourteenth"};
 
-void DoAddCurvePoint (x,y)
-   float	x,y;
+void DoAddCurvePoint (float x, float y)
 {
    static char 		message [80];
 
@@ -338,7 +334,8 @@ void DoAddCurvePoint (x,y)
    ChangeStatusLine (message, True);
 }
 
-void DoTriMeshGeneration ()
+static void
+DoTriMeshGeneration(void)
 {
    Element	*element;
    Node		*node;
@@ -410,7 +407,12 @@ void DoTriMeshGeneration ()
    changeflag = True;
 }
 
-void FinishCurve ()
+void FinishCurveCB (Widget w, XtPointer closure, XtPointer data)
+{
+     FinishCurve(w, NULL, NULL, NULL);
+}
+
+void FinishCurve (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    trimesh -> curves [curr_curve] -> numvc = curr_vc;
    maxvc = 20;
@@ -428,7 +430,12 @@ void FinishCurve ()
       ChangeStatusLine ("Select first hole point:", True);
 }
 
-void AbortTriMesh ()
+void AbortTriMeshCB (Widget w, XtPointer closure, XtPointer data)
+{
+     AbortTriMesh(w, NULL, NULL, NULL);
+}
+
+void AbortTriMesh (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    unsigned	i;
 
@@ -452,7 +459,7 @@ void AbortTriMesh ()
    SetNormalMode ();
 }
 
-void BackupOnePoint ()
+void BackupOnePoint (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    char		message [80];
 

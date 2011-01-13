@@ -29,32 +29,32 @@
 # define _WRITETAB_H
 # include "descriptor.h"		/* descriptor type definition */
 
-static void write_null	     PROTO ((descriptor *));
-static void write_variable   PROTO ((descriptor *));
-static void write_function   PROTO ((descriptor *));
-static void write_intrinsic  PROTO ((descriptor *));
-static void write_string     PROTO ((descriptor *));
-static void write_double     PROTO ((descriptor *));
-static void write_int	     PROTO ((descriptor *));
-static void write_byte	     PROTO ((descriptor *));
-static void write_array	     PROTO ((descriptor *));
-static void write_row	     PROTO ((descriptor *));
-static void write_matrix     PROTO ((descriptor *));
-static void write_matrix_ptr PROTO ((descriptor *));
-static void write_analysis   PROTO ((descriptor *));
-static void write_constraint PROTO ((descriptor *));
-static void write_definition PROTO ((descriptor *));
-static void write_element    PROTO ((descriptor *));
-static void write_force	     PROTO ((descriptor *));
-static void write_load	     PROTO ((descriptor *));
-static void write_material   PROTO ((descriptor *));
-static void write_node	     PROTO ((descriptor *));
-static void write_pair	     PROTO ((descriptor *));
-static void write_problem    PROTO ((descriptor *));
-static void write_stress     PROTO ((descriptor *));
-static void write_external   PROTO ((descriptor *));
+static void write_null	     (descriptor *);
+static void write_variable   (descriptor *);
+static void write_function   (descriptor *);
+static void write_intrinsic  (descriptor *);
+static void write_string     (descriptor *);
+static void write_double     (descriptor *);
+static void write_int	     (descriptor *);
+static void write_byte	     (descriptor *);
+static void write_array	     (descriptor *);
+static void write_row	     (descriptor *);
+static void write_matrix     (descriptor *);
+static void write_matrix_ptr (descriptor *);
+static void write_analysis   (descriptor *);
+static void write_constraint (descriptor *);
+static void write_definition (descriptor *);
+static void write_element    (descriptor *);
+static void write_force	     (descriptor *);
+static void write_load	     (descriptor *);
+static void write_material   (descriptor *);
+static void write_node	     (descriptor *);
+static void write_pair	     (descriptor *);
+static void write_problem    (descriptor *);
+static void write_stress     (descriptor *);
+static void write_external   (descriptor *);
 
-static void (*(writetab [ ])) PROTO ((descriptor *)) = {
+static void (*(writetab [ ])) (descriptor *) = {
     write_null,		/* T_Null	*/
     write_variable,	/* T_Variable	*/
     write_function,	/* T_Function	*/

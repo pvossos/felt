@@ -35,7 +35,8 @@
 # define CollapseArray(d)\
 	(D_Type (d) == T_Array ? CoerceData (d, T_Null) : CollapseMatrix (d))
 
-extern descriptor *CoerceData	 PROTO ((descriptor *, int));
-extern descriptor *CoerceToArray PROTO ((descriptor *, int));
+descriptor *CoerceData (descriptor *d, int type);
+
+descriptor *CoerceToArray (descriptor *d, int type);
 
 # endif /* _COERCE_H */

@@ -33,23 +33,21 @@
 # include "error.h"
 # include "misc.h"
 
-int CTGLumpedCapacityMatrix ( );
-int CTGConsistentCapacityMatrix ( );
-Vector	CTGResolveConvection ( );
-Matrix	CTGLocalB ( );
-Matrix	PlanarConductivity ( );
-int	ctgEltSetup ( );
-int	ctgEltStress ( );
+static int CTGLumpedCapacityMatrix (Element e, double A);
+static int CTGConsistentCapacityMatrix (Element e, double area);
+static Vector	CTGResolveConvection (Element element, int *err_count);
+static Matrix	CTGLocalB (Element element, double *area);
+static Matrix	PlanarConductivity (Element element);
+static int	ctgEltSetup (Element element, char mass_mode, int tangent);
+static int	ctgEltStress (Element element);
 
 struct definition ctgDefinition = {
    "ctg", ctgEltSetup, ctgEltStress, 
    Planar, 3, 3, 0, 1, {0, 1, 0, 0, 0, 0, 0}, 0
 };
 
-int ctgEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+ctgEltSetup(Element element, char mass_mode, int tangent)
 {
    unsigned		i;
    Vector		equiv;
@@ -116,16 +114,15 @@ int ctgEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int ctgEltStress (element)
-   Element	element;
+static int
+ctgEltStress(Element element)
 {
    element -> ninteg = 0;
    return 0;
 } 
 
-int CTGLumpedCapacityMatrix (e, A)
-   Element	e;
-   double	A;
+static int
+CTGLumpedCapacityMatrix(Element e, double A)
 {
    double	factor;
 
@@ -140,15 +137,14 @@ int CTGLumpedCapacityMatrix (e, A)
    return 0;
 }
 
-int CTGConsistentCapacityMatrix (e, area)
-   Element	e;
-   double	area;
+static int
+CTGConsistentCapacityMatrix(Element e, double area)
 {
    return 0;
 }
 
-Matrix PlanarConductivity (element)
-   Element	element;
+static Matrix
+PlanarConductivity(Element element)
 {
    static Matrix	D = NullMatrix;
 
@@ -163,9 +159,8 @@ Matrix PlanarConductivity (element)
    return D;
 }
 
-Matrix CTGLocalB (element, area)
-   Element	element;
-   double	*area;
+static Matrix
+CTGLocalB(Element element, double *area)
 {
    static Matrix 	B = NullMatrix;
    double		xc1,yc1,
@@ -222,9 +217,8 @@ Matrix CTGLocalB (element, area)
    return B;
 }
 
-Vector CTGResolveConvection (element, err_count)
-   Element	element;
-   int		*err_count;
+static Vector
+CTGResolveConvection(Element element, int *err_count)
 {
    double		L;
    double		factor;

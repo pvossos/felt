@@ -28,6 +28,7 @@
 
 # include <stdio.h>
 # include <math.h>
+# include "draw.h"
 # include "allocate.h"
 # include "problem.h"
 # include "fe.h"
@@ -46,20 +47,8 @@
  *
  *****************************************************************************/
 
-# if defined (__STDC__)
-
-static void Line (char **b, int xs, int ys, int xe, int ye)
-
-# else
-
-static void Line (b, xs, ys, xe, ye)
-    char	**b;
-    int	  	  xs;
-    int	  	  ys;
-    int	  	  xe;
-    int	 	  ye;
-
-# endif
+static void
+Line(char **b, int xs, int ys, int xe, int ye)
 {
    unsigned	i;
    int		x,y,
@@ -123,10 +112,8 @@ static void Line (b, xs, ys, xe, ye)
  *
  ***************************************************************************/
 
-void DrawStructureASCII (fp, cols, rows)
-    FILE       *fp;
-    unsigned	cols;
-    unsigned	rows;
+void
+DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
 {
     char	**b;
     unsigned	  i, j;

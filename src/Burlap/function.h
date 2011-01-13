@@ -42,8 +42,10 @@ typedef struct function {
 } *Function;
 
 
-extern Function	CreateFunction	PROTO ((char *));
-extern Function CopyFunction	PROTO ((Function));
-extern void	DestroyFunction	PROTO ((Function));
+Function CreateFunction (char *name);
+
+Function CopyFunction (Function func);
+
+void DestroyFunction (Function func);
 
 # endif /* _FUNCTION_H */

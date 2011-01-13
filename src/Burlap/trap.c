@@ -42,8 +42,7 @@ static TrapHandler handlers [MaxHandlers];
  *		index of the handler is returned.			*
  ************************************************************************/
 
-int AddTrap (handler)
-    TrapHandler handler;
+int AddTrap (TrapHandler handler)
 {
     unsigned i;
 
@@ -64,10 +63,7 @@ int AddTrap (handler)
  * Description:	Calls a trap handler.					*
  ************************************************************************/
 
-int CallTrap (index, arg1, arg2)
-    int		 index;
-    descriptor	*arg1;
-    descriptor **arg2;
+int CallTrap (int index, descriptor *arg1, descriptor **arg2)
 {
     d_printf ("calling handler %d\n", index);
     return handlers [index] (arg1, arg2);
@@ -81,7 +77,7 @@ int CallTrap (index, arg1, arg2)
  *		handlers.						*
  ************************************************************************/
 
-int NumTraps ( )
+int NumTraps (void)
 {
     return num_handlers;
 }

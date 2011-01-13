@@ -121,11 +121,7 @@ static XtTranslations command_translations;
  *		to be deleted; calls the callback of the dummy widget.	*
  ************************************************************************/
 
-static void Delete (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Delete (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     while (XtClass (w) != transientShellWidgetClass)
 	w = XtParent (w);
@@ -142,10 +138,7 @@ static void Delete (w, event, params, num_params)
  * Description:	Notifies the user through a callback or selection.	*
  ************************************************************************/
 
-static void Notify (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Notify (Widget w, XtPointer client_data, XtPointer call_data)
 {
     OutputDialog outputd;
     String	 label;
@@ -174,11 +167,7 @@ static void Notify (w, client_data, call_data)
  *		Popdown().						*
  ************************************************************************/
 
-OutputDialog OutputDialogCreate (parent, name, buttons, num_buttons)
-    Widget   parent;
-    String   name;
-    String  *buttons;
-    Cardinal num_buttons;
+OutputDialog OutputDialogCreate (Widget parent, String name, String *buttons, Cardinal num_buttons)
 {
     Arg			args [1];
     Widget		group [MaxButtons + 1];
@@ -287,10 +276,7 @@ OutputDialog OutputDialogCreate (parent, name, buttons, num_buttons)
  *		the dialog was deleted.					*
  ************************************************************************/
 
-String OutputDialogSelect (outputd, title, preferred)
-    OutputDialog outputd;
-    String	 title;
-    String	 preferred;
+String OutputDialogSelect (OutputDialog outputd, String title, String preferred)
 {
     XEvent	 event;
     XtAppContext app_context;
@@ -321,12 +307,7 @@ String OutputDialogSelect (outputd, title, preferred)
  *		selection or deletion with the specified client	data.	*
  ************************************************************************/
 
-void OutputDialogPopup (outputd, title, preferred, callback, client_data)
-    OutputDialog   outputd;
-    String	   title;
-    String	   preferred;
-    XtCallbackProc callback;
-    XtPointer	   client_data;
+void OutputDialogPopup (OutputDialog outputd, String title, String preferred, XtCallbackProc callback, XtPointer client_data)
 {
     Arg      args [2];
     Cardinal i;
@@ -353,8 +334,7 @@ void OutputDialogPopup (outputd, title, preferred, callback, client_data)
  * Description:	Pops down the specified output dialog.			*
  ************************************************************************/
 
-void OutputDialogPopdown (outputd)
-    OutputDialog outputd;
+void OutputDialogPopdown (OutputDialog outputd)
 {
     XtPopdown (outputd -> shell);
 }
@@ -366,11 +346,7 @@ void OutputDialogPopdown (outputd)
  * Description:	...							*
  ************************************************************************/
 
-void OutputDialogView (outputd, file_name, max_lines, max_columns)
-    OutputDialog outputd;
-    String	 file_name;
-    Cardinal	 max_lines;
-    Cardinal	 max_columns;
+void OutputDialogView (OutputDialog outputd, String file_name, Cardinal max_lines, Cardinal max_columns)
 {
     Arg   args [4];
     Cardinal length;
@@ -423,19 +399,12 @@ void OutputDialogView (outputd, file_name, max_lines, max_columns)
  * Description: Uses OutputDialogVprintf() to simulate printf().	*
  ************************************************************************/
 
-# if NeedVarargsPrototypes
 void OutputDialogPrintf (OutputDialog outputd, String format, ...)
-# else
-void OutputDialogPrintf (outputd, format, va_alist)
-    OutputDialog outputd;
-    String	 format;
-    va_dcl
-# endif
 {
     va_list	     ap;
 
 
-    Va_start (ap, format);
+    va_start (ap, format);
     OutputDialogVprintf (outputd, format, ap);
     va_end (ap);
 }
@@ -462,10 +431,7 @@ void OutputDialogPrintf (outputd, format, va_alist)
  *		importantly allows a file to viewed efficiently.	*
  ************************************************************************/
 
-void OutputDialogVprintf (outputd, format, ap)
-    OutputDialog outputd;
-    String	 format;
-    va_list	 ap;
+void OutputDialogVprintf (OutputDialog outputd, String format, va_list ap)
 {
     Arg		     args [4];
     char	     buffer [2048];
@@ -494,8 +460,7 @@ void OutputDialogVprintf (outputd, format, ap)
  * Description:	Returns the shell widget of an output dialog.		*
  ************************************************************************/
 
-Widget OutputDialogShell (outputd)
-    OutputDialog outputd;
+Widget OutputDialogShell (OutputDialog outputd)
 {
     return outputd -> shell;
 }

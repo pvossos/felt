@@ -38,45 +38,14 @@ typedef struct {
     Boolean	   proceed;
 } MaterialDialogInfo;
 
+MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure);
 
-extern MaterialDialog MaterialDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */,
-    XtCallbackProc		/* callback    */,
-    XtPointer			/* client_data */
-# endif
-);
+void MaterialDialogPopup (MaterialDialog materiald);
 
+void MaterialDialogUpdate (MaterialDialog materiald, Tree tree);
 
-extern void MaterialDialogPopup (
-# if NeedFunctionPrototypes
-    MaterialDialog		/* material_dialog */
-# endif
-);
+Material MaterialDialogActive (MaterialDialog materiald);
 
-
-extern void MaterialDialogUpdate (
-# if NeedFunctionPrototypes
-    MaterialDialog		/* material_dialog */,
-    Tree			/* material_tree   */
-# endif
-);
-
-
-extern Material MaterialDialogActive (
-# if NeedFunctionPrototypes
-    MaterialDialog		/* material_dialog */
-# endif
-);
-
-
-extern void MaterialDialogDisplay (
-# if NeedFunctionPrototypes
-    MaterialDialog		/* material_dialog */,
-    Material			/* material	   */
-# endif
-);
+void MaterialDialogDisplay (MaterialDialog materiald, Material material);
 
 # endif /* _Material_h */

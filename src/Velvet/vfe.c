@@ -54,7 +54,7 @@ static FigureAttributes	attributes;
  * Description:	Draws the display list from the appearance structure.	*
  ************************************************************************/
 
-static void DrawDisplayList ( )
+static void DrawDisplayList (void)
 {
     unsigned  i;
     unsigned  j;
@@ -137,8 +137,7 @@ static void DrawDisplayList ( )
  *		information is valid.					*
  ************************************************************************/
 
-void DrawProblem (z)
-    double   z;
+void DrawProblem (double z)
 {
     unsigned  i;
     Node      n;
@@ -327,11 +326,11 @@ void DrawProblem (z)
 
     for (i = 1; i <= problem.num_elements; i ++)
 	if (problem.elements [i] != NULL)
-	    DrawElement (problem.elements [i], i == 1 ? True : False);
+         DrawElement (problem.elements [i]);
 
     for (i = 1; i <= problem.num_nodes; i ++)
 	if (problem.nodes [i] != NULL)
-	    DrawNode (problem.nodes [i], i == 1 ? True : False);
+         DrawNode (problem.nodes [i]);
 
     DrawDisplayList ( );
 
@@ -351,8 +350,7 @@ void DrawProblem (z)
  * Description:	Destroy the current problem invocation.			*
  ************************************************************************/
 
-void DestroyProblem (material_op)
-    ItemDestructor material_op;
+void DestroyProblem (ItemDestructor material_op)
 {
     (void) TreeSetDestructor (problem.node_tree, (ItemDestructor)
 		DestroyNode);
@@ -386,8 +384,7 @@ void DestroyProblem (material_op)
  * Description:	Sets the node numbering for a specified node.		*
  ************************************************************************/
 
-static int setnodenum (item)
-    Item item;
+static int setnodenum (Item item)
 {
     static char	     number [10];
     FigureAttributes attr;
@@ -423,8 +420,7 @@ static int setnodenum (item)
  * Description:	Set the node numbering status.				*
  ************************************************************************/
 
-void SetNodeNumbering (value)
-    int value;
+void SetNodeNumbering (int value)
 {
     if (DW_SetForeground (drawing, canvas -> node_color) == False)
 	(void) DW_SetForeground (drawing, "black");
@@ -446,8 +442,7 @@ void SetNodeNumbering (value)
  * Description:	Sets the element numbering for a specified element.	*
  ************************************************************************/
 
-static int setelementnum (item)
-    Item item;
+static int setelementnum (Item item)
 {
     static char	     number [10];
     FigureAttributes attr;
@@ -482,8 +477,7 @@ static int setelementnum (item)
  * Description:	Set the element numbering status.			*
  ************************************************************************/
 
-void SetElementNumbering (value)
-    int value;
+void SetElementNumbering (int value)
 {
     if (DW_SetForeground (drawing, canvas -> element_color) == False)
 	(void) DW_SetForeground (drawing, "black");
@@ -498,8 +492,7 @@ void SetElementNumbering (value)
     DW_SetAutoRedraw (drawing, True);
 }
 
-static int RecolorNode (item)
-   Item		item;
+static int RecolorNode (Item item)
 {
    Node			n;
    FigureAttributes	attrib;
@@ -523,8 +516,7 @@ static int RecolorNode (item)
    return 0;
 }
 
-static int RecolorElement (item)
-   Item		item;
+static int RecolorElement (Item item)
 {
    FigureAttributes	attrib;
    Element		e;
@@ -555,7 +547,7 @@ static int RecolorElement (item)
  *		based on possibly new values of object coloring		*
  ************************************************************************/
 
-void RecolorCanvas ( )
+void RecolorCanvas (void)
 {
    DW_SetAutoRedraw (drawing, False);
 

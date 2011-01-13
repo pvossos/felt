@@ -26,8 +26,7 @@
 
 # ifndef _PATHSEARCH_H
 # define _PATHSEARCH_H
-# include "proto.h"			/* function declarations */
 
-extern char *pathsearch PROTO ((char *, char *, char *, int));
+char *pathsearch (char *path, char *file, char *suffix, int def_flag);
 
 # endif /* _PATHSEARCH_H */

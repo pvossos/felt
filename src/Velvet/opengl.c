@@ -29,13 +29,13 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <math.h>
+#include <ctype.h>
 #include <X11/X.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #include <X11/Xaw/Command.h>
 #include <X11/Xaw/Toggle.h>
-// #include <GL/xmesa.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/GLwDrawA.h> 
@@ -45,6 +45,11 @@
 #include "fe.h"
 #include "colormap.h"
 #include "globals.h"
+#include "util.h"
+#include "eps.h"
+#include "ppm.h"
+#include "xwd.h"
+#include "opengl.h"
 
 #define WEDGEWIDTH 100
 
@@ -77,9 +82,7 @@ face bface[] =
     {0, 1, 5, 4},
 };
 
-static void MakeFont(fwidth, fheight)
-   int *fwidth;
-   int *fheight;
+static void MakeFont(int *fwidth, int *fheight)
 {
     XFontStruct *fontInfo;
     Font id;
@@ -202,7 +205,6 @@ static void SaveFunction(Widget w, XtPointer client_data, XtPointer call_data)
 
 static void DismissFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-   int	 i;
    info *inf = (info *) client_data;
 
    XtDestroyWidget(inf -> shell);
@@ -212,7 +214,6 @@ static void DismissFunction(Widget w, XtPointer client_data, XtPointer call_data
 static void ToggleFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
    Boolean	 state;
-   Widget        dw = (Widget) client_data;
    Arg		 args [1];
    info		*inf = (info *) client_data;
 
@@ -259,7 +260,8 @@ static Boolean RotateZNeg (XtPointer client_data)
    return False;
 }
 
-void InputFunction (Widget w, XtPointer client_data, XtPointer call_data)
+static void
+InputFunction(Widget w, XtPointer client_data, XtPointer call_data)
 {
    info				*inf = (info *) client_data;
    static int           	 prev_x, prev_y;
@@ -329,7 +331,6 @@ static void DrawWedge (info *inf)
 {
    static int  fwidth, fheight;
    static int  init = 0;
-   Arg         args [2];
    int	       i;
    double      dy;
    char        buffer [32];
@@ -460,11 +461,7 @@ static void HandleFocusEvent(Widget w, XtPointer client_data,
    RedrawFunction(inf -> mesa, (XtPointer) inf, NULL);
 }
    
-static void LoadResults(inf, element, numelts, mag)
-   info	   *inf;
-   Element *element;
-   int      numelts;
-   float    mag;
+static void LoadResults(info *inf, Element *element, int numelts, float mag)
 {
    int		i, j, k, nd;
    int		epn;
@@ -560,12 +557,7 @@ static void LoadResults(inf, element, numelts, mag)
    glEndList();
 }
 
-static void LoadContourResults(inf, stress, comp, element, numelts)
-   info	   *inf;
-   Boolean  stress;
-   int      comp;
-   Element *element;
-   int      numelts;
+static void LoadContourResults(info *inf, Boolean stress, int comp, Element *element, int numelts)
 {
    int		i, j, k, nd;
    int		epn;
@@ -723,11 +715,7 @@ static String table =
  <KeyUp>Return: AutoRepeat(saved) unset() ShellAction(button)\n\
  <KeyUp>space: AutoRepeat(saved) unset() ShellAction(button)";
 
-static void Action (w, event, params, num_params)
-   Widget        w;
-   XEvent       *event;
-   String       *params;
-   Cardinal     *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    if (strcmp (params [0], "delete") == 0)
       w = XtNameToWidget (w, "layout.dismiss");
@@ -735,21 +723,13 @@ static void Action (w, event, params, num_params)
    XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-void CreateOpenGLShell(name, title, stress, comp, element, numelts, contour)
-   String	 name;
-   String	 title;
-   Boolean	 stress;
-   int		 comp;
-   Element	*element;
-   unsigned      numelts;	         
-   Boolean	 contour;
+void CreateOpenGLShell(String name, String title, Boolean stress,
+                       int comp, Element *element, unsigned numelts, Boolean contour)
 {
    static XVisualInfo  *vi = NULL;
-   Widget	        group [3];
    Widget               mesa, shell, layout, dismiss, save, toggle;
    Cardinal             n;
    Arg	                args [10];
-   Pixel	        highlight;
    XtTranslations       translations;
    static XtActionsRec  actions [ ] = {{"ShellAction", Action}};
    info                *inf;

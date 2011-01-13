@@ -33,21 +33,19 @@
 # include "error.h"
 # include "misc.h"
 
-int axisymmetricEltSetup ( );
-int axisymmetricEltStress ( );
+static int axisymmetricEltSetup(Element element, char mass_mode, int tangent);
+static int axisymmetricEltStress(Element element);
 
 struct definition axisymmetricDefinition = {
     "axisymmetric", axisymmetricEltSetup, axisymmetricEltStress, 
     Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
 };
 
-Matrix  AxisymmetricLocalB 	     ( );
-Vector	AxisymmetricEquivNodalForces ( );
+static Matrix  AxisymmetricLocalB           (Element element, double *area, double *r_avg, double *z_avg);
+static Vector  AxisymmetricEquivNodalForces (Element element, double area, int *err_count);
 
-int axisymmetricEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+axisymmetricEltSetup(Element element, char mass_mode, int tangent)
 {
    unsigned		i;
    Vector		equiv;
@@ -123,8 +121,8 @@ int axisymmetricEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int axisymmetricEltStress (element)
-   Element	element;
+static int
+axisymmetricEltStress(Element element)
 {
    static Vector	stress = NullMatrix,
 			d;
@@ -194,11 +192,8 @@ int axisymmetricEltStress (element)
    return 0;
 } 
 
-Matrix AxisymmetricLocalB (element, area, r_avg, z_avg)
-   Element	element;
-   double	*area;
-   double	*r_avg;
-   double	*z_avg;
+static Matrix
+AxisymmetricLocalB(Element element, double *area, double *r_avg, double *z_avg)
 {
    static Matrix 	B = NullMatrix;
    double		rc1, zc1;
@@ -272,10 +267,8 @@ Matrix AxisymmetricLocalB (element, area, r_avg, z_avg)
    return B;
 }
 
-Vector AxisymmetricEquivNodalForces (element, area, err_count)
-   Element	element;
-   double	area;
-   int		*err_count;
+static Vector
+AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 {
    double		Mr, Mp;
    double		p1, p2;

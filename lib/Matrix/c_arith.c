@@ -3,24 +3,17 @@
 # include <string.h>
 # include "complex.h"
 
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
-
-double re(x)
-   complex	x;
+double re(complex x)
 {
    return x.r;
 }
 
-double im(x)
-   complex	x;
+double im(complex x)
 {
    return x.i;
 }
 
-complex negate(x)
-   complex	x;
+complex negate(complex x)
 {
    complex	y;
 
@@ -30,8 +23,7 @@ complex negate(x)
    return y;
 }
 
-complex recip(x)
-   complex	x; 
+complex recip(complex x)
 {
    complex	one;
 
@@ -41,15 +33,12 @@ complex recip(x)
    return cdiv(one, x); 
 }
   
-double modulus(x)
-   complex	x;
+double modulus(complex x)
 {
    return sqrt(x.r*x.r + x.i*x.i);
 }
  
-complex mult (x, y)
-   complex	x;
-   complex	y;
+complex mult (complex x, complex y)
 {
    complex	a;
 
@@ -59,9 +48,7 @@ complex mult (x, y)
    return a;
 }
 
-complex add (x, y)
-   complex	x;
-   complex	y;
+complex add (complex x, complex y)
 {
    complex	a;
 
@@ -71,9 +58,7 @@ complex add (x, y)
    return a;
 }
 
-complex sub (x, y)
-   complex	x;
-   complex	y;
+complex sub (complex x, complex y)
 {
    complex	a;
 
@@ -83,9 +68,7 @@ complex sub (x, y)
    return a;
 }
 
-complex cdiv (x, y)
-   complex	x;
-   complex	y;
+complex cdiv (complex x, complex y)
 {
    complex	a;
    double	factor;
@@ -99,8 +82,7 @@ complex cdiv (x, y)
    return a;
 }
 
-complex csqrt (x)
-   complex	x;
+complex felt_csqrt (complex x)
 {
    complex	y;
    double	theta, radius;
@@ -114,8 +96,7 @@ complex csqrt (x)
    return y;
 }
  
-complex cexp (x)
-   double	x;
+complex felt_cexp (double x)
 {
    complex	y;
 
@@ -125,19 +106,17 @@ complex cexp (x)
    return y;
 }
 
-complex ccos (x)
-   complex	x;
+complex felt_ccos (complex x)
 {
    complex	y;
 
-   y = scale(cexp(x.r), exp(-x.i)*0.5, 0.0);
-   y = add(y, scale(cexp(-x.r), exp(x.i)*0.5, 0.0));
+   y = scale(felt_cexp(x.r), exp(-x.i)*0.5, 0.0);
+   y = add(y, scale(felt_cexp(-x.r), exp(x.i)*0.5, 0.0));
 
    return y;
 }
 
-complex csin (x)
-   complex	x;
+complex felt_csin (complex x)
 {
    complex	y;
    complex	i2;
@@ -145,15 +124,14 @@ complex csin (x)
    i2.r = 0.0;
    i2.i = 2;
 
-   y = scale(cexp(x.r), exp(-x.i), 0.0);
-   y = sub(y, scale(cexp(-x.r), exp(x.i), 0.0));
+   y = scale(felt_cexp(x.r), exp(-x.i), 0.0);
+   y = sub(y, scale(felt_cexp(-x.r), exp(x.i), 0.0));
    y = cdiv(y, i2);
 
    return y;
 }
 
-complex cnjgt (x)
-   complex	x;
+complex cnjgt (complex x)
 {
    complex	a;
   
@@ -163,13 +141,12 @@ complex cnjgt (x)
    return a;
 }
 
-unsigned is_zero(x)
-   complex	x;
+unsigned is_zero(complex x)
 {
    return (x.r == 0 && x.i == 0);
 }
 
-complex zero()
+complex zero(void)
 {
    complex	x;
 
@@ -179,10 +156,7 @@ complex zero()
    return x;
 }
 
-complex scale(x, factor, offset)
-   complex	x;
-   double	factor;
-   double	offset;
+complex scale(complex x, double factor, double offset)
 {
    complex	y;
 
@@ -192,8 +166,7 @@ complex scale(x, factor, offset)
    return y;
 }
 
-char *cprint (x)
-   complex	x;
+char *cprint (complex x)
 {
    char		buffer [32];
 

@@ -32,10 +32,9 @@
 # include "mesh.h"
 # include "rules.h"
 
-void *AssignRule (type)
-   Rule	 type;
+RuleFunction AssignRule (Rule type)
 {
-   double (*func) ();
+   double (*func) (int, int, double);
 
    if (type == CosRule)
       func = cos_rule;
@@ -55,10 +54,7 @@ void *AssignRule (type)
    return (void *) func;
 }
  
-double linear_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double linear_rule (int i, int ne, double L)
 {
    if (ne <= 0)
       return 0.0;
@@ -66,10 +62,7 @@ double linear_rule (i, ne, L)
    return L * ((double) (i - 1) / (double) ne);
 }
 
-double cos_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double cos_rule (int i, int ne, double L)
 {
    double   n;
    double   x;
@@ -84,10 +77,7 @@ double cos_rule (i, ne, L)
    return x;
 }   
 
-double sin_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double sin_rule (int i, int ne, double L)
 {
    double   n;
    double   x;
@@ -102,10 +92,7 @@ double sin_rule (i, ne, L)
    return x;
 }   
 
-double log_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double log_rule (int i, int ne, double L)
 {
    double   n;
    double   x;
@@ -120,10 +107,7 @@ double log_rule (i, ne, L)
    return x;
 }   
 
-double parabolic_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double parabolic_rule (int i, int ne, double L)
 {
    double   n;
    double   x;
@@ -138,10 +122,7 @@ double parabolic_rule (i, ne, L)
    return x;
 }   
 
-double reverse_log_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double reverse_log_rule (int i, int ne, double L)
 {
    double   n;
    double   x;
@@ -156,10 +137,7 @@ double reverse_log_rule (i, ne, L)
    return x;
 }   
 
-double reverse_parabolic_rule (i, ne, L)
-   int	    i;
-   int      ne;
-   double   L;
+double reverse_parabolic_rule (int i, int ne, double L)
 {
    double   n;
    double   x;

@@ -44,8 +44,7 @@
  *		double value.						*
  ************************************************************************/
 
-int anyp_func (n)
-    int n;
+int anyp_func (int n)
 {
     Matrix	a;
     descriptor *arg;
@@ -116,8 +115,7 @@ int anyp_func (n)
  *		determines whether the descriptor is a compact matrix.	*
  ************************************************************************/
 
-int compactp_func (n)
-    int n;
+int compactp_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -174,8 +172,7 @@ int compactp_func (n)
  *		double value.						*
  ************************************************************************/
 
-int everyp_func (n)
-    int n;
+int everyp_func (int n)
 {
     Matrix	a;
     descriptor *arg;
@@ -246,8 +243,7 @@ int everyp_func (n)
  *		determines whether the descriptor is a matrix.		*
  ************************************************************************/
 
-int matrixp_func (n)
-    int n;
+int matrixp_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -292,8 +288,7 @@ int matrixp_func (n)
  *		determines whether the descriptor is null.		*
  ************************************************************************/
 
-int nullp_func (n)
-    int n;
+int nullp_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -348,8 +343,7 @@ int nullp_func (n)
  *		determines whether the descriptor is a scalar.		*
  ************************************************************************/
 
-int scalarp_func (n)
-    int n;
+int scalarp_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -395,8 +389,7 @@ int scalarp_func (n)
  *		matrix.							*
  ************************************************************************/
 
-int symmetricp_func (n)
-    int n;
+int symmetricp_func (int n)
 {
     descriptor *arg;
     descriptor *result;

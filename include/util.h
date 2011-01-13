@@ -27,133 +27,34 @@
 # ifndef _UTIL_H
 # define _UTIL_H
 
-extern XtArgVal StringToLayout (
-# if NeedFunctionPrototypes
-    Widget		/* widget */,
-    String		/* string */
-# endif
-);
+XtArgVal StringToLayout (Widget widget, String string);
 
+void CenterOnWidget (Widget shell, Widget center, Boolean force);
 
-extern void CenterOnWidget (
-# if NeedFunctionPrototypes
-    Widget		/* shell  */,
-    Widget		/* center */,
-# if NeedWidePrototypes
-    int			/* force */
-# else
-    Boolean		/* force */
-# endif
-# endif
-);
+void CenterOnScreen (Widget shell, Boolean force);
 
+void AddDeleteWindowProtocol (Widget shell, String action);
 
-extern void CenterOnScreen (
-# if NeedFunctionPrototypes
-    Widget		/* shell */,
-# if NeedWidePrototypes
-    int			/* force */
-# else
-    Boolean		/* force */
-# endif
-# endif
-);
+void WarpToCenter (Widget w);
 
+void ListAddCursorTranslations (Widget viewport);
 
-extern void AddDeleteWindowProtocol (
-# if NeedFunctionPrototypes
-    Widget		/* shell  */,
-    String		/* action */
-# endif
-);
+void ListAddCursorAccelerators (Widget viewport, Widget w);
 
+void SetTextString (Widget w, String value);
 
-extern void WarpToCenter (
-# if NeedFunctionPrototypes
-    Widget		/* w */
-# endif
-);
+String GetTextString (Widget w);
 
+Cardinal GetTextWidth (XFontStruct *font, String text, Cardinal length);
 
-extern void ListAddCursorTranslations (
-# if NeedFunctionPrototypes
-    Widget		/* viewport */
-# endif
-);
+void SetLabelString (Widget w, String value);
 
+String GetLabelString (Widget w);
 
-extern void ListAddCursorAccelerators (
-# if NeedFunctionPrototypes
-    Widget		/* viewport */,
-    Widget		/* w        */
-# endif
-);
+void AddAutoRepeatAction (XtAppContext app_context);
 
+Widget CreateHelpButton (Widget parent, String name);
 
-extern void SetTextString (
-# if NeedFunctionPrototypes
-    Widget		/* text  */,
-    String		/* value */
-# endif
-);
-
-
-extern String GetTextString (
-# if NeedFunctionPrototypes
-    Widget		/* text */
-# endif
-);
-
-
-extern Cardinal GetTextWidth (
-# if NeedFunctionPrototypes
-    XFontStruct *	/* font   */,
-    String		/* text   */,
-    Cardinal		/* length */
-# endif
-);
-
-
-extern void SetLabelString (
-# if NeedFunctionPrototypes
-    Widget		/* label */,
-    String		/* value */
-# endif
-);
-
-
-extern String GetLabelString (
-# if NeedFunctionPrototypes
-    Widget		/* label */
-# endif
-);
-
-
-extern void AddAutoRepeatAction (
-# if NeedFunctionPrototypes
-    XtAppContext	/* app_context */
-# endif
-);
-
-
-extern Widget CreateHelpButton (
-# if NeedFunctionPrototypes
-    Widget		/* parent */,
-    String		/* name   */
-# endif
-);
-
-
-extern void UpdateHelpMessage (
-# if NeedFunctionPrototypes
-    Widget		/* button  */,
-    String		/* message */,
-# if NeedWidePrototypes
-    unsigned		/* width   */
-# else
-    Dimension		/* width   */
-# endif
-# endif
-);
+void UpdateHelpMessage (Widget button, String message, Dimension width);
 
 # endif /* _UTIL_H */

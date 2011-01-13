@@ -32,10 +32,6 @@
 # include "allocate.h"
 # include "definition.h"
 
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
-
 # define streq(a,b)	!strcmp(a,b)
 # define strneq(a,b)	strcmp(a,b)
 
@@ -58,15 +54,8 @@ static struct constraint default_constraint = {NULL, "default_constraint"};
 static char *cpp;
 static char  cpp_command [2048];
 
-
-/************************************************************************
- * Function:	defnlookup						*
- *									*
- * Description:	Looks up an element definition by name.			*
- ************************************************************************/
-
-Definition defnlookup (name)
-    char *name;
+Definition
+defnlookup(char *name)
 {
     char      *ptr;
     Definition definition;
@@ -91,9 +80,8 @@ Definition defnlookup (name)
  * Description:	Compares two nodes by number.				*
  ************************************************************************/
 
-static int node_cmp (n1, n2)
-    Item n1;
-    Item n2;
+static int
+node_cmp(Item n1, Item n2)
 {
     return ((Node) n1) -> number - ((Node) n2) -> number;
 }
@@ -105,9 +93,8 @@ static int node_cmp (n1, n2)
  * Description:	Compares two elements by number.			*
  ************************************************************************/
 
-static int element_cmp (e1, e2)
-    Item e1;
-    Item e2;
+static int
+element_cmp(Item e1, Item e2)
 {
     return ((Element) e1) -> number - ((Element) e2) -> number;
 }
@@ -119,9 +106,8 @@ static int element_cmp (e1, e2)
  * Description:	Compares two materials by name.				*
  ************************************************************************/
 
-static int material_cmp (m1, m2)
-    Item m1;
-    Item m2;
+static int 
+material_cmp(Item m1, Item m2)
 {
     return strcmp (((Material) m1) -> name, ((Material) m2) -> name);
 }
@@ -133,9 +119,8 @@ static int material_cmp (m1, m2)
  * Description:	Compares two distributed loads by name.			*
  ************************************************************************/
 
-static int distributed_cmp (d1, d2)
-    Item d1;
-    Item d2;
+static int 
+distributed_cmp(Item d1, Item d2)
 {
     return strcmp (((Distributed) d1) -> name, ((Distributed) d2) -> name);
 }
@@ -147,9 +132,8 @@ static int distributed_cmp (d1, d2)
  * Description:	Compares two forces by name.				*
  ************************************************************************/
 
-static int force_cmp (f1, f2)
-    Item f1;
-    Item f2;
+static int 
+force_cmp(Item f1, Item f2)
 {
     return strcmp (((Force) f1) -> name, ((Force) f2) -> name);
 }
@@ -161,9 +145,8 @@ static int force_cmp (f1, f2)
  * Description:	Compares two constraints by name.			*
  ************************************************************************/
 
-static int constraint_cmp (c1, c2)
-    Item c1;
-    Item c2;
+static int
+constraint_cmp(Item c1, Item c2)
 {
     return strcmp (((Constraint) c1) -> name, ((Constraint) c2) -> name);
 }
@@ -175,9 +158,8 @@ static int constraint_cmp (c1, c2)
  * Description:	Compares two load cases by name.			*
  ************************************************************************/
 
-static int loadcase_cmp (lc1, lc2)
-    Item lc1;
-    Item lc2;
+static int 
+loadcase_cmp(Item lc1, Item lc2)
 {
     return strcmp (((LoadCase) lc1) -> name, ((LoadCase) lc2) -> name);
 }
@@ -189,8 +171,8 @@ static int loadcase_cmp (lc1, lc2)
  * Description:	Resolve the names of objects for a node.		*
  ************************************************************************/
 
-static int resolve_node (item)
-    Item item;
+static int 
+resolve_node(Item item)
 {
     struct force      f;
     struct constraint c;
@@ -247,8 +229,8 @@ static int resolve_node (item)
  * Descriptin:	Resolve the names of objects for an element.		*
  ************************************************************************/
 
-static int resolve_element (item)
-    Item item;
+static int
+resolve_element(Item item)
 {
     struct distributed d;
     struct material    m;
@@ -315,8 +297,8 @@ static int case_count;
  * Description:	Resolve the names of objects for a loadcase.		*
  ************************************************************************/
 
-static int resolve_loadcase (item)
-    Item item;
+static int
+resolve_loadcase(Item item)
 {
     struct force       f;
     struct node	       n;
@@ -378,7 +360,8 @@ static int resolve_loadcase (item)
  *		those pointers here.					*
  ************************************************************************/
 
-static void resolve_names ( )
+static void
+resolve_names(void)
 {
     unsigned      i;
     struct node   n;
@@ -453,18 +436,8 @@ static void resolve_names ( )
     }
 }
 
-
-/************************************************************************
- * Function:	ReadFeltFile						*
- *									*
- * Description:	Reads a felt file using the preprocessor if desired.  A	*
- *		filename of "-" indicates standard input (can only be	*
- *		used initially) and a NULL filename indicates no file	*
- *		(an empty problem is created).				*
- ************************************************************************/
-
-int ReadFeltFile (filename)
-    const char *filename;
+int
+ReadFeltFile(const char *filename)
 {
     unsigned i;
     char     buffer [2048];
@@ -475,7 +448,7 @@ int ReadFeltFile (filename)
     /* Open the file and send it through the preprocessor. */
 
     if (filename) {
-# ifndef DOS
+
 	if (cpp != NULL) {
 	    if (streq (filename, "-"))
 		sprintf (buffer, "%s", cpp_command);
@@ -493,7 +466,7 @@ int ReadFeltFile (filename)
 	    }
 
 	} else
-# endif
+
 	{
 	    if (streq (filename, "-"))
 		input = stdin;
@@ -569,14 +542,10 @@ int ReadFeltFile (filename)
 	yyparse ( );
 	problem.line = 0;
 
-# ifdef DOS
-        fclose (input);
-# else
 	if (cpp)
 	    pclose (input);
 	else if (input != stdin)
 	    fclose (input);
-# endif
 
 	if (!problem.num_errors)
 	    resolve_names ( );
@@ -594,19 +563,8 @@ int ReadFeltFile (filename)
     return 0;
 }
 
-
-/************************************************************************
- * Function:	SetAnalysisMode						*
- *									*
- * Description:	Returns the current analysis mode for given problem	*
- *		instance.  Applications cannot simply use 		*
- *		problem.mode blindly because we may want to modify	*
- *		the mode to reflect factors other than those that	*
- *		the user can specify with analysis= (i.e., we want	*
- *		to allow for sub-modes)					*
- ************************************************************************/
-
-AnalysisType SetAnalysisMode ( )
+AnalysisType
+SetAnalysisMode(void)
 {
     if (problem.mode == Static && problem.num_loadcases > 0)
         return StaticLoadCases;
@@ -623,17 +581,8 @@ AnalysisType SetAnalysisMode ( )
     return problem.mode;        
 }
 
-
-/************************************************************************
- * Function:	ParseCppOptions						*
- *									*
- * Description:	Parses and removes the preprocesor options from the	*
- *		command line arguments.					*
- ************************************************************************/
-
-int ParseCppOptions (argc, argv)
-    int  *argc;
-    char *argv [ ];
+int
+ParseCppOptions(int *argc, char **argv)
 {
     int   i;
     int   j;
@@ -668,15 +617,8 @@ int ParseCppOptions (argc, argv)
     return 0;
 }
 
-
-/************************************************************************
- * Function:	CompileCode						*
- *									*
- * Description:	Compiles a string to a piece of code.			*
- ************************************************************************/
-
-int CompileCode (text)
-    char *text;
+int
+CompileCode(char *text)
 {
     char input [2048];
 
@@ -688,17 +630,8 @@ int CompileCode (text)
     return yyparse ( );
 }
 
-
-/************************************************************************
- * Function:	exptod							*
- *									*
- * Description:	Converts a string representing an expression to a	*
- *		double (works just like strtod ( )).			*
- ************************************************************************/
-
-double exptod (expr, ptr)
-    char  *expr;
-    char **ptr;
+double
+exptod(char *expr, char **ptr)
 {
     Code code;
 
@@ -711,15 +644,8 @@ double exptod (expr, ptr)
     return EvalCode (code, 0.0);
 }
 
-
-/************************************************************************
- * Function:	InitAppearance						*
- *									*
- * Description:	Initializes the appearance structure, first freeing	*
- *		any existing information.				*
- ************************************************************************/
-
-void InitAppearance ( )
+void
+InitAppearance(void)
 {
     unsigned i;
 

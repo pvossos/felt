@@ -39,44 +39,14 @@ typedef struct {
 } ConstraintDialogInfo;
 
 
-extern ConstraintDialog ConstraintDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */,
-    XtCallbackProc		/* callback    */,
-    XtPointer			/* client_data */
-# endif
-);
+ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure);
 
+void ConstraintDialogPopup (ConstraintDialog constraintd);
 
-extern void ConstraintDialogPopup (
-# if NeedFunctionPrototypes
-    ConstraintDialog		/* constraint_dialog */
-# endif
-);
+void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree);
 
+Constraint ConstraintDialogActive (ConstraintDialog constraintd);
 
-extern void ConstraintDialogUpdate (
-# if NeedFunctionPrototypes
-    ConstraintDialog		/* constraint_dialog */,
-    Tree			/* constraint_tree   */
-# endif
-);
-
-
-extern Constraint ConstraintDialogActive (
-# if NeedFunctionPrototypes
-    ConstraintDialog		/* constraint_dialog */
-# endif
-);
-
-
-extern void ConstraintDialogDisplay (
-# if NeedFunctionPrototypes
-    ConstraintDialog		/* constraint_dialog */,
-    Constraint			/* constraint	     */
-# endif
-);
+void ConstraintDialogDisplay (ConstraintDialog constraintd, Constraint constraint);
 
 # endif /* _Constraint_h */

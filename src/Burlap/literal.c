@@ -35,7 +35,7 @@
  * Descriptor:	Pushes an argument descriptor on the stack.		*
  ************************************************************************/
 
-int arg_op ( )
+int arg_op (void)
 {
     descriptor *a;
     descriptor *d;
@@ -61,7 +61,7 @@ int arg_op ( )
  * Description:	Pushes a double literal descriptor on the stack.	*
  ************************************************************************/
 
-int dbl_op ( )
+int dbl_op (void)
 {
     descriptor *d;
 
@@ -83,7 +83,7 @@ int dbl_op ( )
  * Descriptor:	Pushes a global variable descriptor on the stack.	*
  ************************************************************************/
 
-int glbl_op ( )
+int glbl_op (void)
 {
     descriptor *d;
 
@@ -105,7 +105,7 @@ int glbl_op ( )
  * Description:	Pushes a local variable descriptor on the stack.	*
  ************************************************************************/
 
-int local_op ( )
+int local_op (void)
 {
     descriptor *d;
 
@@ -127,7 +127,7 @@ int local_op ( )
  * Description:	Pushes a null descriptor on the stack.			*
  ************************************************************************/
 
-int null_op ( )
+int null_op (void)
 {
     descriptor *d;
 
@@ -149,7 +149,7 @@ int null_op ( )
  * Description:	Pushes a string literal descriptor on the stack.	*
  ************************************************************************/
 
-int str_op ( )
+int str_op (void)
 {
     descriptor *d;
 

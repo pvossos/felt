@@ -25,9 +25,9 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <stdarg.h>
 # include "error.h"
 # include "problem.h"
-# include VAR_ARGS_INCLUDE
 
 extern void ExitLoom ( );
 
@@ -40,18 +40,12 @@ extern void ExitLoom ( );
  *		printed before the error message.			*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void error (char *format, ...)
-# else
-void error (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
 
     if (problem.line)
 	fprintf (stderr, "line %d: ", problem.line);
@@ -71,18 +65,12 @@ void error (format, va_alist)
  		and arguments to standard error and exits the program.	*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void Fatal (char *format, ...)
-# else
-void Fatal (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
     fprintf (stderr, "Fatal: ");
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");

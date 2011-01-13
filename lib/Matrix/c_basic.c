@@ -17,33 +17,16 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	basic.c	       
- *	
- * Description:	
- *		
- ************************************************************************/
-
+# include <stdlib.h>
 # include <time.h>
 # include <math.h>
 # include <stdio.h>
 # include "matrix.h"
 # include "cmatrix.h"
 
-#undef srand48
-#undef drand48
-extern void srand48 ();
-extern double drand48 ();
-
-# if (defined DOS || defined __CYGWIN32__)
-# define srand48 srand
-# define drand48 rand
-# endif
-
 # define PRINT_TOL 1.0e-12
 
-int ZeroComplexMatrix (a)		/* a = 0			*/
-   ComplexMatrix	a;		/* matrix to fill with zeros	*/
+int ZeroComplexMatrix (ComplexMatrix a)
 {
    unsigned	i,j;
 
@@ -64,8 +47,7 @@ int ZeroComplexMatrix (a)		/* a = 0			*/
    return 0;
 }
 
-int MirrorComplexMatrix (a)
-   ComplexMatrix	a;		/* matrix to mirror		   */
+int MirrorComplexMatrix (ComplexMatrix a)
 {
    unsigned	i, j;
 
@@ -82,9 +64,7 @@ int MirrorComplexMatrix (a)
    return 0;
 }
 
-int CopyComplexMatrix (b, a)		/* b = a			   */
-   ComplexMatrix	a;		/* source matrix		   */
-   ComplexMatrix	b;		/* destination matrix		   */
+int CopyComplexMatrix (ComplexMatrix b, ComplexMatrix a)
 {
    unsigned	i, j;
 
@@ -114,9 +94,7 @@ int CopyComplexMatrix (b, a)		/* b = a			   */
    return 0;
 }
 
-int RandomComplexMatrix (a, seed)	/* a(i,j) = rand()		*/
-   ComplexMatrix	a;		/* matrix to randomize		*/
-   int		seed;		/* optional seed		*/
+int RandomComplexMatrix (ComplexMatrix a, int seed)
 {
    unsigned	i, j;
    static int	seeded = 0;
@@ -142,10 +120,7 @@ int RandomComplexMatrix (a, seed)	/* a(i,j) = rand()		*/
    return 0;
 }
 
-int MultiplyComplexMatrices (c, a, b)	/* c = ab			*/
-   ComplexMatrix	c;		/* destination matrix		*/
-   ComplexMatrix 	a;		/* source matrix 1		*/
-   ComplexMatrix	b;		/* source matrix 2		*/
+int MultiplyComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
 {
    unsigned	i,j,k;
 
@@ -168,10 +143,7 @@ int MultiplyComplexMatrices (c, a, b)	/* c = ab			*/
    return 0;
 }
 
-int AddComplexMatrices (c, a, b)	/* c = a + b			*/
-   ComplexMatrix	c;		/* destination matrix		*/
-   ComplexMatrix	a;		/* source matrix 1		*/
-   ComplexMatrix	b;		/* source matrix 2		*/
+int AddComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
 {
    unsigned	i,j;
 
@@ -191,10 +163,7 @@ int AddComplexMatrices (c, a, b)	/* c = a + b			*/
    return 0;
 }
 
-int SubtractComplexMatrices (c, a, b)	/* c = a - b 			*/
-   ComplexMatrix	c;		/* destination matrix		*/
-   ComplexMatrix	a;		/* source matrix 1		*/
-   ComplexMatrix	b;		/* source matrix 2		*/
+int SubtractComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b)
 {
    unsigned	i,j;
 
@@ -214,11 +183,7 @@ int SubtractComplexMatrices (c, a, b)	/* c = a - b 			*/
    return 0;
 }
 
-int ScaleComplexMatrix(b, a, factor, offset)	/* b(i,j) = factor*a(i,j) + offset  */
-   ComplexMatrix	b;			/* destination matrix		    */
-   ComplexMatrix	a;			/* source matrix		    */
-   complex		factor;			/* multiplicative scale factor	    */
-   complex		offset;			/* additive offset		    */
+int ScaleComplexMatrix(ComplexMatrix b, ComplexMatrix a, complex factor, complex offset)
 {
    unsigned	i,j;
 
@@ -235,9 +200,7 @@ int ScaleComplexMatrix(b, a, factor, offset)	/* b(i,j) = factor*a(i,j) + offset 
    return 0;
 }
 
-int ModulusComplexMatrix(b, a)
-   Matrix		b;
-   ComplexMatrix	a;
+int ModulusComplexMatrix(Matrix b, ComplexMatrix a)
 {
    unsigned	i,j;
    
@@ -254,9 +217,7 @@ int ModulusComplexMatrix(b, a)
    return 0;
 }
 
-int TransposeComplexMatrix(b, a)	/* b = aT			*/
-   ComplexMatrix	b;		/* destination matrix		*/
-   ComplexMatrix	a;		/* source matrix		*/
+int TransposeComplexMatrix(ComplexMatrix b, ComplexMatrix a)
 {
    unsigned	i, j;
 
@@ -276,9 +237,7 @@ int TransposeComplexMatrix(b, a)	/* b = aT			*/
    return 0;
 }
 
-int PrintComplexMatrix (m, fp)		/* print matrix m to file fp	*/
-   ComplexMatrix	m;		/* matrix to print		*/
-   FILE		*fp;			/* file pointer for output	*/
+int PrintComplexMatrix (ComplexMatrix m, FILE *fp)
 {
    complex	val;
    unsigned	start, end;

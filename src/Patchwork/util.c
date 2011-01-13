@@ -41,7 +41,8 @@
 static int	max_nodes;
 static int	max_elements;
 
-int InitializeProblem ( )
+int
+InitializeProblem(void)
 {
    ReadFeltFile (NULL);
 
@@ -56,12 +57,8 @@ int InitializeProblem ( )
    return 0;
 }
 
-Node AddNode (x, y, z, constraint, force)
-   double	x;
-   double	y;
-   double	z;
-   Constraint	constraint;
-   Force	force;
+Node
+AddNode(double x, double y, double z, Constraint constraint, Force force)
 {
    Node		node;
 
@@ -92,12 +89,9 @@ Node AddNode (x, y, z, constraint, force)
    return node;
 }
 
-Element AddElement (defn, nodes, material, distributed, numdistributed)
-   Definition	defn;
-   Node		*nodes;
-   Material	material; 
-   Distributed	*distributed;
-   unsigned	numdistributed;
+Element
+AddElement(Definition defn, Node *nodes, Material material, 
+           Distributed *distributed, unsigned numdistributed)
 {
    unsigned	i;
    Element	element;

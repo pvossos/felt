@@ -17,13 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File: 	factor.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <math.h>
 # include <stdlib.h>
@@ -32,11 +25,7 @@
 
 # define SIGN(x) ((x) < 0 ? -1 : 1)
 
-static void HouseHolderRow (a, v, j, m, n, w)
-   Matrix	a;
-   double	*v;
-   unsigned	m, n, j;
-   double	*w;
+static void HouseHolderRow (Matrix a, double *v, unsigned int j, unsigned int m, unsigned int n, double *w)
 {
    unsigned	i, k;
    double	beta;
@@ -63,10 +52,7 @@ static void HouseHolderRow (a, v, j, m, n, w)
    return;
 }
 
-static void HouseHolder (v, a, j, m)
-   double	*v;
-   Matrix	a;
-   unsigned	j, m; 
+static void HouseHolder (double *v, Matrix a, unsigned int j, unsigned int m)
 {
    unsigned	i;
    double	mu, beta;
@@ -90,10 +76,7 @@ static void HouseHolder (v, a, j, m)
    return;
 }
 
-int QRFactorMatrix (q, r, a)	/* factor a such that qTa = r		*/
-   Matrix	q;		/* destination matrix for q		*/
-   Matrix	r;		/* destination matrix for r		*/
-   Matrix	a;		/* source matrix			*/
+int QRFactorMatrix (Matrix q, Matrix r, Matrix a)
 {
    unsigned	i, j;
    unsigned	m , n;
@@ -161,9 +144,7 @@ int QRFactorMatrix (q, r, a)	/* factor a such that qTa = r		*/
    return 0;
 }
 
-int CholeskyFactorMatrix (b, a)	/* factor a such that bbT=a	*/
-   Matrix	b;			/* destination matrix		*/
-   Matrix	a;			/* source matrix		*/
+int CholeskyFactorMatrix (Matrix b, Matrix a)
 {
    unsigned	i, j, k;
    unsigned	n;
@@ -227,10 +208,7 @@ int CholeskyFactorMatrix (b, a)	/* factor a such that bbT=a	*/
    return 0;
 }
 
-int InvertMatrix (b, a, p)	/* compute b = inv(a) where a is LU factored */
-   Matrix	b;		/* destination matrix			     */
-   Matrix	a;		/* factored source matrix  		     */
-   Matrix	p;		/* pivot vector				     */
+int InvertMatrix (Matrix b, Matrix a, Matrix p)
 {
    unsigned	i, j;
    unsigned	n;
@@ -266,10 +244,7 @@ int InvertMatrix (b, a, p)	/* compute b = inv(a) where a is LU factored */
    return 0;
 }
 
-int DeterminantMatrix (result, a, p)	/* result = |a|			*/
-   double	*result;		/* pointer to result location	*/
-   Matrix	a;			/* factorized source matrix	*/
-   Matrix	p;			/* pivot vector			*/
+int DeterminantMatrix (double *result, Matrix a, Matrix p)
 {
    unsigned	i;
    double	x, y;
@@ -310,11 +285,7 @@ int DeterminantMatrix (result, a, p)	/* result = |a|			*/
    return 0;
 }
 
-int LUFactorMatrix (b, a, p, info) /* factor a into LU and store in b 	*/
-   Matrix	b;		    /* destination matrix		*/
-   Matrix 	a;	  	    /* source matrix			*/
-   Matrix 	p; 		    /* permutation vector		*/
-   int		*info;		    /* singularity code			*/
+int LUFactorMatrix (Matrix b, Matrix a, Matrix p, int *info)
 {
    double	t;
    unsigned	i, j, k;
@@ -398,12 +369,7 @@ int LUFactorMatrix (b, a, p, info) /* factor a into LU and store in b 	*/
    return 0; 
 }
 
-int FormLUPMatrices (L, U, P, a, p)	/* separate matrices from factors    */
-   Matrix	L;			/* return matrix for L		     */
-   Matrix	U;			/* return matrix for U		     */
-   Matrix	P;			/* return matrix for P		     */
-   Matrix	a;			/* factored form of matrix	     */
-   Matrix	p;			/* pivot vector			     */
+int FormLUPMatrices (Matrix L, Matrix U, Matrix P, Matrix a, Matrix p)
 {
    unsigned	i, j;
    unsigned	n;
@@ -463,11 +429,7 @@ int FormLUPMatrices (L, U, P, a, p)	/* separate matrices from factors    */
    return 0;
 }
 
-int LUBackSolveMatrix (c, a, b, p)	/* solve Ax=b and store result in c  */	
-   Matrix	c;			/* destination vector		     */
-   Matrix	a;			/* factorized source matrix          */	
-   Matrix	b;			/* right hand side vector 	     */
-   Matrix	p;			/* pivot vector			     */
+int LUBackSolveMatrix (Matrix c, Matrix a, Matrix b, Matrix p)
 {
    unsigned	i, k;
    unsigned	n;
@@ -531,8 +493,7 @@ int LUBackSolveMatrix (c, a, b, p)	/* solve Ax=b and store result in c  */
    return 0;
 }
 
-int CroutFactorMatrix (A)	/* crout factorize A and store in A	*/
-   Matrix	A;		/* source and destination matrix	*/
+int CroutFactorMatrix (Matrix A)
 {
    unsigned     j,jj,jjlast,jcolht,
           	istart,ij,ii,i,
@@ -607,9 +568,7 @@ int CroutFactorMatrix (A)	/* crout factorize A and store in A	*/
    return 0;
 }
 
-int CroutBackSolveMatrix (A, b)	/* solve Ax=b and store x in b	*/
-   Matrix   	 A;			/* Crout factored LHS matrix	*/
-   Matrix   	 b;			/* RHS (and dest) vector	*/
+int CroutBackSolveMatrix (Matrix A, Matrix b)
 {
    unsigned	 jj,j,jjlast,
 		 jcolht,jjnext,

@@ -17,23 +17,14 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	norm.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <math.h>
 # include <string.h>
 # include "matrix.h"
 
-double	atof();
+double	atof(const char *);
 
-int FrobeniusNormMatrix (result, a)
-   double	*result;
-   Matrix	a;
+int FrobeniusNormMatrix (double *result, Matrix a)
 {
    unsigned	i, j;
    double	data;
@@ -53,10 +44,7 @@ int FrobeniusNormMatrix (result, a)
    return 0;
 }
 
-int PNormMatrix (result, a, p)
-   double	*result;	/* pointer to space for result		*/
-   Matrix	a;		/* source matrix			*/
-   char		*p;		/* "1", "inf" type of norm		*/
+int PNormMatrix (double *result, Matrix a, char *p)
 {
    unsigned	i, j;
    double	x;
@@ -93,10 +81,7 @@ int PNormMatrix (result, a, p)
    return 0;
 }
 
-int PNormVector (result, a, p)
-   double	*result;	/* pointer to space for result		*/
-   Matrix	a;		/* source vector			*/
-   char		*p;		/* "1", "2", "inf" type of norm		*/
+int PNormVector (double *result, Matrix a, char *p)
 {
    unsigned	i;
    double	data;

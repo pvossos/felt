@@ -17,35 +17,20 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	coalesce.c
- *
- ***************************************************************************/
-
 # include <math.h>
 # include "allocate.h"
 # include "error.h"
 # include "fe.h"
 # include "objects.h"
+# include "mesh.h"
 
 # define TOLERANCE	0.001
 # define DIST(a,b)	(sqrt(((a) -> x - (b) -> x)*((a) -> x - (b) -> x) + \
                               ((a) -> y - (b) -> y)*((a) -> y - (b) -> y) + \
                               ((a) -> z - (b) -> z)*((a) -> z - (b) -> z)))
 
-/****************************************************************************
- *
- * Function:	
- *
- * Description:	
- *
- ****************************************************************************/
-
-int CheckConnections (n1, n2, element, numelts)
-   Node		n1, n2;
-   Element	*element;
-   unsigned	numelts;
+static int
+CheckConnections(Node n1, Node n2, Element *element, unsigned numelts)
 {
    unsigned	i, j, k;
    int		status;
@@ -70,10 +55,8 @@ int CheckConnections (n1, n2, element, numelts)
    return status;
 }
 
-void Reconnect (new, old, element, numelts)
-   Node		new, old;
-   Element	*element;
-   unsigned	numelts;
+static void
+Reconnect(Node new, Node old, Element *element, unsigned numelts)
 {
    unsigned	i,j;
 
@@ -90,13 +73,10 @@ void Reconnect (new, old, element, numelts)
    return;
 }
       
-Node *MergeNodes (node, element, numnodes, numelts, merges, merge_count)
-   Node		*node;
-   Element	*element;
-   unsigned	numnodes;
-   unsigned	numelts;
-   unsigned	*merges;
-   unsigned	merge_count;
+static Node*
+MergeNodes(Node *node, Element *element,
+           unsigned numnodes, unsigned numelts,
+           unsigned *merges, unsigned merge_count)
 {
    Node		*new_nodes;
    unsigned	i;
@@ -124,11 +104,8 @@ Node *MergeNodes (node, element, numnodes, numelts, merges, merge_count)
    return new_nodes;
 }
 
-Node *CoalesceNodes (node, element, nn, numelts)
-   Node		*node;
-   Element	*element;
-   unsigned	*nn;
-   unsigned	numelts;
+Node*
+CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts)
 {
    double	maxX, maxY, maxZ;
    double	minX, minY, minZ;

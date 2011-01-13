@@ -43,9 +43,8 @@ extern ElementDialog element_d;
 extern MaterialDialog material_d;
 extern ElementList element_l;
 
-void DeleteElementGroup (figures, nfigures)
-    Figure  *figures;
-    unsigned nfigures;
+static void
+DeleteElementGroup(Figure *figures, unsigned nfigures)
 {
     unsigned         i;
     unsigned         j;
@@ -104,8 +103,8 @@ void DeleteElementGroup (figures, nfigures)
 }
 
 
-void DoDeleteElt (element)
-    Element element;
+static void
+DoDeleteElt(Element element)
 {
     unsigned i;
     Element newelement;
@@ -142,10 +141,7 @@ void DoDeleteElt (element)
 }
 
 
-void DeleteEltCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -160,7 +156,7 @@ void DeleteEltCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button == 2) {
 	SelectGroup (call_data, DeleteElementGroup);
@@ -188,7 +184,7 @@ void DeleteEltCB (w, client_data, call_data)
 }
 
 
-void DeleteEltAP ( )
+void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
@@ -211,7 +207,7 @@ void DeleteEltAP ( )
 }
 
 
-void EditDeleteElement ( )
+void EditDeleteElement (void)
 {
     Arg		arglist [1];
 
@@ -229,10 +225,7 @@ void EditDeleteElement ( )
 }
 
 
-void EditElementCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport   *report;
     FigureAttributes attributes;
@@ -247,7 +240,7 @@ void EditElementCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -271,7 +264,7 @@ void EditElementCB (w, client_data, call_data)
 }
 
 
-void EditElementAP ( )
+void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
@@ -292,7 +285,7 @@ void EditElementAP ( )
 }
 
 
-void EditElementNumber ( )
+void EditElementNumber (void)
 {
     SetEditMode ( );
     ChangeStatusLine ("Select element:", True);
@@ -314,8 +307,13 @@ static char *ordinals [ ] = {"", "first", "second", "third", "fourth", "fifth",
 			"sixth", "seventh", "eighth", "ninth", "tenth",
 			"eleventh", "twelfth", "thirteenth", "fourteenth"};
 
+void AbortAddElementCB (Widget w, XtPointer closure, XtPointer data)
+{
+     AbortAddElement(w, NULL, NULL, NULL);     
+}
 
-void AbortAddElement ( )
+
+void AbortAddElement (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     if (num_nodes == 0)
 	SetNormalMode ( );
@@ -327,8 +325,7 @@ void AbortAddElement ( )
 
 
 
-void DoAddElement (node)
-    Node node;
+void DoAddElement (Node node)
 {
     static char      message [80];
     unsigned         i;
@@ -370,7 +367,7 @@ void DoAddElement (node)
 }
 
 
-void AddElementAP ( )
+void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
@@ -395,10 +392,7 @@ void AddElementAP ( )
 }
 
 
-void AddElementCB (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Node             node;
     Drawn            drawn;
@@ -412,7 +406,7 @@ void AddElementCB (w, client_data, call_data)
 	return;
 
     if (report -> event -> xbutton.button == 3)
-	QuitEdit ( );
+         QuitEditCB (w, client_data, call_data);
 
     if (report -> event -> xbutton.button != 1)
 	return;
@@ -434,7 +428,7 @@ void AddElementCB (w, client_data, call_data)
 }
 
 
-void EditAddElement ( )
+void EditAddElement (void)
 {
     Definition		active_definition;
 
@@ -460,17 +454,14 @@ void EditAddElement ( )
     XtRemoveAllCallbacks (drawing, XtNbuttonCallback);
     XtAddCallback (drawing, XtNbuttonCallback, AddElementCB, NULL);
 
-    AssignQuitAbort (QuitEdit, "QuitEdit", AbortAddElement, "AbortAddElement");
+    AssignQuitAbort (QuitEditCB, "QuitEdit", AbortAddElementCB, "AbortAddElement");
 
     XtOverrideTranslations (entry,
 	XtParseTranslationTable ("<Key>Return: AddElementAP()"));
 }
 
 
-void ComputeCenter (element, x, y)
-    Element element;
-    float  *x;
-    float  *y; 
+void ComputeCenter (Element element, float *x, float *y)
 {
     unsigned	i;
     unsigned	n;
@@ -496,8 +487,7 @@ void ComputeCenter (element, x, y)
 }
 
 
-int DrawElement (element)
-    Element element;
+int DrawElement (Element element)
 {
     Point            points [100];
     Figure           fig;
@@ -602,9 +592,7 @@ int DrawElement (element)
 }
 
 
-void MoveElement (element, old_nodes)
-    Element element;
-    Node   *old_nodes;
+void MoveElement (Element element, Node *old_nodes)
 {
     unsigned		i;
     unsigned		numnodes;

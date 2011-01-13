@@ -46,6 +46,10 @@
 # include "allocate.h"
 # include "definition.h"
 # include "options.h"
+# include "wireframe.h"
+# include "graph.h"
+# include "contour.h"
+# include "results.h"
 
 typedef int	Boolean;
 
@@ -105,9 +109,7 @@ static Boolean	 contour_overlay = 0;
  * Description:	Parses the specific command line options.		*
  ************************************************************************/
 
-static int ParseOptions (argc, argv)
-    int   argc;
-    char *argv [ ];
+static int ParseOptions (int argc, char **argv)
 {
     int		n;
 
@@ -180,7 +182,8 @@ static int ParseOptions (argc, argv)
     return 0;
 }
 
-static void DumpOptions ( )
+/* UNUSED
+static void DumpOptions (void)
 {
    printf ("in = %s\n", in);
    printf ("out = %s\n", out);
@@ -208,6 +211,7 @@ static void DumpOptions ( )
    printf ("renumber = %d\n", renumber);
    printf ("table = %d\n", table);
 }
+*/
 
 /************************************************************************
  * Function:	 ExitLoom						*
@@ -215,8 +219,8 @@ static void DumpOptions ( )
  * Description:	 							*
  ************************************************************************/
 
-void ExitLoom(status)
-    int	 status;
+void
+ExitLoom(int status)
 {
 
     if (fp_out)
@@ -237,9 +241,7 @@ void ExitLoom(status)
  * Description:	 Main is the driver function for loom.			*
  ************************************************************************/
 
-int main (argc, argv)
-    int   argc;
-    char *argv [ ];
+int main (int argc, char **argv)
 {
     int		 i;
     char	*title;			/* title of problem		*/

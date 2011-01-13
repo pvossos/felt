@@ -27,8 +27,7 @@
 # include <stdio.h>
 # include "generator.h"
 
-int WriteCorduroyFile (filename)
-    char *filename;
+int WriteCorduroyFile (char *filename)
 {
     unsigned	 i;
     unsigned	 j;

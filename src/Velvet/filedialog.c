@@ -202,9 +202,7 @@ static XtTranslations toggle_translations;
  *		shortening the directory at the front so that it fits.	*
  ************************************************************************/
 
-static void DisplayPath (filed, width)
-    FileDialog filed;
-    Dimension  width;
+static void DisplayPath (FileDialog filed, Dimension width)
 {
     Arg		 args [1];
     int		 length;
@@ -267,11 +265,7 @@ static void DisplayPath (filed, width)
  *		client data.						*
  ************************************************************************/
 
-static void ResizeHandler (w, client_data, event, cont)
-    Widget    w;
-    XtPointer client_data;
-    XEvent   *event;
-    Boolean  *cont;
+static void ResizeHandler (Widget w, XtPointer client_data, XEvent *event, Boolean *cont)
 {
     if (event -> type == ConfigureNotify)
 	DisplayPath ((FileDialog) client_data, event -> xconfigure.width - 8);
@@ -285,9 +279,7 @@ static void ResizeHandler (w, client_data, event, cont)
  *		(which end with a /) are always placed before files	*
  ************************************************************************/
 
-static int SortEntries (s1, s2)
-    String *s1;
-    String *s2;
+static int SortEntries (String *s1, String *s2)
 {
     String dir1;
     String dir2;
@@ -317,9 +309,7 @@ static int SortEntries (s1, s2)
  *		Otherwise, True is returned.				*
  ************************************************************************/
 
-static Boolean ReadDirectory (filed, name)
-    FileDialog filed;
-    String     name;
+static Boolean ReadDirectory (FileDialog filed, String name)
 {
     int		   count;
     DIR		  *dirp;
@@ -362,10 +352,7 @@ static Boolean ReadDirectory (filed, name)
  *		entry to the entry widget.				*
  ************************************************************************/
 
-static void CopySelected (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void CopySelected (Widget w, XtPointer client_data, XtPointer call_data)
 {
     FileDialog		 filed;
     XawListReturnStruct *info;
@@ -389,10 +376,7 @@ static void CopySelected (w, client_data, call_data)
  *		is used as a directory which is then read.		*
  ************************************************************************/
 
-static void Okay (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Okay (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char	   old;
     char	   buffer [MaxPathLen];
@@ -511,10 +495,7 @@ static void Okay (w, client_data, call_data)
  * Description:	                     					*
  ************************************************************************/
 
-static void CheckToggle (w, client_data, call_data)
-    Widget	w;
-    XtPointer   client_data;
-    XtPointer   call_data;
+static void CheckToggle (Widget w, XtPointer client_data, XtPointer call_data)
 {
     FileDialog		filed;
     Boolean		state;
@@ -547,10 +528,7 @@ static void CheckToggle (w, client_data, call_data)
  *		the canceled flag.					*
  ************************************************************************/
 
-static void Cancel (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Cancel (Widget w, XtPointer client_data, XtPointer call_data)
 {
     FileDialog filed;
 
@@ -571,11 +549,7 @@ static void Cancel (w, client_data, call_data)
  *		button.							* 
  ************************************************************************/
 
-static void FileDialogOkay (w, event, params, num_params)
-    Widget   w;
-    XEvent  *event;
-    String  *params;
-    Cardinal num_params;
+static void FileDialogOkay (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == listWidgetClass)
 	w = XtParent (w);
@@ -592,11 +566,7 @@ static void FileDialogOkay (w, event, params, num_params)
  *		cancel button.						*
  ************************************************************************/
 
-static void FileDialogCancel (w, event, params, num_params)
-    Widget   w;
-    XEvent  *event;
-    String  *params;
-    Cardinal num_params;
+static void FileDialogCancel (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (event -> type == ClientMessage)
 	w = XtNameToWidget (w, "layout.cancel");
@@ -618,10 +588,7 @@ static void FileDialogCancel (w, event, params, num_params)
  *		then be popped down using FileDialogPopdown().		*
  ************************************************************************/
 
-FileDialog FileDialogCreate (parent, name, toggle_labels)
-    Widget parent;
-    String name;
-    char   **toggle_labels;
+FileDialog FileDialogCreate (Widget parent, String name, char **toggle_labels)
 {
     Arg			args [1];
     Widget		group [6];
@@ -793,13 +760,7 @@ FileDialog FileDialogCreate (parent, name, toggle_labels)
  *		the selection or NULL if the dialog was canceled	*
  ************************************************************************/
 
-void FileDialogSelect (filed, title, label, suggestion, answer, toggle)
-    FileDialog filed;
-    String     title;
-    String     label;
-    String     suggestion;
-    String    *answer;
-    String    *toggle;
+void FileDialogSelect (FileDialog filed, String title, String label, String suggestion, String *answer, String *toggle)
 {
     XEvent       event;
     XtAppContext app_context;
@@ -830,8 +791,7 @@ void FileDialogSelect (filed, title, label, suggestion, answer, toggle)
  * Description:	Returns the name of the currently active toggle button.	*
  ************************************************************************/
 
-String FileDialogToggle (filed)
-    FileDialog filed;
+String FileDialogToggle (FileDialog filed)
 {
     Arg     args [1];
     Boolean state;
@@ -858,10 +818,7 @@ String FileDialogToggle (filed)
  *		file dialog.						*
  ************************************************************************/
 
-void FileDialogSetToggles (filed, label1, label2)
-    FileDialog filed;
-    String     label1;
-    String     label2;
+void FileDialogSetToggles (FileDialog filed, String label1, String label2)
 {
     Arg args [1];
 
@@ -885,13 +842,7 @@ void FileDialogSetToggles (filed, label1, label2)
  *		cancelation with the specified client data.		*
  ************************************************************************/
 
-void FileDialogPopup (filed, title, label, suggestion, callback, client_data)
-    FileDialog	   filed;
-    String	   title;
-    String	   label;
-    String	   suggestion;
-    XtCallbackProc callback;
-    XtPointer	   client_data;
+void FileDialogPopup (FileDialog filed, String title, String label, String suggestion, XtCallbackProc callback, XtPointer client_data)
 {
     Arg args [1];
 
@@ -929,8 +880,7 @@ void FileDialogPopup (filed, title, label, suggestion, callback, client_data)
  * Descripion:	Pops down the specified file dialog			*
  ************************************************************************/
 
-void FileDialogPopdown (filed)
-    FileDialog filed;
+void FileDialogPopdown (FileDialog filed)
 {
     XtPopdown (filed -> shell);
 }

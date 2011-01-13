@@ -123,11 +123,16 @@ struct descriptor {
 
 extern char *type_names [ ];
 
-extern void CreateData	 PROTO ((descriptor *, descriptor *, descriptor *, int, ...));
-extern int  AssignData	 PROTO ((descriptor *, descriptor **));
-extern int  AssignObject PROTO ((descriptor *, int, int, void *));
-extern void RecycleData	 PROTO ((descriptor *));
-extern void FreeData	 PROTO ((descriptor *));
-extern void PrintData	 PROTO ((descriptor *));
+void CreateData (descriptor *d, descriptor *a, descriptor *b, int type, ...);
+
+int AssignData (descriptor *dest, descriptor **srcp);
+
+int AssignObject (descriptor *dest, int type, int temp, void *ptr);
+
+void RecycleData (descriptor *d);
+
+void FreeData (descriptor *d);
+
+void PrintData (descriptor *d);
 
 # endif /* _DESCRIPTOR_H */

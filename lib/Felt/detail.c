@@ -25,53 +25,32 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <stdarg.h>
 # include "problem.h"
-# include VAR_ARGS_INCLUDE
-
 
 static FILE	*detail_fp = NULL;
 
-
-/************************************************************************
- * Function:	SetDetailStream						*
- *									*
- * Description:	Turns on (or off) and sets the stream that describes	*
- *		where detail messages should be printed.  To toggle  	*
- *		detail messages off, set the stream to NULL        	*
- ************************************************************************/
-
-void SetDetailStream (fp)
-    FILE    *fp;
+void
+SetDetailStream(FILE *fp)
 {
     detail_fp = fp;
 }
 
-FILE *GetDetailStream ( )
+FILE*
+GetDetailStream(void)
 {
    return detail_fp;
 }
 
-/************************************************************************
- * Function:	detail							*
- *									*
- * Description:	checks the state of the detail print flag and if it	*
- *		is on, prints a message to the current detail stream	*
- ************************************************************************/
-
-# ifdef UseFunctionPrototypes
-void detail (char *format, ...)
-# else
-void detail (format, va_alist)
-    char *format;
-    va_dcl
-# endif
+void
+detail(char *format, ...)
 {
     va_list ap;
 
     if (!detail_fp)
        return;
 
-    VA_START (ap, format);
+    va_start (ap, format);
 
     vfprintf (detail_fp, format, ap);
     fprintf (detail_fp, "\n");

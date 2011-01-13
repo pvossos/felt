@@ -3,7 +3,6 @@
 # include <string.h>
 # include <ctype.h>
 # include "allocate.h"
-# include "proto.h"
 # include "options.h"
 # include "error.h"
 
@@ -12,14 +11,7 @@
 
 static int args_used = 0;
 
-# ifdef UseFunctionPrototypes
 static int GetArgNumber (int argc, char *argv[], char *name)
-# else
-static int GetArgNumber (argc, argv, name)
-   int	argc;
-   char	*argv [ ];
-   char	*name;
-# endif
 {
    char	buffer [256];
    int	i;
@@ -37,14 +29,7 @@ static int GetArgNumber (argc, argv, name)
    return n;
 }
 
-# ifdef UseFunctionPrototypes
 static int CountArgs (int argc, char *argv[], int n)
-# else
-static int CountArgs (argc, argv, n)
-   int	 argc;
-   char	*argv [ ];
-   int	 n;
-# endif
 {
    int	 i;
    int	 c;
@@ -63,16 +48,12 @@ static int CountArgs (argc, argv, n)
    return c;
 }
 
-int ArgsUsed ( )
+int ArgsUsed (void)
 {
    return args_used;
 }
 
-int GetIntegerOption(argc, argv, name, opt)
-   int	 argc;
-   char	*argv [ ];
-   char	*name;
-   int	**opt;
+int GetIntegerOption(int argc, char **argv, char *name, int **opt)
 {
    int		n;
    int		c;
@@ -96,11 +77,7 @@ int GetIntegerOption(argc, argv, name, opt)
    return c;
 }
 
-int GetDoubleOption(argc, argv, name, opt)
-   int	     argc;
-   char	    *argv [ ];
-   char	    *name;
-   double  **opt;
+int GetDoubleOption(int argc, char **argv, char *name, double **opt)
 {
    int		n;
    int		c;
@@ -124,11 +101,7 @@ int GetDoubleOption(argc, argv, name, opt)
    return c;
 }
 
-int GetFloatOption(argc, argv, name, opt)
-   int	     argc;
-   char	    *argv [ ];
-   char	    *name;
-   float   **opt;
+int GetFloatOption(int argc, char **argv, char *name, float **opt)
 {
    int		n;
    int		c;
@@ -152,11 +125,7 @@ int GetFloatOption(argc, argv, name, opt)
    return c;
 }
 
-int GetBooleanOption(argc, argv, name, opt)
-   int	 argc;
-   char	*argv [ ];
-   char	*name;
-   int	*opt;
+int GetBooleanOption(int argc, char **argv, char *name, int *opt)
 {
    int		n;
    int		c;
@@ -178,11 +147,7 @@ int GetBooleanOption(argc, argv, name, opt)
    return c;
 }
 
-int GetStringOption(argc, argv, name, opt)
-   int	 argc;
-   char	*argv [ ];
-   char	*name;
-   char	***opt;
+int GetStringOption(int argc, char **argv, char *name, char ***opt)
 {
    int		n;
    int		c;
@@ -206,11 +171,7 @@ int GetStringOption(argc, argv, name, opt)
    return c;
 }
 
-int GetSoloIntegerOption(argc, argv, name, opt)
-   int	 argc;
-   char	*argv [ ];
-   char	*name;
-   int	*opt;
+int GetSoloIntegerOption(int argc, char **argv, char *name, int *opt)
 {
    int		n;
    int		c;
@@ -230,11 +191,7 @@ int GetSoloIntegerOption(argc, argv, name, opt)
    return c;
 }
 
-int GetSoloFloatOption(argc, argv, name, opt)
-   int	    argc;
-   char	   *argv [ ];
-   char	   *name;
-   float   *opt;
+int GetSoloFloatOption(int argc, char **argv, char *name, float *opt)
 {
    int		n;
    int		c;
@@ -254,11 +211,7 @@ int GetSoloFloatOption(argc, argv, name, opt)
    return c;
 }
 
-int GetSoloDoubleOption(argc, argv, name, opt)
-   int	    argc;
-   char	   *argv [ ];
-   char	   *name;
-   double  *opt;
+int GetSoloDoubleOption(int argc, char **argv, char *name, double *opt)
 {
    int		n;
    int		c;
@@ -278,11 +231,7 @@ int GetSoloDoubleOption(argc, argv, name, opt)
    return c;
 }
 
-int GetSoloStringOption(argc, argv, name, opt)
-   int	 argc;
-   char	*argv [ ];
-   char	*name;
-   char	**opt;
+int GetSoloStringOption(int argc, char **argv, char *name, char **opt)
 {
    int		n;
    int		c;

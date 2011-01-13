@@ -189,340 +189,74 @@ typedef struct {
 
 /* Public function declarations. */
 
-# if NeedWidePrototypes
-# define FLOAT double
-# define BOOLEAN int
-# else
-# define FLOAT float
-# define BOOLEAN Boolean
-# endif
-
-
-extern Figure DW_DrawLine (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing		 */
-    FLOAT,		/* starting x coordinate */
-    FLOAT,		/* starting y coordinate */
-    FLOAT,		/* ending x coordinate	 */
-    FLOAT		/* ending y coordinate	 */
-# endif
-);
-
-
-extern Figure DW_DrawPolygon (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	    */
-    BOOLEAN,		/* scaled	    */
-    Point [ ],		/* array of points  */
-    int			/* number of points */
-# endif
-);
-
-
-extern Figure DW_FillPolygon (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	    */
-    BOOLEAN,		/* scaled	    */
-    Point [ ],		/* array of points  */
-    int			/* number of points */
-# endif
-);
-
-
-extern Figure DW_DrawRectangle (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing		   */
-    BOOLEAN,		/* scaled		   */
-    FLOAT,		/* lower left x coordinate */
-    FLOAT,		/* lower left y coordinate */
-    FLOAT,		/* width		   */
-    FLOAT		/* height		   */
-# endif
-);
-
-
-extern Figure DW_FillRectangle (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing		   */
-    BOOLEAN,		/* scaled		   */
-    FLOAT,		/* lower left x coordinate */
-    FLOAT,		/* lower left y coordinate */
-    FLOAT,		/* width		   */
-    FLOAT		/* height		   */
-# endif
-);
-
-
-extern Figure DW_DrawArc (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	       */
-    BOOLEAN,		/* scaled	       */
-    FLOAT,		/* center x coordinate */
-    FLOAT,		/* center y coordinate */
-    FLOAT,		/* width	       */
-    FLOAT,		/* height	       */
-    FLOAT,		/* starting angle      */
-    FLOAT		/* arc length	       */
-# endif
-);
-
-
-extern Figure DW_FillArc (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	       */
-    BOOLEAN,		/* scaled	       */
-    FLOAT,		/* center x coordinate */
-    FLOAT,		/* center y coordinate */
-    FLOAT,		/* width	       */
-    FLOAT,		/* height	       */
-    FLOAT,		/* starting angle      */
-    FLOAT		/* arc length	       */
-# endif
-);
-
-
-extern Figure DW_DrawText (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing		   */
-    BOOLEAN,		/* scaled		   */
-    FLOAT,		/* lower left x coordinate */
-    FLOAT,		/* lower left y coordinate */
-    String		/* text string		   */
-# endif
-);
-
-
-extern Figure DW_DrawPixmap (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing		   */
-    FLOAT,		/* lower left x coordinate */
-    FLOAT,		/* lower left y coordinate */
-    Pixmap		/* pixmap		   */
-# endif
-);
-
-
-extern Figure DW_DrawBitmap (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing		   */
-    FLOAT,		/* lower left x coordinate */
-    FLOAT,		/* lower left y coordinate */
-    Pixmap		/* bitmap		   */
-# endif
-);
-
-
-extern Figure DW_FindFigure (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	*/
-    FLOAT,		/* x coordinate	*/
-    FLOAT		/* y coordinate	*/
-# endif
-);
-
-
-extern void DW_RaiseFigure (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing */
-    Figure		/* figure  */
-# endif
-);
-
-
-extern void DW_LowerFigure (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing */
-    Figure		/* figure  */
-# endif
-);
-
-
-extern void DW_RemoveFigure (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing */
-    Figure		/* figure  */
-# endif
-);
-
-
-extern void DW_RemoveAll (
-# if NeedFunctionPrototypes
-    Widget		/* drawing */
-# endif
-);
-
-
-extern void DW_Redraw (
-# if NeedFunctionPrototypes
-    Widget		/* drawing */
-# endif
-);
-
-
-extern void DW_GetAttributes (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing    */
-    Figure,		/* figure     */
-    FigureAttributes *	/* attributes */
-# endif
-);
-
-
-extern Boolean DW_SetAttributes (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing    */
-    Figure,		/* figure     */
-    unsigned long,	/* mask       */
-    FigureAttributes *	/* attributes */
-# endif
-);
-
-
-extern void DW_ClipBox (
-# if NeedFunctionPrototypes
-    Figure,		/* figure   */
-    XRectangle *	/* clip box */
-# endif
-);
-
-
-extern Boolean DW_SetForeground (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing    */
-    String		/* color name */
-# endif
-);
-
-
-extern Boolean DW_SetFont (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing   */
-    String		/* font name */
-# endif
-);
-
-extern void DW_GetTextExtents (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing   */
-    String,		/* string    */
-    float *,		/* width     */
-    float *		/* height    */
-# endif
-);
-
-extern void DW_SetLineWidth (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing    */
-    unsigned		/* line width */
-# endif
-);
-
-
-extern void DW_SetLineStyle (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing    */
-    int			/* line style */
-# endif
-);
-
-
-extern void DW_SetInteractive (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing     */
-    BOOLEAN		/* interactive */
-# endif
-);
-
-
-extern void DW_SetAutoFind (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing  */
-    BOOLEAN		/* autofind */
-# endif
-);
-
-
-extern void DW_SetAutoRedraw (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing    */
-    BOOLEAN		/* autoredraw */
-# endif
-);
-
-
-extern Figure *DW_SearchArea (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	     */
-    Point [ ],		/* boundary points   */
-    unsigned,		/* number of points  */
-    unsigned *		/* number of figures */
-# endif
-);
-
-
-extern Figure *DW_RetrieveAll (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	     */
-    BOOLEAN,		/* visible	     */
-    unsigned *		/* number of figures */
-# endif
-);
-
-
-extern Figure DW_Group (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing	     */
-    Figure [ ],		/* group members     */
-    unsigned		/* number of members */
-# endif
-);
-
-
-extern void DW_Ungroup (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing */
-    Figure		/* group   */
-# endif
-);
-
-
-extern Pixmap DW_CreatePixmap (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing */
-    unsigned,		/* width   */
-    unsigned		/* height  */
-# endif
-);
-
-
-extern Pixmap DW_CreateBitmap (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing */
-    unsigned,		/* width   */
-    unsigned		/* height  */
-# endif
-);
-
-
-extern void DW_TranslateCoords (
-# if NeedFunctionPrototypes
-    Widget,		/* drawing  */
-    int,		/* window x */
-    int,		/* window y */
-    float *,		/* real x   */
-    float *		/* real y   */
-# endif
-);
-
-
-extern XtArgVal Float2Arg (
-# if NeedFunctionPrototypes
-    FLOAT		/* value */
-# endif
-);
-
-
-# undef FLOAT
-# undef BOOLEAN
+Figure DW_DrawLine (Widget gw, float x1, float y1, float x2, float y2);
+
+Figure DW_DrawPolygon (Widget gw, Boolean scaled, Point *points, int npoints);
+
+Figure DW_FillPolygon (Widget gw, Boolean scaled, Point *points, int npoints);
+
+Figure DW_DrawRectangle (Widget gw, Boolean scaled, float x, float y, float width, float height);
+
+Figure DW_FillRectangle (Widget gw, Boolean scaled, float x, float y, float width, float height);
+
+Figure DW_DrawArc (Widget gw, Boolean scaled, float x, float y, float width, float height, float start, float length);
+
+Figure DW_FillArc (Widget gw, Boolean scaled, float x, float y, float width, float height, float start, float length);
+
+Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, String text);
+
+Figure DW_DrawPixmap (Widget gw, float x, float y, Pixmap pixmap);
+
+Figure DW_DrawBitmap (Widget gw, float x, float y, Pixmap pixmap);
+
+Figure DW_FindFigure (Widget gw, float realx, float realy);
+
+void DW_RaiseFigure (Widget gw, Figure fig);
+
+void DW_LowerFigure (Widget gw, Figure fig);
+
+void DW_RemoveFigure (Widget gw, Figure fig);
+
+void DW_RemoveAll (Widget gw);
+
+void DW_Redraw (Widget gw);
+
+void DW_GetAttributes (Widget gw, Figure fig, FigureAttributes *values);
+
+Boolean DW_SetAttributes (Widget gw, Figure fig, long unsigned int valuemask, FigureAttributes *values);
+
+void DW_ClipBox (Figure fig, XRectangle *rect);
+
+Boolean DW_SetForeground (Widget gw, String name);
+
+Boolean DW_SetFont (Widget gw, String name);
+
+void DW_GetTextExtents (Widget gw, String string, float *w, float *h);
+
+void DW_SetLineWidth (Widget gw, unsigned int width);
+
+void DW_SetLineStyle (Widget gw, int style);
+
+void DW_SetInteractive (Widget gw, Boolean interactive);
+
+void DW_SetAutoFind (Widget gw, Boolean autofind);
+
+void DW_SetAutoRedraw (Widget gw, Boolean autoredraw);
+
+Figure *DW_SearchArea (Widget gw, Point *points, unsigned int npoints, unsigned int *nfigs);
+
+Figure *DW_RetrieveAll (Widget gw, Boolean visible, unsigned int *nfigs);
+
+Figure DW_Group (Widget gw, Figure *figs, unsigned int nfigs);
+
+void DW_Ungroup (Widget gw, Figure fig);
+
+Pixmap DW_CreatePixmap (Widget gw, unsigned int width, unsigned int height);
+
+Pixmap DW_CreateBitmap (Widget gw, unsigned int width, unsigned int height);
+
+void DW_TranslateCoords (Widget gw, int x, int y, float *rx, float *ry);
+
+XtArgVal Float2Arg (float value);
 
 # endif /* _Drawing_h */

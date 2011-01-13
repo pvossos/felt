@@ -17,13 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File: 	eigen.c
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <stdio.h>
 # include <math.h>
 # include <stdlib.h>
@@ -36,8 +29,7 @@
 # define SIGN(x,y) ((y) > 0.0 ? fabs(x) : -fabs(x))
 # define MAX(x,y) ((x) > (y) ? (x) : (y))
 
-static void HessenbergReduction (a)
-   Matrix	a;
+static void HessenbergReduction (Matrix a)
 {
    unsigned	n;
    unsigned	i,j,k;
@@ -130,10 +122,7 @@ static void HessenbergReduction (a)
    return;
 }
 
-static void GeneralShiftedQR (a, maxit, tol)
-   Matrix	a;
-   unsigned	maxit;
-   double	tol;
+static void GeneralShiftedQR (Matrix a, unsigned int maxit, double tol)
 {
    unsigned	i,j,k;
    unsigned	n;
@@ -209,11 +198,7 @@ static void GeneralShiftedQR (a, maxit, tol)
    return;
 }
 
-int GeneralMatrixEigenModes (a, lambda, tol, maxit)
-   Matrix	a;
-   Matrix	lambda;
-   double	tol;
-   unsigned	maxit;
+int GeneralMatrixEigenModes (Matrix a, Matrix lambda, double tol, unsigned int maxit)
 {
    unsigned	i, j;
    Matrix	work;
@@ -259,11 +244,7 @@ int GeneralMatrixEigenModes (a, lambda, tol, maxit)
    return 0;
 }
 
-static int SymmetricImplicitQL (d, sd, x, maxit)
-   Matrix	d;
-   Matrix	sd;
-   Matrix	x;
-   unsigned	maxit;
+static int SymmetricImplicitQL (Matrix d, Matrix sd, Matrix x, unsigned int maxit)
 {
    unsigned	i, j, k, m;
    unsigned	mmj, ii;
@@ -395,11 +376,7 @@ static int SymmetricImplicitQL (d, sd, x, maxit)
    return 0; 
 }
 
-int SymmetricMatrixEigenModes (a, lambda, x, maxit)
-   Matrix	a;
-   Matrix	lambda;
-   Matrix	x;
-   unsigned	maxit;
+int SymmetricMatrixEigenModes (Matrix a, Matrix lambda, Matrix x, unsigned int maxit)
 {
    Matrix	diag;
    Matrix	sub_diag;
@@ -442,12 +419,7 @@ int SymmetricMatrixEigenModes (a, lambda, x, maxit)
    return 0;
 }
 
-int TridiagSymmMatrixEigenModes (diag, sub_diag, lambda, x, maxit)
-   Matrix	diag;
-   Matrix	sub_diag;
-   Matrix	lambda;
-   Matrix	x;
-   unsigned	maxit;
+int TridiagSymmMatrixEigenModes (Matrix diag, Matrix sub_diag, Matrix lambda, Matrix x, unsigned int maxit)
 {
    unsigned	i;
    int		status;
@@ -485,21 +457,17 @@ int TridiagSymmMatrixEigenModes (diag, sub_diag, lambda, x, maxit)
    return 0;
 }
 
-static int CholeskyReduction (a, b, ar, br)
-   Matrix	a;
-   Matrix	b;
-   Matrix	ar;
-   Matrix	br;
+/* UNUSED
+static int CholeskyReduction (Matrix a, Matrix b, Matrix ar, Matrix br)
 {
    return 1;
 }
+*/
 
-int SymmetricMatrixGeneralEigenModes (a, b, lambda, x, maxit)
-   Matrix	a;
-   Matrix	b;
-   Matrix	lambda;
-   Matrix	x;
-   unsigned	maxit;
+/* UNUSED
+static int
+SymmetricMatrixGeneralEigenModes(Matrix a, Matrix b, Matrix lambda,
+                                 Matrix x, unsigned maxit)
 {
    Matrix	diag;
    Matrix	sub_diag;
@@ -552,10 +520,9 @@ int SymmetricMatrixGeneralEigenModes (a, b, lambda, x, maxit)
 
    return 0;
 }
+*/
 
-int NormalizeByLength (b, a)
-   Matrix	b;
-   Matrix	a;
+int NormalizeByLength (Matrix b, Matrix a)
 {
    double	div;
    unsigned	i, j;
@@ -588,9 +555,7 @@ int NormalizeByLength (b, a)
    return 0;
 } 
 
-int NormalizeByFirst (b, a)
-   Matrix	b;
-   Matrix	a;
+int NormalizeByFirst (Matrix b, Matrix a)
 {
    double	div;
    unsigned	i, j;
@@ -618,10 +583,7 @@ int NormalizeByFirst (b, a)
    return 0;
 } 
 
-int NormalizeByMaximum (b, a, keep_sign)
-   Matrix	b;
-   Matrix	a;
-   unsigned	keep_sign;
+int NormalizeByMaximum (Matrix b, Matrix a, unsigned int keep_sign)
 {
    double	max;
    double	div;
@@ -661,10 +623,7 @@ int NormalizeByMaximum (b, a, keep_sign)
    return 0;
 } 
 
-int BuildTridiagonalVectors (a, diag, sub_diag)
-   Matrix	a;
-   Matrix	diag;
-   Matrix	sub_diag;
+int BuildTridiagonalVectors (Matrix a, Matrix diag, Matrix sub_diag)
 {
    unsigned	i;
    unsigned	n;
@@ -692,11 +651,7 @@ int BuildTridiagonalVectors (a, diag, sub_diag)
    return 0;
 }
 
-int TridiagonalReduction (a, diag, sub_diag, z)
-   Matrix	a;
-   Matrix	diag;
-   Matrix	sub_diag;
-   Matrix	z;
+int TridiagonalReduction (Matrix a, Matrix diag, Matrix sub_diag, Matrix z)
 {
    unsigned	n;
    int		i,j,k,l;

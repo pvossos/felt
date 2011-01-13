@@ -543,11 +543,7 @@ be analyzed at each of these nodes.";
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -563,10 +559,7 @@ static void Action (w, event, params, num_params)
  * Description: Sets a selected analysis type				*
  ************************************************************************/
 
-static void SetRadioState (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data,
-		call_data;
+static void SetRadioState (Widget w, XtPointer client_data, XtPointer call_data)
 {
    unsigned		mode;
    Arg			args [1];
@@ -614,10 +607,7 @@ static void SetRadioState (w, client_data, call_data)
  * Description: Sets a selected input DOF				*
  ************************************************************************/
 
-static void SetInputDOF (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data,
-		call_data;
+static void SetInputDOF (Widget w, XtPointer client_data, XtPointer call_data)
 {
    Arg			args [1];
    Boolean		state;
@@ -648,11 +638,7 @@ static void SetInputDOF (w, client_data, call_data)
  * Description: Callback to set the radio state.                        *
  ************************************************************************/
 
-static void ToggleAction (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void ToggleAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     SetRadioState (w, &Forced, NULL);
 }
@@ -663,8 +649,7 @@ static void ToggleAction (w, event, params, num_params)
  * Description: Returns the currently selected problem analysis type	*				*
  ************************************************************************/
 
-static AnalysisType GetAnalysisType (analysisd)
-   AnalysisDialog	analysisd;
+static AnalysisType GetAnalysisType (AnalysisDialog analysisd)
 {
    Boolean      state;
    Arg          args[1];
@@ -697,10 +682,7 @@ static AnalysisType GetAnalysisType (analysisd)
  * Description:								*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		   args [1];
     AnalysisDialog analysisd;
@@ -797,10 +779,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Shuffle the node entries left and right			*
  ************************************************************************/
 
-static void ShiftNodes (w, client_data, call_data)
-    Widget	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Arg		    args [1];
     AnalysisDialog  analysisd;
@@ -884,10 +863,7 @@ static void ShiftNodes (w, client_data, call_data)
  * Description:	enforces radio behavior on the mass mode toggles	*
  ************************************************************************/
 
-static void CheckMassToggle (w, client_data, call_data)
-    Widget	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void CheckMassToggle (Widget w, XtPointer client_data, XtPointer call_data)
 {
     AnalysisDialog	analysisd;
     Boolean		state;
@@ -922,10 +898,7 @@ static void CheckMassToggle (w, client_data, call_data)
  * Description:	sets the dismiss flag					*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     AnalysisDialog analysisd;
 
@@ -940,10 +913,7 @@ static void Dismiss (w, client_data, call_data)
  *		the dialog						*
  ************************************************************************/
 
-static void ExternalCallback (w, client_data, call_data)
-    Widget 	w;
-    XtPointer	client_data;
-    XtPointer	call_data;
+static void ExternalCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
     AnalysisDialog	analysisd;
 
@@ -963,13 +933,7 @@ static void ExternalCallback (w, client_data, call_data)
  * Description:	sets the widgets based on current analysis settings 	*
  ************************************************************************/
 
-# if defined(__STDC__)
-void AnalysisDialogUpdate (AnalysisDialog analysisd, int force)
-# else
-void AnalysisDialogUpdate (analysisd,force)
-    AnalysisDialog	analysisd;
-    Boolean		force;
-# endif
+void AnalysisDialogUpdate (AnalysisDialog analysisd, Boolean force)
 {
     Arg		args [1];
     char	buffer [80];
@@ -1092,10 +1056,7 @@ void AnalysisDialogUpdate (analysisd,force)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-AnalysisDialog AnalysisDialogCreate (parent, name, title)
-    Widget parent;
-    String name;
-    String title;
+AnalysisDialog AnalysisDialogCreate (Widget parent, String name, String title)
 {
     char		buffer [10];
     Cardinal		i;
@@ -1484,8 +1445,7 @@ AnalysisDialog AnalysisDialogCreate (parent, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-void AnalysisDialogPopup (analysisd)
-    AnalysisDialog analysisd;
+void AnalysisDialogPopup (AnalysisDialog analysisd)
 {
     XtPopup (analysisd -> shell, XtGrabNone);
 }

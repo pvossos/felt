@@ -17,19 +17,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	cmatrix.h    
- *	
- * Description:	
- ************************************************************************/
-
 # ifndef _CMATRIX_H
 # define _CMATRIX_H
 
 # include <stdio.h>		/* for FILE definition			*/
 # include "complex.h"
 # include "status.h"
-# include "proto.h"
 
 typedef struct complex_matrix *ComplexMatrix;
 
@@ -52,162 +45,210 @@ typedef ComplexMatrix ComplexVector;
 	 * prototypes for DATA manipulation routines
 	 */
 
-complex cmdata PROTO ((     
-   ComplexMatrix,		/* matrix to fetch data from	*/
-   unsigned,	    		/* row index			*/
-   unsigned	    		/* column index			*/
-));
+/*!
+  \param A matrix to fetch data from
+  \param row row index
+  \param col column index
+*/
+complex cmdata (ComplexMatrix A, unsigned int row, unsigned int col);
 
-ComplexMatrix CreateFullComplexMatrix PROTO ((
-   unsigned,			/* number of rows		*/
-   unsigned			/* number of columns		*/	
-));
+/*!
+  \param rows number of rows
+  \param cols number of columns
+*/
+ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols);
 
-ComplexMatrix CreateComplexRowVector PROTO ((
-   unsigned			/* vector length		*/	
-));
+/*!
+  \param size vector length
+*/
+ComplexMatrix CreateComplexRowVector (unsigned int size);
 
-ComplexMatrix CreateComplexColumnVector PROTO ((
-   unsigned			/* vector length		*/
-));
+/*!
+  \param size vector length
+*/
+ComplexMatrix CreateComplexColumnVector (unsigned int size);
 
-void DestroyComplexMatrix PROTO ((
-   ComplexMatrix		/* matrix to free		*/
-));
+/*!
+  \param m matrix to free
+*/
+void DestroyComplexMatrix (ComplexMatrix m);
 
-ComplexMatrix CreateCompactComplexMatrix PROTO ((
-   unsigned,			/* number of rows		*/
-   unsigned, 			/* number of columns		*/	
-   unsigned,			/* actual size of storage	*/	
-   unsigned *			/* diagonal index array		*/
-));
+/*!
+  \param rows number of rows
+  \param cols number of columns
+  \param size actual size of storage
+  \param diag diagonial index array
+ */
+ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols, unsigned int size, unsigned int *diag);
 
-ComplexMatrix CreateCopyComplexMatrix PROTO ((
-   ComplexMatrix			/* matrix to copy data from	*/	
-));
+/*!
+  \param a matrix to copy data from
+*/
+ComplexMatrix CreateCopyComplexMatrix (ComplexMatrix a);
 
-ComplexMatrix MakeFullFromCompactComplex PROTO ((
-   ComplexMatrix			/* compact matrix to expand 	*/	
-));
+/*!
+  \param A compact matrix to expand
+*/
+ComplexMatrix MakeFullFromCompactComplex (ComplexMatrix A);
 
-ComplexMatrix MakeCompactFromFullComplex PROTO ((
-   ComplexMatrix			/* full matrix to compact	*/	
-)); 
+/*!
+  \param A full matrix to compact
+*/
+
+ComplexMatrix MakeCompactFromFullComplex (ComplexMatrix A);
 
 	/*
 	 * prototypes for the BASIC matrix routines
 	 */
 
-int ZeroComplexMatrix PROTO ((		/* a = 0			   */
-   ComplexMatrix	 		/* matrix to fill with zeros	   */
-));
+/*!
+  \brief A = 0 
+  \param a the Matrix to fill with zeros
+ */
+int ZeroComplexMatrix (ComplexMatrix a);
 
-int CopyComplexMatrix PROTO ((		/* b = a			   */
-   ComplexMatrix,			/* source matrix		   */
-   ComplexMatrix			/* destination matrix		   */
-));
 
-int RandomComplexMatrix PROTO ((	/* a(i,j) = rand()		   */
-   ComplexMatrix,			/* matrix to randomize		   */
-   int		     			/* optional seed		   */
-));
+/*!
+  \brief B = A
+  \param a the source Matrix
+  \param b the destination Matrix
+ */
+int CopyComplexMatrix (ComplexMatrix b, ComplexMatrix a);
 
-int MirrorComplexMatrix PROTO ((
-   ComplexMatrix			/* matrix to complete		*/
-));
+/*!
+  \brief a(i,j) = rand()
+  \param a Matrix to randomize
+  \param seed optional seed
+ */
+int RandomComplexMatrix (ComplexMatrix a, int seed);
 
-int MultiplyComplexMatrices PROTO ((	/* c = ab			*/
-   ComplexMatrix,			/* destination matrix		*/
-   ComplexMatrix, 			/* source matrix 1		*/
-   ComplexMatrix			/* source matrix 2		*/
-));
+/*!
+  \param a the Matrix to mirror
+ */
+int MirrorComplexMatrix (ComplexMatrix a);
 
-int AddComplexMatrices PROTO ((		/* c = a + b			*/
-   ComplexMatrix, 			/* destination matrix		*/
-   ComplexMatrix,	  		/* source matrix 1		*/
-   ComplexMatrix    			/* source matrix 2		*/
-));
+/*!
+  \brief c = a * b
+  \param c destination Matrix
+  \param a source matrix 1
+  \param b source matrix 2
+ */
+int MultiplyComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b);
 
-int SubtractComplexMatrices PROTO ((	/* c = a - b 			*/
-   ComplexMatrix,	  		/* destination matrix		*/
-   ComplexMatrix,	  		/* source matrix 1		*/
-   ComplexMatrix	  		/* source matrix 2		*/
-));
+/*!
+  \brief c = a + b
+  \param c destination Matrix
+  \param a source Matrix 1
+  \param b source Matrix 2
+ */
+int AddComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b);
 
-int ScaleComplexMatrix PROTO (( 	/* b = a*y + x			*/
-   ComplexMatrix,	  		/* destination matrix		*/
-   ComplexMatrix,	  		/* source matrix		*/
-   complex,
-   complex
-));
+/*!
+  \brief c = a - b
+  \param c destination Matrix
+  \param a source Matrix 1
+  \param b source Matrix 2
+*/
+int SubtractComplexMatrices (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b);
 
-int ModulusComplexMatrix PROTO ((	/* b = |a|			*/
-   Matrix,				/* real destination matrix	*/
-   ComplexMatrix			/* complex source matrix	*/
-));
+/*!
+  \brief b(i,j) = factor*a(i,j) + offset
+  \param b destination matrix
+  \param a source matrix
+  \param factor multiplicative scale factor
+  \param offset additive offset
+ */
+int ScaleComplexMatrix(ComplexMatrix b, ComplexMatrix a, complex factor, complex offset);
 
-int TransposeComplexMatrix PROTO (( 	/* b = aT			*/
-   ComplexMatrix,	  		/* destination matrix		*/
-   ComplexMatrix	  		/* source matrix		*/
-));
+/*!
+  \brief b = |a|
+  \param b real destination matrix
+  \param a complex source matrix
+*/
+int ModulusComplexMatrix(Matrix b, ComplexMatrix a);
 
-int PrintComplexMatrix PROTO (( 	/* print matrix m to file fp	*/
-   ComplexMatrix,	  		/* matrix to print		*/
-   FILE	*	    			/* file pointer for output	*/
-));
+/*!
+  \brief b = aT
+  \param b destination matrix
+  \param a source matrix
+*/
+int TransposeComplexMatrix(ComplexMatrix b, ComplexMatrix a);
+
+/*!
+  \brief print matrix m to file fp
+  \param m matrix to print
+  \param fp file pointer for output
+*/
+int PrintComplexMatrix (ComplexMatrix m, FILE *fp);
 
 	/*
 	 * protoypes for the FACTORization machine
 	 */
 
-int InvertComplexMatrix PROTO (( /* compute b = inv(a) where a is LU factored */
-   ComplexMatrix,	  	 /* destination matrix		              */
-   ComplexMatrix,	  	 /* factored source matrix  		      */
-   Matrix	  		 /* pivot vector			      */
-));
+/*!
+  \brief  compute b = inv(a) where a is LU factored
+  \param b destination matrix
+  \param a factored source matrix
+  \param p pivot vector
+*/
+int InvertComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p);
 
-int LUFactorComplexMatrix PROTO ((  /* factor a into LU and store in b 	*/
-   ComplexMatrix,	  	    /* destination matrix		*/
-   ComplexMatrix, 	  	    /* source matrix			*/
-   Matrix, 	   		    /* permutation vector		*/
-   int *     		    	    /* singularity code			*/
-));
+/*!
+  \brief  factor a into LU and store in b
+  \param b destination matrix
+  \param a source matrix
+  \param p permutation vector
+  \param info singularity code
+*/
+int LUFactorComplexMatrix (ComplexMatrix b, ComplexMatrix a, Matrix p, int *info);
 
-int LUBackSolveComplexMatrix PROTO ((	/* solve Ax=b and store result in c */	
-   ComplexMatrix,	  		/* destination vector	            */
-   ComplexMatrix,	  		/* factorized source matrix         */	
-   ComplexMatrix,	  		/* right hand side vector 	    */
-   Matrix	  		    	/* pivot vector		            */
-));
 
-int DeterminantComplexMatix PROTO ((	/* x = |a|			*/
-   complex *,				/* pointer to result location	*/
-   ComplexMatrix,			/* LU factored source matrix	*/
-   Matrix				/* pivot vector			*/
-));
+/*!
+  \brief  solve Ax=b and store result in c
+  \param c destination vector
+  \param a factorized source matrix
+  \param b RHS vector
+  \param p pivot vector
+*/
+int LUBackSolveComplexMatrix (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b, Matrix p);
 
-int InvertCroutComplexMatrix PROTO ((
-   ComplexMatrix,
-   ComplexMatrix,
-   unsigned
-));
+/*!
+  \brief calculates |a|
+  \param result pointer to result location
+  \param a LU factorized source matrix
+  \param p pivot vector
+*/
+int DeterminantComplexMatrix(complex *result, ComplexMatrix a, Matrix p);
 
-int CroutFactorComplexMatrix PROTO ((   /* Crout factorize A and store in A */
-   ComplexMatrix	  		/* source and destination matrix    */
-));
+/*!
+  \brief compute one column of inv(a)
+  \param b destination matrix
+  \param a factored source matrix
+*/
+int InvertCroutComplexMatrix (ComplexMatrix b, ComplexMatrix a, unsigned int col);
 
-int CroutBackSolveComplexMatrix PROTO ((   /* solve Ax=b and store x in b  */
-   ComplexMatrix,   	   		   /* Crout factored LHS matrix	   */
-   ComplexMatrix   	   		   /* RHS (and dest) vector	   */
-));
+/*!
+  \brief Crout factorize A and store in A
+  \param A source and destination matrix
+*/
+int CroutFactorComplexMatrix (ComplexMatrix A);
+
+/*!
+  \brief  solve Ax=b and store x in b
+  \param A Crout factored LHS matrix
+  \param b RHS (and dest) vector
+*/
+int CroutBackSolveComplexMatrix (ComplexMatrix A, ComplexMatrix b);
 
         /*
          * prototypes for the PROPERTY routines
          */
 
-int IsSymmetricComplexMatrix PROTO ((
-   ComplexMatrix
-));
+/*!
+  \brief Aij == Aji ? 1 : 0
+  \param a matrix to check for symmetry
+*/
+int IsSymmetricComplexMatrix (ComplexMatrix a);
 
 # endif	/* _CMATRIX_H */
 

@@ -26,13 +26,12 @@
 
 # ifndef _CONTROL_H
 # define _CONTROL_H
-# include "proto.h"			/* function declarations */
 
-extern int fail_op PROTO ((void));
-extern int gen_op  PROTO ((void));
-extern int halt_op PROTO ((void));
-extern int jmp_op  PROTO ((void));
-extern int jnz_op  PROTO ((void));
-extern int jz_op   PROTO ((void));
+int fail_op (void);
+int gen_op  (void);
+int halt_op (void);
+int jmp_op  (void);
+int jnz_op  (void);
+int jz_op   (void);
 
 # endif /* _CONTROL_H */

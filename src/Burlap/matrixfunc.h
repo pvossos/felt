@@ -26,21 +26,20 @@
 
 # ifndef _MATRIXFUNC_H
 # define _MATRIXFUNC_H
-# include "proto.h"			/* function declarations */
 
-extern int chol_func	PROTO ((int));
-extern int cols_func	PROTO ((int));
-extern int compact_func	PROTO ((int));
-extern int det_func	PROTO ((int));
-extern int eig_func	PROTO ((int));
-extern int eye_func	PROTO ((int));
-extern int inv_func	PROTO ((int));
-extern int lu_func	PROTO ((int));
-extern int norm_func	PROTO ((int));
-extern int ones_func	PROTO ((int));
-extern int qr_func	PROTO ((int));
-extern int rand_func	PROTO ((int));
-extern int rows_func	PROTO ((int));
-extern int zeros_func	PROTO ((int));
+int chol_func	(int n);
+int cols_func	(int n);
+int compact_func	(int n);
+int det_func	(int n);
+int eig_func	(int n);
+int eye_func	(int n);
+int inv_func	(int n);
+int lu_func	(int n);
+int norm_func	(int n);
+int ones_func	(int n);
+int qr_func	(int n);
+int rand_func	(int n);
+int rows_func	(int n);
+int zeros_func	(int n);
 
 # endif /* _MATRIXFUNC_H */

@@ -26,9 +26,9 @@
 
 # ifndef _WRITE_H
 # define _WRITE_H
-# include "proto.h"			/* function declarations */
 
-extern int write_func  PROTO ((int));
-extern int writes_func PROTO ((int));
+int write_func (int n);
+
+int writes_func (int n);
 
 # endif /* _WRITE_H */

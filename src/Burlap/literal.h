@@ -26,13 +26,12 @@
 
 # ifndef _LITERAL_H
 # define _LITERAL_H
-# include "proto.h"			/* function declarations */
 
-extern int arg_op   PROTO ((void));
-extern int dbl_op   PROTO ((void));
-extern int glbl_op  PROTO ((void));
-extern int local_op PROTO ((void));
-extern int null_op  PROTO ((void));
-extern int str_op   PROTO ((void));
+int arg_op   (void);
+int dbl_op   (void);
+int glbl_op  (void);
+int local_op (void);
+int null_op  (void);
+int str_op   (void);
 
 # endif /* _LITERAL_H */

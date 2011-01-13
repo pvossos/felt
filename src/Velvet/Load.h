@@ -39,44 +39,14 @@ typedef struct {
 } LoadDialogInfo;
 
 
-extern LoadDialog LoadDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */,
-    XtCallbackProc		/* callback    */,
-    XtPointer			/* client_data */
-# endif
-);
+LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure);
 
+void LoadDialogPopup (LoadDialog loadd);
 
-extern void LoadDialogPopup (
-# if NeedFunctionPrototypes
-    LoadDialog			/* load_dialog */
-# endif
-);
+void LoadDialogUpdate (LoadDialog loadd, Tree tree);
 
+Distributed LoadDialogActive (LoadDialog loadd);
 
-extern void LoadDialogUpdate (
-# if NeedFunctionPrototypes
-    LoadDialog			/* load_dialog	*/,
-    Tree			/* load_tree	*/
-# endif
-);
-
-
-extern Distributed LoadDialogActive (
-# if NeedFunctionPrototypes
-    LoadDialog			/* load_dialog */
-# endif
-);
-
-
-extern void LoadDialogDisplay (
-# if NeedFunctionPrototypes
-    LoadDialog			/* load_dialog */,
-    Distributed			/* load	       */
-# endif
-);
+void LoadDialogDisplay (LoadDialog loadd, Distributed load);
 
 # endif /* _Load_h */

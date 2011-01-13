@@ -25,11 +25,11 @@
  ************************************************************************/
 
 # include <ctype.h>
+# include <stdlib.h>
 # include "trap.h"
 # include "coerce.h"
 # include "execute.h"
 # include "allocate.h"
-# include "our-stdlib.h"
 
 # define NumStatic 16
 
@@ -54,9 +54,7 @@ static descriptor array [NumStatic];
  *		members.						*
  ************************************************************************/
 
-static int strict (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int strict (descriptor *dest, descriptor **src)
 {
     /* This data is never recycled. */
 
@@ -120,9 +118,7 @@ static int strict (dest, src)
  *		the element type of the array is numeric.		*
  ************************************************************************/
 
-descriptor *CoerceData (d, type)
-    descriptor *d;
-    int		type;
+descriptor *CoerceData (descriptor *d, int type)
 {
     Matrix	a;
     Array	arr;
@@ -467,9 +463,7 @@ descriptor *CoerceData (d, type)
  * Description:	Coerces the data of a descriptor to an array.		*
  ************************************************************************/
 
-descriptor *CoerceToArray (d, type)
-    descriptor *d;
-    int		type;
+descriptor *CoerceToArray (descriptor *d, int type)
 {
     Matrix	a;
     char       *ptr;

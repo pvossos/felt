@@ -26,17 +26,13 @@
 
 # include <math.h>
 # include <time.h>
+# include <string.h>
+# include <stdlib.h>
 # include "debug.h"
 # include "error.h"
 # include "coerce.h"
 # include "execute.h"
 # include "matrixfunc.h"
-# include "our-stdlib.h"
-
-# ifdef DOS
-# define srand48 srand
-# define drand48 rand
-# endif
 
 /************************************************************************
  * Function:	chol_func						*
@@ -52,8 +48,7 @@
  *		double value.						*
  ************************************************************************/
 
-int chol_func (n)
-    int n;
+int chol_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -130,8 +125,7 @@ int chol_func (n)
  *		double value.						*
  ************************************************************************/
 
-int cols_func (n)
-    int n;
+int cols_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -195,8 +189,7 @@ int cols_func (n)
  *		double value.						*
  ************************************************************************/
 
-int compact_func (n)
-    int n;
+int compact_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -274,8 +267,7 @@ int compact_func (n)
  *		double value.						*
  ************************************************************************/
 
-int det_func (n)
-    int n;
+int det_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -362,8 +354,7 @@ int det_func (n)
  *		to a double value.					*
  ************************************************************************/
 
-int eig_func (n)
-    int n;
+int eig_func (int n)
 {
     Matrix	a;
     Matrix	l;
@@ -463,8 +454,7 @@ int eig_func (n)
  *		the result will be a double scalar.			*
  ************************************************************************/
 
-int eye_func (n)
-    int n;
+int eye_func (int n)
 {
     Matrix	a;
     double	val1;
@@ -551,8 +541,7 @@ int eye_func (n)
  *		double value.						*
  ************************************************************************/
 
-int inv_func (n)
-    int n;
+int inv_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -645,8 +634,7 @@ int inv_func (n)
  *		to a double value.					*
  ************************************************************************/
 
-int lu_func (n)
-    int n;
+int lu_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -793,8 +781,7 @@ int lu_func (n)
  *		2-norm of the vector.					*
  ************************************************************************/
 
-int norm_func (n)
-    int n;
+int norm_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -946,8 +933,7 @@ int norm_func (n)
  *		the result will be a double scalar.			*
  ************************************************************************/
 
-int ones_func (n)
-    int n;
+int ones_func (int n)
 {
     Matrix	a;
     double	val1;
@@ -1037,8 +1023,7 @@ int ones_func (n)
  *		to a double value.					*
  ************************************************************************/
 
-int qr_func (n)
-    int n;
+int qr_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -1173,8 +1158,7 @@ int qr_func (n)
  *		single scalar then the result will be a double scalar.	*
  ************************************************************************/
 
-int rand_func (n)
-    int n;
+int rand_func (int n)
 {
     Matrix	a;
     double	val1;
@@ -1311,8 +1295,7 @@ int rand_func (n)
  *		double value.						*
  ************************************************************************/
 
-int rows_func (n)
-    int n;
+int rows_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -1381,8 +1364,7 @@ int rows_func (n)
  *		the result will be a double scalar.			*
  ************************************************************************/
 
-int zeros_func (n)
-    int n;
+int zeros_func (int n)
 {
     Matrix	a;
     double	val1;

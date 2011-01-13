@@ -26,10 +26,9 @@
 
 # ifndef _VECTOR_H
 # define _VECTOR_H
-# include "proto.h"			/* function declarations */
 
-extern int mtx_op   PROTO ((void));
-extern int range_op PROTO ((void));
-extern int row_op   PROTO ((void));
+int mtx_op (void);
+int range_op (void);
+int row_op   (void);
 
 # endif /* _VECTOR_H */

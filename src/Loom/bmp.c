@@ -26,9 +26,10 @@
  *****************************************************************************/
 
 # include <stdio.h>
+# include "bmp.h"
 # include "error.h"
 
-static int architecture ( )
+static int architecture (void)
 {
    int  x = 1;
 
@@ -38,8 +39,7 @@ static int architecture ( )
       return 1;
 }
 
-static short SwapShort (x)
-   short        x;
+static short SwapShort (short int x)
 {
    char         *ptr;
    char         buffer [2];
@@ -53,8 +53,7 @@ static short SwapShort (x)
    return *((short *) ptr);
 }
 
-static long SwapLong (x)
-   int          x;
+static long SwapLong (int x)
 {
    char         *ptr;
    char         buffer [4];
@@ -70,14 +69,8 @@ static long SwapLong (x)
    return *((int *) ptr);
 }
 
-void ImageDataToBMP(out, image, rows, cols, red, green, blue)
-   char	 *out;
-   unsigned char **image;
-   int	  rows;
-   int	  cols;
-   unsigned char  *red;
-   unsigned char  *green;
-   unsigned char  *blue;
+void ImageDataToBMP(char *out, unsigned char **image, int rows, int cols,
+                    unsigned char *red, unsigned char *green, unsigned char *blue)
 {
    FILE		*fp;
    int 		i;
@@ -86,11 +79,7 @@ void ImageDataToBMP(out, image, rows, cols, red, green, blue)
    int		nbytes;
    int		a;
 
-# ifndef DOS
    fp = fopen(out, "w");
-# else
-   fp = fopen(out, "wb");
-# endif
 
    if (fp == NULL)
       Fatal ("temporary file error -> bitmap");

@@ -30,9 +30,6 @@
 # include "symbol.h"
 # include "allocate.h"
 
-
-static int st_hash PROTO ((char *));
-
 /************************************************************************
  * Function:	st_hash							*
  *									*
@@ -40,8 +37,7 @@ static int st_hash PROTO ((char *));
  *		is from p. 436 of Aho, Sehti, and Ullman.		*
  ************************************************************************/
 
-static int st_hash (s)
-    char *s;
+static int st_hash (char *s)
 {
     unsigned g;
     unsigned h;
@@ -63,9 +59,7 @@ static int st_hash (s)
  *		returned.						*
  ************************************************************************/
 
-ste *st_lookup (table, name)
-    st   *table;
-    char *name;
+ste *st_lookup (st *table, char *name)
 {
     ste *head;
     ste *ptr;
@@ -89,10 +83,7 @@ ste *st_lookup (table, name)
  *		name, and then returned.				*
  ************************************************************************/
 
-ste *st_insert (table, name, op)
-    st    *table;
-    char  *name;
-    Opcode op;
+ste *st_insert (st *table, char *name, Opcode op)
 {
     ste *head;
     ste *ptr;
@@ -123,9 +114,7 @@ ste *st_insert (table, name, op)
  *		returned.						*
  ************************************************************************/
 
-ste *st_index (table, idx)
-    st *table;
-    int idx;
+ste *st_index (st *table, int idx)
 {
     int  i;
     ste *ptr;
@@ -149,8 +138,7 @@ ste *st_index (table, idx)
  * Description:	Returns an array of names of symbol table entries.	*
  ************************************************************************/
 
-char **st_names (table)
-    st *table;
+char **st_names (st *table)
 {
     int    i;
     ste   *ptr;
@@ -176,8 +164,7 @@ char **st_names (table)
  * Description:	Initializes a symbol table to have no symbols.		*
  ************************************************************************/
 
-void st_init (table)
-    st *table;
+void st_init (st *table)
 {
     int i;
 
@@ -195,8 +182,7 @@ void st_init (table)
  * Description:	Deletes all symbols from a symbol table.		*
  ************************************************************************/
 
-void st_fini (table)
-    st *table;
+void st_fini (st *table)
 {
     int  i;
     ste *head;

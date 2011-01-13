@@ -26,31 +26,30 @@
 
 # ifndef _FEFUNC_H
 # define _FEFUNC_H
-# include "proto.h"			/* function declarations */
 
-extern int area_func   PROTO ((int));
-extern int felt_func   PROTO ((int));
-extern int length_func PROTO ((int));
-extern int volume_func PROTO ((int));
+int area_func   (int n);
+int felt_func   (int n);
+int length_func (int n);
+int volume_func (int n);
 
-extern int add_definition_func	  PROTO ((int));
-extern int remove_definition_func PROTO ((int));
+int add_definition_func	  (int n);
+int remove_definition_func (int n);
 
-extern int assemble_func	     PROTO ((int));
-extern int clear_nodes_func	     PROTO ((int));
-extern int compute_modes_func	     PROTO ((int));
-extern int compute_stresses_func     PROTO ((int));
-extern int construct_forces_func     PROTO ((int));
-extern int find_dofs_func	     PROTO ((int));
-extern int global_dof_func	     PROTO ((int));
-extern int integrate_hyperbolic_func PROTO ((int));
-extern int integrate_parabolic_func  PROTO ((int));
-extern int local_dof_func	     PROTO ((int));
-extern int remove_constrained_func   PROTO ((int));
-extern int renumber_nodes_func	     PROTO ((int));
-extern int restore_numbers_func	     PROTO ((int));
-extern int set_up_func		     PROTO ((int));
-extern int solve_displacements_func  PROTO ((int));
-extern int zero_constrained_func     PROTO ((int));
+int assemble_func	     (int n);
+int clear_nodes_func	     (int n);
+int compute_modes_func	     (int n);
+int compute_stresses_func     (int n);
+int construct_forces_func     (int n);
+int find_dofs_func	     (int n);
+int global_dof_func	     (int n);
+int integrate_hyperbolic_func (int n);
+int integrate_parabolic_func  (int n);
+int local_dof_func	     (int n);
+int remove_constrained_func   (int n);
+int renumber_nodes_func	     (int n);
+int restore_numbers_func	     (int n);
+int set_up_func		     (int n);
+int solve_displacements_func  (int n);
+int zero_constrained_func     (int n);
 
 # endif /* _FEFUNC_H */

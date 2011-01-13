@@ -96,9 +96,8 @@ static Element prev_element;
  * Description:	Format a constraint into a proper string.		*
  ************************************************************************/
 
-static char *ConstraintSymbol (constraint, dof)
-    Constraint constraint;
-    DOF	       dof;
+static char*
+ConstraintSymbol(Constraint constraint, DOF dof)
 {
     static char buffer [32];
 
@@ -123,8 +122,8 @@ static char *ConstraintSymbol (constraint, dof)
  * Description:	Quotes a string if necessary.				*
  ************************************************************************/
 
-static char *Quote (s)
-    char *s;
+static char*
+Quote(char *s)
 {
     char	c;
     char       *ptr;
@@ -150,8 +149,8 @@ static char *Quote (s)
  * Description:	Writes a node to the specified stream.			*
  ************************************************************************/
 
-static void WriteNode (node)
-    Node node;
+static void
+WriteNode(Node node)
 {
     fprintf (fp, "%-2u x=%g ", node -> number, node -> x);
     fprintf (fp, "y=%g z=%g", node -> y, node -> z);
@@ -175,8 +174,8 @@ static void WriteNode (node)
  * Description:	Writes an element to the specified stream.		*
  ************************************************************************/
 
-static void WriteElement (element)
-    Element element;
+static void
+WriteElement(Element element)
 {
     unsigned i;
     unsigned numnodes;
@@ -213,8 +212,8 @@ static void WriteElement (element)
  *		cleared.						*
  ************************************************************************/
 
-static int WriteMaterial (item)
-    Item item;
+static int
+WriteMaterial(Item item)
 {
     Material material;
 
@@ -257,8 +256,8 @@ static int WriteMaterial (item)
  *		then cleared.						*
  ************************************************************************/
 
-static int WriteLoad (item)
-    Item item;
+static int
+WriteLoad(Item item)
 {
     unsigned	 i;
     Distributed  load;
@@ -300,8 +299,8 @@ static int WriteLoad (item)
  *		cleared.						*
  ************************************************************************/
 
-static int WriteConstraint (item)
-    Item item;
+static int
+WriteConstraint(Item item)
 {
     Constraint constraint;
 
@@ -380,8 +379,8 @@ static int WriteConstraint (item)
  *		cleared.						*
  ************************************************************************/
 
-static int WriteForce (item)
-    Item item;
+static int
+WriteForce(Item item)
 {
     Force force;
 
@@ -468,8 +467,8 @@ static int WriteForce (item)
  * Description:	Writes out a load case definition			*
  ************************************************************************/
 
-static int WriteLoadCase (item)
-   Item         item;
+static int
+WriteLoadCase(Item item)
 {
    LoadCase	lc;
    unsigned     i;
@@ -505,7 +504,8 @@ static int WriteLoadCase (item)
  * Description:	Writes out the analysis parameters section.		*
  ************************************************************************/
 
-static void WriteAnalysisParameters ( )
+static void
+WriteAnalysisParameters(void)
 {
     unsigned	 i;
     static char *dof_symbols [ ] = {"", "Tx", "Ty", "Tz", "Rx", "Ry", "Rz"};
@@ -571,7 +571,8 @@ static void WriteAnalysisParameters ( )
  * Description:	Writes the canvas configuration section if necessary.	*
  ************************************************************************/
 
-static void WriteCanvasConfiguration ( )
+static void
+WriteCanvasConfiguration(void)
 {
     InitFormat   (fp);
     StartSection (fp);
@@ -620,7 +621,8 @@ static void WriteCanvasConfiguration ( )
  * Description:	Writes the figure list section.				*
  ************************************************************************/
 
-static void WriteFigureList ( )
+static void
+WriteFigureList(void)
 {
     unsigned i;
     unsigned j;
@@ -697,8 +699,8 @@ static void WriteFigureList ( )
  *		standard output.					*
  ************************************************************************/
 
-static int WriteFile (flag)
-    char *flag;
+static int
+WriteFile(char *flag)
 {
     int		 any_forces;
     int		 any_loads;
@@ -846,8 +848,8 @@ static int WriteFile (flag)
     return 0;
 }
 
-static int OpenFile (filename)
-    char *filename;
+static int
+OpenFile(char *filename)
 {
     if (strcmp (filename, "-")) {
 	if (!(fp = fopen (filename, "w"))) {
@@ -860,7 +862,8 @@ static int OpenFile (filename)
     return 0;
 }
 
-static void CloseFile ( )
+static void
+CloseFile(void)
 {
     if (fp != stdout)
 	fclose (fp);
@@ -868,15 +871,8 @@ static void CloseFile ( )
     return;
 }
 
-/************************************************************************
- * Function:	WriteFeltFile						*
- *									*
- * Description:	Writes a felt file -- only referenced objects will be	*
- *		written.						*
- ************************************************************************/
-
-int WriteFeltFile (filename)
-    char *filename;
+int
+WriteFeltFile(char *filename)
 {
     if (OpenFile (filename))
        return 1;
@@ -889,16 +885,8 @@ int WriteFeltFile (filename)
     return 0;
 }
 
-
-/************************************************************************
- * Function:	DumpFeltFile						*
- *									*
- * Description:	Dumps a felt file -- referenced and unreferenced	*
- *		objects will be written.				*
- ************************************************************************/
-
-int DumpFeltFile (filename)
-    char *filename;
+int
+DumpFeltFile(char *filename)
 {
     if (OpenFile (filename))
        return 1;
@@ -911,15 +899,8 @@ int DumpFeltFile (filename)
     return 0;
 }
 
-/************************************************************************
- * Function:	fWriteFeltFile						*
- *									*
- * Description:	Writes a felt file -- only referenced objects will be	*
- *		written.						*
- ************************************************************************/
-
-int fWriteFeltFile (stream)
-    FILE *stream;
+int
+fWriteFeltFile(FILE *stream)
 {
     fp = stream;
 
@@ -929,16 +910,8 @@ int fWriteFeltFile (stream)
     return 0;
 }
 
-
-/************************************************************************
- * Function:	fDumpFeltFile						*
- *									*
- * Description:	Dumps a felt file -- referenced and unreferenced	*
- *		objects will be written.				*
- ************************************************************************/
-
-int fDumpFeltFile (stream)
-    FILE *stream;
+int 
+fDumpFeltFile(FILE *stream)
 {
     fp = stream;
 

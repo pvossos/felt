@@ -27,14 +27,13 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "help.h"
 # include "debug.h"
 # include "coerce.h"
 # include "execute.h"
 # include "helptab.h"
 # include "functab.h"
-# include "our-stdlib.h"
-
 
 static char *copyright = "\
 \n\
@@ -58,9 +57,6 @@ static char *copyright = "\
 ";
 
 
-static void list_topics PROTO ((void));
-
-
 /************************************************************************
  * File:	list_topics						*
  *									*
@@ -69,7 +65,7 @@ static void list_topics PROTO ((void));
  *		stylized format.					*
  ************************************************************************/
 
-static void list_topics ( )
+static void list_topics (void)
 {
     int   i;
     int   j;
@@ -85,15 +81,11 @@ static void list_topics ( )
     across = 0;
     last_type = -1;
 
-# ifdef DOS
-    stream = stdout;
-# else
     if (!(pager = getenv ("PAGER")))
 	pager = "more";
 
     if (!(stream = popen (pager, "w")))
 	stream = stdout;
-# endif
 
     fprintf (stream, "\nHelp is available on the following topics:");
 
@@ -115,10 +107,8 @@ static void list_topics ( )
     fprintf (stream, "\n");
     fprintf (stream, "\n");
 
-# ifndef DOS
     if (stream != stdout)
 	pclose (stream);
-# endif
 }
 
 
@@ -137,8 +127,7 @@ static void list_topics ( )
  *		string value.						*
  ************************************************************************/
 
-int help_func (n)
-    int n;
+int help_func (int n)
 {
     char       *string;
     descriptor *arg;

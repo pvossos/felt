@@ -40,21 +40,8 @@
 # include "error.h"
 # include "problem.h"
 
-/****************************************************************************
-*
-* Function:	ConstructDynamic
-*
-* Description: 	See the description of ConstructStiffness () in fe.c.
-*		This routine does the same thing except it includes
-*		code to assemble the global mass matrix in addition
-*		to the global stiffness matrix.  Having two separate
-*		routines is basically a performance consideration 
-*		(i.e., why do all the mass checks in the static case?)
-*
-****************************************************************************/
-
-int ConstructDynamic (Kr, Mr, Cr)
-   Vector	*Kr, *Mr, *Cr;
+int
+ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 {
    Node		*node;
    Element	*element;
@@ -299,17 +286,8 @@ int ConstructDynamic (Kr, Mr, Cr)
    return 0;
 }
 
-/****************************************************************************
- *
- * Function:	AssembleTransientForce
- *
- * Description:	 
- *
- ****************************************************************************/
-
-void AssembleTransientForce (t, F)
-   double	t;
-   Vector	F;
+void
+AssembleTransientForce(double t, Vector F)
 {
    Node		*node;
    unsigned	numnodes,
@@ -356,29 +334,8 @@ void AssembleTransientForce (t, F)
    return;
 }
 
-/*****************************************************************************
- *
- * Function:	IntegrateHyperbolicDE
- *
- * Description: Solves the discrete equation of motion, Ma + Cv + Kd = F
- *		for the length of a model using Newmark's method
- *		with the Hilbert-Hughes-Taylor alpha correction for
- *		improved accuracy with numerical damping.
- *
- *		The first important numerical thing that we do is
- *		to solve for the initial acceleration vector:
- *		Ma(0) = F(0) - Kd(0) - Cv(0). From there we can begin
- *		the iterations - the iterations proceed by solving
- *		for d(i+1) implicity and then using this
- *		information with Newmark's update equations to get
- *		a(i+1) and v(i+1)
- *
- *****************************************************************************/
-
-Matrix IntegrateHyperbolicDE (K, M, C)
-   Vector	K;
-   Vector	M;
-   Vector	C;
+Matrix
+IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 {
    Node		*node;
    unsigned	numnodes;
@@ -610,23 +567,8 @@ Matrix IntegrateHyperbolicDE (K, M, C)
    return dtable;
 }
 
-/*****************************************************************************
- *
- * Function:	IntegrateParabolicDE
- *
- * Description: Solves the discrete parabolic differential equation 
- *		Mv + Kd = F for the length of a model using a generalized 
- *		trapezoidal method.
- *
- *		The implementation we use here does not explicitly make
- *		use of the v vector because it is slightly more efficient
- *		to factor it out from the start.
- *
- *****************************************************************************/
-
-Matrix IntegrateParabolicDE (K, M)
-   Vector	K;
-   Vector	M;
+Matrix
+IntegrateParabolicDE(Vector K, Vector M)
 {
    Node		*node;
    unsigned	numnodes;
@@ -792,17 +734,8 @@ Matrix IntegrateParabolicDE (K, M)
    return dtable;
 }
 
-/****************************************************************************
- *
- * Function:	BuildHyperbolicIC
- *
- * Description: Fills in the displacement and velocity vectors at time
- *		t = 0 given the nodal constraint conditions.
- *		
- ****************************************************************************/
- 
-int BuildHyperbolicIC (d, v, a)
-   Vector	d, v, a;
+int
+BuildHyperbolicIC(Vector d, Vector v, Vector a)
 {
    Node		*node;
    unsigned	numnodes;
@@ -852,17 +785,8 @@ int BuildHyperbolicIC (d, v, a)
    return build_a0;
 }
 
-/****************************************************************************
- *
- * Function:	BuildParabolicIC
- *
- * Description: Fills in the displacement vector at time
- *		t = 0 given the nodal constraint initial conditions.
- *		
- ****************************************************************************/
-
-void BuildParabolicIC (d)
-   Vector	d;
+void
+BuildParabolicIC(Vector d)
 {
    unsigned	*dofs;
    Node		*node;
@@ -889,7 +813,8 @@ void BuildParabolicIC (d)
    return;
 }
 
-int *BuildConstraintMask ( )
+int*
+BuildConstraintMask(void)
 {
    Node		*node;
    unsigned	numnodes;
@@ -925,21 +850,8 @@ int *BuildConstraintMask ( )
    return mask;
 }
 
-/****************************************************************************
- *
- * Function:	ResolveBC
- *
- * Description: Basically like ZeroConstrainedDOF () for the
- *		static case, but here we only make adjustments for 	
- *		displacement boundary conditions (i.e., we don't bother
- *		with zeroing rows and columns of the stiffness matrix).
- *		
- ****************************************************************************/
-
-void ResolveBC (t, K, F)
-   double	t;
-   Vector	K;
-   Vector	F; 
+void
+ResolveBC(double t, Vector K, Vector F)
 {
    Node		*node;
    unsigned	*dofs;

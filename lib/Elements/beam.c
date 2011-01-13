@@ -31,26 +31,23 @@
 # include "misc.h"
 
 
-int beamEltSetup ( );
-int beamEltStress ( );
+static int beamEltSetup (Element element, char mass_mode, int tangent);
+static int beamEltStress (Element element);
 
 struct definition beamDefinition = {
     "beam", beamEltSetup, beamEltStress, 
     Linear, 2, 2, 3, 3, {0, 1, 2, 6, 0, 0, 0}, 1
 };
 
-Matrix BeamLocalK           ( );
-Matrix BeamTransformMatrix  ( );
-Vector BeamEquivNodalForces ( );
-Matrix BeamConsistentMassMatrix ( );
-Matrix BeamLumpedMassMatrix ( );
+static Matrix BeamLocalK           (Element element);
+static Matrix BeamTransformMatrix  (Element element);
+static Vector BeamEquivNodalForces (Element element, int *err_count);
+static Matrix BeamConsistentMassMatrix (Element element);
+static Matrix BeamLumpedMassMatrix (Element element);
+static void   ResolveEndForces	    (Vector equiv, double wa, double wb, Direction direction, double L);
 
-static void   ResolveEndForces	    ( );
-
-int beamEltSetup (element, mass_mode, tangent)
-   Element 	element;
-   char		mass_mode;
-   int		tangent;
+static int
+beamEltSetup(Element element, char mass_mode, int tangent)
 {
    Matrix		T,
 			me,
@@ -134,8 +131,8 @@ int beamEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int beamEltStress (element)
-   Element	element;
+static int
+beamEltStress(Element element)
 {
    unsigned		i;
    int			count;
@@ -215,8 +212,8 @@ int beamEltStress (element)
 	 * These are the essentially private functions
 	 */
 
-Matrix BeamLocalK (element)
-   Element	element;
+static Matrix
+BeamLocalK(Element element)
 {
    double		L,
 			L3,
@@ -264,8 +261,8 @@ Matrix BeamLocalK (element)
    return ke;
 }
 
-Matrix BeamLumpedMassMatrix (element)
-   Element	element;
+static Matrix
+BeamLumpedMassMatrix(Element element)
 {
    static Matrix	me = NullMatrix;
    double		L;
@@ -291,8 +288,8 @@ Matrix BeamLumpedMassMatrix (element)
    return me;
 } 
 
-Matrix BeamConsistentMassMatrix (element)
-   Element	element;
+static Matrix
+BeamConsistentMassMatrix(Element element)
 {
    static Matrix	me = NullMatrix;
    double		L;
@@ -327,8 +324,8 @@ Matrix BeamConsistentMassMatrix (element)
    return me;
 }
 
-Matrix BeamTransformMatrix (element)
-   Element	element;
+static Matrix
+BeamTransformMatrix(Element element)
 {
    double		cx,cy,
 			L;
@@ -364,9 +361,8 @@ Matrix BeamTransformMatrix (element)
    return T;
 }
 
-Vector BeamEquivNodalForces (element, err_count)
-   Element	element;
-   int		*err_count;
+static Vector
+BeamEquivNodalForces(Element element, int *err_count)
 {
    double		L;
    double		wa,wb;
@@ -518,12 +514,8 @@ Vector BeamEquivNodalForces (element, err_count)
    return result; 
 }
 
-static void ResolveEndForces (equiv, wa, wb, direction, L)
-   Vector	equiv;
-   double	wa;
-   double	wb;
-   Direction	direction;
-   double	L;
+static void
+ResolveEndForces(Vector equiv, double wa, double wb, Direction direction, double L)
 {
    double	force1, force2;
    double	moment1, moment2;

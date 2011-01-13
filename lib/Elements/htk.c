@@ -39,8 +39,8 @@
 # include "error.h"
 # include "misc.h"
 
-int htkEltSetup ( );
-int htkEltStress ( );
+static int htkEltSetup (Element element, char mass_mode, int tangent);
+static int htkEltStress (Element element);
 
 struct definition htkDefinition = {
    "htk", htkEltSetup, htkEltStress, 
@@ -50,17 +50,17 @@ struct definition htkDefinition = {
 # define TRIANGLE	3
 # define QUADRILATERAL	4
 
-static void     OnePointLocalShapeFunctions  ( );
-static void     TwoPointLocalShapeFunctions  ( );
-static void	HTKLumpedMassMatrix ( );
-static Vector   GlobalShapeFunctions ( );
-static void	AddContribution ( );
-static void 	MultiplyDBd ( );
-static int	EquivNodalForces ( );
-static Matrix   FormBsMatrix ( );
-static Matrix   FormBbMatrix ( );
-static Matrix   FormDsMatrix  ( );
-static Matrix   FormDbMatrix  ( );
+static void     OnePointLocalShapeFunctions  (Element element, Matrix N, Matrix dNdxi, Matrix dNde, unsigned int shape);
+static void     TwoPointLocalShapeFunctions  (Element element, Matrix N, Matrix dNdxi, Matrix dNde, unsigned int shape);
+static void	HTKLumpedMassMatrix (Element element, unsigned int shape);
+static Vector   GlobalShapeFunctions (Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, unsigned int ninteg, unsigned int shape);
+static void	AddContribution (Matrix K, Matrix B, Matrix D, double jac, unsigned int shape);
+static void 	MultiplyDBd (Matrix D, Matrix B, Vector d, Vector res);
+static int	EquivNodalForces (Element e, Matrix N, unsigned int shape, unsigned int ninteg);
+static Matrix   FormBsMatrix (Element element, Matrix N, Matrix dNdx, Matrix dNdy, unsigned int numnodes, unsigned int point);
+static Matrix   FormBbMatrix (Element element, Matrix dNdx, Matrix dNdy, unsigned int numnodes, unsigned int point);
+static Matrix   FormDsMatrix  (Element element);
+static Matrix   FormDbMatrix  (Element element);
 
 	/*
 	 * these are variables that we use for both Setup and Stress
@@ -80,10 +80,8 @@ static Matrix	dNdxi2;		/* shape func derivs in local coord  */
 static Matrix	dNdx2;		/* shape func derivs in global coord */
 static Matrix 	dNdy2;		/* shape func derivs in global coord */
 
-int htkEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+htkEltSetup(Element element, char mass_mode, int tangent)
 {
    unsigned		i;
    Matrix		Ds, Db;
@@ -224,12 +222,8 @@ int htkEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-static void AddContribution (K, B, D, jac, shape)
-   Matrix	K;
-   Matrix	D;
-   Matrix	B;
-   double	jac;
-   unsigned	shape;
+static void
+AddContribution(Matrix K, Matrix B, Matrix D, double jac, unsigned int shape)
 {
    double	temp [5];
    double	result;
@@ -252,14 +246,8 @@ static void AddContribution (K, B, D, jac, shape)
    }
 }
 
-static Vector GlobalShapeFunctions (element,dNdxi,dNde,dNdx,dNdy,ninteg,shape)
-   Element	element;
-   Matrix	dNdxi;
-   Matrix	dNde;
-   Matrix	dNdx;
-   Matrix	dNdy;
-   unsigned	shape;
-   unsigned	ninteg;
+static Vector
+GlobalShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, unsigned int ninteg, unsigned int shape)
 {
    unsigned		i,j;
    static Vector	jac = NullMatrix;
@@ -299,12 +287,8 @@ static Vector GlobalShapeFunctions (element,dNdxi,dNde,dNdx,dNdy,ninteg,shape)
    return jac;
 }
 
-static void TwoPointLocalShapeFunctions (element, N, dNdxi, dNde, shape)
-   Element	element;
-   Matrix	N;
-   Matrix	dNdxi;
-   Matrix	dNde;
-   unsigned	shape;
+static void
+TwoPointLocalShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, unsigned int shape)
 {
    static double 	points [] = {-0.57735026918962, 0.57735026918962};
    unsigned		i, j;
@@ -346,12 +330,8 @@ static void TwoPointLocalShapeFunctions (element, N, dNdxi, dNde, shape)
    }
 }
 
-static void OnePointLocalShapeFunctions (element, N, dNdxi, dNde, shape)
-   Element	element;
-   Matrix	N;
-   Matrix	dNdxi;
-   Matrix	dNde;
-   unsigned	shape;
+static void
+OnePointLocalShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, unsigned int shape)
 {
    static double 	points [] = {0.0};
    unsigned		i, j;
@@ -393,13 +373,8 @@ static void OnePointLocalShapeFunctions (element, N, dNdxi, dNde, shape)
    }
 }
 
-static Matrix FormBsMatrix (element, N, dNdx, dNdy, numnodes, point)
-   Element	element;
-   Matrix	N;
-   Matrix	dNdx;
-   Matrix	dNdy;
-   unsigned	numnodes;
-   unsigned	point;
+static Matrix
+FormBsMatrix(Element element, Matrix N, Matrix dNdx, Matrix dNdy, unsigned int numnodes, unsigned int point)
 {
    unsigned		i;
    static Matrix 	B = NullMatrix;
@@ -421,12 +396,8 @@ static Matrix FormBsMatrix (element, N, dNdx, dNdy, numnodes, point)
    return B;
 }
     
-static Matrix FormBbMatrix (element, dNdx, dNdy, numnodes, point)
-   Element	element;
-   Matrix	dNdx;
-   Matrix	dNdy;
-   unsigned	numnodes;
-   unsigned	point;
+static Matrix
+FormBbMatrix(Element element, Matrix dNdx, Matrix dNdy, unsigned int numnodes, unsigned int point)
 {
    unsigned		i;
    static Matrix 	B = NullMatrix;
@@ -447,8 +418,8 @@ static Matrix FormBbMatrix (element, dNdx, dNdy, numnodes, point)
    return B;
 }
 
-static Matrix FormDsMatrix (element)
-   Element	element;
+static Matrix
+FormDsMatrix(Element element)
 {
    static Material	prev_material = NULL;
    static Matrix	D = NullMatrix;
@@ -474,8 +445,8 @@ static Matrix FormDsMatrix (element)
    return D;
 }
 
-static Matrix FormDbMatrix (element)
-   Element	element;
+static Matrix
+FormDbMatrix(Element element)
 {
    static Material	prev_material = NULL;
    static Matrix	D = NullMatrix;
@@ -509,8 +480,8 @@ static Matrix FormDbMatrix (element)
    return D;
 }
 
-int htkEltStress (element)
-   Element	element;
+static int 
+htkEltStress(Element element)
 {
    unsigned		i;
    Matrix		Ds, Db;
@@ -596,11 +567,8 @@ int htkEltStress (element)
    return 0;
 }
 
-static void MultiplyDBd (D, B, d, res)
-   Matrix	D;
-   Matrix	B;
-   Vector	d;
-   Vector	res;
+static void
+MultiplyDBd(Matrix D, Matrix B, Vector d, Vector res)
 {
    unsigned	i, j;
    double	temp [5];
@@ -617,9 +585,8 @@ static void MultiplyDBd (D, B, d, res)
    }
 }
 
-static void HTKLumpedMassMatrix (element, shape)
-   Element	element;
-   unsigned	shape;
+static void
+HTKLumpedMassMatrix(Element element, unsigned int shape)
 {
    double	factor;
    double	area;
@@ -636,11 +603,8 @@ static void HTKLumpedMassMatrix (element, shape)
    return;
 }
 
-static int EquivNodalForces (e, N, shape, ninteg)
-   Element	e;
-   Matrix	N;
-   unsigned	shape;
-   unsigned	ninteg;
+static int
+EquivNodalForces(Element e, Matrix N, unsigned int shape, unsigned int ninteg)
 {
    int		  count;
    static Vector  equiv = NullMatrix;

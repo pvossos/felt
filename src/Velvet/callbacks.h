@@ -20,57 +20,16 @@
 # ifndef _CALLBACKS_H
 # define _CALLBACKS_H
 
-extern void ConstraintDialogChanged (
-# if NeedFunctionPrototypes
-    Widget		/* widget      */,
-    XtPointer		/* client_data */,
-    XtPointer		/* call_data   */
-# endif
-);
+void ConstraintDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
+void ElementDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
-extern void ElementDialogChanged (
-# if NeedFunctionPrototypes
-    Widget		/* widget      */,
-    XtPointer		/* client_data */,
-    XtPointer		/* call_data   */
-# endif
-);
+void ForceDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
+void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
-extern void ForceDialogChanged (
-# if NeedFunctionPrototypes
-    Widget		/* widget      */,
-    XtPointer		/* client_data */,
-    XtPointer		/* call_data   */
-# endif
-);
+void MaterialDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
-
-extern void LoadDialogChanged (
-# if NeedFunctionPrototypes
-    Widget		/* widget      */,
-    XtPointer		/* client_data */,
-    XtPointer		/* call_data   */
-# endif
-);
-
-
-extern void MaterialDialogChanged (
-# if NeedFunctionPrototypes
-    Widget		/* widget      */,
-    XtPointer		/* client_data */,
-    XtPointer		/* call_data   */
-# endif
-);
-
-
-extern void NodeDialogChanged (
-# if NeedFunctionPrototypes
-    Widget		/* widget      */,
-    XtPointer		/* client_data */,
-    XtPointer		/* call_data   */
-# endif
-);
+void NodeDialogChanged (Widget w, XtPointer client_data, XtPointer call_data);
 
 # endif /* _CALLBACKS_H */

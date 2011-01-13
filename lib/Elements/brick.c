@@ -32,8 +32,8 @@
 # include "error.h"
 # include "misc.h"
 
-int brickEltSetup ( );
-int brickEltStress ( );
+static int brickEltSetup (Element element, char mass_mode, int tangent);
+static int brickEltStress (Element element);
 
 struct definition brickDefinition = {
    "brick",
@@ -48,10 +48,10 @@ struct definition brickDefinition = {
    0				/* retain K flag			     */
 };
 
-static void	LocalShapeFunctions ( );
-static Vector	GlobalShapeFunctions ( );
-static void     AddContribution ( );
-static Matrix   LocalB ( );
+static void	LocalShapeFunctions (Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdzt, int first, int nodal);
+static Vector	GlobalShapeFunctions (Element element, Matrix dNdxi, Matrix dNde, Matrix dNdzt, Matrix dNdx, Matrix dNdy, Matrix dNdz);
+static void     AddContribution (Matrix K, Matrix B, Matrix D, double jac);
+static Matrix   LocalB (Element element, Matrix dNdx, Matrix dNdy, Matrix dNdz, unsigned int point);
 
 	/*
 	 * shape function / shape function derivative matrices - we
@@ -67,10 +67,8 @@ static Matrix	dNdx;
 static Matrix 	dNdy;
 static Matrix	dNdz;
 
-int brickEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+brickEltSetup(Element element, char mass_mode, int tangent)
 {
    unsigned	i;
    Matrix	D;
@@ -123,8 +121,8 @@ int brickEltSetup (element, mass_mode, tangent)
    return 0; 
 }
 
-int brickEltStress (element)
-   Element	element;
+static int
+brickEltStress(Element element)
 {
    static Vector	stress = NullMatrix,
 			d;
@@ -214,12 +212,8 @@ int brickEltStress (element)
    return 0;
 }
 
-static Matrix LocalB (element, dNdx, dNdy, dNdz, point)
-   Element	element;
-   Matrix	dNdx;
-   Matrix	dNdy;
-   Matrix	dNdz;
-   unsigned	point;
+static Matrix
+LocalB(Element element, Matrix dNdx, Matrix dNdy, Matrix dNdz, unsigned int point)
 {
    static Matrix	B = NullMatrix;
    unsigned		i;
@@ -244,11 +238,8 @@ static Matrix LocalB (element, dNdx, dNdy, dNdz, point)
    return B;
 }
 
-static void AddContribution (K, B, D, jac)
-   Matrix	K;
-   Matrix	B;
-   Matrix	D;
-   double	jac;
+static void
+AddContribution(Matrix K, Matrix B, Matrix D, double jac)
 {
    unsigned	i, j, k;
    double	result;
@@ -284,14 +275,8 @@ static double xi_points [ ]   = {0, -PT, PT, PT, -PT, -PT, PT, PT, -PT};
 static double eta_points [ ]  = {0, -PT, -PT, PT, PT, -PT, -PT, PT, PT};
 static double zeta_points [ ] = {0, -PT, -PT, -PT, -PT, PT, PT, PT, PT};
 
-static void LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, first, nodal)
-   Element	element;
-   Matrix	N;
-   Matrix	dNdxi;
-   Matrix	dNde;
-   Matrix	dNdzt;
-   int		first;
-   int		nodal;
+static void
+LocalShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdzt, int first, int nodal)
 {
    double	eta, en;
    double	xi, xn;
@@ -335,14 +320,8 @@ static void LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, first, nodal)
    return;
 }
 
-static Vector GlobalShapeFunctions (element, dNdxi,dNde,dNdzt, dNdx, dNdy, dNdz)
-   Element	element;
-   Matrix	dNdxi;
-   Matrix	dNde;
-   Matrix	dNdzt;
-   Matrix	dNdx;
-   Matrix	dNdy;
-   Matrix	dNdz;
+static Vector
+GlobalShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdzt, Matrix dNdx, Matrix dNdy, Matrix dNdz)
 {
    static Vector	jac = NullMatrix;
    unsigned		i, j;

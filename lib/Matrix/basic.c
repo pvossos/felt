@@ -17,32 +17,15 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	basic.c	       
- *	
- * Description:	
- *		
- ************************************************************************/
-
+# include <stdlib.h>
 # include <time.h>
 # include <math.h>
 # include <stdio.h>
 # include "matrix.h"
 
-#undef srand48
-#undef drand48
-extern void srand48 ();
-extern double drand48 ();
-
-# if (defined DOS || defined __CYGWIN32__)
-# define srand48 srand
-# define drand48 rand
-# endif
-
 # define PRINT_TOL 1.0e-12
 
-int ZeroMatrix (a)		/* a = 0			*/
-   Matrix	a;		/* matrix to fill with zeros	*/
+int ZeroMatrix (Matrix a)
 {
    unsigned	i,j;
 
@@ -58,8 +41,7 @@ int ZeroMatrix (a)		/* a = 0			*/
    return 0;
 }
 
-int MirrorMatrix (a)
-   Matrix	a;		/* matrix to mirror		   */
+int MirrorMatrix (Matrix a)
 {
    unsigned	i, j;
 
@@ -73,9 +55,7 @@ int MirrorMatrix (a)
    return 0;
 }
 
-int CopyMatrix (b, a)		/* b = a			   */
-   Matrix	a;		/* source matrix		   */
-   Matrix	b;		/* destination matrix		   */
+int CopyMatrix (Matrix b, Matrix a)
 {
    unsigned	i, j;
 
@@ -100,8 +80,7 @@ int CopyMatrix (b, a)		/* b = a			   */
    return 0;
 }
 
-int IdentityMatrix (a)		/* a = [I]			   */
-   Matrix	a;		/* destination matrix for identity */
+int IdentityMatrix (Matrix a)
 {
    unsigned	i;
    int		status;
@@ -123,9 +102,7 @@ int IdentityMatrix (a)		/* a = [I]			   */
    return 0;
 }
 
-int RandomMatrix (a, seed)	/* a(i,j) = rand()		*/
-   Matrix	a;		/* matrix to randomize		*/
-   int		seed;		/* optional seed		*/
+int RandomMatrix (Matrix a, int seed)
 {
    unsigned	i, j;
    static int	seeded = 0;
@@ -148,10 +125,7 @@ int RandomMatrix (a, seed)	/* a(i,j) = rand()		*/
    return 0;
 }
 
-int MultiplyMatrices (c, a, b)	/* c = ab			*/
-   Matrix	c;		/* destination matrix		*/
-   Matrix 	a;		/* source matrix 1		*/
-   Matrix	b;		/* source matrix 2		*/
+int MultiplyMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i,j,k;
 
@@ -174,10 +148,7 @@ int MultiplyMatrices (c, a, b)	/* c = ab			*/
    return 0;
 }
 
-int AddMatrices (c, a, b)	/* c = a + b			*/
-   Matrix	c;		/* destination matrix		*/
-   Matrix	a;		/* source matrix 1		*/
-   Matrix	b;		/* source matrix 2		*/
+int AddMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i,j;
 
@@ -197,10 +168,7 @@ int AddMatrices (c, a, b)	/* c = a + b			*/
    return 0;
 }
 
-int SubtractMatrices (c, a, b)	/* c = a - b 			*/
-   Matrix	c;		/* destination matrix		*/
-   Matrix	a;		/* source matrix 1		*/
-   Matrix	b;		/* source matrix 2		*/
+int SubtractMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i,j;
 
@@ -220,10 +188,7 @@ int SubtractMatrices (c, a, b)	/* c = a - b 			*/
    return 0;
 }
 
-int ModMatrices (c, a, b)	/* c = a % b			*/
-   Matrix	c;		/* destination matrix		*/
-   Matrix	a;		/* source matrix 1		*/
-   Matrix	b;		/* source matrix 2		*/
+int ModMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i,j;
 
@@ -243,11 +208,7 @@ int ModMatrices (c, a, b)	/* c = a % b			*/
    return 0;
 }
 
-int Saxpy (c, a, b, alpha)	/* c = b + alpha*a		*/	
-   Matrix	c;		/* destination vector		*/
-   Matrix	a;		/* source 1 vector		*/
-   Matrix	b;		/* source 2 vector		*/
-   double	alpha;		/* scale factor			*/
+int Saxpy (Matrix c, Matrix a, Matrix b, double alpha)
 {
    unsigned	i;
 
@@ -266,11 +227,7 @@ int Saxpy (c, a, b, alpha)	/* c = b + alpha*a		*/
    return 0;
 }
 
-int Gaxpy (c, a, b, A)		/* c = b + Aa 			*/
-   Matrix	c;		/* destination vector		*/
-   Matrix	a;		/* source 1 vector		*/
-   Matrix	b;		/* source 2 vector		*/
-   Matrix	A;		/* source matrix		*/
+int Gaxpy (Matrix c, Matrix a, Matrix b, Matrix A)
 {
    unsigned	i,j;
 
@@ -296,11 +253,7 @@ int Gaxpy (c, a, b, A)		/* c = b + Aa 			*/
    return 0;
 }
 
-int ScaleMatrix(b, a, factor, offset)	/* b(i,j) = factor*a(i,j) + offset  */
-   Matrix	b;			/* destination matrix		    */
-   Matrix	a;			/* source matrix		    */
-   double	factor;			/* multiplicative scale factor	    */
-   double	offset;			/* additive offset		    */
+int ScaleMatrix(Matrix b, Matrix a, double factor, double offset)
 {
    unsigned	i,j;
 
@@ -329,9 +282,7 @@ int ScaleMatrix(b, a, factor, offset)	/* b(i,j) = factor*a(i,j) + offset  */
    return 0;
 }
 
-int SqrtMatrix(b, a)		/* b(i,j) = sqrt(a(i,j))        */
-   Matrix	b;		/* destination matrix	   	*/
-   Matrix	a;		/* source matrix	        */
+int SqrtMatrix(Matrix b, Matrix a)
 {
    unsigned	i,j;
 
@@ -348,10 +299,7 @@ int SqrtMatrix(b, a)		/* b(i,j) = sqrt(a(i,j))        */
    return 0;
 }
 
-int DotBProduct(x, a, b)	/* x = aTb			*/
-   double	*x;		/* pointer to result location	*/
-   Matrix	a;		/* source vector (row) 1	*/
-   Matrix	b;		/* source vector 2		*/
+int DotBProduct(double *x, Matrix a, Matrix b)
 {
    unsigned	i;
    double	result;
@@ -367,9 +315,7 @@ int DotBProduct(x, a, b)	/* x = aTb			*/
    return 0;
 }
 
-int TransposeMatrix(b, a)	/* b = aT			*/
-   Matrix	b;		/* destination matrix		*/
-   Matrix	a;		/* source matrix		*/
+int TransposeMatrix(Matrix b, Matrix a)
 {
    unsigned	i, j;
 
@@ -389,10 +335,7 @@ int TransposeMatrix(b, a)	/* b = aT			*/
    return 0;
 }
 
-int CompareEQMatrices (c, a, b)	/* c = (a == b)		*/
-   Matrix	c;			/* destination matrix	*/
-   Matrix	a;			/* first RHS matrix	*/
-   Matrix	b;			/* second RHS matrix	*/
+int CompareEQMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i, j;
   
@@ -412,10 +355,7 @@ int CompareEQMatrices (c, a, b)	/* c = (a == b)		*/
    return 0;
 }
 
-int CompareNEQMatrices (c, a, b)	/* c = (a != b)		*/
-   Matrix	c;			/* destination matrix	*/
-   Matrix	a;			/* first RHS matrix	*/
-   Matrix	b;			/* second RHS matrix	*/
+int CompareNEQMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i, j;
   
@@ -435,10 +375,7 @@ int CompareNEQMatrices (c, a, b)	/* c = (a != b)		*/
    return 0;
 }
 
-int CompareGTMatrices (c, a, b)	/* c = (a > b)		*/
-   Matrix	c;			/* destination matrix	*/
-   Matrix	a;			/* first RHS matrix	*/
-   Matrix	b;			/* second RHS matrix	*/
+int CompareGTMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i, j;
   
@@ -458,10 +395,7 @@ int CompareGTMatrices (c, a, b)	/* c = (a > b)		*/
    return 0;
 }
 
-int CompareLTMatrices (c, a, b)	/* c = (a < b)		*/
-   Matrix	c;			/* destination matrix	*/
-   Matrix	a;			/* first RHS matrix	*/
-   Matrix	b;			/* second RHS matrix	*/
+int CompareLTMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i, j;
   
@@ -481,10 +415,7 @@ int CompareLTMatrices (c, a, b)	/* c = (a < b)		*/
    return 0;
 }
 
-int CompareLTEMatrices (c, a, b)	/* c = (a <= b)		*/
-   Matrix	c;			/* destination matrix	*/
-   Matrix	a;			/* first RHS matrix	*/
-   Matrix	b;			/* second RHS matrix	*/
+int CompareLTEMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i, j;
   
@@ -504,10 +435,7 @@ int CompareLTEMatrices (c, a, b)	/* c = (a <= b)		*/
    return 0;
 }
 
-int CompareGTEMatrices (c, a, b)	/* c = (a >= b)		*/
-   Matrix	c;			/* destination matrix	*/
-   Matrix	a;			/* first RHS matrix	*/
-   Matrix	b;			/* second RHS matrix	*/
+int CompareGTEMatrices (Matrix c, Matrix a, Matrix b)
 {
    unsigned	i, j;
   
@@ -527,9 +455,7 @@ int CompareGTEMatrices (c, a, b)	/* c = (a >= b)		*/
    return 0;
 }
 
-int PrintMatrix (m, fp)		/* print matrix m to file fp	*/
-   Matrix	m;		/* matrix to print		*/
-   FILE		*fp;		/* file pointer for output	*/
+int PrintMatrix (Matrix m, FILE *fp)
 {
    double       val;
    unsigned	start, end;
@@ -563,13 +489,7 @@ int PrintMatrix (m, fp)		/* print matrix m to file fp	*/
    return 0;
 }
 
-int PrintMatrixSubsection (m, sr, sc, er, ec, fp) /* print matrix m to fp    */
-   Matrix	m;				  /* matrix to print	     */
-   unsigned	sr;				  /* starting row	     */
-   unsigned	sc;				  /* starting column	     */
-   unsigned	er;				  /* ending row	     	     */
-   unsigned	ec;				  /* ending column	     */
-   FILE		*fp;				  /* file pointer for output */
+int PrintMatrixSubsection (Matrix m, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec, FILE *fp)
 {
    double       val;
    unsigned     i, j;

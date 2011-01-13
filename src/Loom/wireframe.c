@@ -26,20 +26,17 @@
  *****************************************************************************/
 
 # include <stdio.h>
+# include "wireframe.h"
 # include "problem.h"
 # include "allocate.h"
 # include "error.h"
+# include "draw.h"
 
 # define min(a,b) ((a) < (b) ? (a) : (b))
 # define max(a,b) ((a) > (b) ? (a) : (b))
 
-void WriteWireframeFile (filename, mag, xrot, yrot, zrot, zsc)
-    char	*filename;
-    double	mag;
-    double	xrot;
-    double	yrot;
-    double	zrot;
-    double	zsc;
+void WriteWireframeFile (char *filename, double mag, 
+                         double xrot, double yrot, double zrot, double zsc)
 {
     FILE       *fp;
     unsigned	x, y;

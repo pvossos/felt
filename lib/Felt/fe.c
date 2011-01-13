@@ -38,21 +38,10 @@
 # include "fe.h"
 # include "error.h"
 
-extern Matrix ZeroRowCol ( );
+Matrix ZeroRowCol(Matrix K, unsigned int dof);
 
-/**************************************************************************
- *
- * Function:	 FindDOFS
- *
- * Description:  FindDOFS will search through all of the elements for a
- *		 problem and determine which DOFs (out of the six that
- *		 are physically possible) must be considered in this
- *		 problem based on the different element types.  The
- *		 list of affected DOFs is built and ...
- *	
- *****************************************************************************/
-
-int FindDOFS ( )
+int
+FindDOFS(void)
 {
    Element	*e;
    unsigned	ne;
@@ -100,29 +89,8 @@ int FindDOFS ( )
    return count;
 }
       
-/****************************************************************************
- *
- * Function:	ConstructStiffness
- *
- * Description:	For a given set of elements (possibly of varying types)
- *		this will assemble all element stiffness matrices into
- *		the global stiffness matrix according to what DOFs each
- *		individual element affects (a function of both its node
- *		numbers and the DOFs that it affects and their relation
- *		to the global DOFs as indexed by dofs).
- *		
- *		Before we do anything we figure out how the compact
- *		column storage scheme is going to work, i.e., we need
- *		to set up the height and diag arrays which contain
- *		information needed to go from a standard row,column
- *		notation (which I think is easier to read) to 
- *		an address into the compact column vector representation
- *		of the global stiffness matrix
- *
- ****************************************************************************/
-
-Matrix ConstructStiffness (status)
-   int		*status;
+Matrix
+ConstructStiffness(int *status)
 {
    Element	*element;
    unsigned	numelts,
@@ -315,24 +283,8 @@ Matrix ConstructStiffness (status)
    return K;
 }
 
-/****************************************************************************
- *
- * Function:	RemoveConstrainedDOF
- *
- * Description: As opposed to simply zeroing out the rows and columns
- *		associated with a constrained DOF, here we actually reduce
- *		the size of the stiffness and mass matrices by removing 
- *		those rows and columns entirely.
- *
- ****************************************************************************/
-
-void RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond)
-   Matrix	K;
-   Matrix	M;
-   Matrix	C;
-   Matrix	*Kcond;
-   Matrix	*Mcond;
-   Matrix	*Ccond;
+void
+RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond, Matrix *Ccond)
 {
    Node		*node;
    unsigned	numnodes,
@@ -481,30 +433,8 @@ void RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond)
    return;
 }
 
-/****************************************************************************
- *
- * Function:	ZeroConstrainedDOF
- *
- * Description: For a fixed BC at a given DOF all we'll do is zero
- *		out the rows and columns of the stiffness matrix
- *		associated with that DOF (with a one on the diagonal
- *		for stability).  For a displacement BC, we'll need
- *		to adjust the force vector, also, we should put
- *		the displacement into the force vector so when we
- *		go to solve, we'll just go ahead and get that
- *		displacement right back.  We don't deal with hinges
- *		here really because we already dealt with them when we had
- *		the element stiffness matrix laying around.  All we'll
- *		do here is make sure that the displacement will come 
- *		out zero.
- *
- ****************************************************************************/
-
-void ZeroConstrainedDOF (K, F, Kc, Fc)
-   Vector	K;
-   Vector	F;
-   Vector	*Kc;
-   Vector	*Fc; 
+void
+ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
 {
    Node		*node;
    unsigned	active;
@@ -564,28 +494,8 @@ void ZeroConstrainedDOF (K, F, Kc, Fc)
    return;
 }
 
-/****************************************************************************
- *
- * Function:	AdjustForceVector
- *
- * Description: Given a displacement boundary condition, we can't just
- *		knock out the rows and columns of K for that DOF.  We
- *		need to adjust the force vector by adding the effect
- *		of the stiffness in that DOF times the given displacement
- *		to the external force vector.  The simplest way to do
- *		that is to just loop over all DOFs and adjust them
- *		as appropriate.  In some cases the adjustment is unnecessary
- *		because the displaced DOF may not affect all DOFs or
- *		a given DOF may be fixed anyways.  It won't hurt to
- *		operate in these cases anyways though, so that's what I do.
- *		
- ****************************************************************************/
-
-void AdjustForceVector (Fcond, Kcond, affected_dof, dx)
-    Vector	Fcond;
-    Vector	Kcond;
-    unsigned	affected_dof;
-    double	dx;
+void
+AdjustForceVector(Vector Fcond, Vector Kcond, unsigned int affected_dof, double dx)
 {
     unsigned	i;
     unsigned	address;
@@ -602,18 +512,8 @@ void AdjustForceVector (Fcond, Kcond, affected_dof, dx)
     return;
 }
 
-/****************************************************************************
- *
- * Function:	ZeroCompactRowCol
- *
- * Description:	Zeros out the row and column given by dof.  Places
- *		a one on the diagonal.
- *
- ****************************************************************************/
-
-Vector ZeroCompactRowCol (K, dof)
-   Vector	K;
-   unsigned	dof;
+Vector
+ZeroCompactRowCol(Vector K, unsigned int dof)
 {
    unsigned	i;
    unsigned	address;
@@ -635,19 +535,8 @@ Vector ZeroCompactRowCol (K, dof)
    return K;
 }
 
-/****************************************************************************
- *
- * Function:	ConstructForceVector		
- *
- * Description:	Constructs the global nodal force vector based on all
- *		nodal forces and the global DOFs active at those nodes.
- *		Global DOF determination is by node number and the
- *		and the relationship between the force and its actual
- *		physical DOF and the location of this DOF in problem space.
- *
- ****************************************************************************/
- 
-Vector ConstructForceVector ( )
+Vector
+ConstructForceVector(void)
 {
    Node		*node;
    unsigned	active;
@@ -695,16 +584,8 @@ Vector ConstructForceVector ( )
    return F;
 }
 
-/****************************************************************************
- *
- * Function:	ClearNodes
- *
- * Description:	sets all the displacements on the nodes to zero and
- *		clears the equivalent force vector
- *
- ****************************************************************************/
-
-void ClearNodes ( )
+void
+ClearNodes(void)
 {
    unsigned	i,j;
 
@@ -718,17 +599,8 @@ void ClearNodes ( )
    }
 }
   
-
-/****************************************************************************
- *
- * Function:	FactorStiffnessMatrix
- *
- * Description: Factorizes the problem stiffness matrix in place 
- *
- ****************************************************************************/
-
-int FactorStiffnessMatrix (K)
-   Vector	K;
+int
+FactorStiffnessMatrix(Vector K)
 {
    Node		*node;
    unsigned      numnodes;
@@ -759,20 +631,8 @@ int FactorStiffnessMatrix (K)
    return 0;
 }
 
- 
-/****************************************************************************
- *
- * Function:	SolveForDisplacements
- *
- * Description: Solves the linear system Kd=F for the vector of global
- *		nodal displacements.  The system must not be singular
- *		(i.e. K and F should be condensed)
- *
- ****************************************************************************/
-
-Vector SolveForDisplacements (K, F)
-   Vector	K;
-   Vector	F;
+Vector
+SolveForDisplacements(Vector K, Vector F)
 {
    if (FactorStiffnessMatrix (K))
       return NullVector;
@@ -787,18 +647,8 @@ Vector SolveForDisplacements (K, F)
    return F;
 }
  
-/****************************************************************************
- *
- * Function:	SolveStaticLoadCases
- *
- * Description: builds a table of nodal DOF displacements for all defined
- *		loadcases
- *
- ****************************************************************************/
-
-Matrix SolveStaticLoadCases (K, Fbase)
-   Matrix	 K;
-   Matrix 	 Fbase;
+Matrix
+SolveStaticLoadCases(Matrix K, Matrix Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -853,19 +703,8 @@ Matrix SolveStaticLoadCases (K, Fbase)
    return dtable;
 }
 
-/****************************************************************************
- *
- * Function:	SolveStaticLoadRange
- *
- * Description: builds a table of nodal DOF displacements for 
- *		input forcing at a single DOF over a range of
- *		force magnitudes
- *
- ****************************************************************************/
-
-Matrix SolveStaticLoadRange (K, Fbase)
-   Matrix	 K;
-   Matrix 	 Fbase;
+Matrix
+SolveStaticLoadRange(Matrix K, Matrix Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -916,17 +755,8 @@ Matrix SolveStaticLoadRange (K, Fbase)
    return dtable;
 }
 
-/***************************************************************************
- *
- * Function:	AssembleLoadCaseForce
- *
- * Description:	
- *
- ****************************************************************************/
-
-void AssembleLoadCaseForce (F, lc)
-   Matrix	F;
-   LoadCase	lc;
+void
+AssembleLoadCaseForce(Matrix F, LoadCase lc)
 {
    unsigned	 active;
    unsigned	*dofs;
@@ -957,16 +787,8 @@ void AssembleLoadCaseForce (F, lc)
    return;     
 }
 
-/***************************************************************************
- *
- * Function:	ApplyNodalDisplacements
- *
- * Description:	
- *
- ****************************************************************************/
-
-void ApplyNodalDisplacements (d)
-   Matrix	 d;
+void
+ApplyNodalDisplacements(Matrix d)
 {
    unsigned	i, j; 
    unsigned	base_dof;
@@ -997,23 +819,8 @@ void ApplyNodalDisplacements (d)
    return;
 }
 
-/***************************************************************************
- *
- * Function:	SolveForReactions
- *
- * Description:	Pretty simple really, first we find how many reaction
- *		forces there should be, then we allocate space for them,
- *		then we multiply rows of the stiffness matrix by the
- *		global displacement vector to get an entry that was
- *		previously unknown in the global force vector
- *
- ****************************************************************************/
-
-unsigned SolveForReactions (K, d, old_numbers, reac)
-   Vector	K;
-   Vector	d;
-   unsigned	*old_numbers;
-   Reaction	**reac;
+unsigned
+SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac)
 {
    Node		*node;
    unsigned	numnodes,
@@ -1092,31 +899,8 @@ unsigned SolveForReactions (K, d, old_numbers, reac)
    return num_reactions;
 }
 
-/***************************************************************************
- *
- * Function:	ElementSetup
- *
- * Description:	calls the appropriate function to assemble the element
- *		stiffness matrix for an element.  Each element stiffness
- *		function should be of the form: xxxSetup(element,mass_mode)
- *		where x is the element type (as defined in element.h)
- *		element is the element to assemble the stiffness for
- *		and mass_mode is 0 in static cases or 'c' or 'l' in
- *		transient analysis when a mass matrix should be formed.
- *
- ****************************************************************************/
-
-# if defined (__STDC__)
-
-int ElementSetup (Element element, char mass_mode)
-
-# else
-
-int ElementSetup (element, mass_mode)
-    Element	element; 
-    char 	mass_mode;
-
-# endif
+int
+ElementSetup(Element element, char mass_mode)
 {
     int		status;
   
@@ -1125,15 +909,8 @@ int ElementSetup (element, mass_mode)
     return status;
 }
 
-/***************************************************************************
- *
- * Function:	ElementStresses
- *
- * Description:	calls the element stress functions for all of the elements
- *
- ****************************************************************************/
-
-int ElementStresses ( )
+int
+ElementStresses(void)
 {
     Element	*e;
     Node	*n;
@@ -1165,18 +942,8 @@ int ElementStresses ( )
     return status;
 }
 
-/***************************************************************************
- *
- * Function:	CheckAnalysisParameters
- *
- * Description:	Verifies that everything in the analysis parameters
- *		section is set (or at least the minimum number of
- *		things that we need) for the given analysis type.
- *
- ***************************************************************************/
-
-int CheckAnalysisParameters (mode)
-   AnalysisType	mode; 
+int
+CheckAnalysisParameters(AnalysisType mode)
 {
    unsigned	count;
 
@@ -1359,20 +1126,8 @@ int CheckAnalysisParameters (mode)
    return count;
 }
 
-/***************************************************************************
- *
- * Function:    GlobalDOF
- *
- * Description: calculates the global DOF number based on a given local
- *              DOF (Tx ... Rz), a node number and a dofs map.  Zero is
- *              returned if the given local DOF is not active in the
- *              current dofs map.
- *
- ***************************************************************************/
-
-int GlobalDOF (node, dx)
-   unsigned     node;
-   unsigned     dx;
+int
+GlobalDOF(unsigned int node, unsigned int dx)
 {
    if (!problem.dofs_pos [dx]) 
       return 0;
@@ -1380,18 +1135,8 @@ int GlobalDOF (node, dx)
    return problem.num_dofs*(node - 1) + problem.dofs_pos [dx];
 }
 
-/***************************************************************************
- *
- * Function:    LocalDOF
- *
- * Description: finds the node and local DOF of a given global DOF
- *
- ***************************************************************************/
-
-void LocalDOF (global_dof, node, local_dof)
-   unsigned	global_dof;
-   unsigned	*node;
-   unsigned	*local_dof;
+void 
+LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_dof)
 {
    unsigned	i;
    unsigned	active;
@@ -1405,20 +1150,8 @@ void LocalDOF (global_dof, node, local_dof)
    return;
 }
  
-/***************************************************************************
- *
- * Function:	FindForcedDOF
- *
- * Description:	builds a list of global DOF numbers which have some sort
- *		of input applied to them.  We make two passes rather than
- *		dealing with reallocation (and deallocation in the case
- *		of no forcing) 
- *
- ***************************************************************************/
-
-void FindForcedDOF (forced, numforced)
-   NodeDOF	**forced;
-   unsigned	*numforced;
+void
+FindForcedDOF(NodeDOF **forced, unsigned int *numforced)
 {
    Node		*node;
    unsigned	numnodes;
@@ -1482,18 +1215,8 @@ void FindForcedDOF (forced, numforced)
    return;
 } 
 
-/****************************************************************************
- *
- * Function:	RemoveConstrainedMatrixDOF
- *
- * Description: a generalized form of RemoveConstrainedDOF for a single
- *		matrix.  If a matrix is input, it needs to be in compact
- *		column format.
- *
- ****************************************************************************/
-
-Matrix RemoveConstrainedMatrixDOF (a)
-   Matrix	a;
+Matrix
+RemoveConstrainedMatrixDOF(Matrix a)
 {
    Node		*node;
    unsigned	numnodes,
@@ -1639,18 +1362,8 @@ Matrix RemoveConstrainedMatrixDOF (a)
    return b;
 }
 
-/****************************************************************************
- *
- * Function:	ZeroConstrainedMatrixDOF
- *
- * Description: sort of like ZeroConstrainedDOF only simpler and more
- *		general because it only works on one thing at a time.
- *
- ****************************************************************************/
-
-int ZeroConstrainedMatrixDOF (b, a)
-   Matrix	b;
-   Matrix	a;
+int
+ZeroConstrainedMatrixDOF(Matrix b, Matrix a)
 {
    Node		*node;
    unsigned	active;

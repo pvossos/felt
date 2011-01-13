@@ -39,8 +39,7 @@
    Description:	Returns a hash value for a string.
  ************************************************************************/
 
-static unsigned StringHash (s)
-    char *s;
+static unsigned StringHash (char *s)
 {
     unsigned g;
     unsigned h;
@@ -59,7 +58,7 @@ static unsigned StringHash (s)
    Description:	Creates, initialize, and returns a new cache.
  ************************************************************************/
 
-Cache DW_CacheCreate ( )
+Cache DW_CacheCreate (void)
 {
     Cache    cache;
     unsigned i;
@@ -79,8 +78,7 @@ Cache DW_CacheCreate ( )
    Description:	Destroys a cache.
  ************************************************************************/
 
-void DW_CacheDestroy (cache)
-    Cache cache;
+void DW_CacheDestroy (Cache cache)
 {
     unsigned  i;
     CacheData ptr;
@@ -102,9 +100,7 @@ void DW_CacheDestroy (cache)
    Description:	Looks up a named value in a cache.
  ************************************************************************/
 
-CacheData DW_CacheLookup (cache, name)
-    Cache  cache;
-    String name;
+CacheData DW_CacheLookup (Cache cache, String name)
 {
     unsigned  idx;
     CacheData ptr;
@@ -124,10 +120,7 @@ CacheData DW_CacheLookup (cache, name)
    Description:	Inserts a named value in a cache.
  ************************************************************************/
 
-CacheData DW_CacheInsert (cache, name, value)
-    Cache    cache;
-    String   name;
-    XtArgVal value;
+CacheData DW_CacheInsert (Cache cache, String name, XtArgVal value)
 {
     unsigned  idx;
     CacheData ptr;
@@ -154,8 +147,7 @@ CacheData DW_CacheInsert (cache, name, value)
    Description:	Increments the reference count of a named value.
  ************************************************************************/
 
-void DW_CacheAddRef (data)
-    CacheData data;
+void DW_CacheAddRef (CacheData data)
 {
     data -> ref_count ++;
 }
@@ -166,8 +158,7 @@ void DW_CacheAddRef (data)
    Description:	Decrements the reference count of a named value.
  ************************************************************************/
 
-void DW_CacheDelRef (data)
-    CacheData data;
+void DW_CacheDelRef (CacheData data)
 {
     data -> ref_count --;
 

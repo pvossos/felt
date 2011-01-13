@@ -33,26 +33,8 @@
 # include "error.h"
 # include "problem.h"
 
-
-
-/****************************************************************************
- *
- * Function:	CreateNonlinearStiffness
- *
- * Description:	For a given set of elements (possibly of varying types)
- *		this will create compact column storage for the global
- *		stiffness matrix in a nonlinear problem.  We can't really
- *		base this one simply on the non-zero entries in the 
- *		element stiffness matrices, because as the element
- *		stiffness matrices change with geometry we're not
- *		sure where the zeros might be.  Instead we make sure
- *		that we have at least enough room for all possible 
- *		element DOF.	
- *		
- ****************************************************************************/
-
-Matrix CreateNonlinearStiffness (status)
-   int		*status;
+Matrix
+CreateNonlinearStiffness(int *status)
 {
    Element	*e;
    unsigned	 ne,
@@ -168,18 +150,8 @@ Matrix CreateNonlinearStiffness (status)
    return K;
 }
 
-/****************************************************************************
- *
- * Function:	
- *
- * Description:	
- *
- ****************************************************************************/
-
-int AssembleCurrentState (K, F, tangent)
-   Matrix	K;
-   Matrix	F;
-   int		tangent;
+int
+AssembleCurrentState(Matrix K, Matrix F, int tangent)
 {
    Element	*element;
    Element	e;
@@ -247,17 +219,8 @@ int AssembleCurrentState (K, F, tangent)
    return 0;
 }
 
-/****************************************************************************
- *
- * Function:	
- *
- * Description:	
- *
- ****************************************************************************/
- 
-int AssembleCurrentForce (F, Fnodal)
-   Matrix	F;
-   Matrix	Fnodal;
+int
+AssembleCurrentForce(Matrix F, Matrix Fnodal)
 {
    Node		*node;
    unsigned	active;
@@ -289,8 +252,8 @@ int AssembleCurrentForce (F, Fnodal)
    return 0;
 }
 
-int RestoreCoordinates (d)
-   Matrix	d;
+int
+RestoreCoordinates(Matrix d)
 {
    int		i, j;
    int		base_dof;
@@ -345,8 +308,8 @@ int RestoreCoordinates (d)
    return 0;
 }
 
-int UpdateCoordinates (d)
-   Matrix	d;
+int
+UpdateCoordinates(Matrix d)
 {
    int		i;
    int		base_dof;
@@ -379,24 +342,8 @@ int UpdateCoordinates (d)
    return 0;
 }
 
-/****************************************************************************
- *
- * Function:	StaticNonlinearDisplacements 
- *
- * Description:	solves a geometrically nonlinear, large deformation
- *		problem by iteratively solving Kd = F where K
- *		is updated at every iteration according to the 
- *		displacements from the previous iteration - the
- *		value of tangent determines what kind of stiffness
- *		matrix is formed (simple linear or nonlinear tangent)
- *		and how the force residuals are calculated
- *		
- ****************************************************************************/
-
-Matrix StaticNonlinearDisplacements (K, Fnodal, tangent)
-   Matrix	K;
-   Matrix	Fnodal;
-   int		tangent;
+Matrix
+StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
 {
    Matrix	  residual;
    Matrix	  Felement;
@@ -474,17 +421,8 @@ Matrix StaticNonlinearDisplacements (K, Fnodal, tangent)
    return d;
 }
 
-
-/****************************************************************************
- *
- * Function:	SolveNonlinearLoadRange
- *
- ****************************************************************************/
-
-Matrix SolveNonlinearLoadRange (K, Fnodal, tangent)
-   Matrix     K;
-   Matrix     Fnodal;
-   int	      tangent;
+Matrix
+SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
 {
    unsigned	  num_cases;
    Matrix	  dtable;

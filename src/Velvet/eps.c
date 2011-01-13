@@ -16,33 +16,34 @@
 */
 
 # include <stdio.h>
+# include <stdlib.h>
 # include <X11/Xlib.h>
 # include <X11/Xutil.h>
 # include <X11/Intrinsic.h>
-# include "proto.h"
+# include "eps.h"
 # include "error.h"
 # include "version.h"
+# include "xwd.h"
 
 #define MARGIN 0.95
 
 typedef unsigned char xelval;
-extern XImage *WidgetToXImage PROTO((Widget, XColor **, int *));
-static int colorstobpp PROTO((int colors));
-static void putinit PROTO(( char* name, int cols, int rows, int padright, int bps, float scale, int dpi, int pagewid, int pagehgt, int turnflag, int turnokflag, int rleflag ));
-static void putitem PROTO(( void ));
-static void putxelval PROTO(( xelval xv ));
-static void putrest PROTO(( void ));
-static void rleputbuffer PROTO(( void ));
-static void rleputitem PROTO(( void ));
-static void rleputxelval PROTO(( xelval xv ));
-static void rleflush PROTO(( void ));
-static void rleputrest PROTO(( void ));
+static int colorstobpp(int colors);
+static void putinit(char* name, int cols, int rows, int padright, int bps, float scale,
+                    int dpi, int pagewid, int pagehgt, int turnflag,
+                    int turnokflag, int rleflag);
+static void putitem(void);
+static void putxelval (xelval xv);
+static void putrest (void);
+static void rleputbuffer (void);
+static void rleputitem (void);
+static void rleputxelval (xelval xv);
+static void rleflush (void);
+static void rleputrest (void);
 
 static FILE 	*output;
 
-void WidgetToEPS (filename, w)
-    char	*filename;
-    Widget	 w;
+void WidgetToEPS (char *filename, Widget w)
 {
     XImage   *img;
     int       turnflag, turnokflag, rleflag;
@@ -151,8 +152,7 @@ void WidgetToEPS (filename, w)
     return;
 }
 
-static int colorstobpp( colors )
-   int colors;
+static int colorstobpp(int colors)
 {
     int bpp;
 
@@ -182,21 +182,11 @@ static int bitspersample, item, bitsperitem, bitshift, itemsperline, items;
 static int rleitem, rlebitsperitem, rlebitshift;
 static int repeat, itembuf[128], count, repeatitem, repeatcount;
 
-#ifdef __STDC__
 static void
-putinit( char* name, int cols, int rows, int padright, int bps, float scale,
-	 int dpi, int pagewid, int pagehgt, int turnflag,
-	 int turnokflag, int rleflag )
-#else /*__STDC__*/
-static void
-putinit( name, cols, rows, padright, bps, scale, dpi, pagewid, pagehgt,
-	 turnflag, turnokflag, rleflag )
-    char* name;
-    int cols, rows, padright, bps;
-    float scale;
-    int dpi, pagewid, pagehgt, turnflag, turnokflag, rleflag;
-#endif /*__STDC__*/
-    {
+putinit(char* name, int cols, int rows, int padright, int bps, float scale,
+        int dpi, int pagewid, int pagehgt, int turnflag,
+        int turnokflag, int rleflag)
+{
     int icols, irows, devpix;
     float pixfac, scols, srows, llx, lly;
 
@@ -325,8 +315,8 @@ putinit( name, cols, rows, padright, bps, scale, dpi, pagewid, pagehgt,
     }
 
 static void
-putitem()
-    {
+putitem(void)
+{
     char* hexits = "0123456789abcdef";
 
     if ( itemsperline == 30 )
@@ -359,8 +349,8 @@ putxelval( xv )
     }
 
 static void
-putrest()
-    {
+putrest(void)
+{
     if ( bitsperitem > 0 )
 	putitem();
     fprintf(output, "\n" );
@@ -370,8 +360,8 @@ putrest()
     }
 
 static void
-rleputbuffer()
-    {
+rleputbuffer(void)
+{
     int i;
 
     if ( repeat )
@@ -396,8 +386,8 @@ rleputbuffer()
     }
 
 static void
-rleputitem()
-    {
+rleputitem(void)
+{
     int i;
 
     if ( count == 128 )
@@ -480,8 +470,8 @@ rleputxelval( xv )
     }
 
 static void
-rleflush()
-    {
+rleflush(void)
+{
     if ( rlebitsperitem > 0 )
 	rleputitem();
     if ( count > 0 )
@@ -489,8 +479,8 @@ rleflush()
     }
 
 static void
-rleputrest()
-    {
+rleputrest(void)
+{
     rleflush();
     fprintf(output, "\n" );
     fprintf(output, "grestore\n" );

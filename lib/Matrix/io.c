@@ -17,13 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	io.c	       
- *	
- * Description:	
- *		
- ************************************************************************/
-
 # include <math.h>
 # include <stdio.h>
 # include <string.h>
@@ -46,7 +39,7 @@ typedef union {
    unsigned char    b;
 } DataVal;
 
-static int architecture ( )
+static int architecture (void)
 {
    int	x = 1;
 
@@ -56,8 +49,7 @@ static int architecture ( )
       return 1;
 }
 
-static float SwapFloat (x)
-   float	x;
+static float SwapFloat (float x)
 {
    char		*ptr;
    char		buffer [4];
@@ -73,8 +65,7 @@ static float SwapFloat (x)
    return *((float *) ptr);
 }
 
-static long SwapLong (x)
-   long		x;
+static long SwapLong (long int x)
 {
    char		*ptr;
    char		buffer [4];
@@ -90,8 +81,8 @@ static long SwapLong (x)
    return *((long *) ptr);
 }
 
-static short SwapShort (x)
-   short	x;
+/* UNUSED
+static short SwapShort (short int x)
 {
    char		*ptr;
    char		buffer [2];
@@ -104,9 +95,10 @@ static short SwapShort (x)
    ptr = buffer;
    return *((short *) ptr);
 }
+*/
 
-static unsigned short SwapUnsignedShort (x)
-   unsigned short	x;
+ /* UNUSED
+static unsigned short SwapUnsignedShort (short unsigned int x)
 {
    char		*ptr;
    char		buffer [2];
@@ -119,9 +111,9 @@ static unsigned short SwapUnsignedShort (x)
    ptr = buffer;
    return *((unsigned short *) ptr);
 }
+ */
 
-static double SwapDouble (x)
-   double	x;
+static double SwapDouble (double x)
 {
    char		*ptr;
    char		buffer [8];
@@ -141,10 +133,7 @@ static double SwapDouble (x)
    return *((double *) ptr);
 }
 
-static int ReadMAT (fp, a, name)
-   FILE		*fp; 
-   Matrix	*a;
-   char		**name;
+static int ReadMAT (FILE *fp, Matrix *a, char **name)
 {
    unsigned	count;
    MATheader	h;
@@ -270,11 +259,7 @@ static int ReadMAT (fp, a, name)
    return count;
 }
  
-static void WriteMAT (a, fp, name, arch)
-   Matrix	a;
-   FILE		*fp;
-   char		*name;
-   int		arch;
+static void WriteMAT (Matrix a, FILE *fp, char *name, int arch)
 {
    long		mopt;
    double	x;
@@ -305,10 +290,7 @@ static void WriteMAT (a, fp, name, arch)
 }
 
 
-int MatrixToMatlab (a, fp, name)
-   Matrix	a;
-   FILE		*fp;
-   char		*name;
+int MatrixToMatlab (Matrix a, FILE *fp, char *name)
 {
    int		arch;
   
@@ -319,11 +301,7 @@ int MatrixToMatlab (a, fp, name)
    return 0;
 }
 
-int MatricesToMatlab (a, n, fp, name)
-   Matrix	*a;
-   unsigned	n;
-   FILE		*fp;
-   char		**name;
+int MatricesToMatlab (Matrix *a, unsigned int n, FILE *fp, char **name)
 {
    int		arch;
    unsigned	i;
@@ -336,8 +314,7 @@ int MatricesToMatlab (a, n, fp, name)
    return 0;
 }
 
-Matrix MatlabToMatrix (fp)
-   FILE		*fp;
+Matrix MatlabToMatrix (FILE *fp)
 {
    Matrix	a;
    int		status;

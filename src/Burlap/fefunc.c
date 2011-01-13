@@ -26,6 +26,7 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include "felt.h"
 # include "trap.h"
 # include "apply.h"
@@ -37,7 +38,6 @@
 # include "problem.h"
 # include "allocate.h"
 # include "definition.h"
-# include "our-stdlib.h"
 # include "pathsearch.h"
 
 
@@ -49,21 +49,10 @@ static struct {
 
 static int num_defs;
 
-
-static int	 is_static	PROTO ((void));
-static int	 check_analysis	PROTO ((char *));
-static int	 is_permutation	PROTO ((char *, Array));
-static int	 element_set_up	PROTO ((Element, int));
-static int	 element_stress	PROTO ((Element));
-static Matrix	 check_matrix	PROTO ((char *, Matrix));
-static unsigned *check_dofs	PROTO ((descriptor *, char *, unsigned *));
-
-
 /* These are only in misc.h. */
 
-extern double ElementArea   PROTO ((Element, unsigned));
-extern double ElementLength PROTO ((Element, unsigned));
-
+double ElementArea(Element e, unsigned int n);
+double ElementLength(Element element, unsigned int coords);
 
 /************************************************************************
  * Function:	is_static						*
@@ -72,7 +61,7 @@ extern double ElementLength PROTO ((Element, unsigned));
  *		zero otherwise.						*
  ************************************************************************/
 
-static int is_static ( )
+static int is_static (void)
 {
     return problem.mode == Static || problem.mode == StaticThermal;
 }
@@ -85,8 +74,7 @@ static int is_static ( )
  *		initialized, and zero otherwise.			*
  ************************************************************************/
 
-static int check_analysis (func)
-    char *func;
+static int check_analysis (char *func)
 {
     if (CheckAnalysisParameters (problem.mode))
 	return 0;
@@ -112,9 +100,7 @@ static int check_analysis (func)
  *		suitable for node renumbering, otherwise zero.		*
  ************************************************************************/
 
-static int is_permutation (func, array)
-    char *func;
-    Array array;
+static int is_permutation (char *func, Array array)
 {
     int  i;
     int  j;
@@ -162,9 +148,7 @@ static int is_permutation (func, array)
  *		from C objects into burlap descriptors.			*
  ************************************************************************/
 
-static int element_set_up (element, mass_mode)
-    Element element;
-    int     mass_mode;
+static int element_set_up (Element element, int mass_mode)
 {
     int		i;
     int		status;
@@ -190,7 +174,7 @@ static int element_set_up (element, mass_mode)
 	    D_Type    (arg1) = T_Element;
 	    D_Temp    (arg1) = F_False;
 	    D_Trapped (arg1) = F_False;
-	    D_Element (arg1) = &element;
+	    arg1->u.ptr      = &element;
 
 	    D_Type    (arg2) = T_Int;
 	    D_Temp    (arg2) = F_False;
@@ -222,8 +206,7 @@ static int element_set_up (element, mass_mode)
  *		transformed from C objects into burlap descriptors.	*
  ************************************************************************/
 
-static int element_stress (element)
-    Element element;
+static int element_stress (Element element)
 {
     int		i;
     int		status;
@@ -247,7 +230,7 @@ static int element_stress (element)
 	    D_Type    (arg1) = T_Element;
 	    D_Temp    (arg1) = F_False;
 	    D_Trapped (arg1) = F_False;
-	    D_Element (arg1) = &element;
+	    arg1->u.ptr      = &element;
 
 	    if (!function_call (function, 1)) {
 		result = top ( );
@@ -268,9 +251,7 @@ static int element_stress (element)
  *		size and that it is compact, or can be compacted.	*
  ************************************************************************/
 
-static Matrix check_matrix (func, a)
-    char  *func;
-    Matrix a;
+static Matrix check_matrix (char *func, Matrix a)
 {
     Matrix   b;
     unsigned size;
@@ -302,10 +283,7 @@ static Matrix check_matrix (func, a)
  *		array of the degrees of freedom.			*
  ************************************************************************/
 
-static unsigned *check_dofs (d, function, num_dofs)
-    descriptor *d;
-    char       *function;
-    unsigned   *num_dofs;
+static unsigned *check_dofs (descriptor *d, char *function, unsigned int *num_dofs)
 {
     unsigned  i;
     unsigned *dofs;
@@ -354,8 +332,7 @@ static unsigned *check_dofs (d, function, num_dofs)
  *		This function is only defined for planar elements.	*
  ************************************************************************/
 
-int area_func (n)
-    int n;
+int area_func (int n)
 {
     Element	e;
     descriptor *arg;
@@ -421,8 +398,7 @@ int area_func (n)
  *		string value.						*
  ************************************************************************/
 
-int felt_func (n)
-    int n;
+int felt_func (int n)
 {
     char	*name;
     static char	*path;
@@ -488,8 +464,7 @@ int felt_func (n)
  *		double value if the argument is not a string.		*
  ************************************************************************/
 
-int length_func (n)
-    int n;
+int length_func (int n)
 {
     Matrix	a;
     Element	e;
@@ -577,8 +552,7 @@ int length_func (n)
  * Description:	Not available yet.					*
  ************************************************************************/
 
-int volume_func (n)
-    int n;
+int volume_func (int n)
 {
     rterror ("volume() function is not available");
     return 1;
@@ -594,8 +568,7 @@ int volume_func (n)
  *		definition on the stack.				*
  ************************************************************************/
 
-int add_definition_func (n)
-    int n;
+int add_definition_func (int n)
 {
     descriptor *arg1;
     descriptor *arg2;
@@ -731,8 +704,7 @@ int add_definition_func (n)
  *		string value.						*
  ************************************************************************/
 
-int remove_definition_func (n)
-    int n;
+int remove_definition_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -808,8 +780,7 @@ int remove_definition_func (n)
  *		computed.						*
  ************************************************************************/
 
-int assemble_func (n)
-    int n;
+int assemble_func (int n)
 {
     Matrix	K;
     Matrix	M;
@@ -892,8 +863,7 @@ int assemble_func (n)
  *		a null descriptor.					*
  ************************************************************************/
 
-int clear_nodes_func (n)
-    int n;
+int clear_nodes_func (int n)
 {
     descriptor *result;
 
@@ -926,8 +896,7 @@ int clear_nodes_func (n)
  *		arguments to matrices.					*
  ************************************************************************/
 
-int compute_modes_func (n)
-    int n;
+int compute_modes_func (int n)
 {
     Matrix	l;
     Matrix	x;
@@ -1007,8 +976,7 @@ int compute_modes_func (n)
  * Description:	Not available yet.					*
  ************************************************************************/
 
-int compute_stresses_func (n)
-    int n;
+int compute_stresses_func (int n)
 {
     rterror ("compute_stresses() function is not available");
     return 1;
@@ -1030,8 +998,7 @@ int compute_stresses_func (n)
  *		double value.						*
  ************************************************************************/
 
-int construct_forces_func (n)
-    int n;
+int construct_forces_func (int n)
 {
     double	t;
     Matrix	v;
@@ -1098,8 +1065,7 @@ int construct_forces_func (n)
  *		number of degrees of freedom.				*
  ************************************************************************/
 
-int find_dofs_func (n)
-    int n;
+int find_dofs_func (int n)
 {
     ste	       *s;
     descriptor *dofs;
@@ -1139,8 +1105,7 @@ int find_dofs_func (n)
  *		integer values.						*
  ************************************************************************/
 
-int global_dof_func (n)
-    int n;
+int global_dof_func (int n)
 {
     descriptor *arg1;
     descriptor *arg2;
@@ -1220,8 +1185,7 @@ int global_dof_func (n)
  *		of integers.						*
  ************************************************************************/
 
-int integrate_hyperbolic_func (n)
-    int n;
+int integrate_hyperbolic_func (int n)
 {
     Matrix	K;
     Matrix	M;
@@ -1329,8 +1293,7 @@ int integrate_hyperbolic_func (n)
  *		of integers.						*
  ************************************************************************/
 
-int integrate_parabolic_func (n)
-    int n;
+int integrate_parabolic_func (int n)
 {
     Matrix	K;
     Matrix	M;
@@ -1429,8 +1392,7 @@ int integrate_parabolic_func (n)
  *		to an integer value.					*
  ************************************************************************/
 
-int local_dof_func (n)
-    int n;
+int local_dof_func (int n)
 {
     descriptor *arg1;
     descriptor *arg2;
@@ -1511,8 +1473,7 @@ int local_dof_func (n)
  *		matrix.							*
  ************************************************************************/
 
-int remove_constrained_func (n)
-    int n;
+int remove_constrained_func (int n)
 {
     Matrix	a;
     Matrix	b;
@@ -1576,8 +1537,7 @@ int remove_constrained_func (n)
  *		permutation vector of node numbers.			*
  ************************************************************************/
 
-int renumber_nodes_func (n)
-    int n;
+int renumber_nodes_func (int n)
 {
     unsigned   *v;
     unsigned	num_elts;
@@ -1619,8 +1579,7 @@ int renumber_nodes_func (n)
  *		array of integer values.				*
  ************************************************************************/
 
-int restore_numbers_func (n)
-    int n;
+int restore_numbers_func (int n)
 {
     descriptor *arg;
     descriptor *result;
@@ -1667,8 +1626,7 @@ int restore_numbers_func (n)
  * Description:	Not available yet.					*
  ************************************************************************/
 
-int set_up_func (n)
-    int n;
+int set_up_func (int n)
 {
     rterror ("set_up() function is not available");
     return 1;
@@ -1690,8 +1648,7 @@ int set_up_func (n)
  *		matrices.						*
  ************************************************************************/
 
-int solve_displacements_func (n)
-    int n;
+int solve_displacements_func (int n)
 {
     Matrix	K;
     Matrix	f;
@@ -1785,8 +1742,7 @@ int solve_displacements_func (n)
  *		matrix.							*
  ************************************************************************/
 
-int zero_constrained_func (n)
-    int n;
+int zero_constrained_func (int n)
 {
     Matrix	a;
     descriptor *arg;

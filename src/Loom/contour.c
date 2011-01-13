@@ -26,12 +26,14 @@
 # include <stdio.h>
 # include <string.h>
 # include <ctype.h>
+# include <X11/Xutil.h>
+# include "contour.h"
 # include "fe.h"
 # include "allocate.h"
 # include "error.h"
-# include "region.h"
-
+# include "bivar.h"
 # include "colormap.h"
+# include "bmp.h"
 
 # define HORIZ	1
 # define VERT	2
@@ -49,12 +51,7 @@ static unsigned char	  white, black;
 
 # define Sign(x) ((x) >= 0 ? 1 : -1)
 
-static void BresenhamLine (xs, ys, xe, ye, image, nrows, ncols)
-   int	  xs, ys, xe, ye;
-   unsigned char **image;
-   int	  nrows;
-   int	  ncols; 
-   
+static void BresenhamLine (int xs, int ys, int xe, int ye, unsigned char **image, int nrows, int ncols)
 {
    unsigned	i;
    int		x,y,
@@ -110,7 +107,7 @@ static void BresenhamLine (xs, ys, xe, ye, image, nrows, ncols)
    return;
 }
 
-static void InitializeColormapTable ( )
+static void InitializeColormapTable (void)
 {
    int	i;
 
@@ -139,10 +136,7 @@ static void InitializeColormapTable ( )
    return;
 }
 
-static void HequalImageData (image, nrows, ncols)
-   unsigned char	**image;
-   int	  nrows;
-   int	  ncols;
+static void HequalImageData (unsigned char **image, int nrows, int ncols)
 {
    unsigned		i,j;
    unsigned char			point;
@@ -195,13 +189,7 @@ static void HequalImageData (image, nrows, ncols)
    }
 }
 
-static unsigned char **LoadImage (z, width, height, mask, equalize, wedge_orient)
-   float	 **z;
-   unsigned char **mask;
-   int		   width;
-   int		   height;
-   int		   equalize;
-   unsigned	   wedge_orient;
+static unsigned char **LoadImage (float **z, int width, int height, unsigned char **mask, int equalize, unsigned int wedge_orient)
 {
    unsigned		x_max,y_max,x_min,y_min;
    float		max,min;
@@ -304,20 +292,7 @@ static unsigned char **LoadImage (z, width, height, mask, equalize, wedge_orient
    return image;
 }
 
-static void PlotContourField (filename, node, numnodes, element, 
-                              numelts, nd, component, equalize, plot_elt,
-                              width, height)
-   char		*filename;
-   Node		*node;
-   unsigned	numnodes;
-   Element	*element;
-   unsigned	numelts,
-		nd;
-   int		component;
-   int		equalize;
-   int		plot_elt;
-   int		width;
-   int		height;
+static void PlotContourField (char *filename, Node *node, unsigned int numnodes, Element *element, unsigned int numelts, unsigned int nd, int component, int equalize, int plot_elt, int width, int height)
 {
    unsigned	i,j;
    unsigned	n;
@@ -526,16 +501,8 @@ static void PlotContourField (filename, node, numnodes, element,
    return;
 }  
 
-void PlotStressField (out, element, numelts, comp, equalize, plot_elt,
-                      width, height)
-   char		*out;
-   Element	*element;
-   unsigned	numelts;
-   int		comp;
-   int		equalize;
-   int 		plot_elt;
-   int		width;
-   int		height;
+void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
+                      int equalize, int plot_elt, int width, int height)
 {
    int		nd;
    int		i, j;
@@ -576,18 +543,9 @@ void PlotStressField (out, element, numelts, comp, equalize, plot_elt,
                      equalize, plot_elt, width, height);
 }
 
-void PlotDisplacementField (out, node, numnodes, element, numelts, comp, 
-                            equalize, plot_elt, width, height)
-   char		*out;
-   Node		*node;
-   unsigned	numnodes;
-   Element	*element;
-   unsigned	numelts;
-   int		comp;
-   int		equalize;
-   int 		plot_elt;
-   int		width;
-   int		height;
+void PlotDisplacementField (char *out, Node *node, unsigned numnodes,
+                            Element *element, unsigned numelts, int comp, 
+                            int equalize, int plot_elt, int width, int height)
 {
    int		i;
    int		flag;

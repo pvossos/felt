@@ -38,8 +38,8 @@
 
 # define FONTSIZE 14
 
-static void SetSelected ();
-static void SetSelectedOkay ();
+static void SetSelected (Widget widget, XtPointer clientData, XtPointer callData);
+static void SetSelectedOkay(Widget w, XEvent *event, String *params, Cardinal *num_params);
 
 static unsigned selected;
 
@@ -61,7 +61,7 @@ static XtActionsRec actiontable [ ] = {
  * Function:	SetSelectedOkay 					* 
  ************************************************************************/
 
-static void SetSelectedOkay ()
+static void SetSelectedOkay(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    selected = Okay;
 }
@@ -70,10 +70,7 @@ static void SetSelectedOkay ()
  * Function:	 SetSelected						*
  ************************************************************************/
 
-static void SetSelected (widget, clientData, callData)
-    Widget    widget;
-    XtPointer clientData;
-    XtPointer callData;
+static void SetSelected (Widget widget, XtPointer clientData, XtPointer callData)
 {
     selected = *(unsigned *) clientData;
 }
@@ -83,10 +80,7 @@ static void SetSelected (widget, clientData, callData)
  * Function:	 CreateDialog						*
  ************************************************************************/
 
-Dialog *CreateDialog (topwidget, name, options)
-    Widget   topwidget;
-    char    *name;
-    unsigned options;
+Dialog *CreateDialog (Widget topwidget, char *name, unsigned int options)
 {
     int     		i;
     Dialog 		*dialog;
@@ -125,11 +119,7 @@ Dialog *CreateDialog (topwidget, name, options)
  * Function:	 PopupDialog						*
  ************************************************************************/
 
-unsigned PopupDialog (dialog, message, suggestion, answer)
-    Dialog *dialog;
-    String  message;
-    String  suggestion;
-    String *answer;
+unsigned PopupDialog (Dialog *dialog, String message, String suggestion, String *answer)
 {
     XEvent    		event;
     Cardinal  		count;

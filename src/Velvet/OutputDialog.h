@@ -27,84 +27,24 @@
 # ifndef _OutputDialog_h
 # define _OutputDialog_h
 
-# if NeedVarargsPrototypes
 # include <stdarg.h>
-# else
-# include <varargs.h>
-# endif
 
 typedef struct output_dialog *OutputDialog;
 
+OutputDialog OutputDialogCreate (Widget parent, String name, String *buttons, Cardinal num_buttons);
 
-extern OutputDialog OutputDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String *			/* buttons     */,
-    Cardinal			/* num_buttons */
-# endif
-);
+String OutputDialogSelect (OutputDialog outputd, String title, String preferred);
 
+void OutputDialogPopup (OutputDialog outputd, String title, String preferred, XtCallbackProc callback, XtPointer client_data);
 
-extern String OutputDialogSelect (
-# if NeedFunctionPrototypes
-    OutputDialog		/* output_dialog */,
-    String			/* title	 */,
-    String			/* preferred	 */
-# endif
-);
+void OutputDialogPopdown (OutputDialog outputd);
 
+void OutputDialogView (OutputDialog outputd, String file_name, Cardinal max_lines, Cardinal max_columns);
 
-extern void OutputDialogPopup (
-# if NeedFunctionPrototypes
-    OutputDialog		/* output_dialog */,
-    String			/* title	 */,
-    String			/* preferred	 */,
-    XtCallbackProc		/* callback	 */,
-    XtPointer			/* client_data	 */
-# endif
-);
+void OutputDialogPrintf (OutputDialog outputd, String format, ...);
 
+void OutputDialogVprintf (OutputDialog outputd, String format, va_list ap);
 
-extern void OutputDialogPopdown (
-# if NeedFunctionPrototypes
-    OutputDialog		/* output_dialog */
-# endif
-);
-
-
-extern void OutputDialogView (
-# if NeedFunctionPrototypes
-    OutputDialog		/* output_dialog */,
-    String			/* file_name	 */,
-    Cardinal			/* max_lines	 */,
-    Cardinal			/* max_columns	 */
-# endif
-);
-
-
-extern void OutputDialogPrintf (
-# if NeedVarargsPrototypes
-    OutputDialog		/* output_dialog */,
-    String			/* format	 */,
-    ...				/* arguments	 */
-# endif
-);
-
-
-extern void OutputDialogVprintf (
-# if NeedFunctionPrototypes
-    OutputDialog		/* output_dialog */,
-    String			/* format	 */,
-    va_list			/* argument list */
-# endif
-);
-
-
-extern Widget OutputDialogShell (
-# if NeedFunctionPrototypes
-    OutputDialog		/* output_dialog */
-# endif
-);
+Widget OutputDialogShell (OutputDialog outputd);
 
 # endif /* _OutputDialog_h */

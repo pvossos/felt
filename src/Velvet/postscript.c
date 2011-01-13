@@ -26,6 +26,7 @@
 
 # include <stdio.h>
 # include <string.h>
+# include <stdlib.h>
 # include <X11/Xatom.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -34,13 +35,12 @@
 # include "Canvas.h"
 # include "Tree.h"
 # include "pslib.h"
+# include "procedures.h"
 
 static double		Xscale, Yscale;
 static double		Xmin, Ymin;
 static double		conv;
 static Widget		w;	
-
-extern Canvas		canvas;
 
 static char *color_names [ ] = {
 "white", "black", "red", "green", "blue", "yellow", "brown", 
@@ -50,21 +50,17 @@ static char *Color_names [ ] = {
 "White", "Black", "Red", "Green", "Blue", "Yellow", "Brown", 
 "Gray", "Violet", "Cyan", "Magenta", "Orange"};
 
-static int xconv (x)
-   double	x;
+static int xconv (double x)
 {
    return xconvps ((x - Xmin)/Xscale);
 }
 
-static int yconv (y)
-   double	y;
+static int yconv (double y)
 {
    return yconvps ((y - Ymin)/Yscale);
 }
 
-static void SetupFont (fname, fstruct)
-   String	fname;
-   XFontStruct	*fstruct;
+static void SetupFont (String fname, XFontStruct *fstruct)
 {
    static char    *size_names [ ] = {"--8","--10","--11","--12","--14","--17",
                                      "--18","--20","--24","--25","--34"};
@@ -177,8 +173,7 @@ static void SetupFont (fname, fstruct)
    pssetfontsize (size);
 }
 
-static void SetupLineStyle (style)
-   int			style;
+static void SetupLineStyle (int style)
 {
    int			ps_style;
 
@@ -211,8 +206,7 @@ static void SetupLineStyle (style)
    pssetlinestyle (ps_style);
 }   
 
-static void SetupColor (color)
-   String	color;
+static void SetupColor (String color)
 {
    int		i;
    int		color_number;
@@ -234,8 +228,7 @@ static void SetupColor (color)
    pssetcolor (color_number);
 }
 
-static int TranslateFigure (f)
-   Figure		f;
+static int TranslateFigure (Figure f)
 {
    FigureAttributes	attr;
    unsigned		j;
@@ -307,15 +300,7 @@ static int TranslateFigure (f)
    return 0;
 }
       
-int WritePostscriptFigures (f, n, widget, xmin, xmax, ymin, ymax, ps_filename)
-   Figure	*f;
-   unsigned	n;
-   Widget	widget;
-   double	xmin;
-   double	xmax;
-   double	ymin;
-   double	ymax;
-   char		*ps_filename;
+int WritePostscriptFigures (Figure *f, unsigned int n, Widget widget, double xmin, double xmax, double ymin, double ymax, char *ps_filename)
 {
    int		i;
    int		width, height;

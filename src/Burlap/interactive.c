@@ -31,7 +31,6 @@
 # include "error.h"
 # include "lexer.h"
 # include "allocate.h"
-# include "our-stdlib.h"
 # include "interactive.h"
 
 
@@ -51,12 +50,6 @@ static struct alias {
 } aliases [MaxAliases];
 
 static int num_aliases;
-
-static int   compare_aliases PROTO ((void *, void *));
-static void  sort_aliases    PROTO ((void));
-static int   parse_alias     PROTO ((char *));
-static char *expand_alias    PROTO ((char *));
-
 
 # define NumDefaults (sizeof (default_aliases) / sizeof (*default_aliases))
 
@@ -96,7 +89,7 @@ static FILE *stream = NULL;
 # include "functab.h"
 # include "consttab.h"
 
-static char *completion_generator PROTO ((char *, int));
+static char *completion_generator (char *, int);
 
 static char *keywords [ ] = {
     "break", "do", "else", "end", "for", "function", "global",
@@ -113,9 +106,7 @@ static char *keywords [ ] = {
  *		intrinsic functions and keywords are completed.		*
  ************************************************************************/
 
-static char *completion_generator (text, state)
-    char *text;
-    int   state;
+static char *completion_generator (char *text, int state)
 {
     char      *ptr;
     static int index;
@@ -174,9 +165,8 @@ static char *completion_generator (text, state)
  * Description:	Compares two aliases.					*
  ************************************************************************/
 
-static int compare_aliases (p1, p2)
-    void *p1;
-    void *p2;
+static int 
+compare_aliases(const void *p1, const void *p2)
 {
     struct alias *a1;
     struct alias *a2;
@@ -195,7 +185,7 @@ static int compare_aliases (p1, p2)
  * Description:	Sorts the alias list in place.				*
  ************************************************************************/
 
-static void sort_aliases ( )
+static void sort_aliases (void)
 {
     qsort (aliases, num_aliases, sizeof (*aliases), compare_aliases);
 }
@@ -210,8 +200,7 @@ static void sort_aliases ( )
  *		input line.						*
  ************************************************************************/
 
-static int parse_alias (line)
-    char *line;
+static int parse_alias (char *line)
 {
     int  i;
     char alias [1024];
@@ -308,8 +297,7 @@ static int parse_alias (line)
  *		characters work as in csh.				*
  ************************************************************************/
 
-static char *expand_alias (text)
-    char *text;
+static char *expand_alias (char *text)
 {
     int   i;
     int   length;
@@ -374,11 +362,7 @@ static char *expand_alias (text)
  * Description:	Initializes the state for interactive mode.		*
  ************************************************************************/
 
-void init_interactive (argv0, s_file, q_flag, a_flag)
-    char *argv0;
-    char *s_file;
-    int   q_flag;
-    int   a_flag;
+void init_interactive (char *argv0, char *s_file, int q_flag, int a_flag)
 {
     int i;
 
@@ -437,7 +421,7 @@ void init_interactive (argv0, s_file, q_flag, a_flag)
  *		input stream using either getchar() or readline().	*
  ************************************************************************/
 
-int readchar ( )
+int readchar (void)
 {
 # ifdef READLINE
     int   result;
@@ -550,8 +534,7 @@ int readchar ( )
  * Description:	Prints the last elements of the history list.		*
  ************************************************************************/
 
-int print_history (n)
-    int n;
+int print_history (int n)
 {
 # ifdef READLINE
     int		 i;

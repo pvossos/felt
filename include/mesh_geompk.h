@@ -74,22 +74,31 @@ typedef struct _grid {
    Rule		zrule;		/* scale rule for z-axis		*/
 } *Grid;
 
-extern Node    *CoalesceNodes     PROTO ((Node *, Element *, 
-                                          unsigned *, unsigned));
-extern unsigned GenerateLine	  PROTO ((Line, Element **, Node **,
-                                          unsigned *, unsigned *,
-                                          unsigned, unsigned));
-extern unsigned GenerateGrid	  PROTO ((Grid, Element **, Node **,
-                                          unsigned *, unsigned *,
-                                          unsigned, unsigned));
-extern unsigned GenerateQuadGrid  PROTO ((Grid, Element **, Node **,
-                                          unsigned *, unsigned *,
-                                          unsigned, unsigned));
-extern unsigned GenerateBrickGrid PROTO ((Grid, Element **, Node **,
-                                          unsigned *, unsigned *,
-                                          unsigned, unsigned));
-extern unsigned GenerateTriMesh	  PROTO ((TriMesh, Element **, Node **,
-                                          unsigned *, unsigned *,
-                                          unsigned, unsigned));
+Node* CoalesceNodes(Node *node, Element *element, unsigned *nn, unsigned numelts);
+
+unsigned 
+GenerateLine (Line line, Element **element, Node **node,
+              unsigned int *numelts, unsigned int *numnodes,
+              unsigned int bnode, unsigned int belement);
+
+unsigned
+GenerateGrid(Grid grid, Element **element, Node **node,
+             unsigned int *numelts, unsigned int *numnodes, 
+             unsigned int bnode, unsigned int belement);
+
+unsigned
+GenerateQuadGrid(Grid grid, Element **element, Node **node,
+                 unsigned int *numelts, unsigned int *numnodes, 
+                 unsigned int bnode, unsigned int belement);
+
+unsigned 
+GenerateBrickGrid(Grid grid, Element **element, Node **node, 
+                  unsigned int *numelts, unsigned int *numnodes, 
+                  unsigned int bnode, unsigned int belement);
+
+unsigned
+GenerateTriMesh(TriMesh trimesh, Element **element, Node **node, 
+                unsigned int *numelts, unsigned int *numnodes,
+                unsigned int bnode, unsigned int belement);
 
 # endif /* _MESH_H */

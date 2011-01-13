@@ -25,9 +25,8 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <stdarg.h>
 # include "debug.h"
-# include VAR_ARGS_INCLUDE
-
 
 int debug;
 
@@ -38,18 +37,12 @@ int debug;
  *		arguments to the standard error stream.			*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void eprintf (char *format, ...)
-# else
-void eprintf (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
     vfprintf (stderr, format, ap);
     va_end (ap);
 }

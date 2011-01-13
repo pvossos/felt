@@ -114,8 +114,7 @@ static String table =
  <KeyUp>Return: AutoRepeat(saved) unset() ModalAction(button)\n\
  <KeyUp>space: AutoRepeat(saved) unset() ModalAction(button)";
 
-static void ChangeDisplayedMode (direction)
-   int		direction;
+static void ChangeDisplayedMode (int direction)
 {
    Point	points [MaxNodesPerElement];
    unsigned	i,j;
@@ -187,10 +186,7 @@ static void ChangeDisplayedMode (direction)
    return;
 }
 
-static void ButtonCallback (w, client_data, call_data)
-   Widget	w;
-   XtPointer	client_data,
-		call_data;
+static void ButtonCallback (Widget w, XtPointer client_data, XtPointer call_data)
 {
    unsigned	selected = *(unsigned *) client_data;
 
@@ -204,11 +200,7 @@ static void ButtonCallback (w, client_data, call_data)
       ChangeDisplayedMode (-1);
 }                       
 
-static void ModalAction (w, event, params, num_params)
-   Widget	w;
-   XEvent	*event;
-   String	*params;
-   Cardinal	*num_params;
+static void ModalAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    if (strcmp (params [0], "delete") == 0)
       ButtonCallback ((Widget) NULL, (XtPointer) &DismissButton, (XtPointer) NULL);
@@ -216,7 +208,7 @@ static void ModalAction (w, event, params, num_params)
       XtCallCallbacks (w, XtNcallback, NULL);
 }
 
-static void CreateModalShell ()
+static void CreateModalShell (void)
 {
    Arg			args [10];
    Widget		group [4];
@@ -338,11 +330,7 @@ static void CreateModalShell ()
    return; 
 }
 
-static void SetupArrays (phi, element, numelts, numnodes)
-   Matrix	phi;
-   Element	*element;
-   unsigned	numelts;
-   unsigned	numnodes;
+static void SetupArrays (Matrix phi, Element *element, unsigned int numelts, unsigned int numnodes)
 {
    unsigned	i,j;
 
@@ -398,13 +386,7 @@ static void SetupArrays (phi, element, numelts, numnodes)
 
 static int  	first_time = 1;
 
-void DrawModeShapes (phi, lambda, node, element, numnodes, numelts)
-   Matrix	phi;
-   Matrix	lambda;
-   Node		*node;
-   Element	*element;
-   unsigned	numnodes;
-   unsigned	numelts;
+void DrawModeShapes (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	x_max, x_min,
@@ -494,13 +476,7 @@ void DrawModeShapes (phi, lambda, node, element, numnodes, numelts)
    ChangeDisplayedMode (1);
 }
 
-void DrawModeShapes3D (phi, lambda, node, element, numnodes, numelts)
-   Matrix	phi;
-   Matrix	lambda;
-   Element	*element;
-   Node		*node;
-   unsigned	numnodes;
-   unsigned	numelts;
+void DrawModeShapes3D (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	maxX, minX, 

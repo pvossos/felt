@@ -32,26 +32,23 @@
 # include "misc.h"
 
 
-int beam3dEltSetup ( );
-int beam3dEltStress ( );
+static int beam3dEltSetup (Element element, char mass_mode, int tangent);
+static int beam3dEltStress (Element element);
 
 struct definition beam3dDefinition = {
     "beam3d", beam3dEltSetup, beam3dEltStress,
     Linear, 2, 2, 6, 6, {0, 1, 2, 3, 4, 5, 6}, 1
 };
 
-Matrix Beam3dLumpedMassMatrix  ( );
-Matrix Beam3dConsistentMassMatrix ( );
-Matrix Beam3dLocalK            ( );
-Matrix Beam3dTransformMatrix   ( );
-Vector Beam3dEquivNodalForces  ( );
+static Matrix Beam3dLumpedMassMatrix  (Element element);
+static Matrix Beam3dLocalK            (Element element);
+static Matrix Beam3dTransformMatrix   (Element element);
+static Vector Beam3dEquivNodalForces  (Element element, int *err_count);
 
-static void ResolveEndForces ( );
+static void ResolveEndForces (Vector equiv, double wa, double wb, Direction direction, double L);
 
-int beam3dEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+beam3dEltSetup(Element element, char mass_mode, int tangent)
 {
    Matrix		T,
 			me,
@@ -142,8 +139,8 @@ int beam3dEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int beam3dEltStress (element)
-   Element	element;
+static int
+beam3dEltStress(Element element)
 {
    unsigned		i;
    int			count;
@@ -211,8 +208,8 @@ int beam3dEltStress (element)
    return 0;          
 } 
 
-Matrix Beam3dLocalK (element)
-   Element	element;
+static Matrix
+Beam3dLocalK(Element element)
 {
    double		L,
 			L3,
@@ -264,8 +261,8 @@ Matrix Beam3dLocalK (element)
    return ke;
 }
 
-Matrix Beam3dLumpedMassMatrix (element)
-   Element	element;
+static Matrix
+Beam3dLumpedMassMatrix(Element element)
 {
    static Matrix	me = NullMatrix;
    double		L;
@@ -297,14 +294,8 @@ Matrix Beam3dLumpedMassMatrix (element)
    return me;
 }
 
-Matrix Beam3dConsistentMassMatrix (element)
-   Element	element;
-{
-   return Beam3dLumpedMassMatrix (element);
-}
-
-Matrix Beam3dTransformMatrix (element)
-   Element	element;
+static Matrix
+Beam3dTransformMatrix(Element element)
 {
    unsigned		i;
    double	   	cl,	
@@ -355,9 +346,8 @@ Matrix Beam3dTransformMatrix (element)
    return T;
 }
 
-Vector Beam3dEquivNodalForces (element, err_count)
-   Element	element;
-   int		*err_count;
+static Vector
+Beam3dEquivNodalForces(Element element, int *err_count)
 {
    double		L;
    double		wa,wb;
@@ -581,12 +571,8 @@ Vector Beam3dEquivNodalForces (element, err_count)
    return result; 
 }
 
-static void ResolveEndForces (equiv, wa, wb, direction, L)
-   Vector	equiv;
-   double	wa;
-   double	wb;
-   Direction	direction;
-   double	L;
+static void
+ResolveEndForces(Vector equiv, double wa, double wb, Direction direction, double L)
 {
    double	force1, force2;
    double	moment1, moment2;

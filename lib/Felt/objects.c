@@ -31,20 +31,8 @@
 # include "objects.h"
 # include "allocate.h"
 
-# ifdef NEED_STRDUP
-extern char *strdup ( );
-# endif
-
-/************************************************************************
- * Function:	 CreateNode						*
- *									*
- * Description:	 CreateNode creates and initializes a node structure.	*
- *		 The node number is assigned and all pointer fields are	*
- *		 set to NULL.						*
- ************************************************************************/
-
-Node CreateNode (number)
-    unsigned number;
+Node
+CreateNode(unsigned int number)
 {
     Node     node;
     unsigned i;
@@ -68,17 +56,8 @@ Node CreateNode (number)
     return node;
 }
 
-
-/************************************************************************
- * Function:	 DestroyNode						*
- *									*
- * Description:	 DestroyNode deallocates a node structure.  The		*
- *		 auxillary pointer and equivalent force vector are	*
- *		 deallocated.						*
- ************************************************************************/
-
-void DestroyNode (node)
-    Node node;
+void
+DestroyNode(Node node)
 {
     if (node) {
 	Deallocate (node -> aux);
@@ -87,20 +66,8 @@ void DestroyNode (node)
     }
 }
 
-
-/************************************************************************
- * Function:	 CreateElement						*
- *									*
- * Description:	 CreateElement creates and initializes a new element	*
- *		 structure.  The element number and definition are	*
- *		 assigned, the array of node pointers is allocated and	*
- *		 if definition is not NULL, and all other pointer	*
- *		 fields are initialized to NULL.			*
- ************************************************************************/
-
-Element CreateElement (number, defn)
-    unsigned   number;
-    Definition defn;
+Element
+CreateElement(unsigned int number, Definition defn)
 {
     unsigned i;
     Element  element;
@@ -139,18 +106,8 @@ Element CreateElement (number, defn)
     return element;
 }
 
-
-/************************************************************************
- * Function:	 DestroyElement						*
- *									*
- * Description:	 DestroyElement deallocates an element structure.  The	*
- *		 array of pointers to nodes, the array of stresses, and	*
- *		 the structure pointed to by the auxillary pointer are	*
- *		 deallocated.						*
- ************************************************************************/
-
-void DestroyElement (element)
-    Element element;
+void
+DestroyElement(Element element)
 {
     unsigned i;
 
@@ -170,17 +127,8 @@ void DestroyElement (element)
     }
 }
 
-
-/************************************************************************
- * Function:	 CreateForce						*
- *									*
- * Description:	 CreateForce creates and initializes a force structure.	*
- *		 The name of the force is assigned (not copied) and the	*
- *		 force components are initialized to zero.		*
- ************************************************************************/
-
-Force CreateForce (name)
-    char *name;
+Force
+CreateForce(char *name)
 {
     int   i;
     Force force;
@@ -204,16 +152,8 @@ Force CreateForce (name)
     return force;
 }
 
-
-/************************************************************************
- * Function:	 DestroyForce						*
- *									*
- * Description:	 DestroyForce deallocates a force structure.  The name	*
- *		 and auxillary pointer are also deallocated.		*
- ************************************************************************/
-
-void DestroyForce (force)
-    Force force;
+void
+DestroyForce(Force force)
 {
     int i;
 
@@ -230,17 +170,8 @@ void DestroyForce (force)
     }
 }
 
-
-/************************************************************************
- * Function:	 CreateMaterial						*
- *									*
- * Description:	 CreateMaterial creates and initializes a new material	*
- *		 structure.  The name is assigned (not copied) and the	*
- *		 fields are initialized to zero.			*
- ************************************************************************/
-
-Material CreateMaterial (name)
-    char *name;
+Material
+CreateMaterial(char *name)
 {
     Material material;
 
@@ -272,16 +203,8 @@ Material CreateMaterial (name)
     return material;
 }
 
-
-/************************************************************************
- * Function:	 DestroyMaterial					*
- *									*
- * Description:	 DestroyMaterial deallocates a material structure.  The	*
- *		 name and auxillary structure are also deallocated.	*
- ************************************************************************/
-
-void DestroyMaterial (material)
-    Material material;
+void
+DestroyMaterial(Material material)
 {
     if (material) {
 	Deallocate (material -> name);
@@ -291,17 +214,8 @@ void DestroyMaterial (material)
     }
 }
 
-
-/************************************************************************
- * Function:	 CreateConstraint					*
- *									*
- * Description:	 CreateConstraint creates and initializes a new		*
- *		 constraint structure.  The name is assigned (not	*
- *		 copied) and the fields are initialized to zero.	*
- ************************************************************************/
-
-Constraint CreateConstraint (name)
-    char *name;
+Constraint
+CreateConstraint(char *name)
 {
     int        i;
     Constraint constraint;
@@ -329,16 +243,8 @@ Constraint CreateConstraint (name)
     return constraint;
 }
 
-
-/************************************************************************
- * Function:	 DestroyConstraint					*
- *									*
- * Description:	 DestroyConstraint deallocates a constraint structure.	*
- *		 The name and auxillary structure are also deallocated.	*
- ************************************************************************/
-
-void DestroyConstraint (constraint)
-    Constraint constraint;
+void
+DestroyConstraint(Constraint constraint)
 {
     int i;
 
@@ -355,18 +261,8 @@ void DestroyConstraint (constraint)
     }
 }
 
-
-/************************************************************************
- * Function:	 CreateDistributed					*
- *									*
- * Description:	 CreateDistributed creates and initializes a new	*
- *		 distributed structure.  The name is assigned (not	*
- *		 copied) and the array of values allocated.		*
- ************************************************************************/
-
-Distributed CreateDistributed (name, nvalues)
-    char    *name;
-    unsigned nvalues;
+Distributed
+CreateDistributed(char *name, unsigned int nvalues)
 {
     Distributed distributed;
 
@@ -388,17 +284,8 @@ Distributed CreateDistributed (name, nvalues)
     return distributed;
 }
 
-
-/************************************************************************
- * Function:	 DestroyDistributed					*
- *									*
- * Description:	 DestroyDistributed deallocates a distributed		*
- *		 structure.  The array of values, name, and auxillary	*
- *		 structure are deallocated.				*
- ************************************************************************/
-
-void DestroyDistributed (distributed)
-    Distributed distributed;
+void
+DestroyDistributed(Distributed distributed)
 {
     if (distributed) {
 	ZeroOffset (distributed -> value);
@@ -410,17 +297,8 @@ void DestroyDistributed (distributed)
     }
 }
 
-
-/************************************************************************
- * Function:	 CreateLoadCase						*
- *									*
- * Description:	 CreateLoadCase creates and initializes a new		*
- *		 load case structure.  The name is assigned (not	*
- *		 copied) and the array of values allocated.		*
- ************************************************************************/
-
-LoadCase CreateLoadCase (name)
-    char    *name;
+LoadCase
+CreateLoadCase(char *name)
 {
     LoadCase	loadcase;
 
@@ -440,16 +318,8 @@ LoadCase CreateLoadCase (name)
     return loadcase;
 }
 
-
-/************************************************************************
- * Function:	 DestroyLoadCase					*
- *									*
- * Description:	 DestroyLoadCase deallocates a load case 		*
- *		 structure.                                           	* 
- ************************************************************************/
-
-void DestroyLoadCase (loadcase)
-    LoadCase	loadcase;
+void
+DestroyLoadCase(LoadCase loadcase)
 {
     if (loadcase) {
         if (loadcase -> forces) {
@@ -472,18 +342,9 @@ void DestroyLoadCase (loadcase)
 	Deallocate (loadcase);
     }
 }
-/************************************************************************
- * Function:	AssignForce						*
- *									*
- * Description:	Assigns a force given as a piece of code to a force	*
- *		structure.						*
- ************************************************************************/
 
-void AssignForce (force, dof, expr, text)
-    Force force;
-    DOF   dof;
-    Code  expr;
-    char *text;
+void
+AssignForce(Force force, DOF dof, Code expr, char *text)
 {
     Deallocate (force -> force [dof].text);
     FreeCode (force -> force [dof].expr);
@@ -493,18 +354,8 @@ void AssignForce (force, dof, expr, text)
     force -> force [dof].text  = text ? strdup (text) : NULL;
 }
 
-/************************************************************************
- * Function:	AssignSpectrum						*
- *									*
- * Description:	Assigns a spectrum given as a piece of code to a force	*
- *		structure.						*
- ************************************************************************/
-
-void AssignSpectrum (force, dof, expr, text)
-    Force force;
-    DOF   dof;
-    Code  expr;
-    char *text;
+void
+AssignSpectrum(Force force, DOF dof, Code expr, char *text)
 {
     Deallocate (force -> spectrum [dof].text);
     FreeCode (force -> spectrum [dof].expr);
@@ -514,20 +365,8 @@ void AssignSpectrum (force, dof, expr, text)
     force -> spectrum [dof].text  = text ? strdup (text) : NULL;
 }
 
-/************************************************************************
- * Function:	AssignConstraint					*
- *									*
- * Description:	Assigns a boundary condition given as a piece of code   *
- *		to the boundary value part of a constraint structure	*
- *              (Tx=, Ty=, Tz=, Rx=, Ry=, Rz=)				*
- ************************************************************************/
-
-void AssignConstraint (constraint, dof, expr, text, symbol)
-    Constraint	constraint;
-    DOF   	dof;
-    Code  	expr;
-    char       *text;
-    int  	symbol;
+void
+AssignConstraint(Constraint constraint, DOF dof, Code expr, char *text, int symbol)
 {
     Deallocate (constraint -> dx [dof].text);
     FreeCode (constraint -> dx [dof].expr);

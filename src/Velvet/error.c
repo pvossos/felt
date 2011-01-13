@@ -66,7 +66,7 @@ void error (format, va_alist)
 
 
     if (buffer_errors == True) {
-	VA_START (ap, format);
+	va_start (ap, format);
 	if (problem.line)
 	    fprintf (output, "%s:%d: ", problem.filename, problem.line);
 	vfprintf (output, format, ap);
@@ -74,7 +74,7 @@ void error (format, va_alist)
 	va_end (ap);
 	errors = True;
     } else {
-	VA_START (ap, format);
+	va_start (ap, format);
 	OutputDialogVprintf (error_dialog, format, ap);
 	CenterOnWidget (OutputDialogShell (error_dialog), toplevel, True);
 	WarpToCenter (OutputDialogShell (error_dialog));
@@ -94,18 +94,11 @@ void error (format, va_alist)
  *		 program.						*
  ************************************************************************/
 
-# if NeedVarargsPrototypes
 void Fatal (char *format, ...)
-# else
-void Fatal (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
-
-    VA_START (ap, format);
+    va_start (ap, format);
     fprintf (stderr, "velvet: ");
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");
@@ -114,8 +107,7 @@ void Fatal (format, va_alist)
 }
 
 
-void BufferErrors (flag)
-    Boolean flag;
+void BufferErrors (Boolean flag)
 {
     static char *name;
 

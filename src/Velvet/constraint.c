@@ -375,9 +375,7 @@ button to register your changes.  'Delete' erases the current constraint.  \
  * Description:	Sets the state of the specified toggle button.		*
  ************************************************************************/
 
-static void ToggleButtonSetState (w, state)
-   Widget	w;
-   Boolean 	state;
+static void ToggleButtonSetState (Widget w, Boolean state)
 {
    Arg		arglist [1]; 
 
@@ -393,8 +391,7 @@ static void ToggleButtonSetState (w, state)
  * Description:	Retrieves the state of the specified toggle button.	*
  ************************************************************************/
 
-static Boolean ToggleButtonGetState (w)
-   Widget	w;
+static Boolean ToggleButtonGetState (Widget w)
 {
    Arg		arglist [1];
    Boolean	state;
@@ -414,10 +411,7 @@ static Boolean ToggleButtonGetState (w)
  *		focus to the specified widget if necessary.		*
  ************************************************************************/
 
-static void SetSensitive (w, value, move_to)
-    Widget  w;
-    Boolean value;
-    Widget  move_to;
+static void SetSensitive (Widget w, Boolean value, Widget move_to)
 {
     if (value == False && HasFocus (w) == True)
 	SetFocus (move_to);
@@ -436,10 +430,7 @@ static void SetSensitive (w, value, move_to)
  *		entry when a toggle widget is toggled.			*
  ************************************************************************/
 
-static void Toggle (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Toggle (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Widget text;
 
@@ -457,8 +448,7 @@ static void Toggle (w, client_data, call_data)
  *		index of the active constraint is also set.		*
  ************************************************************************/
 
-static int AppendConstraintName (item)
-    Item item;
+static int AppendConstraintName (Item item)
 {
     if (dialog -> active == (Constraint) item)
 	list_index = num_constraints;
@@ -475,11 +465,7 @@ static int AppendConstraintName (item)
  *		specified button.					*	
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -503,10 +489,7 @@ static void Action (w, event, params, num_params)
  *		any new/copy operation is canceled.			*
  ************************************************************************/
 
-static void Change (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [32];
     Constraint		 active;
@@ -614,10 +597,7 @@ static void Change (w, client_data, call_data)
  *		entries.						    *
  ****************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		*ptr;
     String		 value;
@@ -738,10 +718,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ConstraintDialog constraintd;
 
@@ -758,10 +735,7 @@ static void Dismiss (w, client_data, call_data)
  *		is not in effect.  The dialog is then updated.	 	*	
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ConstraintDialog     constraintd;
     ConstraintDialogInfo info;
@@ -797,10 +771,7 @@ static void Delete (w, client_data, call_data)
  *		that a new/copy operation is in effect.			*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ConstraintDialog constraintd;
 
@@ -821,10 +792,7 @@ static void Copy (w, client_data, call_data)
  *		flag indicating that a new/copy operation is in effect.	*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ConstraintDialog constraintd;
     unsigned	     i;
@@ -855,12 +823,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-ConstraintDialog ConstraintDialogCreate (parent, name, title, callback, closure)
-    Widget	   parent;
-    String	   name;
-    String	   title;
-    XtCallbackProc callback;
-    XtPointer	   closure;
+ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure)
 {
     Cardinal		i, j;
     char		buffer [32];
@@ -1083,8 +1046,7 @@ ConstraintDialog ConstraintDialogCreate (parent, name, title, callback, closure)
  * Description:	Pops up the specified constraint dialog.		*
  ************************************************************************/
 
-void ConstraintDialogPopup (constraintd)
-    ConstraintDialog constraintd;
+void ConstraintDialogPopup (ConstraintDialog constraintd)
 {
     XtPopup (constraintd -> shell, XtGrabNone);
 }
@@ -1096,8 +1058,7 @@ void ConstraintDialogPopup (constraintd)
  * Description:	Returns the currently active constraint.		*
  ************************************************************************/
 
-Constraint ConstraintDialogActive (constraintd)
-    ConstraintDialog constraintd;
+Constraint ConstraintDialogActive (ConstraintDialog constraintd)
 {
     return constraintd -> active;
 }
@@ -1109,9 +1070,7 @@ Constraint ConstraintDialogActive (constraintd)
  * Description:	Displays specified constraint.				*	
  ************************************************************************/
 
-void ConstraintDialogDisplay (constraintd, constraint)
-    ConstraintDialog constraintd;
-    Constraint	     constraint;
+void ConstraintDialogDisplay (ConstraintDialog constraintd, Constraint constraint)
 {
     constraintd -> active = constraint;
     ConstraintDialogUpdate (constraintd, constraintd -> tree);
@@ -1129,9 +1088,7 @@ void ConstraintDialogDisplay (constraintd, constraint)
  *		to display the active values.				*
  ************************************************************************/
 
-void ConstraintDialogUpdate (constraintd, tree)
-    ConstraintDialog constraintd;
-    Tree	     tree;
+void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree)
 {
     Cardinal nbytes;
 

@@ -33,22 +33,20 @@
 # include "error.h"
 # include "misc.h"
 
-int RodLumpedCapacityMatrix ( );
-int RodConsistentCapacityMatrix ( );
-int rodEltSetup  ( );
-int rodEltStress ( );
+static int RodLumpedCapacityMatrix (Element e);
+static int RodConsistentCapacityMatrix (Element e);
+static int rodEltSetup  (Element element, char mass_mode, int tangent);
+static int rodEltStress (Element element);
 
 struct definition rodDefinition = {
    "rod", rodEltSetup, rodEltStress, 
    Linear, 2, 2, 0, 1, {0, 1, 0, 0, 0, 0, 0}, 0
 };
 
-Vector RodResolveConvection ( );
+static Vector RodResolveConvection (Element element, int *err_count);
 
-int rodEltSetup (element, mass_mode, tangent)
-   Element	element;
-   char		mass_mode;
-   int		tangent;
+static int
+rodEltSetup(Element element, char mass_mode, int tangent)
 {
    unsigned		i;
    Vector		equiv;
@@ -111,15 +109,15 @@ int rodEltSetup (element, mass_mode, tangent)
    return 0;
 }
 
-int rodEltStress (element)
-   Element	element;
+static int
+rodEltStress(Element element)
 {
    element -> ninteg = 0;
    return 0;
 } 
 
-int RodLumpedCapacityMatrix (e)
-   Element	e;
+static int
+RodLumpedCapacityMatrix(Element e)
 {
    double	factor;
    double	L;
@@ -137,8 +135,8 @@ int RodLumpedCapacityMatrix (e)
    return 0;
 }
 
-int RodConsistentCapacityMatrix (e)
-   Element	e;
+static int
+RodConsistentCapacityMatrix(Element e)
 {
    double	factor;
    double	L;
@@ -156,9 +154,8 @@ int RodConsistentCapacityMatrix (e)
    return 0;
 }
 
-Vector RodResolveConvection (element, err_count)
-   Element	element;
-   int		*err_count;
+static Vector
+RodResolveConvection(Element element, int *err_count)
 {
    double		length;
    double		factor;

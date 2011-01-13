@@ -51,11 +51,28 @@ typedef struct {
 
 extern Generator generator;
 
-extern void	  init_lexer	      PROTO ((FILE *));
-extern int	  yyparse	      PROTO ((void));
-extern int	  CorduroyCppOptions  PROTO ((int *, char **));
-extern int	  ReadCorduroyFile    PROTO ((char *));
-extern int	  WriteCorduroyFile   PROTO ((char *));
-extern Definition defnlookup	      PROTO ((char *));
+void init_lexer (FILE *fp);
+int	 yyparse	(void);
+
+/*!
+  Parses and removes the preprocesor options from the command line
+  arguments.
+*/
+int CorduroyCppOptions (int *argc, char **argv);
+
+/*!
+  Reads a corduroy file using the preprocessor if desired.  A filename
+  of "-" indicates standard input (can only be used initially) and a
+  NULL filename indicates no file (an empty generation instance is
+  created).
+*/
+int ReadCorduroyFile (char *input_name);
+
+int WriteCorduroyFile (char *filename);
+
+/*!
+  Looks up an element definition by name.			
+*/
+Definition defnlookup(char *name);
 
 # endif /* _GENERATOR_H */

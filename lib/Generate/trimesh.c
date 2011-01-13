@@ -17,12 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	triangle.c
- *
- ***************************************************************************/
-
 # include <math.h>
 # include <stdio.h>
 # include "allocate.h"
@@ -35,9 +29,7 @@
 typedef double dbl_pair [2];
 typedef int    triple_int [3];
 
-static double PolygonArea (vcl, n)
-   double  (*vcl) [2];
-   int       n;
+static double PolygonArea (double (*vcl)[2], int n)
 {
    int       i;
    double    A;
@@ -51,29 +43,14 @@ static double PolygonArea (vcl, n)
    return 0.5*A;
 }
 
-/****************************************************************************
- *
- * Function:	GenerateTriMesh
- *
- * Description:	a procedure to interface to Triangle and generate a mesh
- *		of triangular elements. 
- *
- ****************************************************************************/
-
-unsigned GenerateTriMesh (trimesh,element,node,numelts,numnodes,bnode,belement)
-   TriMesh	trimesh;
-   Element	**element;
-   Node		**node;
-   unsigned	*numelts;
-   unsigned	*numnodes;
-   unsigned	bnode;
-   unsigned	belement;
+unsigned
+GenerateTriMesh(TriMesh trimesh, Element **element, Node **node, 
+                unsigned int *numelts, unsigned int *numnodes,
+                unsigned int bnode, unsigned int belement)
 {
    unsigned	i,j;
-   unsigned	count;
    int		n, m;
    int		ne, nn;
-   int		status;
    struct triangulateio   in, out;
    int		npoints;
    double       x, y;

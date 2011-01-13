@@ -17,12 +17,6 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/****************************************************************************
- *
- * File:	grid.c
- *
- ***************************************************************************/
-
 # include <math.h>
 # include "allocate.h"
 # include "error.h"
@@ -31,28 +25,14 @@
 # include "mesh.h"
 # include "rules.h"
 
-/****************************************************************************
- *
- * Function:	GenerateGrid	
- *
- * Description:	a simple procedure to generate a 3-d grid of line elements
- *		with all the elements running parallel to one of the 
- * 		axes.
- *
- ****************************************************************************/
-
-unsigned GenerateGrid (grid, element, node, numelts, numnodes, bnode, belement)
-   Grid		grid;
-   Element	**element;
-   Node		**node;
-   unsigned	*numelts;
-   unsigned	*numnodes;
-   unsigned	bnode;
-   unsigned	belement;
+unsigned
+GenerateGrid(Grid grid, Element **element, Node **node,
+             unsigned int *numelts, unsigned int *numnodes, 
+             unsigned int bnode, unsigned int belement)
 {
-   double	(*xrule_func) ();
-   double	(*yrule_func) ();
-   double	(*zrule_func) ();
+   RuleFunction xrule_func;
+   RuleFunction yrule_func;
+   RuleFunction zrule_func;
    unsigned	ne, nn;
    unsigned	ecount, ncount;
    unsigned	node1, node2;

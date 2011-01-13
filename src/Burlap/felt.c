@@ -26,6 +26,7 @@
 
 # include <stdio.h>
 # include <unistd.h>
+# include <stdarg.h>
 # include "felt.h"
 # include "error.h"
 # include "field.h"
@@ -34,25 +35,21 @@
 # include "problem.h"
 # include "allocate.h"
 # include "definition.h"
-# include VAR_ARGS_INCLUDE
-
 
 /* These are hacks.  We can't include felt's code.h since there would be
    type conflicts with the types defined in codegen.h.  Fortunately code is
    the same size all over the world. */
 
 extern Code   InCore;
-extern int    CompileCode ( );
-extern int    IsConstant  ( );
-extern double EvalCode	  ( );
-extern void   FreeCode	  ( );
-extern Code   CopyCode	  ( );
-
+int CompileCode(char *text);
+int IsConstant(Code code);
+double EvalCode(Code code, double time);
+void FreeCode(Code code);
+Code CopyCode(Code code);
 
 /* This is only in misc.h. */
 
-extern void SetupStressMemory ( );
-
+void SetupStressMemory(Element element);
 
 # define NUMBER(x)	(sizeof (x) / sizeof (*x))
 # define OFFSET(x,y)	((unsigned) (((char *) (&(((x)0)->y))) - ((char *) 0)))
@@ -68,29 +65,24 @@ typedef struct field {
 static int last_handler;
 static int first_handler;
 
-static int dofs_array	    PROTO ((descriptor *, descriptor **));
-static int nodes_array	    PROTO ((descriptor *, descriptor **));
-static int dofs_num_array   PROTO ((descriptor *, descriptor **));
-static int dofs_pos_array   PROTO ((descriptor *, descriptor **));
+static int non_null	        (descriptor *dest, descriptor **source);
+static int num_loads	    (descriptor *dest, descriptor **source);
+static int direction	    (descriptor *dest, descriptor **source);
+static int read_only	    (descriptor *dest, descriptor **source);
+static int code_expression  (descriptor *dest, descriptor **source);
+static int code_assignment  (descriptor *dest, descriptor **source);
 
-static int non_null	    PROTO ((descriptor *, descriptor **));
-static int num_loads	    PROTO ((descriptor *, descriptor **));
-static int direction	    PROTO ((descriptor *, descriptor **));
-static int read_only	    PROTO ((descriptor *, descriptor **));
-static int code_expression  PROTO ((descriptor *, descriptor **));
-static int code_assignment  PROTO ((descriptor *, descriptor **));
+static int load_array	    (descriptor *dest, descriptor **source);
+static int node_array	    (descriptor *dest, descriptor **source);
+static int force_array	    (descriptor *dest, descriptor **source);
+static int stress_array	    (descriptor *dest, descriptor **source);
+static int element_array    (descriptor *dest, descriptor **source);
+static int problem_array    (descriptor *dest, descriptor **source);
+static int analysis_array   (descriptor *dest, descriptor **source);
+static int constraint_array (descriptor *dest, descriptor **source);
+static int definition_array (descriptor *dest, descriptor **source);
 
-static int load_array	    PROTO ((descriptor *, descriptor **));
-static int node_array	    PROTO ((descriptor *, descriptor **));
-static int force_array	    PROTO ((descriptor *, descriptor **));
-static int stress_array	    PROTO ((descriptor *, descriptor **));
-static int element_array    PROTO ((descriptor *, descriptor **));
-static int problem_array    PROTO ((descriptor *, descriptor **));
-static int analysis_array   PROTO ((descriptor *, descriptor **));
-static int constraint_array PROTO ((descriptor *, descriptor **));
-static int definition_array PROTO ((descriptor *, descriptor **));
-
-static void invalidate	    PROTO ((descriptor *));
+static void invalidate	    (descriptor *d);
 
 
 /* Analysis fields
@@ -362,9 +354,7 @@ static struct field stress_fields [ ] = {
  *		array of the analysis structure.			*
  ************************************************************************/
 
-static int dofs_array (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int dofs_array (descriptor *dest, descriptor **src)
 {
     int		i;
     int        *ptr;
@@ -439,9 +429,7 @@ static int dofs_array (dest, src)
  *		array of the analysis structure.			*
  ************************************************************************/
 
-static int nodes_array (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int nodes_array (descriptor *dest, descriptor **src)
 {
     return 1;
 }
@@ -454,9 +442,7 @@ static int nodes_array (dest, src)
  *		array of the problem structure.				*
  ************************************************************************/
 
-static int dofs_num_array (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int dofs_num_array (descriptor *dest, descriptor **src)
 {
     ste        *s;
     int		i;
@@ -540,9 +526,7 @@ static int dofs_num_array (dest, src)
  *		array of the problem structure.				*
  ************************************************************************/
 
-static int dofs_pos_array (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int dofs_pos_array (descriptor *dest, descriptor **src)
 {
     ste        *s;
     int		i;
@@ -621,9 +605,7 @@ static int dofs_pos_array (dest, src)
  *		load descriptor.					*
  ************************************************************************/
 
-static int load_array (record, field)
-    descriptor	*record;
-    descriptor **field;
+static int load_array (descriptor *record, descriptor **field)
 {
     Array	array;
     Distributed	load;
@@ -657,9 +639,7 @@ static int load_array (record, field)
  *		node descriptor.					*
  ************************************************************************/
 
-static int node_array (record, field)
-    descriptor	*record;
-    descriptor **field;
+static int node_array (descriptor *record, descriptor **field)
 {
     int     i;
     Array   array;
@@ -717,9 +697,7 @@ static int node_array (record, field)
  *		force descriptor.					*
  ************************************************************************/
 
-static int force_array (record, field)
-    descriptor	*record;
-    descriptor **field;
+static int force_array (descriptor *record, descriptor **field)
 {
     Array array;
     Force force;
@@ -768,9 +746,7 @@ static int force_array (record, field)
  *		stress descriptor.					*
  ************************************************************************/
 
-static int stress_array (record, field)
-    descriptor  *record;
-    descriptor **field;
+static int stress_array (descriptor *record, descriptor **field)
 {
     Array  array;
     Stress stress;
@@ -802,9 +778,7 @@ static int stress_array (record, field)
  *		element descriptor.					*
  ************************************************************************/
 
-static int element_array (record, field)
-    descriptor	*record;
-    descriptor **field;
+static int element_array (descriptor *record, descriptor **field)
 {
     Array    array;
     Element  element;
@@ -877,9 +851,7 @@ static int element_array (record, field)
  *		constraint descriptor.					*
  ************************************************************************/
 
-static int problem_array (record, field)
-    descriptor  *record;
-    descriptor **field;
+static int problem_array (descriptor *record, descriptor **field)
 {
     Array    array;
     Problem *problem;
@@ -947,9 +919,7 @@ static int problem_array (record, field)
  *		analysis descriptor.					*
  ************************************************************************/
 
-static int analysis_array (record, field)
-    descriptor  *record;
-    descriptor **field;
+static int analysis_array (descriptor *record, descriptor **field)
 {
     Array     array;
     Analysis *analysis;
@@ -997,9 +967,7 @@ static int analysis_array (record, field)
  *		constraint descriptor.					*
  ************************************************************************/
 
-static int constraint_array (record, field)
-    descriptor	*record;
-    descriptor **field;
+static int constraint_array (descriptor *record, descriptor **field)
 {
     Array      array;
     Constraint constraint;
@@ -1083,9 +1051,7 @@ static int constraint_array (record, field)
  *		definition descriptor.					*
  ************************************************************************/
 
-static int definition_array (record, field)
-    descriptor	*record;
-    descriptor **field;
+static int definition_array (descriptor *record, descriptor **field)
 {
     Array array;
 
@@ -1116,9 +1082,7 @@ static int definition_array (record, field)
  *		destination descriptor that is a pointer type.		*
  ************************************************************************/
 
-int strict_assignment (dest, src)
-    descriptor	*dest;
-    descriptor **src;
+int strict_assignment (descriptor *dest, descriptor **src)
 {
     /* This data is never recycled. */
 
@@ -1210,9 +1174,7 @@ int strict_assignment (dest, src)
  *		that do not allow a null value.				*
  ************************************************************************/
 
-static int non_null (dest, src)
-    descriptor	*dest;
-    descriptor **src;
+static int non_null (descriptor *dest, descriptor **src)
 {
     /* This data is never recycled. */
 
@@ -1287,9 +1249,7 @@ static int non_null (dest, src)
  *		loads that an element may have.				*
  ************************************************************************/
 
-static int num_loads (dest, src)
-    descriptor	*dest;
-    descriptor **src;
+static int num_loads (descriptor *dest, descriptor **src)
 {
     int value;
 
@@ -1330,9 +1290,7 @@ static int num_loads (dest, src)
  * Description:	Trapped variable handler for directions.		*
  ************************************************************************/
 
-static int direction (dest, src)
-    descriptor	*dest;
-    descriptor **src;
+static int direction (descriptor *dest, descriptor **src)
 {
     int value;
 
@@ -1372,9 +1330,7 @@ static int direction (dest, src)
  * Description:	Trapped variable handler for read-only variables.	*
  ************************************************************************/
 
-static int read_only (dest, src)
-    descriptor	*dest;
-    descriptor **src;
+static int read_only (descriptor *dest, descriptor **src)
 {
 
     /* This data is never recycled. */
@@ -1405,9 +1361,7 @@ static int read_only (dest, src)
  *		the FElt parser does.					*
  ************************************************************************/
 
-static int code_expression (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int code_expression (descriptor *dest, descriptor **src)
 {
     int      status;
     int      type_error;
@@ -1474,9 +1428,7 @@ static int code_expression (dest, src)
  *		code structures.					*
  ************************************************************************/
 
-static int code_assignment (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int code_assignment (descriptor *dest, descriptor **src)
 {
     int		i;
     Array	s_array;
@@ -1538,9 +1490,7 @@ static int code_assignment (dest, src)
  *		the memory of the destination.				*
  ************************************************************************/
 
-int array_assignment (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+int array_assignment (descriptor *dest, descriptor **src)
 {
     Array	s_array;
     Array	d_array;
@@ -1594,8 +1544,7 @@ int array_assignment (dest, src)
  * Description:	Invalidates a descriptor if it refers to a FElt object.	*
  ************************************************************************/
 
-static void invalidate (d)
-    descriptor *d;
+static void invalidate (descriptor *d)
 {
     int h;
     int remove;
@@ -1641,9 +1590,7 @@ static void invalidate (d)
  *		the arrays of nodes and elements.			*
  ************************************************************************/
 
-int init_felt (argc, argv)
-    int  *argc;
-    char *argv [ ];
+int init_felt (int *argc, char **argv)
 {
     unsigned	i;
     Field	f;
@@ -1780,7 +1727,7 @@ int init_felt (argc, argv)
     D_Type    (d) = T_Problem;
     D_Temp    (d) = F_False;
     D_Trapped (d) = F_False;
-    D_Problem (d) = &problem;
+    d->u.ptr      = &problem;
 
 
     s = add_literal (&var_st, "analysis", GlblOp);
@@ -1789,7 +1736,7 @@ int init_felt (argc, argv)
     D_Type     (d) = T_Analysis;
     D_Temp     (d) = F_False;
     D_Trapped  (d) = F_False;
-    D_Analysis (d) = &analysis;
+    d->u.ptr       = &analysis;
 
     return 0;
 }
@@ -1799,8 +1746,7 @@ int init_felt (argc, argv)
  * Function:	read_felt						*
  ************************************************************************/
 
-int read_felt (file)
-    char *file;
+int read_felt (char *file)
 {
     ste        *s;
     int		h;
@@ -1877,18 +1823,12 @@ int read_felt (file)
  *		only).							*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void error (char *format, ...)
-# else
-void error (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
 
     if (problem.line)
 	fprintf (stderr, "%s:%d: ", problem.filename, problem.line);
@@ -1908,18 +1848,12 @@ void error (format, va_alist)
  *		library compatibility only).				*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void Fatal (char *format, ...)
-# else
-void Fatal (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
     fprintf (stderr, "burlap: ");
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");

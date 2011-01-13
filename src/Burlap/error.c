@@ -25,10 +25,9 @@
  ************************************************************************/
 
 # include <stdio.h>
+# include <stdarg.h>
 # include "error.h"
 # include "lexer.h"
-# include VAR_ARGS_INCLUDE
-
 
 int   curr_line_num;			/* current line number */
 int   curr_file_num;			/* current file number */
@@ -41,18 +40,12 @@ char *curr_file_name;			/* current file name   */
  * Description:	Prints a run-time error message.			*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void rterror (char *format, ...)
-# else
-void rterror (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
     fprintf (stderr, "%s:%d: ", curr_file_name, curr_line_num);
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");
@@ -66,18 +59,12 @@ void rterror (format, va_alist)
  * Description:	Prints a compile-time error message.			*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void cterror (char *format, ...)
-# else
-void cterror (format, va_alist)
-    char *format;
-    va_dcl
-# endif
 {
     va_list ap;
 
 
-    VA_START (ap, format);
+    va_start (ap, format);
     fprintf (stderr, "%s:%d: ", file_name, line_num);
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");

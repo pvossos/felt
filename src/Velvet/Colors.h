@@ -29,32 +29,10 @@
 
 typedef struct colors_dialog *ColorsDialog;
 
-extern ColorsDialog ColorsDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */
-# endif
-);
+ColorsDialog ColorsDialogCreate (Widget parent, String name, String title);
 
-extern void ColorsDialogUpdateObjectList (
-# if NeedFunctionPrototypes
-    ColorsDialog		/* colors_dialog */,
-    Tree			/* object tree   */,
-# if NeedWidgetPrototypes
-    Boolean			/* deleted flag	 */
-# else
-    int				/* deleted flag	 */
-# endif
-# endif
-);
+void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted);
 
-
-extern void ColorsDialogPopup (
-# if NeedFunctionPrototypes
-    ColorsDialog		/* colors_dialog */
-# endif
-);
-
+void ColorsDialogPopup (ColorsDialog colorsd);
 
 # endif /* _Colors_h */

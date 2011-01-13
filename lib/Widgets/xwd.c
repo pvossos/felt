@@ -25,19 +25,18 @@
 # include <X11/Intrinsic.h>
 # include <X11/Xaw/AsciiText.h>
 # include <stdlib.h>
+# include "xwd.h"
 # include "error.h"
 
-int Image_Size ( );
-int Get_XColors ( );
-void _swaplong ( );
-void _swapshort ( );
+int Image_Size (XImage *image);
+int Get_XColors (XWindowAttributes *win_info, XColor **colors);
+void _swaplong (register char *bp, register unsigned int n);
+void _swapshort (register char *bp, register unsigned int n);
 
 Display *dpy;
 int screen;
 
-int DumpWidget(widget, out)
-     Widget	widget;
-     FILE       *out;
+int DumpWidget(Widget widget, FILE *out)
 {
     unsigned long swaptest = 1;
     XColor *colors;
@@ -198,10 +197,7 @@ int DumpWidget(widget, out)
     return 0;
 }
 
-XImage *WidgetToXImage(widget, colors, ncolors)
-     Widget	 widget;
-     XColor    **colors;
-     int	*ncolors;
+XImage *WidgetToXImage(Widget widget, XColor **colors, int *ncolors)
 {
     unsigned long swaptest = 1;
     unsigned buffer_size;
@@ -288,15 +284,10 @@ XImage *WidgetToXImage(widget, colors, ncolors)
     return image;
 }
 
-int XImageCellXY(img, x, y, colors, ncolors)
-   XImage	*img;
-   int		 x, y;
-   XColor	*colors;
-   int		 ncolors; 
+int XImageCellXY(XImage *img, int x, int y, XColor *colors, int ncolors)
 {
    int		 i;
    unsigned long point;
-   int		 idx;
 
    point = XGetPixel(img, x, y);
    _swaplong((char *) &point, sizeof(long));
@@ -312,8 +303,7 @@ int XImageCellXY(img, x, y, colors, ncolors)
  * Determine the pixmap size.
  */
 
-int Image_Size(image)
-     XImage *image;
+int Image_Size(XImage *image)
 {
     if (image->format != ZPixmap)
       return(image->bytes_per_line * image->height * image->depth);
@@ -326,9 +316,7 @@ int Image_Size(image)
 /*
  * Get the XColors of all pixels in image - returns # of colors
  */
-int Get_XColors(win_info, colors)
-     XWindowAttributes *win_info;
-     XColor **colors;
+int Get_XColors(XWindowAttributes *win_info, XColor **colors)
 {
     int i, ncolors;
     Colormap cmap = win_info->colormap;
@@ -371,9 +359,7 @@ int Get_XColors(win_info, colors)
     return(ncolors);
 }
 
-void _swapshort (bp, n)
-    register char *bp;
-    register unsigned n;
+void _swapshort (register char *bp, register unsigned int n)
 {
     register char c;
     register char *ep = bp + n;
@@ -386,9 +372,7 @@ void _swapshort (bp, n)
     }
 }
 
-void _swaplong (bp, n)
-    register char *bp;
-    register unsigned n;
+void _swaplong (register char *bp, register unsigned int n)
 {
     register char c;
     register char *ep = bp + n;

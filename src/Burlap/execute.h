@@ -59,11 +59,16 @@ extern descriptor *argp;		/* argument pointer	  */
 extern descriptor *varp;		/* local variable pointer */
 extern descriptor *stack;		/* run-time stack	  */
 
-extern int  execute	  PROTO ((Code, descriptor *, descriptor *));
-extern void SaveState	  PROTO ((ExecState *));
-extern void RestoreState  PROTO ((ExecState *));
-extern void TypeError	  PROTO ((char *, descriptor *, descriptor *, descriptor *, int));
-extern void MatrixError	  PROTO ((char *, Matrix, Matrix, int, int));
-extern void MathException PROTO ((char *));
+int execute (Code code, descriptor *vars, descriptor *args);
+
+void SaveState (ExecState *state);
+
+void RestoreState (ExecState *state);
+
+void TypeError (char *op, descriptor *a, descriptor *b, descriptor *c, int is_func);
+
+void MatrixError (char *op, Matrix a, Matrix b, int s, int is_func);
+
+void MathException (char *s);
 
 # endif /* _EXECUTE_H */

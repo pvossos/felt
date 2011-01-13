@@ -29,7 +29,7 @@
 # define _PARSER_H
 # include "codegen.h"			/* Code type definition */
 
-extern Code global_cs;
-extern int  bfparse PROTO ((void));
+Code global_cs;
+int bfparse (void);
 
 # endif /* _PARSER_H */

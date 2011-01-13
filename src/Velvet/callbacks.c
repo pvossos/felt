@@ -41,6 +41,7 @@
 # include "util.h"
 # include "error.h"
 # include "procedures.h"
+# include "callbacks.h"
 
 extern ColorsDialog	colors_d;
 
@@ -57,9 +58,7 @@ static Material	   deleted_material;
  * Description:	Checks if the user want to proceed with a deletion.	*
  ************************************************************************/
 
-static int CheckOk (object, name)
-    String object;
-    String name;
+static int CheckOk (String object, String name)
 {
     String selected;
     char   title [64];
@@ -83,8 +82,7 @@ static int CheckOk (object, name)
  * Description:	Tree iterator to check references to a constraint.	*
  ************************************************************************/
 
-static int CheckConstraintReferences (item)
-    Item item;
+static int CheckConstraintReferences (Item item)
 {
     Node node;
 
@@ -107,10 +105,7 @@ static int CheckConstraintReferences (item)
  *		dialog.							*
  ************************************************************************/
 
-void ConstraintDialogChanged (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ConstraintDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Node		  node;
     NodeDialog		  node_d;
@@ -145,10 +140,7 @@ void ConstraintDialogChanged (w, client_data, call_data)
  *		dialog.							*
  ************************************************************************/
 
-void ElementDialogChanged (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ElementDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 {
     unsigned	       i;
     unsigned	       numnodes;
@@ -189,8 +181,7 @@ void ElementDialogChanged (w, client_data, call_data)
  * Description:	Tree iterator to check references to a force.		*
  ************************************************************************/
 
-static int CheckForceReferences (item)
-    Item item;
+static int CheckForceReferences (Item item)
 {
     Node node;
 
@@ -216,10 +207,7 @@ static int CheckForceReferences (item)
  * Description:	Callback for when a change occurs in the force dialog.	*
  ************************************************************************/
 
-void ForceDialogChanged (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void ForceDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Boolean	     displayed;
     Node	     node;
@@ -260,8 +248,7 @@ void ForceDialogChanged (w, client_data, call_data)
  * Description:	Tree iterator to check references to a load.		*
  ************************************************************************/
 
-static int CheckLoadReferences (item)
-    Item item;
+static int CheckLoadReferences (Item item)
 {
     Cardinal i;
     Cardinal j;
@@ -292,10 +279,7 @@ static int CheckLoadReferences (item)
  * Description:	Callback for when a change occurs in the load dialog.	*
  ************************************************************************/
 
-void LoadDialogChanged (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Cardinal	    i;
     Boolean	    displayed;
@@ -342,8 +326,7 @@ void LoadDialogChanged (w, client_data, call_data)
  * Description:	Tree iterator to check references to a material.	*
  ************************************************************************/
 
-static int CheckMaterialReferences (item)
-    Item item;
+static int CheckMaterialReferences (Item item)
 {
     Element element;
 
@@ -366,10 +349,7 @@ static int CheckMaterialReferences (item)
  *		dialog.							*
  ************************************************************************/
 
-void MaterialDialogChanged (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void MaterialDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Element		element;
     MaterialDialogInfo *info;
@@ -403,10 +383,7 @@ void MaterialDialogChanged (w, client_data, call_data)
  * Description:	Callback for when a change occurs in the node dialog.	*
  ************************************************************************/
 
-void NodeDialogChanged (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+void NodeDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Drawn	    drawn;
     NodeDialogInfo *info;

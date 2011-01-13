@@ -28,6 +28,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <math.h>
+# include "draw.h"
 # include "problem.h"
 # include "error.h"
 
@@ -39,10 +40,7 @@ double xscale3d, yscale3d, zscale3d;
 
 double transform [4][4];
 
-static void MultiplyTransformMatrices (result, mat_a, mat_b)
-   double 	result [4][4], 
-           	mat_a [4][4], 
-           	mat_b [4][4];
+static void MultiplyTransformMatrices (double (*result)[4], double (*mat_a)[4], double (*mat_b)[4])
 {
    unsigned	i,j,k;
    double 	temp[4][4];
@@ -62,8 +60,7 @@ static void MultiplyTransformMatrices (result, mat_a, mat_b)
    }
 }
 
-static void CreateUnitMatrix (mat)
-   double 	mat[4][4];
+static void CreateUnitMatrix (double (*mat)[4])
 {
    unsigned	i, j;
 
@@ -78,9 +75,7 @@ static void CreateUnitMatrix (mat)
    }
 }
 
-static void CreateScaleMatrix (sx, sy, sz, mat)
-   double 	sx, sy, sz;
-   double 	mat[4][4];
+static void CreateScaleMatrix (double sx, double sy, double sz, double (*mat)[4])
 {
     CreateUnitMatrix(mat);                              
 
@@ -89,9 +84,7 @@ static void CreateScaleMatrix (sx, sy, sz, mat)
     mat[2][2] = sz;
 }
 
-static void MatrixRotationX (theta, mat)
-   double 	theta;
-   double 	mat[4][4];
+static void MatrixRotationX (double theta, double (*mat)[4])
 {
    theta *= M_PI / 180.0;
 
@@ -102,9 +95,7 @@ static void MatrixRotationX (theta, mat)
    mat[2][2] = cos(theta);
 }
 
-static void MatrixRotationY (theta, mat)
-   double 	theta;
-   double 	mat[4][4];
+static void MatrixRotationY (double theta, double (*mat)[4])
 {
    theta *= M_PI / 180.0;
 
@@ -115,9 +106,7 @@ static void MatrixRotationY (theta, mat)
    mat[2][2] = cos(theta);
 }
 
-static void MatrixRotationZ (theta, mat)
-   double 	theta;
-   double 	mat[4][4];
+static void MatrixRotationZ (double theta, double (*mat)[4])
 {
    theta *= M_PI / 180.0;
 
@@ -128,10 +117,7 @@ static void MatrixRotationZ (theta, mat)
    mat[1][1] = cos(theta);
 }
 
-static void Convert3Dto2D (x, y, z, xdiff, ydiff, xt, yt)
-   double 	x, y, z;
-   double	xdiff, ydiff;
-   double 	*xt, *yt;
+static void Convert3Dto2D (double x, double y, double z, double xdiff, double ydiff, double *xt, double *yt)
 {
    int 		i,j;
    double 	v[4], res[4];		     
@@ -160,12 +146,7 @@ static void Convert3Dto2D (x, y, z, xdiff, ydiff, xt, yt)
    *yt = ((res[1] * 10.0*ydiff/xdiff / w)); 
 }
 
-static void Setup3D (min_x, max_x, min_y, max_y, min_z, max_z, xrot, yrot, zrot, zsc)
-   double 	min_x, max_x;
-   double 	min_y, max_y;
-   double 	min_z, max_z;
-   double	xrot, yrot, zrot;
-   double	zsc;
+static void Setup3D (double min_x, double max_x, double min_y, double max_y, double min_z, double max_z, double xrot, double yrot, double zrot, double zsc)
 {
    double 	ztemp, temp;
    double 	mat [4][4];
@@ -209,15 +190,8 @@ static void Setup3D (min_x, max_x, min_y, max_y, min_z, max_z, xrot, yrot, zrot,
    return;
 }
 
-void WriteWireframe3D (fp, table, n, mag, xrot, yrot, zrot, zsc)
-   FILE	        *fp;
-   Node	       **table;
-   unsigned	 n;
-   double	 mag;
-   double	 xrot;
-   double  	 yrot;
-   double  	 zrot;
-   double	 zsc;
+void WriteWireframe3D (FILE *fp, Node **table, unsigned n, double mag, 
+                       double xrot, double yrot, double zrot, double zsc)
 {
    int		i, j;
    double	maxX, minX, maxY, minY, maxZ, minZ;

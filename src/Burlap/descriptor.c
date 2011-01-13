@@ -24,12 +24,12 @@
  *		definitions for descriptors.				*
  ************************************************************************/
 
+# include <stdarg.h>
 # include "trap.h"
 # include "debug.h"
 # include "desctab.h"
 # include "allocate.h"
 # include "descriptor.h"
-# include VAR_ARGS_INCLUDE
 
 static descriptor *reused;
 
@@ -41,16 +41,7 @@ static descriptor *reused;
  *		other descriptors if they are temporary.		*
  ************************************************************************/
 
-# ifdef UseFunctionPrototypes
 void CreateData (descriptor *d, descriptor *a, descriptor *b, int type, ...)
-# else
-void CreateData (d, a, b, type, va_alist)
-    descriptor *d;
-    descriptor *a;
-    descriptor *b;
-    int		type;
-    va_dcl
-# endif
 {
     void    *ptr;
     int      length;
@@ -81,7 +72,7 @@ void CreateData (d, a, b, type, va_alist)
 	D_Trapped (d) = F_False;
 	D_Temp    (d) = F_True;
 	reused = NULL;
-	VA_START (ap, type);
+	va_start (ap, type);
 
 	switch (type) {
 	case T_Null:
@@ -166,9 +157,7 @@ void CreateData (d, a, b, type, va_alist)
  *		to perform the assignment.				*
  ************************************************************************/
 
-int AssignData (dest, srcp)
-    descriptor  *dest;
-    descriptor **srcp;
+int AssignData (descriptor *dest, descriptor **srcp)
 {
     char       *s;
     Matrix	a;
@@ -307,7 +296,7 @@ int AssignData (dest, srcp)
 	    D_Type     (dest) = T_External;
 	    D_Temp     (dest) = F_False;
 	    D_Trapped  (dest) = F_False;
-	    D_External (dest) = D_External (src);
+	    dest->u.ptr       = D_External (src);
 	    break;
 
 
@@ -333,11 +322,7 @@ int AssignData (dest, srcp)
  *		arguments.						*
  ************************************************************************/
 
-int AssignObject (dest, type, temp, ptr)
-    descriptor *dest;
-    int		type;
-    int		temp;
-    void       *ptr;
+int AssignObject (descriptor *dest, int type, int temp, void *ptr)
 {
     descriptor *src;
     descriptor	scratch;
@@ -365,8 +350,7 @@ int AssignObject (dest, type, temp, ptr)
  *		temporary and has not been reused by CreateData().	*
  ************************************************************************/
 
-void RecycleData (d)
-    descriptor *d;
+void RecycleData (descriptor *d)
 {
     if (d && D_Temp (d) == F_True && d != reused)
 	FreeData (d);
@@ -383,8 +367,7 @@ void RecycleData (d)
  * Description:	Deallocates the data of a descriptor.			*
  ************************************************************************/
 
-void FreeData (d)
-    descriptor *d;
+void FreeData (descriptor *d)
 {
     if (d) {
 	d_printf ("freeing %s (%p)\n", D_TypeName (d), D_Pointer (d));
@@ -459,8 +442,7 @@ void FreeData (d)
  * Description:	Prints the data of a descriptor.			*
  ************************************************************************/
 
-void PrintData (d)
-    descriptor *d;
+void PrintData (descriptor *d)
 {
     if (d) {
 	switch (D_Type (d)) {

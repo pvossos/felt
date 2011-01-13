@@ -425,8 +425,7 @@ force. 'New' empties all fields. 'Copy' empties the name field only.";
  *		index of the active material is also set.		*
  ************************************************************************/
 
-static int AppendMaterialName (item)
-    Item item;
+static int AppendMaterialName (Item item)
 {
     if (dialog -> active == (Material) item)
 	list_index = num_materials;
@@ -443,11 +442,7 @@ static int AppendMaterialName (item)
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     if (XtClass (w) == topLevelShellWidgetClass)
 	w = XtNameToWidget (w, "layout.dismiss");
@@ -471,10 +466,7 @@ static void Action (w, event, params, num_params)
  *		new/copy operation is canceled.				*
  ************************************************************************/
 
-static void Change (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [32];
     Material		 active;
@@ -571,10 +563,7 @@ static void Change (w, client_data, call_data)
  *		entries.						*
  ************************************************************************/
 
-static void Accept (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     struct material    old;
     struct material    dummy;
@@ -662,10 +651,7 @@ static void Accept (w, client_data, call_data)
  * Description:	Pops down the dialog box.				*
  ************************************************************************/
 
-static void Dismiss (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Dismiss (Widget w, XtPointer client_data, XtPointer call_data)
 {
     MaterialDialog materiald;
 
@@ -682,10 +668,7 @@ static void Dismiss (w, client_data, call_data)
  *		not in effect.  The dialog is then updated.		*
  ************************************************************************/
 
-static void Delete (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 {
     MaterialDialog     materiald;
     MaterialDialogInfo info;
@@ -721,10 +704,7 @@ static void Delete (w, client_data, call_data)
  *		that a new/copy operation is in effect.			*
  ************************************************************************/
 
-static void Copy (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
     MaterialDialog materiald;
 
@@ -745,10 +725,7 @@ static void Copy (w, client_data, call_data)
  *		flag indicating that a new/copy operation is in effect.	*
  ************************************************************************/
 
-static void New (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void New (Widget w, XtPointer client_data, XtPointer call_data)
 {
     MaterialDialog materiald;
 
@@ -784,12 +761,7 @@ static void New (w, client_data, call_data)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-MaterialDialog MaterialDialogCreate (parent, name, title, callback, closure)
-    Widget         parent;
-    String         name;
-    String         title;
-    XtCallbackProc callback;
-    XtPointer      closure;
+MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure)
 {
     Cardinal		i;
     Arg			args [1];
@@ -1070,8 +1042,7 @@ MaterialDialog MaterialDialogCreate (parent, name, title, callback, closure)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-void MaterialDialogPopup (materiald)
-    MaterialDialog materiald;
+void MaterialDialogPopup (MaterialDialog materiald)
 {
     XtPopup (materiald -> shell, XtGrabNone);
 }
@@ -1083,8 +1054,7 @@ void MaterialDialogPopup (materiald)
  * Description:	Returns the currently active material.			*
  ************************************************************************/
 
-Material MaterialDialogActive (materiald)
-    MaterialDialog materiald;
+Material MaterialDialogActive (MaterialDialog materiald)
 {
     return materiald -> active;
 }
@@ -1096,9 +1066,7 @@ Material MaterialDialogActive (materiald)
  * Description:	Displays a specified material.				*
  ************************************************************************/
 
-void MaterialDialogDisplay (materiald, material)
-    MaterialDialog materiald;
-    Material	   material;
+void MaterialDialogDisplay (MaterialDialog materiald, Material material)
 {
     materiald -> active = material;
     MaterialDialogUpdate (materiald, materiald -> tree);
@@ -1115,9 +1083,7 @@ void MaterialDialogDisplay (materiald, material)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void MaterialDialogUpdate (materiald, tree)
-    MaterialDialog materiald;
-    Tree	   tree;
+void MaterialDialogUpdate (MaterialDialog materiald, Tree tree)
 {
     Cardinal nbytes;
 

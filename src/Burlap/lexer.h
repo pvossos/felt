@@ -27,7 +27,6 @@
 
 # ifndef _LEXER_H
 # define _LEXER_H
-# include "proto.h"			/* function declarations */
 
 typedef struct {
     unsigned short line;		/* line number of instruction */
@@ -39,10 +38,10 @@ extern int   file_num;			/* file number during parsing */
 extern char *file_name;			/* file name during parsing   */
 extern int   interactive;		/* interactive lexer	      */
 
+int bflex(/*YYSTYPE*/);
 
-extern int  bflex     PROTO ((/*YYSTYPE*/));
-extern int  bfinit    PROTO ((char *));
-extern void bferror   PROTO ((char *));
-extern int  bfinclude PROTO ((char *));
+void bferror (char *message);
+
+int bfinclude (char *file);
 
 # endif /* _LEXER_H */

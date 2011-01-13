@@ -41,11 +41,7 @@
    Description:	Sets the cached color of the widget or a figure.
  ************************************************************************/
 
-static Boolean SetColor (dw, old_data, name, pixel)
-    DrawingWidget dw;
-    CacheData	 *old_data;
-    String	  name;
-    Pixel	 *pixel;
+static Boolean SetColor (DrawingWidget dw, CacheData *old_data, String name, Pixel *pixel)
 {
     Display  *display;
     CacheData data;
@@ -82,11 +78,7 @@ static Boolean SetColor (dw, old_data, name, pixel)
    Description:	Sets the cached font of the widget or a figure.
  ************************************************************************/
 
-static Boolean SetFont (dw, old_data, name, font)
-    DrawingWidget dw;
-    CacheData	 *old_data;
-    String	  name;
-    XFontStruct	**font;
+static Boolean SetFont (DrawingWidget dw, CacheData *old_data, String name, XFontStruct **font)
 {
     Display  *display;
     CacheData data;
@@ -119,9 +111,7 @@ static Boolean SetFont (dw, old_data, name, font)
    Description:	Stacks the auto redraw status for group operations.
  ************************************************************************/
 
-static void StackAutoRedraw (gw, op)
-   Widget gw;
-   int    op;
+static void StackAutoRedraw (Widget gw, int op)
 {
    static unsigned depth = 0;
    static Boolean  redraw;
@@ -142,8 +132,7 @@ static void StackAutoRedraw (gw, op)
    Description:	Return the group leader of a figure.
  ************************************************************************/
 
-static Figure GroupLeader (fig)
-    Figure fig;
+static Figure GroupLeader (Figure fig)
 {
     while (fig -> group != NULL)
 	fig = fig -> group;
@@ -157,12 +146,7 @@ static Figure GroupLeader (fig)
    Description: Adds a line figure to the display list.
  ************************************************************************/
 
-Figure DW_DrawLine (gw, x1, y1, x2, y2)
-    Widget  gw;
-    FLOAT   x1;
-    FLOAT   y1;
-    FLOAT   x2;
-    FLOAT   y2;
+Figure DW_DrawLine (Widget gw, float x1, float y1, float x2, float y2)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -189,11 +173,7 @@ Figure DW_DrawLine (gw, x1, y1, x2, y2)
    Description: Adds a polygon figure to the display list.
  ************************************************************************/
 
-Figure DW_DrawPolygon (gw, scaled, points, npoints)
-    Widget  gw;
-    BOOLEAN scaled;
-    Point   points [ ];
-    int     npoints;
+Figure DW_DrawPolygon (Widget gw, Boolean scaled, Point *points, int npoints)
 {
     int		  i;
     Figure	  fig;
@@ -219,11 +199,7 @@ Figure DW_DrawPolygon (gw, scaled, points, npoints)
    Description: Adds a filled polygon figure to the display list.
  ************************************************************************/
 
-Figure DW_FillPolygon (gw, scaled, points, npoints)
-    Widget  gw;
-    BOOLEAN scaled;
-    Point   points [ ];
-    int     npoints;
+Figure DW_FillPolygon (Widget gw, Boolean scaled, Point *points, int npoints)
 {
     int		  i;
     Figure	  fig;
@@ -249,13 +225,7 @@ Figure DW_FillPolygon (gw, scaled, points, npoints)
    Description: Adds a rectangle figure to the display list.
  ************************************************************************/
 
-Figure DW_DrawRectangle (gw, scaled, x, y, width, height)
-    Widget  gw;
-    BOOLEAN scaled;
-    FLOAT   x;
-    FLOAT   y;
-    FLOAT   width;
-    FLOAT   height;
+Figure DW_DrawRectangle (Widget gw, Boolean scaled, float x, float y, float width, float height)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -282,13 +252,7 @@ Figure DW_DrawRectangle (gw, scaled, x, y, width, height)
    Description: Adds a filled rectangle figure to the display list.
  ************************************************************************/
 
-Figure DW_FillRectangle (gw, scaled, x, y, width, height)
-    Widget  gw;
-    BOOLEAN scaled;
-    FLOAT   x;
-    FLOAT   y;
-    FLOAT   width;
-    FLOAT   height;
+Figure DW_FillRectangle (Widget gw, Boolean scaled, float x, float y, float width, float height)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -315,15 +279,7 @@ Figure DW_FillRectangle (gw, scaled, x, y, width, height)
    Description: Adds an arc figure to the display list.
  ************************************************************************/
 
-Figure DW_DrawArc (gw, scaled, x, y, width, height, start, length)
-    Widget  gw;
-    BOOLEAN scaled;
-    FLOAT   x;
-    FLOAT   y;
-    FLOAT   width;
-    FLOAT   height;
-    FLOAT   start;
-    FLOAT   length;
+Figure DW_DrawArc (Widget gw, Boolean scaled, float x, float y, float width, float height, float start, float length)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -352,15 +308,7 @@ Figure DW_DrawArc (gw, scaled, x, y, width, height, start, length)
    Description: Adds an filled arc figure to the display list.
  ************************************************************************/
 
-Figure DW_FillArc (gw, scaled, x, y, width, height, start, length)
-    Widget  gw;
-    BOOLEAN scaled;
-    FLOAT   x;
-    FLOAT   y;
-    FLOAT   width;
-    FLOAT   height;
-    FLOAT   start;
-    FLOAT   length;
+Figure DW_FillArc (Widget gw, Boolean scaled, float x, float y, float width, float height, float start, float length)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -389,12 +337,7 @@ Figure DW_FillArc (gw, scaled, x, y, width, height, start, length)
    Description: Adds a text figure to the display list.
  ************************************************************************/
 
-Figure DW_DrawText (gw, scaled, x, y, text)
-    Widget  gw;
-    BOOLEAN scaled;
-    FLOAT   x;
-    FLOAT   y;
-    String  text;
+Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, String text)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -422,11 +365,7 @@ Figure DW_DrawText (gw, scaled, x, y, text)
 		is neither copied nor scaled.
  ************************************************************************/
 
-Figure DW_DrawPixmap (gw, x, y, pixmap)
-    Widget gw;
-    FLOAT  x;
-    FLOAT  y;
-    Pixmap pixmap;
+Figure DW_DrawPixmap (Widget gw, float x, float y, Pixmap pixmap)
 {
     Figure        fig;
     DrawingWidget dw;
@@ -457,11 +396,7 @@ Figure DW_DrawPixmap (gw, x, y, pixmap)
 		color and the pixels which are not set are ignored.
  ************************************************************************/
 
-Figure DW_DrawBitmap (gw, x, y, pixmap)
-    Widget gw;
-    FLOAT  x;
-    FLOAT  y;
-    Pixmap pixmap;
+Figure DW_DrawBitmap (Widget gw, float x, float y, Pixmap pixmap)
 {
     Figure        fig;
     DrawingWidget dw;
@@ -487,9 +422,7 @@ Figure DW_DrawBitmap (gw, x, y, pixmap)
    Description:	Sets the foreground pixel value for drawing.
  ************************************************************************/
 
-Boolean DW_SetForeground (gw, name)
-    Widget gw;
-    String name;
+Boolean DW_SetForeground (Widget gw, String name)
 {
     DrawingWidget dw;
 
@@ -504,9 +437,7 @@ Boolean DW_SetForeground (gw, name)
    Description:	Sets the font for drawing.
  ************************************************************************/
 
-Boolean DW_SetFont (gw, name)
-    Widget gw;
-    String name;
+Boolean DW_SetFont (Widget gw, String name)
 {
     DrawingWidget dw;
 
@@ -520,11 +451,7 @@ Boolean DW_SetFont (gw, name)
    Description:	Gets the scaled width and height of a text string
  ************************************************************************/
 
-void DW_GetTextExtents (gw, string, w, h)
-    Widget  gw;
-    String  string;
-    float  *w;
-    float  *h;
+void DW_GetTextExtents (Widget gw, String string, float *w, float *h)
 {
     DrawingWidget dw;
     int	          far;
@@ -546,9 +473,7 @@ void DW_GetTextExtents (gw, string, w, h)
    Description:	Sets the line width for drawing.
  ************************************************************************/
 
-void DW_SetLineWidth (gw, width)
-    Widget   gw;
-    unsigned width;
+void DW_SetLineWidth (Widget gw, unsigned int width)
 {
     DrawingWidget dw;
 
@@ -563,9 +488,7 @@ void DW_SetLineWidth (gw, width)
    Description:	Sets the line style for drawing.
  ************************************************************************/
 
-void DW_SetLineStyle (gw, style)
-    Widget gw;
-    int    style;
+void DW_SetLineStyle (Widget gw, int style)
 {
     DrawingWidget dw;
 
@@ -582,9 +505,7 @@ void DW_SetLineStyle (gw, style)
    Description:	Place the figure at the top of the display list.
  ************************************************************************/
 
-void DW_RaiseFigure (gw, fig)
-    Widget gw;
-    Figure fig;
+void DW_RaiseFigure (Widget gw, Figure fig)
 {
     unsigned i;
 
@@ -607,9 +528,7 @@ void DW_RaiseFigure (gw, fig)
    Description:	Place the figure at the bottom of the display list.
  ************************************************************************/
 
-void DW_LowerFigure (gw, fig)
-    Widget gw;
-    Figure fig;
+void DW_LowerFigure (Widget gw, Figure fig)
 {
     unsigned i;
 
@@ -634,9 +553,7 @@ void DW_LowerFigure (gw, fig)
    Description:	Remove the figure from the display list.
  ************************************************************************/
 
-void DW_RemoveFigure (gw, fig)
-    Widget gw;
-    Figure fig;
+void DW_RemoveFigure (Widget gw, Figure fig)
 {
     unsigned i;
 
@@ -661,8 +578,7 @@ void DW_RemoveFigure (gw, fig)
    Descripton:	Remove all figures from the display list.
  ************************************************************************/
 
-void DW_RemoveAll (gw)
-    Widget gw;
+void DW_RemoveAll (Widget gw)
 {
     Figure        fig;
     Figure	  next;
@@ -691,8 +607,7 @@ void DW_RemoveAll (gw)
    Description:	Force a total redraw of the widget.
  ************************************************************************/
 
-void DW_Redraw (gw)
-    Widget gw;
+void DW_Redraw (Widget gw)
 {
     DrawingWidget dw;
 
@@ -708,10 +623,7 @@ void DW_Redraw (gw)
    Description: Get the attributes of a figure.
  ************************************************************************/
 
-void DW_GetAttributes (gw, fig, values)
-    Widget            gw;
-    Figure            fig;
-    FigureAttributes *values;
+void DW_GetAttributes (Widget gw, Figure fig, FigureAttributes *values)
 {
     if (fig == NULL || values == NULL)
 	return;
@@ -800,11 +712,7 @@ void DW_GetAttributes (gw, fig, values)
    Description: Set the attributes of a figure.
  ************************************************************************/
 
-Boolean DW_SetAttributes (gw, fig, valuemask, values)
-    Widget	      gw;
-    Figure	      fig;
-    unsigned long     valuemask;
-    FigureAttributes *values;
+Boolean DW_SetAttributes (Widget gw, Figure fig, long unsigned int valuemask, FigureAttributes *values)
 {
     int		  i;
     int		  style;
@@ -1150,12 +1058,7 @@ Boolean DW_SetAttributes (gw, fig, valuemask, values)
    Description: Determines if a point lies close to a line.
  ************************************************************************/
 
-static int online (start, end, x, y, delta)
-    XPoint start;
-    XPoint end;
-    int    x;
-    int    y;
-    int    delta;
+static int online (XPoint start, XPoint end, int x, int y, int delta)
 {
     int deltax;
     int deltay;
@@ -1183,10 +1086,7 @@ static int online (start, end, x, y, delta)
 		coordinates.
  ************************************************************************/
 
-Figure DW_FindFigure (gw, realx, realy)
-    Widget gw;
-    FLOAT  realx;
-    FLOAT  realy;
+Figure DW_FindFigure (Widget gw, float realx, float realy)
 {
     Figure	  fig;
     int		  i;
@@ -1311,9 +1211,7 @@ Figure DW_FindFigure (gw, realx, realy)
    Description:	Retrieves the clip box of a figure.
  ************************************************************************/
 
-void DW_ClipBox (fig, rect)
-    Figure      fig;
-    XRectangle *rect;
+void DW_ClipBox (Figure fig, XRectangle *rect)
 {
     if (fig != NULL) {
 	rect -> x      = fig -> x;
@@ -1329,9 +1227,7 @@ void DW_ClipBox (fig, rect)
    Description: Set the interactive mode.
  ************************************************************************/
 
-void DW_SetInteractive (gw, interactive)
-    Widget  gw;
-    BOOLEAN interactive;
+void DW_SetInteractive (Widget gw, Boolean interactive)
 {
     GC		  gc;
     DrawingWidget dw;
@@ -1353,9 +1249,7 @@ void DW_SetInteractive (gw, interactive)
    Description: Set the auto find mode.
  ************************************************************************/
 
-void DW_SetAutoFind (gw, autofind)
-    Widget  gw;
-    BOOLEAN autofind;
+void DW_SetAutoFind (Widget gw, Boolean autofind)
 {
     ((DrawingWidget) gw) -> drawing.search = autofind;
 }
@@ -1366,9 +1260,7 @@ void DW_SetAutoFind (gw, autofind)
    Description: Set the auto redraw mode.
  ************************************************************************/
 
-void DW_SetAutoRedraw (gw, autoredraw)
-    Widget  gw;
-    BOOLEAN autoredraw;
+void DW_SetAutoRedraw (Widget gw, Boolean autoredraw)
 {
     Region        null;
     Region        buffer;
@@ -1398,11 +1290,7 @@ void DW_SetAutoRedraw (gw, autoredraw)
    Description:	Return all figures with an area.
  ************************************************************************/
 
-Figure *DW_SearchArea (gw, points, npoints, nfigs)
-    Widget    gw;
-    Point     points [ ];
-    unsigned  npoints;
-    unsigned *nfigs;
+Figure *DW_SearchArea (Widget gw, Point *points, unsigned int npoints, unsigned int *nfigs)
 {
     int		  loc;
     unsigned	  i;
@@ -1467,10 +1355,7 @@ Figure *DW_SearchArea (gw, points, npoints, nfigs)
    Description:	Retrieve all the figures on the display list.
  ************************************************************************/
 
-Figure *DW_RetrieveAll (gw, visible, nfigs)
-    Widget    gw;
-    BOOLEAN   visible;
-    unsigned *nfigs;
+Figure *DW_RetrieveAll (Widget gw, Boolean visible, unsigned int *nfigs)
 {
     Figure	  fig;
     Figure	 *figs;
@@ -1505,10 +1390,7 @@ Figure *DW_RetrieveAll (gw, visible, nfigs)
    Description:	Create a group figure from a set of figures.
  ************************************************************************/
 
-Figure DW_Group (gw, figs, nfigs)
-    Widget   gw;
-    Figure   figs [ ];
-    unsigned nfigs;
+Figure DW_Group (Widget gw, Figure *figs, unsigned int nfigs)
 {
     unsigned i;
     Figure   fig;
@@ -1530,9 +1412,7 @@ Figure DW_Group (gw, figs, nfigs)
    Description:	Remove a group figure.
  ************************************************************************/
 
-void DW_Ungroup (gw, fig)
-    Widget gw;
-    Figure fig;
+void DW_Ungroup (Widget gw, Figure fig)
 {
     unsigned i;
 
@@ -1552,10 +1432,7 @@ void DW_Ungroup (gw, fig)
 		and height and of the same depth as the drawing widget.
  ************************************************************************/
 
-Pixmap DW_CreatePixmap (gw, width, height)
-    Widget   gw;
-    unsigned width;
-    unsigned height;
+Pixmap DW_CreatePixmap (Widget gw, unsigned int width, unsigned int height)
 {
     unsigned depth;
 
@@ -1571,10 +1448,7 @@ Pixmap DW_CreatePixmap (gw, width, height)
 		and height but of depth one (a bitmap).
  ************************************************************************/
 
-Pixmap DW_CreateBitmap (gw, width, height)
-    Widget   gw;
-    unsigned width;
-    unsigned height;
+Pixmap DW_CreateBitmap (Widget gw, unsigned int width, unsigned int height)
 {
     return XCreatePixmap (XtDisplay (gw), XtWindow (gw), width, height, 1);
 }
@@ -1586,12 +1460,7 @@ Pixmap DW_CreateBitmap (gw, width, height)
 		(useful in action procedures).
  ************************************************************************/
 
-void DW_TranslateCoords (gw, x, y, rx, ry)
-    Widget gw;
-    int    x;
-    int    y;
-    float *rx;
-    float *ry;
+void DW_TranslateCoords (Widget gw, int x, int y, float *rx, float *ry)
 {
     DrawingWidget dw;
 
@@ -1609,8 +1478,7 @@ void DW_TranslateCoords (gw, x, y, rx, ry)
 		for use with XtSetArg.
  ************************************************************************/
 
-XtArgVal Float2Arg (value)
-    FLOAT value;
+XtArgVal Float2Arg (float value)
 {
     float   *new_float;
     float    float_val;

@@ -31,11 +31,11 @@
 # include <X11/StringDefs.h>
 # include <X11/Xaw/MenuButton.h>
 # include <X11/Xaw/SimpleMenu.h>
-
+# include "post.h"
 
 #define printf do_nothing
 
-void do_nothing ( ) { }
+static void do_nothing (const char *fmt, ...) { }
 
 
 static Position	x1;
@@ -77,9 +77,7 @@ static XtTranslations post_translations;
  * Description:	Highlights a menu entry given by event location.	*
  ************************************************************************/
 
-static void highlight (w, event)
-    Widget  w;
-    XEvent *event;
+static void highlight (Widget w, XEvent *event)
 {
     if (XtClass (w) == simpleMenuWidgetClass)
 	XtCallActionProc (w, "highlight", event, NULL, 0);
@@ -92,9 +90,7 @@ static void highlight (w, event)
  * Description:	Notifies a menu entry given by event location.		*
  ************************************************************************/
 
-static void notify (w, event)
-    Widget  w;
-    XEvent *event;
+static void notify (Widget w, XEvent *event)
 {
     if (XtClass (w) == simpleMenuWidgetClass)
 	XtCallActionProc (w, "notify", event, NULL, 0);
@@ -107,9 +103,7 @@ static void notify (w, event)
  * Description:	Unhighlights a menu entry given by event location.	*
  ************************************************************************/
 
-static void unhighlight (w, event)
-    Widget  w;
-    XEvent *event;
+static void unhighlight (Widget w, XEvent *event)
 {
     if (XtClass (w) == simpleMenuWidgetClass)
 	XtCallActionProc (w, "unhighlight", event, NULL, 0);
@@ -122,9 +116,7 @@ static void unhighlight (w, event)
  * Description:	Highlights the next or previous menu entry.		*
  ************************************************************************/
 
-static void move (w, sign)
-    Widget w;
-    int    sign;
+static void move (Widget w, int sign)
 {
     Arg        args [3];
     Position   y;
@@ -229,9 +221,7 @@ static void move (w, sign)
  * Description:	Grabs the keyboard and pointer.				*
  ************************************************************************/
 
-static void grab (w, time)
-    Widget w;
-    Time   time;
+static void grab (Widget w, Time time)
 {
     Arg    args [1];
     Widget v;
@@ -261,9 +251,7 @@ static void grab (w, time)
  * Description:	Ungrabs the keyboard and pointer			*
  ************************************************************************/
 
-static void ungrab (w, time)
-    Widget w;
-    Time   time;
+static void ungrab (Widget w, Time time)
 {
     if (XtClass (w) != menuButtonWidgetClass) {
 	XtUngrabKeyboard (w, time);
@@ -278,8 +266,7 @@ static void ungrab (w, time)
  * Description:	Determines if the pointer is inside a rectangle.	*
  ************************************************************************/
 
-static int inside (event)
-    XEvent *event;
+static int inside (XEvent *event)
 {
     Position x;
     Position y;
@@ -298,8 +285,7 @@ static int inside (event)
  * Description:	Pops up the menu.					*
  ************************************************************************/
 
-static void popup (w)
-    Widget w;
+static void popup (Widget w)
 {
     Arg       args [4];
     Position  x;
@@ -340,8 +326,7 @@ static void popup (w)
  * Description:	Pops down the menu.					*
  ************************************************************************/
 
-static void popdown (w)
-    Widget w;
+static void popdown (Widget w)
 {
     if (XtClass (w) == simpleMenuWidgetClass)
 	XtOverrideTranslations (w, old_translations);
@@ -358,11 +343,7 @@ static void popdown (w)
  * Description:	Empty action procedure.					*
  ************************************************************************/
 
-static void nop (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void nop (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
 }
 
@@ -374,11 +355,8 @@ static void nop (w, event, params, num_params)
  *		postable menu.						*
  ************************************************************************/
 
-void action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void
+action(Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     Time      now;
     KeySym    keysym;
@@ -504,8 +482,8 @@ void action (w, event, params, num_params)
  * Description:	Adds the postable menu actions to the specified widget.	*
  ************************************************************************/
 
-void AddPostMenuActions (w)
-    Widget w;
+void
+AddPostMenuActions(Widget w)
 {
     static XtAppContext	app_context = NULL;
     static XtActionsRec	actions [ ] = {{"PostMenu", action}, {"no-op", nop}};

@@ -27,11 +27,7 @@
 # define Y 2
 # define Z 3
 
-# undef atof
-extern double atof ();
-extern double strtod ();
-
-extern int InitializeProblem ( );
+extern int InitializeProblem (void);
 
 /******************************************************* 
  * function place_symbol
@@ -39,18 +35,10 @@ extern int InitializeProblem ( );
  *
  ******************************************************/
  
-void place_symbol(output,direct,scale,x,y,z,symbol)
-   FILE		*output;
-   double	scale,
-   		x,
-   		y,
-   		z;
-   char		*symbol;
-   int		direct;
+static void
+place_symbol(FILE *output, int direct, double scale, 
+             double x, double y, double z, char *symbol)
 {
-  double	s;
-  
-  
   fprintf (output, "\n{");
   fprintf (output, "\nINST\ntransform\n");
 
@@ -77,14 +65,9 @@ void place_symbol(output,direct,scale,x,y,z,symbol)
 
 }
 
-void place_number(output,direct,scale,x,y,z,number)
-   FILE		*output;
-   double	scale,
-   		x,
-   		y,
-   		z;
-   int		direct,
-   		number;
+static void
+place_number(FILE *output, int direct, double scale,
+             double x, double y, double z, int number)
 {
    int		anzahl=1,
    		digit=0,
@@ -144,12 +127,14 @@ void place_number(output,direct,scale,x,y,z,number)
  *
  ******************************************************/
 
-int dcomp(a,b)
-  double 	*a,
-  		*b;
+static int
+dcomp(const void *aa, const void *bb)
  {
-   if (*a > *b) 	return(1);
-   else if (*a < *b) 	return(-1);
+      double a = *((const double *) aa);
+      double b = *((const double *) bb);
+
+   if (a > b) 	return(1);
+   else if (a < b) 	return(-1);
    else 	 	return(0);
    
  }
@@ -161,8 +146,7 @@ int dcomp(a,b)
  *
  ******************************************************/
 
-int WriteOoglFile (filename)
-   char		*filename;
+int WriteOoglFile (char *filename)
 {
    FILE		*output;
    unsigned	i,j;

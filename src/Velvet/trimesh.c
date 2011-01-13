@@ -195,11 +195,7 @@ click on the label for that variable.";
  *		specified button.					*
  ************************************************************************/
 
-static void Action (w, event, params, num_params)
-    Widget    w;
-    XEvent   *event;
-    String   *params;
-    Cardinal *num_params;
+static void Action (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
     w = XtNameToWidget (XtParent (w), params [0]);
 
@@ -213,10 +209,7 @@ static void Action (w, event, params, num_params)
  * Description:								*
  ************************************************************************/
 
-static void Okay (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Okay (Widget w, XtPointer client_data, XtPointer call_data)
 {
     TrimeshDialog   trimeshd;
 
@@ -232,10 +225,7 @@ static void Okay (w, client_data, call_data)
  * Description:	sets the cancel flag					*
  ************************************************************************/
 
-static void Cancel (w, client_data, call_data)
-    Widget    w;
-    XtPointer client_data;
-    XtPointer call_data;
+static void Cancel (Widget w, XtPointer client_data, XtPointer call_data)
 {
     TrimeshDialog trimeshd;
 
@@ -249,8 +239,7 @@ static void Cancel (w, client_data, call_data)
  * Description:	fills the TriMesh structure based on the text fields	*
  ************************************************************************/
 
-static void TrimeshDialogSet (trimeshd)
-    TrimeshDialog	trimeshd;
+static void TrimeshDialogSet (TrimeshDialog trimeshd)
 {
     Arg		args [1];
     String	value;
@@ -286,10 +275,7 @@ static void TrimeshDialogSet (trimeshd)
  *		consistent with those of the other dialogs.		*
  ************************************************************************/
 
-TrimeshDialog TrimeshDialogCreate (parent, name, title)
-    Widget parent;
-    String name;
-    String title;
+TrimeshDialog TrimeshDialogCreate (Widget parent, String name, String title)
 {
     Cardinal		i;
     Arg			args [1];
@@ -426,8 +412,7 @@ TrimeshDialog TrimeshDialogCreate (parent, name, title)
  * Description:	Pops up the specified material dialog.			*
  ************************************************************************/
 
-TriMesh TrimeshDialogPopup (trimeshd)
-    TrimeshDialog trimeshd;
+TriMesh TrimeshDialogPopup (TrimeshDialog trimeshd)
 {
     XEvent	 event;
     XtAppContext app_context;

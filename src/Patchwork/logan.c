@@ -31,13 +31,14 @@
 # include "fe.h"
 # include "error.h"
 # include "problem.h"
+# include "patchwork.h"
 
-Material *SetupMaterialArray    ( );
-int      CountSurfaceTractions  ( );
-int	 GetKode                ( );
+Material *SetupMaterialArray    (Element *element, unsigned int numelts, int *nummat);
+int      CountSurfaceTractions  (Element *element, unsigned int numelts);
+int	 GetKode                (Node node, float *ulx, float *vly);
 
-int WriteLoganFile (name)
-    char	*name;
+int
+WriteLoganFile(char *name)
 {
     FILE	*fp;			/* output file pointer		*/
     unsigned	 i,			/* loop variable		*/
@@ -196,10 +197,7 @@ int WriteLoganFile (name)
     return 0;
 }
 
-int GetKode (node, ulx, vly)
-   Node		node;
-   float	*ulx,
-		*vly;
+int GetKode (Node node, float *ulx, float *vly)
 {
    unsigned	code;
 
@@ -236,10 +234,7 @@ int GetKode (node, ulx, vly)
    return code;
 } 
 
-Material *SetupMaterialArray (element, numelts, nummat)
-   Element	*element;
-   unsigned	numelts;
-   int		*nummat;
+Material *SetupMaterialArray (Element *element, unsigned int numelts, int *nummat)
 {
    unsigned	i,j,
 		count;
@@ -269,9 +264,7 @@ Material *SetupMaterialArray (element, numelts, nummat)
     return material;
 }
 
-int CountSurfaceTractions (element, numelts)
-   Element	*element;
-   unsigned	numelts;
+int CountSurfaceTractions (Element *element, unsigned int numelts)
 {
    unsigned	i, count;
 

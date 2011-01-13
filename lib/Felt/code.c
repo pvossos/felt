@@ -26,10 +26,9 @@
 
 # include <stdio.h>
 # include <math.h>
+# include <stdarg.h>
 # include "code.h"
 # include "allocate.h"
-# include VAR_ARGS_INCLUDE
-
 
 # define MaxStackDepth	1024
 # define MaxCodeSize	1024
@@ -111,20 +110,8 @@ static double	  *sp;
 
 Code InCore = in_core;
 
-
-/************************************************************************
- * Function:	EmitCode						*
- *									*
- * Description:	Adds an instruction to the current piece of code.	*
- ************************************************************************/
-
-# ifdef UseFunctionPrototypes
-void EmitCode (Opcode op, ...)
-# else
-void EmitCode (op, va_alist)
-    Opcode op;
-    va_dcl
-# endif
+void
+EmitCode(Opcode op, ...)
 {
     va_list ap;
     int     i;
@@ -136,19 +123,19 @@ void EmitCode (op, va_alist)
 
     switch (data [op].arg_type) {
     case Integer:
-	VA_START (ap, op);
+	va_start (ap, op);
 	ip ++ -> offset = va_arg (ap, int);
 	va_end (ap);
 	break;
 
     case Double:
-	VA_START (ap, op);
+	va_start (ap, op);
 	ip ++ -> arg = va_arg (ap, double);
 	va_end (ap);
 	break;
 
     case Array:
-	VA_START (ap, op);
+	va_start (ap, op);
 	array = va_arg (ap, double *);
 	ip ++ -> offset = length = va_arg (ap, int);
 	va_end (ap);
@@ -158,15 +145,8 @@ void EmitCode (op, va_alist)
     }
 }
 
-
-/************************************************************************
- * Function:	CopyCode						*
- *									*
- * Description:	Copies a piece of code.					*
- ************************************************************************/
-
-Code CopyCode (code)
-    Code code;
+Code
+CopyCode(Code code)
 {
     Code     pc;
     Code     ptr;
@@ -205,41 +185,21 @@ Code CopyCode (code)
     return copy;
 }
 
-
-/************************************************************************
- * Function:	FreeCode						*
- *									*
- * Description:	Deallocates a copied program.				*
- ************************************************************************/
-
-void FreeCode (code)
-    Code code;
+void
+FreeCode(Code code)
 {
     if (code != InCore)
 	Deallocate (code);
 }
 
-
-/************************************************************************
- * Function:	SetIP							*
- *									*
- * Description:	Sets the address of the instruction pointer.		*
- ************************************************************************/
-
-void SetIP (new_ip)
-    int new_ip;
+void
+SetIP(int new_ip)
 {
     ip = InCore + new_ip;
 }
 
-
-/************************************************************************
- * Function:	GetIP							*
- *									*
- * Description:	Returns the address of the instruction pointer.		*
- ************************************************************************/
-
-int GetIP ( )
+int
+GetIP(void)
 {
     return ip - InCore;
 }
@@ -251,11 +211,8 @@ int GetIP ( )
  * Description:	Evaluates a table or cycle opcode.			*
  ************************************************************************/
 
-static double EvalTable (array, length, time, flag)
-    double *array;
-    int     length;
-    double  time;
-    int     flag;
+static double
+EvalTable(Code array, int length, double time, int flag)
 {
     int    i1;
     int    i2;
@@ -267,16 +224,16 @@ static double EvalTable (array, length, time, flag)
 
 
     if (length == 2)
-	return time == array [0] ? array [1] : 0;
+	return time == array[0].arg ? array[1].arg : 0;
 
     if (flag) {
-	max = array [length - 2];
+	max = array[length - 2].arg;
 	while (time > max)
 	    time -= max;
     }
 
     for (i1 = 0; i1 < length; i1 += 2)
-	if (time <= array [i1])
+	if (time <= array[i1].arg)
 	    break;
 
     if (i1 == length) {
@@ -287,25 +244,17 @@ static double EvalTable (array, length, time, flag)
     else
 	i2 = i1 + 2;
 
-    t1 = array [i1];
-    t2 = array [i2];
-    x1 = array [i1 + 1];
-    x2 = array [i2 + 1];
+    t1 = array[i1].arg;
+    t2 = array[i2].arg;
+    x1 = array[i1 + 1].arg;
+    x2 = array[i2 + 1].arg;
 
     /*printf ("(%g,%g) %g (%g,%g)\n", t1, x1, time, t2, x2);*/
     return t1 != t2 ? (x2 - x1) / (t2 - t1) * (time - t1) + x1 : x2;
 }
 
-
-/************************************************************************
- * Function:	EvalCode						*
- *									*
- * Description:	Evaluates a piece of code.				*
- ************************************************************************/
-
-double EvalCode (code, time)
-    Code code;
-    double time;
+double
+EvalCode(Code code, double time)
 {
     int    x;
     int    y;
@@ -555,15 +504,8 @@ double EvalCode (code, time)
 	}
 }
 
-
-/************************************************************************
- * Function:	DebugCode						*
- *									*
- * Description:	Print a piece of stack code as instructions.		*
- ************************************************************************/
-
-void DebugCode (code)
-    Code code;
+void
+DebugCode(Code code)
 {
     int     i;
     int     x;
@@ -605,15 +547,8 @@ void DebugCode (code)
     }
 }
 
-
-/************************************************************************
- * Function:	IsConstant						*
- *									*
- * Description:	Determines if a piece of code is constant.		*
- ************************************************************************/
-
-int IsConstant (code)
-    Code code;
+int
+IsConstant(Code code)
 {
     Opcode op;
     Code   pc;

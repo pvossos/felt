@@ -58,7 +58,7 @@ extern CanvasDialog	canvas_d;
 extern Panel   panel [ ];
 
 
-void ToggleSnapStatus ()
+void ToggleSnapStatus (void)
 {
     Arg            arglist[1];
 
@@ -75,7 +75,7 @@ void ToggleSnapStatus ()
     changeflag = True;
 }
 
-void ToggleRenumberStatus ()
+void ToggleRenumberStatus (void)
 {
    Arg 		arglist [1];
 
@@ -89,7 +89,7 @@ void ToggleRenumberStatus ()
    solution -> renumber = !solution -> renumber;
 }
 
-void SetNodeNumberFlag ()
+void SetNodeNumberFlag (void)
 {
    Arg		arglist [1];
 
@@ -101,7 +101,7 @@ void SetNodeNumberFlag ()
    XtSetValues (XtNameToWidget (panel [3].menu, "node_numbering"), arglist, 1);
 }
    
-void ToggleNodeNumberStatus ()
+void ToggleNodeNumberStatus (void)
 {
    canvas -> node_numbers  = !canvas -> node_numbers;
    SetNodeNumberFlag();
@@ -110,7 +110,7 @@ void ToggleNodeNumberStatus ()
    changeflag = True;
 }
 
-void SetEltNumberFlag()
+void SetEltNumberFlag(void)
 {
    Arg		arglist [1];
 
@@ -122,7 +122,7 @@ void SetEltNumberFlag()
    XtSetValues (XtNameToWidget (panel [3].menu, "elt_numbering"), arglist, 1);
 }
 
-void ToggleEltNumberStatus ()
+void ToggleEltNumberStatus (void)
 {
 
    canvas -> element_numbers  = !canvas -> element_numbers;
@@ -133,7 +133,7 @@ void ToggleEltNumberStatus ()
 }
 
 
-void ToggleGridStatus ()
+void ToggleGridStatus (void)
 {
     Arg            arglist[1];
 
@@ -150,7 +150,7 @@ void ToggleGridStatus ()
     changeflag = True;
 }
 
-void ZoomAll ()
+void ZoomAll (void)
 {
    float	xscale,
 		yscale;
@@ -179,7 +179,7 @@ void ZoomAll ()
    changeflag = True;
 }
 
-void ZoomStart ()
+void ZoomStart (void)
 {
    Cardinal	count;
    Arg		arglist [4];
@@ -201,7 +201,7 @@ void ZoomStart ()
 	(void) DW_SetForeground (drawing, "black");
 }
 
-void ZoomAP ()
+void ZoomAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    static unsigned	corner_number = 0;
    static float		xl,xr,
@@ -229,10 +229,7 @@ void ZoomAP ()
    }
 }
 
-void ZoomSelect (w, clientData, callData)
-   Widget	w;
-   XtPointer	clientData;
-   XtPointer	callData;
+void ZoomSelect (Widget w, XtPointer clientData, XtPointer callData)
 {
    static Point		corner;
    static Figure	box; 
@@ -263,8 +260,7 @@ void ZoomSelect (w, clientData, callData)
    }
 } 
 
-void ZoomEnd (box)
-   Figure	box;
+void ZoomEnd (Figure box)
 {
    float		xscale;
    float		yscale;
@@ -330,8 +326,7 @@ void ZoomEnd (box)
    changeflag = True;
 }
 
-void SetWaitCursor (w)
-   Widget	w;
+void SetWaitCursor (Widget w)
 {
    Arg		arglist [1];
    Cardinal	count;
@@ -343,8 +338,7 @@ void SetWaitCursor (w)
    XFlush (XtDisplay (toplevel));
 }
 
-void SetNormalCursor (w)
-   Widget	w;
+void SetNormalCursor (Widget w)
 {
    Arg		arglist [1];
    Cardinal	count;
@@ -356,7 +350,7 @@ void SetNormalCursor (w)
    XFlush (XtDisplay (toplevel));
 }
 
-void ParseEntryLine ()
+void ParseEntryLine (Widget w, XEvent *event, String *params, Cardinal *num)
 {
    extern PanelId     last_command;
    Arg		      arglist [1];
@@ -397,11 +391,7 @@ void ParseEntryLine ()
       XBell (XtDisplay (toplevel), 20);
 }
 
-void MenuAction (w, event, params, num_params)
-   Widget	w;
-   XEvent	*event;
-   String	*params;
-   Cardinal	*num_params;
+void MenuAction (Widget w, XEvent *event, String *params, Cardinal *num_params)
 {
    XtPointer	execute;
    unsigned	i,j;
@@ -435,19 +425,29 @@ void MenuAction (w, event, params, num_params)
       fprintf (stderr,"velvet: could not find menu entry named %s\n",*params);
 }  
 
-void QuitEdit ( )
+void QuitEditCB(Widget w, XtPointer closure, XtPointer data)
+{
+     QuitEdit(w, NULL, NULL, NULL);
+}
+
+void QuitEdit(Widget w, XEvent *event, String *params, Cardinal *num)
 {
    if (edit_mode == True) 
       SetNormalMode ();
 }
 
-void AbortEdit ( )
+void AbortEditCB(Widget w, XtPointer closure, XtPointer data)
+{
+     AbortEdit(w, NULL, NULL, NULL);
+}
+
+void AbortEdit(Widget w, XEvent *event, String *params, Cardinal *num)
 {
    if (edit_mode == True) 
       SetNormalMode ();
 }
 
-void SetNormalMode ()
+void SetNormalMode (void)
 {
    unsigned	i;
    Arg		arglist [2];
@@ -474,7 +474,7 @@ void SetNormalMode ()
 
    XtAddCallback (drawing, XtNbuttonCallback, SelectCallback, NULL);
 
-   AssignQuitAbort (QuitEdit, "QuitEdit", AbortEdit, "AbortEdit");
+   AssignQuitAbort (QuitEditCB, "QuitEdit", AbortEditCB, "AbortEdit");
 
    if (sensitive_menus == True) {
       for (i = 0 ; i <= 2 ; i++)
@@ -500,11 +500,7 @@ void SetNormalMode ()
    edit_mode = False;
 }
 
-void AssignQuitAbort (quitCB, quitAP, abortCB, abortAP)
-   XtCallbackProc	quitCB;
-   XtCallbackProc	abortCB;
-   String		quitAP;
-   String		abortAP;
+void AssignQuitAbort (XtCallbackProc quitCB, String quitAP, XtCallbackProc abortCB, String abortAP)
 {
    char		cmd1 [256];
    char		cmd2 [256];
@@ -525,7 +521,7 @@ void AssignQuitAbort (quitCB, quitAP, abortCB, abortAP)
 }
                                 
 
-void SetEditMode ()
+void SetEditMode (void)
 {
    unsigned	i;
 
@@ -547,9 +543,7 @@ void SetEditMode ()
 }
 
  
-void ChangeStatusLine (new_label, allow_input)
-   String 	new_label;
-   Boolean	allow_input;
+void ChangeStatusLine (String new_label, Boolean allow_input)
 {
    Arg		arglist [1];
    Cardinal	count;

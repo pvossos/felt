@@ -39,48 +39,14 @@ typedef struct {
     Boolean	  proceed;
 } ElementDialogInfo;
 
+ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtCallbackProc callback, XtPointer closure);
 
-extern ElementDialog ElementDialogCreate (
-# if NeedFunctionPrototypes
-    Widget			/* parent      */,
-    String			/* name        */,
-    String			/* title       */,
-    XtCallbackProc		/* callback    */,
-    XtPointer			/* client_data */
-# endif
-);
+void ElementDialogPopup (ElementDialog eltd);
 
+void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tree loads, Tree nodes);
 
-extern void ElementDialogPopup (
-# if NeedFunctionPrototypes
-    ElementDialog		/* element_dialog */
-# endif
-);
+Element ElementDialogActive (ElementDialog eltd);
 
-
-extern void ElementDialogUpdate (
-# if NeedFunctionPrototypes
-    ElementDialog		/* element_dialog */,
-    Tree			/* element_tree	  */,
-    Tree			/* material_tree  */,
-    Tree			/* load_tree	  */,
-    Tree			/* node_tree	  */
-# endif
-);
-
-
-extern Element ElementDialogActive (
-# if NeedFunctionPrototypes
-    ElementDialog		/* element_dialog */
-# endif
-);
-
-
-extern void ElementDialogDisplay (
-# if NeedFunctionPrototypes
-    ElementDialog		/* element_dialog */,
-    Element			/* element	  */
-# endif
-);
+void ElementDialogDisplay (ElementDialog eltd, Element element);
 
 # endif /* _Element_h */

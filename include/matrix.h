@@ -17,17 +17,10 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	matrix.h    
- *	
- * Description:	
- ************************************************************************/
-
 # ifndef _MATRIX_H
 # define _MATRIX_H
 # include <stdio.h>		/* for FILE definition			*/
 # include "status.h"
-# include "proto.h"
 
 typedef struct matrix *Matrix;
 
@@ -77,403 +70,473 @@ typedef Matrix Vector;
 	 * prototypes for DATA manipulation routines
 	 */
 
-double mdata PROTO ((     
-   Matrix,			/* matrix to fetch data from	*/
-   unsigned,	    		/* row index			*/
-   unsigned	    		/* column index			*/
-));
+/*!
+  \param A matrix to fetch data from
+  \param row row index
+  \param col column index
+*/
+double mdata (Matrix A, unsigned int row, unsigned int col);
 
-Matrix CreateSubsectionMatrix PROTO (( 
-   Matrix,			/* matrix to subsection		*/
-   unsigned,			/* starting row			*/
-   unsigned,			/* starting column		*/
-   unsigned,			/* ending row			*/
-   unsigned			/* ending column		*/
-));
+/*!
+  \param a matrix to subsection
+  \param sr starting row
+  \param sc starting column
+  \param er ending row
+  \param ec ending column
+*/
+Matrix CreateSubsectionMatrix (Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec);
 
-Matrix CreateFullMatrix PROTO ((
-   unsigned,			/* number of rows		*/
-   unsigned			/* number of columns		*/	
-));
+/*!
+  \param rows number of rows
+  \param cols number of columns
+*/
+Matrix CreateFullMatrix (unsigned int rows, unsigned int cols);
 
-Matrix CreateRowVector PROTO ((
-   unsigned			/* vector length		*/	
-));
+/*!
+  \param size vector length
+*/
+Matrix CreateRowVector (unsigned int size);
 
-Matrix CreateColumnVector PROTO ((
-   unsigned			/* vector length		*/
-));
+/*!
+  \param size vector length
+*/
+Matrix CreateColumnVector (unsigned int size);
 
-void DestroyMatrix PROTO ((
-   Matrix			/* matrix to free		*/
-));
+/*!
+  \param m matrix to free
+*/
+void DestroyMatrix (Matrix m);
 
-Matrix CreateCompactMatrix PROTO ((
-   unsigned,			/* number of rows		*/
-   unsigned, 			/* number of columns		*/	
-   unsigned,			/* actual size of storage	*/	
-   unsigned *			/* diagonal index array		*/
-));
+/*!
+  \param rows number of rows
+  \param cols number of columns
+  \param size actual size of storage
+  \param diag diagonial index array
+ */
+Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, 
+                            unsigned int size, unsigned int *diag);
 
-Matrix CreateCopyMatrix PROTO ((
-   Matrix			/* matrix to copy data from	*/	
-));
+/*!
+  \param a matrix to copy data from
+*/
+Matrix CreateCopyMatrix (Matrix a);
 
-Matrix MakeFullFromCompact PROTO ((
-   Matrix			/* compact matrix to expand 	*/	
-));
+/*!
+  \param A compact matrix to expand
+*/
+Matrix MakeFullFromCompact (Matrix A);
 
-Matrix MakeCompactFromFull PROTO ((
-   Matrix			/* full matrix to compact	*/	
-)); 
+/*!
+  \param A full matrix to compact
+*/
+Matrix MakeCompactFromFull (Matrix A);
 
-int ConvertRowColumn PROTO ((
-   unsigned,			/* row index			*/
-   unsigned,			/* column index			*/
-   Matrix			/* compact matrix		*/
-));
+/*!
+  Given a compact column storage scheme described by diag
+  and convert row and column into an address into
+  a compact column matrix representation
+
+  \param row the row of what would be the full matrix
+  \param col the column of what would be the full matrix
+  \param a matrix with array of diagonal address
+  \return a valid address if there is one, 0 if there's no
+  need to worry about what would be in that spot of
+  the full matrix.
+ */
+int ConvertRowColumn (unsigned int row, unsigned int col, Matrix a);
 
 	/*
 	 * prototypes for the BASIC matrix routines
 	 */
 
-int ZeroMatrix PROTO ((		/* a = 0			   */
-   Matrix	 		/* matrix to fill with zeros	   */
-));
+/*!
+  \brief A = 0 
+  \param a the Matrix to fill with zeros
+ */
+int ZeroMatrix (Matrix a);
 
-int CopyMatrix PROTO ((		/* b = a			   */
-   Matrix,			/* source matrix		   */
-   Matrix			/* destination matrix		   */
-));
+/*!
+  \brief B = A
+  \param a the source Matrix
+  \param b the destination Matrix
+ */
+int CopyMatrix (Matrix b, Matrix a);
 
-int IdentityMatrix PROTO ((	/* a = [I]			   */
-   Matrix	 		/* destination matrix for identity */
-));
+/*!
+  \brief A = [I]
+  \param a destination matrix for identity
+ */
+int IdentityMatrix (Matrix a);
 
-int RandomMatrix PROTO ((	/* a(i,j) = rand()		   */
-   Matrix,			/* matrix to randomize		   */
-   int		     		/* optional seed		   */
-));
+/*!
+  \brief a(i,j) = rand()
+  \param a Matrix to randomize
+  \param seed optional seed
+ */
+int RandomMatrix (Matrix a, int seed);
 
-int MirrorMatrix PROTO ((
-   Matrix			/* matrix to complete		*/
-));
+/*!
+  \param a the Matrix to mirror
+ */
+int MirrorMatrix (Matrix a);
 
-int MultiplyMatrices PROTO ((	/* c = ab			*/
-   Matrix,			/* destination matrix		*/
-   Matrix, 			/* source matrix 1		*/
-   Matrix			/* source matrix 2		*/
-));
+/*!
+  \brief c = a * b
+  \param c destination Matrix
+  \param a source matrix 1
+  \param b source matrix 2
+ */
+int MultiplyMatrices (Matrix c, Matrix a, Matrix b);
 
-int AddMatrices PROTO ((	/* c = a + b			*/
-   Matrix, 			/* destination matrix		*/
-   Matrix,	  		/* source matrix 1		*/
-   Matrix    			/* source matrix 2		*/
-));
+/*!
+  \brief c = a + b
+  \param c destination Matrix
+  \param a source Matrix 1
+  \param b source Matrix 2
+ */
+int AddMatrices (Matrix c, Matrix a, Matrix b);
 
-int SubtractMatrices PROTO ((	/* c = a - b 			*/
-   Matrix,	  		/* destination matrix		*/
-   Matrix,	  		/* source matrix 1		*/
-   Matrix	  		/* source matrix 2		*/
-));
+/*!
+  \brief c = a - b
+  \param c destination Matrix
+  \param a source Matrix 1
+  \param b source Matrix 2
+*/
+int SubtractMatrices (Matrix c, Matrix a, Matrix b);
 
-int ModMatrices PROTO ((	/* c = a % b			*/
-   Matrix, 			/* destination matrix		*/
-   Matrix,	  		/* source matrix 1		*/
-   Matrix    			/* source matrix 2		*/
-));
+/*!
+  \brief c = a % b
+  \param c destination Matrix
+  \param a source Matrix 1
+  \param b source Matrix 2
+ */
+int ModMatrices (Matrix c, Matrix a, Matrix b);
 
-int Saxpy PROTO ((        	/* c = b + alpha*a		*/	
-   Matrix,	  		/* destination vector		*/
-   Matrix,			/* source 1 vector		*/
-   Matrix,	  		/* source 2 vector		*/
-   double	      		/* scale factor			*/
-));
+/*!
+  \brief c = b + alpha * a
+  \param c destination vector
+  \param a source vector 1
+  \param b source vector 2
+  \param alpha scale factor
+*/
+int Saxpy (Matrix c, Matrix a, Matrix b, double alpha);
 
-int Gaxpy PROTO ((    		/* c = b + Aa 			*/
-   Matrix,	  		/* destination vector		*/
-   Matrix,	  		/* source 1 vector		*/
-   Matrix,	  		/* source 2 vector		*/
-   Matrix	  		/* source matrix		*/
-));
+/*!
+  \brief c = b + A * a
+  \param c destination vector
+  \param a source vector 1
+  \param b source vector 2
+  \param A source Matrix
+*/
+int Gaxpy (Matrix c, Matrix a, Matrix b, Matrix A);
 
-int ScaleMatrix PROTO ((       /* b(i,j) = factor*a(i,j) + offset  */
-   Matrix,	  		/* destination matrix		    */
-   Matrix,	  		/* source matrix		    */
-   double,	       		/* multiplicative scale factor	    */
-   double	       		/* additive offset		    */
-));
+/*!
+  \brief b(i,j) = factor*a(i,j) + offset
+  \param b destination matrix
+  \param a source matrix
+  \param factor multiplicative scale factor
+  \param offset additive offset
+ */
+int ScaleMatrix(Matrix b, Matrix a, double factor, double offset);
 
-int SqrtMatrix PROTO ((         /* b(i,j) = sqrt (a(i,j))           */
-   Matrix,	  		/* destination matrix		    */
-   Matrix 	  		/* source matrix		    */
-));
+/*!
+  \brief b(i,j) = sqrt(a(i,j))
+  \param b destination matrix
+  \param a source matrix
+ */
+int SqrtMatrix(Matrix b, Matrix a);
 
-int DotBProduct PROTO ((	/* x = aTb			*/
-   double *,	   		/* pointer to result location	*/
-   Matrix,	  		/* source vector (row) 1	*/
-   Matrix	  		/* source vector 2		*/
-));
+/*!
+  \brief x = aTb
+  \param x pointer to result location
+  \param a source vector (row) 1
+  \param b sourve vector 2
+ */
+int DotBProduct(double *x, Matrix a, Matrix b);
 
-int TransposeMatrix PROTO (( 	/* b = aT			*/
-   Matrix,	  		/* destination matrix		*/
-   Matrix	  		/* source matrix		*/
-));
+/*!
+  \brief b = aT
+  \param b destination matrix
+  \param a source matrix
+*/
+int TransposeMatrix(Matrix b, Matrix a);
 
-int CompareEQMatrices PROTO (( 	/* c = (a == b)		*/
-   Matrix,	  		/* destination matrix	*/
-   Matrix,	  		/* first RHS matrix	*/
-   Matrix	  		/* second RHS matrix	*/
-));
+/*!
+  \brief  c = (a == b)
+  \param c destination matrix
+  \param a first RHS matrix
+  \param b second RHS matrix
+*/
+int CompareEQMatrices (Matrix c, Matrix a, Matrix b);
 
-int CompareNEQMatrices PROTO (( /* c = (a != b)		*/
-   Matrix,	  		/* destination matrix	*/
-   Matrix,	  		/* first RHS matrix	*/
-   Matrix	  		/* second RHS matrix	*/
-));
+/*!
+  \brief c = (a != b)
+  \param c destination matrix
+  \param a first RHS matrix
+  \param b second RHS matrix
+*/
+int CompareNEQMatrices (Matrix c, Matrix a, Matrix b);
 
-int CompareGTMatrices PROTO (( /* c = (a > b)		*/
-   Matrix,	  		/* destination matrix	*/
-   Matrix,	  		/* first RHS matrix	*/
-   Matrix	  		/* second RHS matrix	*/
-));
+/*!
+  \brief c = (a > b)
+  \param c destination matrix
+  \param a first RHS matrix
+  \param b second RHS matrix
+*/
+int CompareGTMatrices (Matrix c, Matrix a, Matrix b);
 
-int CompareLTMatrices PROTO ((	/* c = (a < b)		*/
-   Matrix,	  		/* destination matrix	*/
-   Matrix,	  		/* first RHS matrix	*/
-   Matrix	  		/* second RHS matrix	*/
-));
+/*!
+  \brief c = (a < b)
+  \param c destination matrix
+  \param a first RHS matrix
+  \param b second RHS matrix
+*/
+int CompareLTMatrices (Matrix c, Matrix a, Matrix b);
 
-int CompareLTEMatrices PROTO (( /* c = (a <= b)	*/
-   Matrix,	  		 /* destination matrix	*/
-   Matrix,	  		 /* first RHS matrix	*/
-   Matrix	  		 /* second RHS matrix	*/
-));
+/*!
+  \brief c = (a <= b)
+  \param c destination matrix
+  \param a first RHS matrix
+  \param b second RHS matrix
+*/
+int CompareLTEMatrices (Matrix c, Matrix a, Matrix b);
 
-int CompareGTEMatrices PROTO (( /* c = (a >= b)	*/
-   Matrix,	  		 /* destination matrix	*/
-   Matrix,	  		 /* first RHS matrix	*/
-   Matrix	  		 /* second RHS matrix	*/
-));
+/*!
+  \brief c = (a >= b)
+  \param c destination matrix
+  \param a first RHS matrix
+  \param b second RHS matrix
+*/
+int CompareGTEMatrices (Matrix c, Matrix a, Matrix b);
 
-int PrintMatrix PROTO (( 	/* print matrix m to file fp	*/
-   Matrix,	  		/* matrix to print		*/
-   FILE	*	    		/* file pointer for output	*/
-));
+/*!
+  \brief print matrix m to file fp
+  \param m matrix to print
+  \param fp file pointer for output
+*/
+int PrintMatrix (Matrix m, FILE *fp);
 
-int PrintMatrixSubsection PROTO (( 	/* print matrix m to file fp	*/
-   Matrix,	  			/* matrix to print		*/
-   unsigned,				/* starting row			*/
-   unsigned,				/* starting column		*/
-   unsigned,				/* ending row			*/
-   unsigned,				/* ending column		*/
-   FILE	*	    			/* file pointer for output	*/
-));
+/*!
+  \brief  print matrix m to fp
+  \param m matrix to print
+  \param sr starting row
+  \param sc starting column
+  \param er ending row
+  \param ec ending column
+  \param fp file pointer for output
+*/
+int PrintMatrixSubsection (Matrix m, unsigned int sr, unsigned int sc,
+                           unsigned int er, unsigned int ec, FILE *fp);
 
 	/*
 	 * protoypes for the FACTORization machine
 	 */
 
-int QRFactorMatrix PROTO ((	/* factor a such that qTa = r		*/
-   Matrix,	  		/* destination matrix for q		*/
-   Matrix,	  		/* destination matrix for r		*/
-   Matrix	  		/* source matrix			*/
-));
+/*!
+  \brief factor a such that qTa = r
+  \param q destination matrix for q
+  \param r destination matrix for r
+  \param a source matrix
+*/
+int QRFactorMatrix (Matrix q, Matrix r, Matrix a);
 
-int CholeskyFactorMatrix PROTO ((	/* factor a such that bbT=a	*/
-   Matrix,	  			/* destination matrix		*/
-   Matrix	  			/* source matrix		*/
-));
 
-int InvertMatrix PROTO (( 	/* compute b = inv(a) where a is LU factored */
-   Matrix,	  		/* destination matrix			     */
-   Matrix,	  		/* factored source matrix  		     */
-   Matrix	  		/* pivot vector				     */
-));
+/*!
+  \brief factor a such that bbT=a
+  \param b destination matrix
+  \param a source matrix
+*/
+int CholeskyFactorMatrix (Matrix b, Matrix a);
 
-int DeterminantMatrix PROTO ((    /* result = |a|			*/
-   double *,       		   /* pointer to result location	*/
-   Matrix,	  		   /* factorized source matrix		*/
-   Matrix	  		   /* pivot vector			*/
-));
 
-int LUFactorMatrix PROTO ((         /* factor a into LU and store in b 	*/
-   Matrix,	  		    /* destination matrix		*/
-   Matrix, 	  	  	    /* source matrix			*/
-   Matrix, 	   		    /* permutation vector		*/
-   int *     		    	    /* singularity code			*/
-));
+/*!
+  \brief  compute b = inv(a) where a is LU factored
+  \param b destination matrix
+  \param a factored source matrix
+  \param p pivot vector
+*/
+int InvertMatrix (Matrix b, Matrix a, Matrix p);
 
-int LUBackSolveMatrix PROTO ((	    /* solve Ax=b and store result in c */	
-   Matrix,	  		    /* destination vector	        */
-   Matrix,	  		    /* factorized source matrix         */	
-   Matrix,	  		    /* right hand side vector 	        */
-   Matrix	  		    /* pivot vector		        */
-));
+/*
+  \brief result = |a|
+  \param result pointer to result location
+  \param a factorized source matrix
+  \param p pivot vector
+*/
+int DeterminantMatrix (double *result, Matrix a, Matrix p);
 
-int FormLUPMatrices PROTO ((        /* separate matrices from factors    */
-   Matrix,			    /* return matrix for L		 */
-   Matrix,			    /* return matrix for U		 */
-   Matrix,			    /* return matrix for P		 */
-   Matrix,			    /* factored form of matrix	         */
-   Matrix			    /* pivot vector		         */
-));
+/*!
+  \brief  factor a into LU and store in b
+  \param b destination matrix
+  \param a source matrix
+  \param p permutation vector
+  \param info singularity code
+*/
+int LUFactorMatrix (Matrix b, Matrix a, Matrix p, int *info);
 
-int CroutFactorMatrix PROTO ((      /* Crout factorize A and store in A	*/
-   Matrix	  		    /* source and destination matrix	*/
-));
+/*!
+  \brief  solve Ax=b and store result in c
+  \param c destination vector
+  \param a factorized source matrix
+  \param b RHS vector
+  \param p pivot vector
+*/
+int LUBackSolveMatrix (Matrix c, Matrix a, Matrix b, Matrix p);
 
-int CroutBackSolveMatrix PROTO ((   /* solve Ax=b and store x in b	*/
-   Matrix,   	   		    /* Crout factored LHS matrix	*/
-   Matrix   	   		    /* RHS (and dest) vector		*/
-));
+/*!
+  \brief separate matrices from factors
+  \param L return matrix for L
+  \param U return matrix for U
+  \param P return matrix for P
+  \param a factored form of matrix
+  \param p pivot vector
+*/
+int FormLUPMatrices (Matrix L, Matrix U, Matrix P, Matrix a, Matrix p);
+
+/*!
+  \brief crout factorize A and store in A
+  \param A source and destination matrix
+*/
+int CroutFactorMatrix (Matrix A);
+
+/*!
+  \brief  solve Ax=b and store x in b
+  \param A Crout factored LHS matrix
+  \param b RHS (and dest) vector
+*/
+int CroutBackSolveMatrix (Matrix A, Matrix b);
 
 	/*
  	 * prototypes for the EIGEN routines
 	 */
 
-int GeneralMatrixEigenModes PROTO ((	/* full, non-symmetric matrix	 */
-   Matrix,				/* input matrix			 */
-   Matrix,				/* output vector of eigenvalues  */
-   double,				/* convergence tolerance	 */
-   unsigned				/* limiting number of iterations */
-));
+/*!
+  \param a input matrix
+  \param lambda output vector of eigenvalues
+  \param tol convergence tolerance
+  \param maxit limiting number of iterations
+*/
+int GeneralMatrixEigenModes (Matrix a, Matrix lambda, double tol, unsigned int maxit);
 
-int TridiagSymmMatrixEigenModes PROTO ((	
-   Matrix,				  /* vector of diagonal elements */
-   Matrix,				  /* vector of sub-diag elements */
-   Matrix,				  /* vector of eigenvalues       */
-   Matrix,				  /* eigenvectors output         */
-   unsigned				  /* iteration limit	         */
-));
+/*!
+  \param diag vector of diagonal elements
+  \param sub_diag vector of sub-diag elements
+  \param lambda vector of eigenevalues
+  \param x eigenvectors output
+  \param maxit iteration limit
+*/
+int TridiagSymmMatrixEigenModes (Matrix diag, Matrix sub_diag, Matrix lambda, Matrix x, unsigned int maxit);
 
-int SymmetricMatrixEigenModes PROTO ((
-   Matrix,				/* source matrix		   */
-   Matrix,				/* vector for eigenvalues	   */
-   Matrix,				/* matrix for eigenvectors	   */
-   unsigned				/* iteration limit		   */
-));
+/*!
+  \param a source matrix
+  \param lambda vector for eigenvalues
+  \param x matrix for eigenvectors
+  \param maxit iteration limit
+*/
+int SymmetricMatrixEigenModes (Matrix a, Matrix lambda, Matrix x, unsigned int maxit);
 
-int BuildTridiagonalVectors PROTO ((
-   Matrix,				/* symmetric, tri-diagonal input   */
-   Matrix,				/* output vector of diag elements  */
-   Matrix				/* vector of sub-digaonal elements */
-));
+/*!
+  \param a symmetric, tri-diagonal input
+  \param diag output vector of diag elements
+  \param sub_diag vector of sub-diagonal elements
+ */
+int BuildTridiagonalVectors (Matrix a, Matrix diag, Matrix sub_diag);
 
-int NormalizeByMaximum PROTO ((	
-   Matrix,				/* destination matrix		*/
-   Matrix,				/* eigenvectors to normalize	*/
-   unsigned				/* flag to preserve sign	*/
-));
+/*!
+  \param b destination matrix
+  \param a eigenvectors to normalize
+  \param keep_sign flag to preserve sign
+*/
+int NormalizeByMaximum (Matrix b, Matrix a, unsigned int keep_sign);
 
-int NormalizeByFirst PROTO ((	
-   Matrix,				/* destination matrix		*/
-   Matrix 				/* eigenvectors to normalize	*/
-));
+/*!
+  \param b destination matrix
+  \param a eigenvectors to normalize
+*/
+int NormalizeByFirst (Matrix b, Matrix a);
 
-int NormalizeByLength PROTO ((	
-   Matrix,				/* destination matrix		*/
-   Matrix 				/* eigenvectors to normalize	*/
-));
+/*!
+  \param b destination matrix
+  \param a eigenvectors to normalize
+*/
+int NormalizeByLength (Matrix b, Matrix a);
 
-int TridiagonalReduction PROTO ((	
-   Matrix,				/* source matrix		     */
-   Matrix,				/* dest vector for diag elements     */
-   Matrix,				/* dest vector for sub-diag elements */
-   Matrix				/* accumulated orthog. transforms    */
-));
+/*!
+  \param a source matrix
+  \param diag dest vector for diag elements
+  \param sub_diag dest vector for sub-diag elements
+  \param z accumulated orthog. transforms
+ */
+int TridiagonalReduction (Matrix a, Matrix diag, Matrix sub_diag, Matrix z);
 
 	/*
 	 * prototypes for the NORM routines
 	 */
 
-int FrobeniusNormMatrix PROTO ((    /* result = ||a||_f			*/
-   double *,	        	    /* pointer to result location	*/
-   Matrix	  		    /* matrix to take norm of		*/
-));
+/*!
+  \param result returns ||a||_f
+  \param a matrix to take norm of
+*/
+int FrobeniusNormMatrix (double *result, Matrix a);
 
-int PNormMatrix PROTO ((      	/* result = ||a||_p			*/
-   double *,      		/* pointer to space for result		*/
-   Matrix,	  		/* source matrix			*/
-   char	*  			/* "1", "inf" type of norm		*/
-));
+/*!
+  \param result pointer to space for result, ||a||_p
+  \param a source matrix
+  \param p "1", "inf" type of norm
+*/
+int PNormMatrix (double *result, Matrix a, char *p);
 
-int PNormVector PROTO ((      	/* result = ||a||_p			*/
-   double *,	        	/* pointer to space for result		*/
-   Matrix,	  		/* source vector			*/
-   char	*  			/* "1", "2", "inf" type of norm		*/
-));
+/*!
+  \param result pointer to space for result, ||a||_p
+  \param a source vector
+  \param p "1", "2", "inf" type of norm
+*/
+int PNormVector (double *result, Matrix a, char *p);
 
 	/*
 	 * prototypes for the PROPERTY routines
 	 */
 
-int IsSymmetricMatrix PROTO ((
-   Matrix
-));
+/*!
+  \brief Aij == Aji ? 1 : 0
+  \param a Matrix to check for symmetry
+*/
+int IsSymmetricMatrix (Matrix a);
 
-int IsZeroMatrix PROTO ((
-   Matrix
-));
+/*!
+  \brief Aij == 0 ? 1 : 0
+  \param a Matrix to check for symmetry
+*/
+int IsZeroMatrix (Matrix a);
 
 	/*
 	 * prototypes for the STATISTICS routines
 	 */
 
-int MaximumMatrix PROTO ((
-   Matrix,
-   double *
-));
+int MaximumMatrix (Matrix a, double *x);
 
-int MinimumMatrix PROTO ((
-   Matrix,
-   double *
-));
+int MinimumMatrix (Matrix a, double *x);
 
-int SumMatrix PROTO ((
-   Matrix,
-   double *
-));
+int SumMatrix (Matrix a, double *x);
 
-int MeanMatrix PROTO ((
-   Matrix,
-   double *
-));
+int MeanMatrix (Matrix a, double *x);
 
-int StddevMatrix PROTO ((
-   Matrix,
-   double *
-));
+int StddevMatrix (Matrix a, double *x);
 
 	/*
 	 * prototypes for the IO routines
 	 */
 
-int MatrixToMatlab PROTO ((
-   Matrix,
-   FILE *,
-   char *
-));
+int MatrixToMatlab (Matrix a, FILE *fp, char *name);
 
-int MatricesToMatlab PROTO ((
-   Matrix *,
-   unsigned,
-   FILE *,
-   char **
-));
+int MatricesToMatlab (Matrix *a, unsigned int n, FILE *fp, char **name);
 
-Matrix MatlabToMatrix PROTO ((
-   FILE *
-));
+Matrix MatlabToMatrix (FILE *fp);
 
 	/*
 	 * prototypes for the SOLVER routines
 	 */
 
-int GaussSeidel PROTO ((
-   Matrix,
-   Matrix,
-   Matrix
-));
+int GaussSeidel(Matrix x, Matrix A, Matrix b);
 
 # endif	/* _MATRIX_H */

@@ -24,7 +24,7 @@
 # ifndef _DRAW3d_H
 # define _DRAW3d_H
 
-void Setup3D ( );
-void Convert3Dto2D ( );
+void Setup3D (double min_x, double max_x, double min_y, double max_y, double min_z, double max_z);
+void Convert3Dto2D (double x, double y, double z, float xdiff, float ydiff, float *xt, float *yt);
 
 # endif /* _DRAW3d_H */

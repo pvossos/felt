@@ -25,6 +25,7 @@
  *		array application and function return.			*
  ************************************************************************/
 
+# include <stdlib.h>
 # include "trap.h"
 # include "apply.h"
 # include "debug.h"
@@ -33,21 +34,12 @@
 # include "coerce.h"
 # include "execute.h"
 # include "functab.h"
-# include "our-stdlib.h"
 # include "pathsearch.h"
 
 
 static descriptor *ret_val;
 static descriptor  ret_obj;
 static Function	   top_of_stack;
-
-static int array_index		PROTO ((descriptor *, int));
-static int matrix_index		PROTO ((descriptor *, int));
-static int intrinsic_call	PROTO ((descriptor *, int));
-static int function_search	PROTO ((descriptor *, int));
-static int external_call	PROTO ((descriptor *, int));
-static int submatrix_assignment	PROTO ((descriptor *, descriptor **));
-
 
 /************************************************************************
  * Function:	submatrix_assignment					*
@@ -57,9 +49,7 @@ static int submatrix_assignment	PROTO ((descriptor *, descriptor **));
  *		type as the destination submatrix.			*
  ************************************************************************/
 
-static int submatrix_assignment (dest, src)
-    descriptor  *dest;
-    descriptor **src;
+static int submatrix_assignment (descriptor *dest, descriptor **src)
 {
     Matrix	a;
     Matrix	b;
@@ -118,9 +108,7 @@ static int submatrix_assignment (dest, src)
  *		are dereferenced in place on the stack.			*
  ************************************************************************/
 
-int function_call (object, num_args)
-    descriptor *object;
-    int		num_args;
+int function_call (descriptor *object, int num_args)
 {
     int		i;
     int		j;
@@ -257,9 +245,7 @@ int function_call (object, num_args)
  *		arguments are not dereferenced.				*
  ************************************************************************/
 
-static int intrinsic_call (object, num_args)
-    descriptor *object;
-    int		num_args;
+static int intrinsic_call (descriptor *object, int num_args)
 {
     int		i;
     int		nargs;
@@ -338,9 +324,7 @@ static int intrinsic_call (object, num_args)
  *		same type and size.					*
  ************************************************************************/
 
-static int matrix_index (object, num_args)
-    descriptor *object;
-    int		num_args;
+static int matrix_index (descriptor *object, int num_args)
 {
     Matrix	a;
     Matrix	b;
@@ -661,9 +645,7 @@ static int matrix_index (object, num_args)
  *		double value.						*
  ************************************************************************/
 
-static int array_index (object, num_args)
-    descriptor *object;
-    int		num_args;
+static int array_index (descriptor *object, int num_args)
 {
     Array	array;
     Matrix	index;
@@ -809,9 +791,7 @@ static int array_index (object, num_args)
  *		global symbol table.					*
  ************************************************************************/
 
-static int function_search (object, num_args)
-    descriptor *object;
-    int		num_args;
+static int function_search (descriptor *object, int num_args)
 {
     int		 idx;
     ste		*s;
@@ -900,9 +880,7 @@ static int function_search (object, num_args)
  *		the second argument, if specified, must be an integer.	*
  ************************************************************************/
 
-static int external_call (object, num_args)
-    descriptor *object;
-    int		num_args;
+static int external_call (descriptor *object, int num_args)
 {
     void      **ptr;
     descriptor *arg1;
@@ -974,7 +952,7 @@ static int external_call (object, num_args)
  *		is a variable.						*
  ************************************************************************/
 
-int apply_op ( )
+int apply_op (void)
 {
     int		num_args;
     descriptor *object;
@@ -1032,7 +1010,7 @@ int apply_op ( )
  *		will return to the caller.				*
  ************************************************************************/
 
-int rtn_op ( )
+int rtn_op (void)
 {
     descriptor *d;
 

@@ -39,7 +39,7 @@
  *		specified address.					*
  ************************************************************************/
 
-int fail_op ( )
+int fail_op (void)
 {
     Address	offset;
     descriptor *d;
@@ -90,7 +90,7 @@ int fail_op ( )
  *		descriptor is pushed on the stack as the result.	*
  ************************************************************************/
 
-int gen_op ( )
+int gen_op (void)
 {
     Matrix	a;
     Matrix	b;
@@ -269,7 +269,7 @@ int gen_op ( )
  * Description:	Halts execution.					*
  ************************************************************************/
 
-int halt_op ( )
+int halt_op (void)
 {
     return -1;
 }
@@ -281,7 +281,7 @@ int halt_op ( )
  * Description:	Transfers control to the specified address.		*
  ************************************************************************/
 
-int jmp_op ( )
+int jmp_op (void)
 {
     Address offset;
 
@@ -300,7 +300,7 @@ int jmp_op ( )
  *		transferred to the specified address.			*
  ************************************************************************/
 
-int jnz_op ( )
+int jnz_op (void)
 {
     Address	offset;
     descriptor *d;
@@ -333,7 +333,7 @@ int jnz_op ( )
  *		to the specified address.				*
  ************************************************************************/
 
-int jz_op ( )
+int jz_op (void)
 {
     Address	offset;
     descriptor *d;

@@ -80,7 +80,7 @@ static struct {
 };
 
 # ifndef READLINE
-static FILE *stream = NULL; 
+static FILE *stream = NULL; // stdin;
 # endif
 
 
@@ -517,6 +517,8 @@ int readchar ( )
     }
 
     ptr = NULL;
+
+    if (stream == NULL) stream = stdin;
 
     if (stream == stdin)
 	printf (last_line == line_num ? CONTINUATION : PROMPT, line_num);

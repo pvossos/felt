@@ -33,19 +33,6 @@
 # include "fe.h"
 # include "error.h"
 
-#define ZERO_CHECK
-#ifdef ZERO_CHECK
-#include <float.h>
-#define ABS(a)         (((a) < 0) ? -(a) : (a))
-/*
- * DBL_EPSILON seems to be too small to be effective.
- * Increase it by two orders of magnitude...
- */
-#define ZERO(x) (ABS(x) > (100 * DBL_EPSILON) ? (x) : 0)
-#else
-#define ZERO(x) (x)
-#endif
-
 extern double ElementArea ( );
 
 /**************************************************************************
@@ -94,12 +81,9 @@ void WriteStructuralResults (output, title, R, numreactions)
     for (i = 1; i <= numnodes; i ++) {
 	fprintf (output,"%3d   %11.5g %11.5g %11.5g %11.5g %11.5g %11.5g\n", 
                  node [i] -> number, 
-                 ZERO (node [i] -> dx[1]),
-								 ZERO (node [i] -> dx[2]), 
-                 ZERO (node [i] -> dx[3]),
-								 ZERO (node [i] -> dx[4]), 
-                 ZERO (node [i] -> dx[5]),
-								 ZERO (node [i] -> dx[6]));
+                 node [i] -> dx[1], node [i] -> dx[2], 
+                 node [i] -> dx[3], node [i] -> dx[4], 
+                 node [i] -> dx[5], node [i] -> dx[6]);
     }
 
     fprintf (output,"\nElement Stresses\n");
@@ -116,7 +100,7 @@ void WriteStructuralResults (output, title, R, numreactions)
 		       element [i] -> stress [j] -> y,
 		       element [i] -> stress [j] -> z);
               for (k = 1 ; k <= element[i] -> definition -> numstresses ; k++) {
-                 fprintf (output," % 11.5g", ZERO(element[i]->stress[j]->values[k]));
+                 fprintf (output," % 11.5g", element[i]->stress[j]->values[k]);
                  count++;
                  if (count == 6) {
                     fprintf (output,"\n");
@@ -141,7 +125,7 @@ void WriteStructuralResults (output, title, R, numreactions)
 
        for (i = 1 ; i <= numreactions ; i++)
           fprintf (output,"%3d        %s        % 11.5g\n",R[i] -> node, 
-                   dof_names [R[i] -> dof], ZERO(R[i] -> force));
+                   dof_names [R[i] -> dof], R[i] -> force);
     }
 
     if (fd)
@@ -1185,81 +1169,8 @@ int MatlabGlobalMatrices (filename, M, C, K)
    if (K != NullMatrix) 
       MatrixToMatlab (K, fp, "K");
 
-   fclose( fp);
    return 0;
 }
-
-int WriteAllMatlab( filename, data)
-    char        *filename;
-    Problem     *data;
-{
-    FILE *fp;
-# ifdef DOS
-    fp = fopen (filename, "wb");
-# else
-    fp = fopen (filename, "w");
-# endif
-
-    if (fp == NULL) {
-	error ("could not open file %s for writing", filename);
-	return 1;
-    }
-
-    if( data->M != NullMatrix)
-      MatrixToMatlab (data->M, fp, "M");
-
-    if( data->C != NullMatrix)
-      MatrixToMatlab (data->C, fp, "C");
-
-    if( data->K != NullMatrix)
-      MatrixToMatlab (data->K, fp, "K");
-
-    if( data->Mcond != NullMatrix)
-      MatrixToMatlab (data->Mcond, fp, "Mcond");
-
-    if( data->Ccond != NullMatrix)
-      MatrixToMatlab (data->Ccond, fp, "Ccond");
-
-    if( data->Kcond != NullMatrix)
-      MatrixToMatlab (data->Kcond, fp, "Kcond");
-
-    if( data->Mm != NullMatrix)
-      MatrixToMatlab (data->Mm, fp, "Mm");
-
-    if( data->Cm != NullMatrix)
-      MatrixToMatlab (data->Cm, fp, "Cm");
-
-    if( data->Km != NullMatrix)
-      MatrixToMatlab (data->Km, fp, "Km");
-
-    if( data->H != NULL)
-      MatrixToMatlab (*(data->H), fp, "H");
-
-    if( data->S != NullMatrix)
-      MatrixToMatlab (data->S, fp, "S");
-
-    if( data->Fcond != NullMatrix)
-      MatrixToMatlab (data->Fcond, fp, "Fcond");
-
-    if( data->d != NullMatrix)
-      MatrixToMatlab (data->d, fp, "d");
-
-    if( data->x != NullMatrix)
-      MatrixToMatlab (data->x, fp, "x");
-
-    if( data->lambda != NullMatrix)
-      MatrixToMatlab (data->lambda, fp, "lambda");
-
-    if( data->dtable != NullMatrix)
-      MatrixToMatlab (data->dtable, fp, "dtable");
-
-    if( data->ttable != NullMatrix)
-      MatrixToMatlab (data->ttable, fp, "ttable");
-
-    fclose(fp);
-    return 0;
-}
-
 
 void WriteModalResults (fp, M, C, K, lambda)
    FILE		*fp;

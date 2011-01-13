@@ -44,8 +44,20 @@ extern char *strdup ( );
 # endif
 
 # ifndef CPP
-# define CPP "/lib/cpp"
+
+# ifdef WINDOWS
+# define CPP NULL
+# elif defined __CYGWIN32__
+# define CPP "/usr/bin/cpp"
+# elif defined __APPLE__
+# define CPP "/usr/bin/cpp"
+// # define CPP NULL
+# else
+# define CPP "c:\\cygwin\\bin\\cpp.exe"
 # endif
+
+# endif
+
 
 
 Problem    problem;
@@ -290,8 +302,8 @@ static int resolve_element (item)
 	d.name = (char *) element -> distributed [i];
 	element -> distributed [i] = (Distributed) TreeSearch (tree, &d);
 
-	if (!element -> distributed[i])
-	    error ("element %u used undefined distributed load %s", number, d.name);
+	if (!element -> distributed)
+	    error ("element %u used undefined load %s", number, d.name);
 
 	Deallocate (d.name);
     }
@@ -464,7 +476,7 @@ static void resolve_names ( )
  ************************************************************************/
 
 int ReadFeltFile (filename)
-    const char *filename;
+    char *filename;
 {
     unsigned i;
     char     buffer [2048];

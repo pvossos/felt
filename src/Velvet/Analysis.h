@@ -27,6 +27,8 @@
 # ifndef _Analysis_h
 # define _Analysis_h
 
+#include <X11/Xfuncproto.h>
+
 typedef struct analysis_dialog *AnalysisDialog;
 
 AnalysisDialog AnalysisDialogCreate (
@@ -44,14 +46,8 @@ void AnalysisDialogPopup (
 );
 
 void AnalysisDialogUpdate (
-# if NeedFunctionPrototypes
     AnalysisDialog		/* analysis_dialog */,
-# if NeedWidePrototypes
     int				/* clear node flag */
-# else
-    Boolean			/* clear node flag */
-# endif
-# endif
 );
 
 # endif /* _Analysis_h */

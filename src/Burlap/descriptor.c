@@ -296,7 +296,7 @@ int AssignData (descriptor *dest, descriptor **srcp)
 	    D_Type     (dest) = T_External;
 	    D_Temp     (dest) = F_False;
 	    D_Trapped  (dest) = F_False;
-	    dest->u.ptr       = D_External (src);
+	    dest -> u.ptr = src -> u.ptr;
 	    break;
 
 

@@ -34,7 +34,7 @@ complex mult(complex x, complex y);
 complex add(complex x, complex y);
 complex cdiv(complex x, complex y);
 complex sub(complex x, complex y);
-complex cnjgt (complex x);
+complex felt_conj (complex x);
 complex scale(complex x, double factor, double offset);
 complex felt_csqrt(complex x);
 complex felt_cexp(double x);

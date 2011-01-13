@@ -26,12 +26,12 @@
 
 # ifndef _PROBLEM_H
 # define _PROBLEM_H
-# include "matrix.h"
 # include "fe.h"
 # include "Tree.h"
 # include "appearance.h"
 
 # define MaxNodesPerElement 32
+
 
 typedef struct {
     AnalysisType mode;			/* analysis mode	   */
@@ -57,25 +57,6 @@ typedef struct {
     unsigned	 num_loadcases;		/* number of load cases	   */
     unsigned	 num_errors;		/* number of errors	   */
     unsigned	 line;			/* current line number	   */
-
-    /* The following used to be in the felt main() function        */
-    Matrix	 M, K, C;		/* global matrices	   */
-    Matrix	 Mcond, Ccond, Kcond;	/* condensed matrices	   */
-    Matrix	 Mm, Km, Cm;		/* modal matrices	   */
-    unsigned	 *old_numbers;		/* original node numbering */
-    Matrix	 *H;			/* transfer     matrices   */
-    Matrix	  S;			/* output spectra	   */
-    Vector	  F,			/* force vector		   */
-		  Fcond;		/* condensed force vector  */
-    Vector	  d;			/* displacement vectors	   */
-    Matrix	  x;			/* eigenvectors		   */
-    Vector	  lambda;		/* eigenvalues		   */
-    NodeDOF	 *forced;		/* forced nodal DOF        */
-    unsigned	  numforced;		/* number of forced DOF	   */
-    Reaction	 *R;			/* reaction force vector   */
-    unsigned	  numreactions;		/* the number of reactions */
-    Matrix	  dtable;		/* time-displacement table */
-    Matrix	  ttable;		/* time step table	   */
 } Problem;
 
 extern Problem  problem;

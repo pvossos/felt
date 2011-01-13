@@ -272,8 +272,8 @@ resolve_element(Item item)
 	d.name = (char *) element -> distributed [i];
 	element -> distributed [i] = (Distributed) TreeSearch (tree, &d);
 
-	if (!element -> distributed[i])
-	    error ("element %u used undefined distributed load %s", number, d.name);
+	if (!element -> distributed)
+	    error ("element %u used undefined load %s", number, d.name);
 
 	Deallocate (d.name);
     }

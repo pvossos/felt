@@ -27,6 +27,8 @@
 # ifndef _Analysis_h
 # define _Analysis_h
 
+#include <X11/Xfuncproto.h>
+
 typedef struct analysis_dialog *AnalysisDialog;
 
 AnalysisDialog AnalysisDialogCreate (Widget parent, String name, String title);

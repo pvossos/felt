@@ -73,7 +73,7 @@ complex cdiv (complex x, complex y)
    complex	a;
    double	factor;
 
-   a = mult (x, cnjgt (y)); 
+   a = mult (x, felt_conj (y)); 
    factor = y.r*y.r + y.i*y.i; 
     
    a.r = a.r / factor;
@@ -131,7 +131,7 @@ complex felt_csin (complex x)
    return y;
 }
 
-complex cnjgt (complex x)
+complex felt_conj (complex x)
 {
    complex	a;
   

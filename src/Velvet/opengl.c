@@ -36,6 +36,8 @@
 #include <X11/Shell.h>
 #include <X11/Xaw/Command.h>
 #include <X11/Xaw/Toggle.h>
+/* #include <GL/xmesa.h> */
+#include <GL/glx.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/GLwDrawA.h> 

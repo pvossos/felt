@@ -328,11 +328,10 @@ Beam3dTransformMatrix(Element element)
       MatrixData (T) [i+1][i+2] = cm;
       MatrixData (T) [i+1][i+3] = cn;
       if (d <= TINY) {
+         MatrixData (T) [i+2][i+1] = 0;
          MatrixData (T) [i+2][i+2] = 1;
-	 if( cn > 0)
-	     MatrixData (T) [i+3][i+1] = -1;
-	 else
-	     MatrixData (T) [i+3][i+1] = 1;
+         MatrixData (T) [i+3][i+1] = 1;
+         MatrixData (T) [i+3][i+2] = 0;
       }
       else {
          MatrixData (T) [i+2][i+1] = -cm/d;

@@ -31,7 +31,7 @@
 # include <unistd.h>
 # include "error.h"
 # include "problem.h"
-# include "y.tab.h"
+# include "parser.h"
 
 static char *filename;
 static void  update_line (void);

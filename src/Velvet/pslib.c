@@ -23,7 +23,7 @@
 #include <ctype.h>
 #include <string.h>
 #include "pslib.h"
-#include "version.h"
+#include "config.h"
 
 #define MAX_BUF_LEN 128
 
@@ -647,7 +647,8 @@ int psinitgraphics(int dmode, FILE *ps_fp)
 
     fprintf(psout, "%%!PostScript\n");
 
-    fprintf(psout, "%%%%Creator: Velvet %s\n", VERSION);
+    fprintf(psout, "%%%%Creator: Velvet %d.%d.%d\n",
+            FELT_VERSION_MAJOR, FELT_VERSION_MINOR, FELT_VERSION_MICRO);
     fprintf(psout, "%%%%Title: %s\n", fname);
 
     fprintf(psout, "%%%%EndComments\n");

@@ -30,6 +30,7 @@
 # include "error.h"
 # include "generator.h"
 # include "definition.h"
+# include "config.h"
 
 # define streq(a,b)	!strcmp(a,b)
 # define strneq(a,b)	strcmp(a,b)
@@ -37,11 +38,6 @@
 # ifndef LIBDIR
 # define LIBDIR "/usr/local/lib/felt"
 # endif
-
-# ifndef CPP
-# define CPP "/lib/cpp"
-# endif
-
 
 Generator generator;
 

@@ -1,0 +1,5 @@
+add_subdirectory(Elements)
+add_subdirectory(Felt)
+add_subdirectory(Generate)
+add_subdirectory(Matrix)
+add_subdirectory(Widgets)

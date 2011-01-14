@@ -31,7 +31,7 @@
 # include "debug.h"
 # include "error.h"
 # include "lexer.h"
-# include "parser.h"
+# include "parseraux.h"
 # include "globals.h"
 # include "execute.h"
 # include "allocate.h"

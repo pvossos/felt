@@ -27,6 +27,12 @@
 # ifndef _Cache_h
 # define _Cache_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct cache_data *CacheData, *Cache;
 
 struct cache_data {
@@ -48,5 +54,11 @@ CacheData DW_CacheInsert (Cache cache, String name, XtArgVal value);
 void DW_CacheAddRef (CacheData data);
 
 void DW_CacheDelRef (CacheData data);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Cache_h */

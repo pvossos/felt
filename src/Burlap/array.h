@@ -27,6 +27,12 @@
 # ifndef _ARRAY_H
 # define _ARRAY_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct array {
     void *ptr;				/* pointer to data    */
     short type;				/* element type code  */
@@ -43,5 +49,11 @@ Array CreateArray (void *ptr, int type, int length, int handler);
 Array CopyArray (Array array);
 
 void DestroyArray (Array array);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _ARRAY_H */

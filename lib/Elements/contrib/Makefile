@@ -17,6 +17,7 @@
 
 APPEND	= true
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
+CXXFLAGS = $(CXXOPTS) -I$(TOPDIR)/include
 LIB	= ../libelt.a
 OBJS	= pltgz4.o
 

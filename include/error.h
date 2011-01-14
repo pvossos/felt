@@ -27,8 +27,20 @@
 # ifndef _ERROR_H
 # define _ERROR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void error (const char *format, ...);
 
 void Fatal (const char *format, ...);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _ERROR_H */

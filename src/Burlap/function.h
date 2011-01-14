@@ -28,6 +28,12 @@
 # define _FUNCTION_H
 # include "codegen.h"			/* Code type definition	  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define ValueArg	0
 # define SharedArg	1
 
@@ -47,5 +53,11 @@ Function CreateFunction (char *name);
 Function CopyFunction (Function func);
 
 void DestroyFunction (Function func);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FUNCTION_H */

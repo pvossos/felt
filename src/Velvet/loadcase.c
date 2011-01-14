@@ -73,8 +73,8 @@ struct loadcase_dialog {
     Widget         help;	   /*	     MenuButton  help	   	*/
     Widget         accept;	   /*	     Command  accept	   	*/
     Widget         dismiss;	   /*	     Command  dismiss	   	*/
-    Widget         delete;	   /*	     Command  delete	   	*/
-    Widget         new;		   /*	     Command  new	   	*/
+    Widget         nuke;	   /*	     Command  delete	   	*/
+    Widget         nu;		   /*	     Command  new	   	*/
     Widget         copy;	   /*	     Command  copy	   	*/
     String	  *loadcases;
     LoadCase	   active;
@@ -1152,11 +1152,11 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title)
 			 commandWidgetClass, loadcased -> layout,
 			 NULL, 0);
 
-    loadcased -> delete   = XtCreateManagedWidget ("delete",
+    loadcased -> nuke   = XtCreateManagedWidget ("delete",
 			 commandWidgetClass, loadcased -> layout,
 			 NULL, 0);
 
-    loadcased -> new      = XtCreateManagedWidget ("new",
+    loadcased -> nu      = XtCreateManagedWidget ("new",
 			 commandWidgetClass, loadcased -> layout,
 			 NULL, 0);
 
@@ -1210,8 +1210,8 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title)
     group [i++]  = loadcased -> help;
     group [i++]  = loadcased -> accept;
     group [i++] = loadcased -> dismiss;
-    group [i++] = loadcased -> delete;
-    group [i++] = loadcased -> new;
+    group [i++] = loadcased -> nuke;
+    group [i++] = loadcased -> nu;
     group [i++] = loadcased -> copy;
 
     XtGetValues (loadcased -> layout, color_args, XtNumber (color_args));
@@ -1260,8 +1260,8 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title)
 
     XtOverrideTranslations (loadcased -> accept,    command_translations);
     XtOverrideTranslations (loadcased -> dismiss,   command_translations);
-    XtOverrideTranslations (loadcased -> delete,    command_translations);
-    XtOverrideTranslations (loadcased -> new,	    command_translations);
+    XtOverrideTranslations (loadcased -> nuke,    command_translations);
+    XtOverrideTranslations (loadcased -> nu,	    command_translations);
     XtOverrideTranslations (loadcased -> copy,	    command_translations);
     XtOverrideTranslations (loadcased -> viewport,  viewport_translations);
     XtOverrideTranslations (loadcased -> help,	    help_translations);
@@ -1272,8 +1272,8 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title)
     XtAddCallback (loadcased -> list,    XtNcallback, Change,  (XtPointer) loadcased);
     XtAddCallback (loadcased -> accept,  XtNcallback, Accept,  (XtPointer) loadcased);
     XtAddCallback (loadcased -> dismiss, XtNcallback, Dismiss, (XtPointer) loadcased);
-    XtAddCallback (loadcased -> delete,  XtNcallback, Delete,  (XtPointer) loadcased);
-    XtAddCallback (loadcased -> new,     XtNcallback, New,     (XtPointer) loadcased);
+    XtAddCallback (loadcased -> nuke,  XtNcallback, Delete,  (XtPointer) loadcased);
+    XtAddCallback (loadcased -> nu,     XtNcallback, New,     (XtPointer) loadcased);
     XtAddCallback (loadcased -> copy,    XtNcallback, Copy,    (XtPointer) loadcased);
     XtAddCallback (loadcased -> node_up,      XtNcallback, ScrollNode,    (XtPointer) loadcased);
     XtAddCallback (loadcased -> node_down,    XtNcallback, ScrollNode,    (XtPointer) loadcased);

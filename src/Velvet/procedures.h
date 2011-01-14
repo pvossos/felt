@@ -33,6 +33,12 @@
 #include "Item.h"
 #include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 	/*
  	 * a bunch of routines that I'm too busy to classify
 	 */
@@ -221,9 +227,9 @@ int BivariateInterp (int ndp, float *xd, float *yd, float *zd,
                      int nxi, int nyi, float *xi, float *yi, float **zi,
                      unsigned char **mask);
 
-void VelvetPlotTD (Matrix dtable, Matrix ttable, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names);
-void VelvetPlotSpectra(Matrix P, char *xlabel, char *ylabel, char *alt_title, Boolean print_dof_names);
-void VelvetPlotTransferFunctions(Matrix *H, unsigned int *forced, unsigned int numforced, char *xlabel, char *ylabel, char *alt_title);
+void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char *ylabel, const char *alt_title, Boolean print_dof_names);
+void VelvetPlotSpectra(Matrix P, const char *xlabel, const char *ylabel, const char *alt_title, Boolean print_dof_names);
+void VelvetPlotTransferFunctions(const Matrix *H, const struct NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title);
 void VelvetPlotForce(Force force, char *quantity);
 void VelvetPlotLoadRange(Matrix dtable);
 void DrawModeShapes (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
@@ -252,5 +258,11 @@ InitializeDrawingShell(Widget shell, Widget dw,
                        Dimension *wx, Dimension *hy);
 
 int  WritePostscriptFigures (Figure *f, unsigned int n, Widget widget, double xmin, double xmax, double ymin, double ymax, char *ps_filename);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PROCEDURES_H */

@@ -29,6 +29,12 @@
 # ifndef _OPTAB_H
 # define _OPTAB_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define OP_NONE	0	/* no operand		    */
 # define OP_ADDR	1	/* address operand	    */
 # define OP_INT		2	/* integer constant operand */
@@ -79,5 +85,11 @@ static struct {
     {"test",	OP_NONE},
     {"trans",	OP_NONE},
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _OPTAB_H */

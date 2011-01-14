@@ -27,11 +27,23 @@
 # ifndef _CONTROL_H
 # define _CONTROL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int fail_op (void);
 int gen_op  (void);
 int halt_op (void);
 int jmp_op  (void);
 int jnz_op  (void);
 int jz_op   (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _CONTROL_H */

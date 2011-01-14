@@ -27,6 +27,12 @@
 # ifndef _Item_h
 # define _Item_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef void *Item;
 
 typedef Item (*ItemDuplicator) (Item);
@@ -34,5 +40,11 @@ typedef int  (*ItemComparator) (Item, Item);
 typedef int  (*ItemDestructor) (Item);
 typedef int  (*ItemIdentifier) (Item);
 typedef int  (*ItemIterator)   (Item);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Item_h */

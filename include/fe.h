@@ -1,3 +1,4 @@
+
 /*
     This file is part of the FElt finite element analysis package.
     Copyright (C) 1993-2000 Jason I. Gobat and Darren C. Atkinson
@@ -29,6 +30,11 @@
 # include "code.h"
 # include "matrix.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
 
 # define TINY 1.0e-60
 # define UnspecifiedValue (-99999999)
@@ -108,15 +114,6 @@ typedef struct pair {
 } Pair;
 
 
-/* A reaction force */
-
-typedef struct reaction {
-    double   force;			/* reaction force             */
-    unsigned node;			/* node number                */
-    unsigned dof;			/* affected degree of freedom */
-} *Reaction;
-
-
 /* Element stress */
 
 typedef struct stress {
@@ -141,7 +138,7 @@ struct element;
 /* An element definition */
 
 typedef struct definition {
-    char    *name;		/* element name			      */
+    const char    *name;		/* element name			      */
     int    (*setup) (struct element*, char, int);	/* initialization function	      */
     int    (*stress) (struct element*);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
@@ -181,7 +178,7 @@ typedef struct force {
 
 typedef struct constraint {
     char   *aux;			/* auxillary data pointer 	  */
-    char   *name;			/* name of constraint     	  */
+    const char   *name;		/* name of constraint     	  */
     char   *color;			/* name of color to use in velvet */
     char    constraint [7];		/* constraint vector     	  */
     double  ix [7];			/* initial displacement vector    */
@@ -195,7 +192,7 @@ typedef struct constraint {
 
 typedef struct material {
     char  *aux;				/* auxillary data pointer           */
-    char  *name;			/* name of material                 */
+    const char  *name;		/* name of material                 */
     char  *color;			/* name of color to use in velvet   */
     double E;				/* Young's modulus                  */
     double Ix;				/* moment of inertia about x-x axis */
@@ -255,10 +252,10 @@ typedef struct element {
 
 /* A nodal DOF */
 
-typedef struct nodeDOF {
+struct NodeDOF {
     DOF		dof;
     Node	node;
-} *NodeDOF;
+};
 
 
 typedef struct casepair {
@@ -375,14 +372,6 @@ Vector ZeroCompactRowCol(Vector K, unsigned int dof);
 */
 void AdjustForceVector(Vector Fcond, Vector Kcond, unsigned int affected_dof, double dx);
 
-/*!
-  Pretty simple really, first we find how many reaction forces there
-  should be, then we allocate space for them, then we multiply rows of
-  the stiffness matrix by the global displacement vector to get an
-  entry that was previously unknown in the global force vector
-*/
-unsigned SolveForReactions(Vector K, Vector d, unsigned int *old_numbers, Reaction **reac);
-
 /*
   Constructs the global nodal force vector based on all nodal forces
   and the global DOFs active at those nodes.  Global DOF determination
@@ -465,92 +454,11 @@ int ZeroConstrainedMatrixDOF(Matrix b, Matrix a);
 Matrix RemoveConstrainedMatrixDOF(Matrix a);
 
 /*!
-  Builds a list of global DOF numbers which have some sort of input
-  applied to them.  We make two passes rather than dealing with
-  reallocation (and deallocation in the case of no forcing)
- */
-void FindForcedDOF(NodeDOF **forced, unsigned int *numforced);
-
-/*!
  Verifies that everything in the analysis parameters section is set
  (or at least the minimum number of things that we need) for the given
  analysis type.
 */
 int CheckAnalysisParameters(AnalysisType mode);
-
-	/*
-	 * routines for automatic node renumbering in renumber.c
-	 */
-
-unsigned *RenumberNodes	(Node *, Element *, unsigned, unsigned);
-void RestoreNodeNumbers (Node *, unsigned *, unsigned);
-
-	/*
-	 * prototypes of routines in transient.c
-	 */
-
-/*!
-  See the description of ConstructStiffness () in fe.c.  This routine
-  does the same thing except it includes code to assemble the global
-  mass matrix in addition to the global stiffness matrix.  Having two
-  separate routines is basically a performance consideration (i.e., why
-  do all the mass checks in the static case?)
-*/
-int ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr);
-
-void AssembleTransientForce(double t, Vector F);
-
-int* BuildConstraintMask(void);
-
-/*!
-  Fills in the displacement and velocity vectors at time t = 0 given
-  the nodal constraint conditions.
-*/
-int BuildHyperbolicIC(Vector d, Vector v, Vector a);
-
-/*!
-  Fills in the displacement vector at time t = 0 given the nodal
-  constraint initial conditions.
-*/
-void BuildParabolicIC(Vector d);
-
-/*!
-  Solves the discrete equation of motion, Ma + Cv + Kd = F for the
-  length of a model using Newmark's method with the
-  Hilbert-Hughes-Taylor alpha correction for improved accuracy with
-  numerical damping.
-  The first important numerical thing that we do is to solve for the
-  initial acceleration vector: Ma(0) = F(0) - Kd(0) - Cv(0). From
-  there we can begin the iterations - the iterations proceed by
-  solving for d(i+1) implicity and then using this information with
-  Newmark's update equations to get a(i+1) and v(i+1)
- */
-Matrix IntegrateHyperbolicDE(Vector K, Vector M, Vector C);
-
-/*
- Solves the discrete equation of motion, Ma + Cv + Ky = F(t) starting
- from initial values v(0) and y(0). Uses modified L-stable,
- single-step, three-stage Rosenbrock method with adaptive step-size
- control and error estimation
-*/
-Matrix RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable);
-
-/*!
-  Solves the discrete parabolic differential equation Mv + Kd = F for
-  the length of a model using a generalized trapezoidal method.  The
-  implementation we use here does not explicitly make use of the v
-  vector because it is slightly more efficient to factor it out from
-  the start.
-*/
-Matrix IntegrateParabolicDE(Vector K, Vector M);
-
-
-/*!
- Basically like ZeroConstrainedDOF () for the static case, but here we
- only make adjustments for displacement boundary conditions (i.e., we
- don't bother with zeroing rows and columns of the stiffness matrix).
-*/
-void ResolveBC(double t, Vector K, Vector F);
 
 	/*
 	 * routines in modal.c
@@ -591,16 +499,6 @@ int Spectrum(Vector x, Vector *P, Vector *F, double delta_t, int nfft);
 */
 int ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft);
 
-
-/*!
-  Computes the frequency domain transfer function between inputs at
-  forced DOF and the output at the DOF described by nodes= and dofs=
-  in the analysis parameters.
-*/
-Matrix* ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, NodeDOF *forced, unsigned int numforced);
-
-Matrix ComputeOutputSpectra(Matrix *H, NodeDOF *forced, unsigned int numforced);
-
 	/*
 	 * routines in nonlinear.c
 	 */
@@ -635,5 +533,11 @@ int UpdateCoordinates(Matrix d);
 Matrix StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent);
 
 Matrix SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FE_H */

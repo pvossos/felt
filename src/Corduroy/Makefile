@@ -16,6 +16,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CFLAGS	= $(CCOPTS) -I$(TOPDIR)/include
+CXXFLAGS = $(CXXOPTS) -I$(TOPDIR)/include
 LEX	= flex
 LDFLAGS	= $(LDOPTS)
 LFLAGS	= -i -Pcord_yy
@@ -31,6 +32,6 @@ TOPDIR	= ../..
 
 include $(TOPDIR)/etc/Makefile.bin
 
-generator.o:	generator.c
-		$(CC) $(CFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c generator.c
+generator.o:	generator.cpp
+		$(CXX) $(CXXFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c generator.cpp
 

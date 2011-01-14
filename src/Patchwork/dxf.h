@@ -28,6 +28,12 @@
 #ifndef DXF_H
 #define DXF_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define STRING		0
 # define HEADER		2
 # define LAYER		8
@@ -68,21 +74,27 @@ typedef struct {
 		z [POLYMAX];
 } DXFPolyline;
 
-int WriteDXFLine (DXFLine *line, char *layer, FILE *output);
+int WriteDXFLine (DXFLine *line, const char *layer, FILE *output);
 int ReadDXFLine (DXFLine *line, char *layer, FILE *input);
 int WriteDXFHeader (FILE *output);
 int ReadDXFHeader (FILE *input);
 int ReadDXFTrailer (FILE *input);
 int ReadDXFEntity (FILE *input);
 int WriteDXFTrailer (FILE *output);
-int WriteDXFPolyline (DXFPolyline *poly, char *layer, FILE *output);
+int WriteDXFPolyline (DXFPolyline *poly, const char *layer, FILE *output);
 int ReadDXFPolyline (DXFPolyline *poly, char *layer, FILE *input);
-int WriteDXFPolyTrailer (char *layer, FILE *output);
-int WriteDXFPolyHeader (char *layer, FILE *output);
-int WriteDXFVertex (double x, double y, double z, char *layer, FILE *output);
-int WriteDXF3dMeshHeader (int m, int n, char *layer, FILE *output);
+int WriteDXFPolyTrailer (const char *layer, FILE *output);
+int WriteDXFPolyHeader (const char *layer, FILE *output);
+int WriteDXFVertex (double x, double y, double z, const char *layer, FILE *output);
+int WriteDXF3dMeshHeader (int m, int n, const char *layer, FILE *output);
 unsigned CheckValidity (unsigned int read, unsigned int wanted);
 
-int WriteDXF3dMeshVertex(double x, double y, double z, char *layer, FILE *output);
+int WriteDXF3dMeshVertex(double x, double y, double z, const char *layer, FILE *output);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif

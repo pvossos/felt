@@ -27,8 +27,20 @@
 # ifndef _SCROLL_H
 # define _SCROLL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 void AddScrollableTextTranslations (Widget text);
 
 void ScrollToInsertionPoint (Widget text);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _SCROLL_H */

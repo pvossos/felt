@@ -28,6 +28,12 @@
 # define _ElementList_h
 # include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct element_list *ElementList;
 
 ElementList ElementListCreate (Widget parent, String name, String title);
@@ -43,5 +49,11 @@ void ElementListSet (ElementList elementl, Definition definition);
 Definition ElementListDefinition (ElementList elementl);
 
 String ElementListName (ElementList elementl);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _ElementList_h */

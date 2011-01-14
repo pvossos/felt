@@ -30,6 +30,12 @@
 
 # define NumConstants (sizeof (consttab) / sizeof (*consttab))
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 static struct {
     const char  *name;
     double value;
@@ -92,5 +98,11 @@ static struct {
     {"&true",  1},
     {"&false", 0},
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _CONSTTAB_H */

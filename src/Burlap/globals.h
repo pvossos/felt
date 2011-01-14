@@ -31,6 +31,12 @@
 # include "symbol.h"		/* symbol table and symbol table entry types */
 # include "descriptor.h"	/* descriptor type			     */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 
 /* Symbol tables for global variables (local variables are on the stack),
    string literals, numeric literals, and record fields. */
@@ -53,5 +59,11 @@ extern double	  *dbl_array;		/* array of double literals	  */
 ste *add_literal (st *table, const char *name, Opcode op);
 void global_init (void);
 int is_global (descriptor *var);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _GLOBALS_H */

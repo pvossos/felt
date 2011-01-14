@@ -58,8 +58,8 @@ struct constraint_dialog {
     Widget         help;	/*	     MenuButton  help	 */
     Widget         accept;	/*	     Command  accept	 */
     Widget         dismiss;	/*	     Command  dismiss	 */
-    Widget         delete;	/*	     Command  delete	 */
-    Widget         new;		/*	     Command  new	 */
+    Widget         nuke;	/*	     Command  delete	 */
+    Widget         nu;		/*	     Command  new	 */
     Widget         copy;	/*	     Command  copy	 */
     XtCallbackProc callback;
     XtPointer	   closure;
@@ -925,11 +925,11 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
 			 commandWidgetClass, constraintd -> layout,
 			 NULL, 0);
 
-    constraintd -> delete   = XtCreateManagedWidget ("delete",
+    constraintd -> nuke   = XtCreateManagedWidget ("delete",
 			 commandWidgetClass, constraintd -> layout,
 			 NULL, 0);
 
-    constraintd -> new      = XtCreateManagedWidget ("new",
+    constraintd -> nu      = XtCreateManagedWidget ("new",
 			 commandWidgetClass, constraintd -> layout,
 			 NULL, 0);
 
@@ -975,8 +975,8 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
     group [i++] = constraintd -> help;
     group [i++] = constraintd -> accept;
     group [i++] = constraintd -> dismiss;
-    group [i++] = constraintd -> delete;
-    group [i++] = constraintd -> new;
+    group [i++] = constraintd -> nuke;
+    group [i++] = constraintd -> nu;
     group [i++] = constraintd -> copy;
 
     XtGetValues (constraintd -> layout, color_args, XtNumber (color_args));
@@ -1014,8 +1014,8 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
 
     XtOverrideTranslations (constraintd -> accept,	command_translations);
     XtOverrideTranslations (constraintd -> dismiss,	command_translations);
-    XtOverrideTranslations (constraintd -> delete,	command_translations);
-    XtOverrideTranslations (constraintd -> new,	        command_translations);
+    XtOverrideTranslations (constraintd -> nuke,	command_translations);
+    XtOverrideTranslations (constraintd -> nu,	        command_translations);
     XtOverrideTranslations (constraintd -> copy,	command_translations);
     XtOverrideTranslations (constraintd -> viewport,	viewport_translations);
     XtOverrideTranslations (constraintd -> help,	help_translations);
@@ -1029,9 +1029,9 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
                    Accept,  (XtPointer) constraintd);
     XtAddCallback (constraintd -> dismiss, XtNcallback, 
                    Dismiss, (XtPointer) constraintd);
-    XtAddCallback (constraintd -> delete,  XtNcallback, 
+    XtAddCallback (constraintd -> nuke,  XtNcallback, 
                    Delete,  (XtPointer) constraintd);
-    XtAddCallback (constraintd -> new,     XtNcallback, 
+    XtAddCallback (constraintd -> nu,     XtNcallback, 
                    New,     (XtPointer) constraintd);
     XtAddCallback (constraintd -> copy,    XtNcallback, 
                    Copy,    (XtPointer) constraintd);

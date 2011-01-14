@@ -28,6 +28,12 @@
 # ifndef _LEXER_H
 # define _LEXER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct {
     unsigned short line;		/* line number of instruction */
     unsigned short file;		/* file number of instruction */
@@ -45,5 +51,11 @@ extern int   interactive;		/* interactive lexer	      */
 void burlap_yyerror(const char *message);
 
 int burlap_yyinclude(char *file);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _LEXER_H */

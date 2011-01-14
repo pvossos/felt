@@ -30,6 +30,12 @@
 # include "Item.h"
 # endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct tree *Tree;
 
 Tree TreeCreate(ItemComparator compare);
@@ -65,5 +71,11 @@ int TreeSetIterator(Tree tree, ItemIterator iterate);
 int TreeSetDestructor(Tree tree, ItemDestructor destroy);
 
 int TreeSetDuplicator(Tree tree, ItemDuplicator copy);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Tree_h */

@@ -284,7 +284,7 @@ opt_expression
 expression
 	: assignment_expression
 	| break opt_expression
-	    {end_break (BREAK, $1);}
+        {end_break (BREAK, (loop_node) $1);}
 	| RETURN opt_expression
 	    {
 		if (cs == global_cs) {

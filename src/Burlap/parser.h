@@ -29,7 +29,19 @@
 # define _PARSER_H
 # include "codegen.h"			/* Code type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 Code global_cs;
 int burlap_yyparse (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PARSER_H */

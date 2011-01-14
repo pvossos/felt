@@ -29,6 +29,12 @@
 
 # include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int pssetmode(int mode, FILE *ps_fp);
 
 void drawps(int x2, int y2, int mode);
@@ -68,5 +74,11 @@ int psgetextents (int *x, int *y);
 void psleavegraphics(FILE *fp);
 
 int psinitgraphics(int dmode, FILE *ps_fp);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PSLIB_H */

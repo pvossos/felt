@@ -28,10 +28,22 @@
 # define _Grid_h
 # include "mesh.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct grid_dialog *GridDialog;
 
 GridDialog GridDialogCreate (Widget parent, String name, String title);
 
 Grid GridDialogPopup (GridDialog gridd);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Grid_h */

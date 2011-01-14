@@ -25,6 +25,23 @@
 *
 ***************************************************************************/
 
+#ifndef TEXT_ENTRY_H
+#define TEXT_ENTRY_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 char *GetTextCoordinates (float *rx, float *ry, float *rz);
 char *GetTextNumber (unsigned int *number);
 String GetText (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
+
+#endif

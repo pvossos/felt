@@ -34,6 +34,12 @@
 # include "predicate.h"
 # include "matrixfunc.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define NumIntrinsics (sizeof (functab) / sizeof (*functab))
 
 static struct {
@@ -136,5 +142,11 @@ static struct {
     {"solve_displacements",  2, solve_displacements_func},
     {"zero_constrained",     1, zero_constrained_func},
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FUNCTAB_H */

@@ -20,6 +20,12 @@
 # ifndef _COMPLEX_H
 # define _COMPLEX_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct {
    double	r;
    double	i;
@@ -43,5 +49,11 @@ complex felt_csin(complex x);
 char *cprint (complex x);
 unsigned is_zero(complex x);
 complex zero(void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _COMPLEX_H */

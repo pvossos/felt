@@ -28,11 +28,23 @@
 # ifndef _YARDSTICK_H
 # define _YARDSTICK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct {
-   char		*name;		/* unit symbolic name			*/
+   const char		*name;		/* unit symbolic name			*/
    double	scale;		/* conversion factor to ref state	*/
 } Unit;
 
 void ScaleFeltFile (double l, double f);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _YARDSTICK_H */

@@ -28,6 +28,12 @@
 # ifndef _DESCTAB_H
 # define _DESCTAB_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 const char *type_names [ ] = {
     "null",			/* T_Null	*/
     "variable",			/* T_Variable	*/
@@ -54,5 +60,11 @@ const char *type_names [ ] = {
     "stress",			/* T_Stress	*/
     "external C function",	/* T_External	*/
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _DESCTAB_H */

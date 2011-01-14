@@ -30,6 +30,12 @@
 # include "Tree.h"
 # include "appearance.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define MaxNodesPerElement 32
 
 
@@ -102,13 +108,13 @@ int ReadFeltFile(const char *filename);
 /*!
   Writes a felt file -- only referenced objects will be written.
 */
-int WriteFeltFile(char *filename);
+int WriteFeltFile(const char *filename);
 
 /*!
  Dumps a felt file -- referenced and unreferenced objects will be
  written.
 */
-int DumpFeltFile(char *filename);
+int DumpFeltFile(const char *filename);
 
 /*!
   Writes a felt file -- only referenced objects will be written.
@@ -135,5 +141,11 @@ void detail(const char *format, ...);
 void SetDetailStream(FILE *fp);
 
 FILE* GetDetailStream(void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PROBLEM_H */

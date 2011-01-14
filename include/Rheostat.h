@@ -11,6 +11,12 @@
 #ifndef  RHEOSTAT_H
 #define  RHEOSTAT_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 extern WidgetClass rheostatWidgetClass;
 typedef struct _RheostatClassRec *RheostatWidgetClass;
 typedef struct _RheostatRec *RheostatWidget;
@@ -116,6 +122,12 @@ void XfwfRheostatSetIntCallback(Widget w, XtPointer closure, XtPointer call_data
 void XfwfDrawArrow(Display *dpy, Drawable d, GC gc, Position endx, Position endy,
                    int dx, int dy, Dimension outer_length, Dimension inner_length,
                    Dimension width, Boolean fill);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 #endif	/* RHEOSTAT_H */
 

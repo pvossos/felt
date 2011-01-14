@@ -27,11 +27,23 @@
 # ifndef _LITERAL_H
 # define _LITERAL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int arg_op   (void);
 int dbl_op   (void);
 int glbl_op  (void);
 int local_op (void);
 int null_op  (void);
 int str_op   (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _LITERAL_H */

@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "mesh.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct {
     char     *filename;			/* file name			*/
     char     *material;			/* material name		*/
@@ -66,13 +72,19 @@ int CorduroyCppOptions (int *argc, char **argv);
   NULL filename indicates no file (an empty generation instance is
   created).
 */
-int ReadCorduroyFile (char *input_name);
+int ReadCorduroyFile (const char *input_name);
 
-int WriteCorduroyFile (char *filename);
+int WriteCorduroyFile (const char *filename);
 
 /*!
   Looks up an element definition by name.			
 */
 Definition defnlookup(char *name);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _GENERATOR_H */

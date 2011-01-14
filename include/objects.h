@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "Tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 /*!
   CreateDistributed creates and initializes a new distributed
   structure.  The name is assigned (not copied) and the array of
@@ -137,5 +143,11 @@ LoadCase CreateLoadCase(char *name);
 DestroyLoadCase deallocates a load case structure.
 */
 void DestroyLoadCase(LoadCase loadcase);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _OBJECTS_H */

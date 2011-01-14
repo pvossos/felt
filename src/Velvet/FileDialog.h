@@ -27,6 +27,12 @@
 # ifndef _FileDialog_h
 # define _FileDialog_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct file_dialog *FileDialog;
 
 FileDialog FileDialogCreate (Widget parent, String name, char **toggle_labels);
@@ -40,5 +46,11 @@ String FileDialogToggle (FileDialog filed);
 void FileDialogSetToggles (FileDialog filed, String label1, String label2);
 
 void FileDialogPopdown (FileDialog filed);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FileDialog_h */

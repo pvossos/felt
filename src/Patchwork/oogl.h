@@ -2,7 +2,7 @@
 symbols.h
 **************************************************************************/
 
-static char *cone = "\n\
+static const char *cone = "\n\
 unit { \n\
   { OFF\n\
 22   40	  120\n\
@@ -72,7 +72,7 @@ unit { \n\
 }\n\
 ";
 
-static char *sphere = "\n\
+static const char *sphere = "\n\
 unit { \n\
   { MESH\n\
 10 10\n\
@@ -189,7 +189,7 @@ unit { \n\
 }\n\
 ";
 
-static char *xyz = "{\n\
+static const char *xyz = "{\n\
 =\n\
 VECT\n\
 8 19 3\n\
@@ -211,7 +211,7 @@ VECT\n\
 0 1 0 1\n\
 0 .6 1 1\n}";
 
-static char *origin = "\n\
+static const char *origin = "\n\
 unit { \n\
   { VECT\n\
 8 19 3\n\
@@ -236,11 +236,11 @@ unit { \n\
 }\n\
 ";
 
-static char *color1 = "\n\
+static const char *color1 = "\n\
 0.26 0.7 0.7 1\
 \n}\n";
 
-static char *fzold = "\n\
+static const char *fzold = "\n\
 unit { \n\
   { VECT\n\
 3 6 1\n\
@@ -256,7 +256,7 @@ unit { \n\
 }\n\
 ";
 
-static char *fz = "\n\
+static const char *fz = "\n\
 unit { \n\
   { VECT\n\
 5 10 1\n\
@@ -274,7 +274,7 @@ unit { \n\
 }\n\
 ";
 
-static char *constraint = "\n\
+static const char *constraint = "\n\
 unit { \n\
   { OFF\n\
     5 2 6\n\
@@ -290,7 +290,7 @@ unit { \n\
 }\n\
 ";
 
-static char *constraintrot = "\n\
+static const char *constraintrot = "\n\
 unit { \n\
   { OFF\n\
     10 4 12\n\
@@ -313,7 +313,7 @@ unit { \n\
 }\n\
 ";
 
-static char *cross = "\n\
+static const char *cross = "\n\
 unit { \n\
   { VECT\n\
 3 6 1\n\
@@ -329,21 +329,21 @@ unit { \n\
 }\n\
 ";
 
-static char *transformz = "\n\
+static const char *transformz = "\n\
 INST\n\
   transform\n\
     1 0 0 0\n\
     0 1 0 0\n\
     0 0 1 0\n\
 ";
-static char *transformx = "\n\
+static const char *transformx = "\n\
 INST\n\
   transform\n\
     0 1 0 0\n\
     0 0 1 0\n\
     1 0 0 0\n\
 ";
-static char *transformy = "\n\
+static const char *transformy = "\n\
 INST\n\
   transform\n\
     0 0 1 0\n\
@@ -351,13 +351,13 @@ INST\n\
     0 1 0 0\n\
 ";
 
-static char *zero = " \nunit { { VECT 2 11 1  2 9  1 0 0 20 0  28 56 0 24 0 0  8 0 0  0 8 0  0 48 0  8 64 0 24 64 0  32 52 0  32 12 0  24 0 0 1 1 1 1}} ";
-static char *one = " \nunit { { VECT 2 5 1  2 3  1 0 4 0 0  28 0 0 4 44 0  16 64 0  16 0 0 1 1 1 1} } ";
-static char *two = " \nunit { { VECT 1 7 1  7  1 0 56 0  8 64 0  24 64 0  32 56 0  32 40 0  0 0 0  32 0 0 1 1 1 1} } ";
-static char *three = " \nunit { { VECT 2 13 1  2 11  1 0 8 36 0  24 36 0 0 56 0  8 64 0  24 64 0  32 56 0 32 44 0  24 36 0  32 24 0  32 8 0  24 0 0  8 0 0  0 8 0 1 1 1 1} } ";
-static char *four = " \nunit { { VECT 2 5 1  2 3  1 0 28 64 0  28 0 0 12 64 0  0 36 0  36 36 0 1 1 1 1} } ";
-static char *five = " \nunit { { VECT 1 9 1  9  1 28 64 0  4 64 0  0 36 0  24 36 0  32 24 0  32 8 0  24 0 0 8 0 0  0 8 0 1 1 1 1} } ";
-static char *six = " \nunit { { VECT 1 12 1  12  1 32 56 0  24 64 0  8 64 0  0 56 0  0 8 0  8 0 0  24 0 0 32 8 0  32 28 0  24 36 0  8 36 0  0 28 0 1 1 1 1} } ";
-static char *seven = " \nunit { { VECT 1 4 1  4  1 0 56 0  4 64 0  32 64 0  8 0 0 1 1 1 1} } ";
-static char *eight = " \nunit { { VECT 1 16 1  16  1 20 36 0  28 44 0  28 56 0  20 64 0  12 64 0  4 56 0  4 44 0  12 36 0  20 36 0  32 24 0  32 8 0  24 0 0  8 0 0  0 8 0  0 24 0  12 36 0 1 1 1 1} } ";
-static char *nine = " \nunit { { VECT 1 12 1  12  1 32 44 0  24 36 0  8 36 0  0 44 0  0 56 0  8 64 0  24 64 0  32 56 0  32 8 0  24 0 0  8 0 0  0 8 0 1 1 1 1} } ";
+static const char *zero = " \nunit { { VECT 2 11 1  2 9  1 0 0 20 0  28 56 0 24 0 0  8 0 0  0 8 0  0 48 0  8 64 0 24 64 0  32 52 0  32 12 0  24 0 0 1 1 1 1}} ";
+static const char *one = " \nunit { { VECT 2 5 1  2 3  1 0 4 0 0  28 0 0 4 44 0  16 64 0  16 0 0 1 1 1 1} } ";
+static const char *two = " \nunit { { VECT 1 7 1  7  1 0 56 0  8 64 0  24 64 0  32 56 0  32 40 0  0 0 0  32 0 0 1 1 1 1} } ";
+static const char *three = " \nunit { { VECT 2 13 1  2 11  1 0 8 36 0  24 36 0 0 56 0  8 64 0  24 64 0  32 56 0 32 44 0  24 36 0  32 24 0  32 8 0  24 0 0  8 0 0  0 8 0 1 1 1 1} } ";
+static const char *four = " \nunit { { VECT 2 5 1  2 3  1 0 28 64 0  28 0 0 12 64 0  0 36 0  36 36 0 1 1 1 1} } ";
+static const char *five = " \nunit { { VECT 1 9 1  9  1 28 64 0  4 64 0  0 36 0  24 36 0  32 24 0  32 8 0  24 0 0 8 0 0  0 8 0 1 1 1 1} } ";
+static const char *six = " \nunit { { VECT 1 12 1  12  1 32 56 0  24 64 0  8 64 0  0 56 0  0 8 0  8 0 0  24 0 0 32 8 0  32 28 0  24 36 0  8 36 0  0 28 0 1 1 1 1} } ";
+static const char *seven = " \nunit { { VECT 1 4 1  4  1 0 56 0  4 64 0  32 64 0  8 0 0 1 1 1 1} } ";
+static const char *eight = " \nunit { { VECT 1 16 1  16  1 20 36 0  28 44 0  28 56 0  20 64 0  12 64 0  4 56 0  4 44 0  12 36 0  20 36 0  32 24 0  32 8 0  24 0 0  8 0 0  0 8 0  0 24 0  12 36 0 1 1 1 1} } ";
+static const char *nine = " \nunit { { VECT 1 12 1  12  1 32 44 0  24 36 0  8 36 0  0 44 0  0 56 0  8 64 0  24 64 0  32 56 0  32 8 0  24 0 0  8 0 0  0 8 0 1 1 1 1} } ";

@@ -38,6 +38,11 @@
 # include "assignment.h"
 # include "relational.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
 
 static int (*(exectab [ ])) (void) = {
     add_op,	/* arithmetic.c	*/
@@ -82,5 +87,11 @@ static int (*(exectab [ ])) (void) = {
     test_op,	/* assignment.c	*/
     trans_op,	/* arithmetic.c	*/
 };
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _EXECTAB_H */

@@ -30,6 +30,12 @@
 # define _GLOBALS_H
 # include "OutputDialog.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 /* Global widgets */
 
 extern XtAppContext app_context;
@@ -64,5 +70,11 @@ extern Node displayed_node;
 extern Element displayed_element;
 
 extern Tree      figure_tree;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif

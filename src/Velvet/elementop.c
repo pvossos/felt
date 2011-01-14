@@ -203,7 +203,7 @@ void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoDeleteElt (found);
+    DoDeleteElt ((Element) found);
 }
 
 
@@ -280,7 +280,7 @@ void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    ElementDialogDisplay (element_d, found);
+    ElementDialogDisplay (element_d, (Element) found);
     ElementDialogPopup (element_d);
 }
 
@@ -388,7 +388,7 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoAddElement (found);
+    DoAddElement ((Node) found);
 }
 
 

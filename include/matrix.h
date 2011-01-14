@@ -22,6 +22,12 @@
 # include <stdio.h>		/* for FILE definition			*/
 # include "status.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct matrix *Matrix;
 
 struct matrix {
@@ -538,5 +544,11 @@ Matrix MatlabToMatrix (FILE *fp);
 	 */
 
 int GaussSeidel(Matrix x, const Matrix A, const Matrix b);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif	/* _MATRIX_H */

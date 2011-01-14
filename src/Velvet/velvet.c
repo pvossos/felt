@@ -709,7 +709,7 @@ int main (int argc, char **argv)
 
     for (i = 0; i < XtNumber (panel); i ++) {
         count = 0;
-	if (panel [i].class == &menuButtonWidgetClass) {
+	if (panel [i].klass == &menuButtonWidgetClass) {
 	    XtSetArg (arglist [0], XtNleftBitmap, menu16); count++;
         }
 	else if (strcmp(panel [i].name,"info") == 0) {
@@ -727,14 +727,14 @@ int main (int argc, char **argv)
 	else if (strcmp(panel [i].name,"constraints_d") == 0) {
 	    XtSetArg (arglist [0], XtNleftBitmap, popup); count++;
         }
-	else if (panel [i].class != &commandWidgetClass) {
+	else if (panel [i].klass != &commandWidgetClass) {
 	    XtSetArg (arglist [0], XtNlabel, ""); count++;
         }
 
 	panel [i].button = XtCreateManagedWidget (panel [i].name,
-                                 *panel [i].class,control,arglist, count);
+                                 *panel [i].klass,control,arglist, count);
 
-	if (panel [i].class == &menuButtonWidgetClass) {
+	if (panel [i].klass == &menuButtonWidgetClass) {
 	    sprintf (string, "%sMenu", panel [i].name);
 	    panel [i].menu = XtCreatePopupShell
 			     (string, simpleMenuWidgetClass, control, NULL, 0);
@@ -748,7 +748,7 @@ int main (int argc, char **argv)
 		 PanelCallback, &panel [i].menuentry [j].id);
 	    }
 
-	} else if (panel [i].class == &commandWidgetClass)
+	} else if (panel [i].klass == &commandWidgetClass)
 	    XtAddCallback (panel [i].button, XtNcallback, PanelCallback,
 	     &panel [i].menuentry [0].id);
     }

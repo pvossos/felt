@@ -142,7 +142,11 @@ int DumpWidget(Widget widget, FILE *out)
     header.bitmap_pad = (CARD32) image->bitmap_pad;
     header.bits_per_pixel = (CARD32) image->bits_per_pixel;
     header.bytes_per_line = (CARD32) image->bytes_per_line;
+#if defined(__cplusplus) || defined(c_plusplus)
+    header.visual_class = (CARD32) win_info.visual->c_class;
+#else
     header.visual_class = (CARD32) win_info.visual->class;
+#endif
     header.red_mask = (CARD32) win_info.visual->red_mask;
     header.green_mask = (CARD32) win_info.visual->green_mask;
     header.blue_mask = (CARD32) win_info.visual->blue_mask;
@@ -327,8 +331,13 @@ int Get_XColors(XWindowAttributes *win_info, XColor **colors)
        error ("could not allocate color memory");
        return 1;
     }
-    if (win_info->visual->class == DirectColor ||
-	win_info->visual->class == TrueColor) {
+
+#if defined(__cplusplus) || defined(c_plusplus)
+    if (win_info->visual->c_class == DirectColor || win_info->visual->c_class == TrueColor) {
+#else
+    if (win_info->visual->class == DirectColor || win_info->visual->class == TrueColor) {
+#endif
+
 	Pixel red, green, blue, red1, green1, blue1;
 
 	red = green = blue = 0;

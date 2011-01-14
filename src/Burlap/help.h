@@ -27,6 +27,18 @@
 # ifndef _HELP_H
 # define _HELP_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int help_func (int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _HELP_H */

@@ -237,7 +237,7 @@ problem_parameter
 
 	| ANALYSIS_EQ ANALYSIS_TYPE
 	    {
-		problem.mode = $2;
+		problem.mode = (AnalysisType) $2;
 	    }
 
 	| error
@@ -710,7 +710,7 @@ load_parameter
 
 	| DIRECTION_EQ DIRECTION
 	    {
-		load -> direction = $2;
+		load -> direction = (Direction) $2;
 	    }
 
 	| VALUES_EQ value_pair_list

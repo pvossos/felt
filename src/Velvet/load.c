@@ -71,8 +71,8 @@ struct load_dialog {
     Widget         help;		/*	     MenuButton  help	  */
     Widget         accept;		/*	     Command  accept	  */
     Widget         dismiss;		/*	     Command  dismiss	  */
-    Widget         delete;		/*	     Command  delete	  */
-    Widget         new;			/*	     Command  new	  */
+    Widget         nuke;		/*	     Command  delete	  */
+    Widget         nu;			/*	     Command  new	  */
     Widget         copy;		/*	     Command  copy	  */
     XtCallbackProc callback;
     XtPointer	   closure;
@@ -966,11 +966,11 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
 			 commandWidgetClass, loadd -> layout,
 			 NULL, 0);
 
-    loadd -> delete   = XtCreateManagedWidget ("delete",
+    loadd -> nuke   = XtCreateManagedWidget ("delete",
 			 commandWidgetClass, loadd -> layout,
 			 NULL, 0);
 
-    loadd -> new      = XtCreateManagedWidget ("new",
+    loadd -> nu      = XtCreateManagedWidget ("new",
 			 commandWidgetClass, loadd -> layout,
 			 NULL, 0);
 
@@ -1016,8 +1016,8 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
     group [18] = loadd -> help;
     group [19] = loadd -> accept;
     group [20] = loadd -> dismiss;
-    group [21] = loadd -> delete;
-    group [22] = loadd -> new;
+    group [21] = loadd -> nuke;
+    group [22] = loadd -> nu;
     group [23] = loadd -> copy;
 
     XtGetValues (loadd -> layout, color_args, XtNumber (color_args));
@@ -1056,8 +1056,8 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
     XtOverrideTranslations (loadd -> axial,      toggle_translations);
     XtOverrideTranslations (loadd -> accept,	command_translations);
     XtOverrideTranslations (loadd -> dismiss,	command_translations);
-    XtOverrideTranslations (loadd -> delete,	command_translations);
-    XtOverrideTranslations (loadd -> new,	command_translations);
+    XtOverrideTranslations (loadd -> nuke,	command_translations);
+    XtOverrideTranslations (loadd -> nu,	command_translations);
     XtOverrideTranslations (loadd -> copy,	command_translations);
     XtOverrideTranslations (loadd -> viewport,	viewport_translations);
     XtOverrideTranslations (loadd -> help,	help_translations);
@@ -1079,8 +1079,8 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
     XtAddCallback (loadd -> list,    XtNcallback, Change,  (XtPointer) loadd);
     XtAddCallback (loadd -> accept,  XtNcallback, Accept,  (XtPointer) loadd);
     XtAddCallback (loadd -> dismiss, XtNcallback, Dismiss, (XtPointer) loadd);
-    XtAddCallback (loadd -> delete,  XtNcallback, Delete,  (XtPointer) loadd);
-    XtAddCallback (loadd -> new,     XtNcallback, New,     (XtPointer) loadd);
+    XtAddCallback (loadd -> nuke,  XtNcallback, Delete,  (XtPointer) loadd);
+    XtAddCallback (loadd -> nu,     XtNcallback, New,     (XtPointer) loadd);
     XtAddCallback (loadd -> copy,    XtNcallback, Copy,    (XtPointer) loadd);
 
 

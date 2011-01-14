@@ -27,6 +27,12 @@
 # ifndef _PREDICATE_H
 # define _PREDICATE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int anyp_func	    (int n);
 int compactp_func   (int n);
 int everyp_func	    (int n);
@@ -34,5 +40,11 @@ int matrixp_func    (int n);
 int nullp_func	    (int n);
 int scalarp_func	(int n);
 int symmetricp_func (int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PREDICATE_H */

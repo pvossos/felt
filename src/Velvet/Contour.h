@@ -27,6 +27,12 @@
 # ifndef _Contour_h
 # define _Contour_h
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct contour_dialog *ContourDialog;
 
 ContourDialog ContourDialogCreate (Widget parent, String name, String title);
@@ -34,5 +40,11 @@ ContourDialog ContourDialogCreate (Widget parent, String name, String title);
 void ContourDialogPopup (ContourDialog contourd);
 
 void ContourDialogUpdate (ContourDialog contourd);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Contour_h */

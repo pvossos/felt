@@ -27,6 +27,12 @@
 # ifndef _CODE_H
 # define _CODE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef union instruction *Code;
 
 typedef enum {
@@ -128,5 +134,11 @@ int GetIP(void);
   like strtod ( )).
 */
 double exptod(char *expr, char **ptr);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _CODE_H */

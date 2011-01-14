@@ -27,11 +27,23 @@
 # ifndef _RELATIONAL_H
 # define _RELATIONAL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int eq_op (void);
 int ge_op (void);
 int gt_op (void);
 int le_op (void);
 int lt_op (void);
 int ne_op (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _RELATIONAL_H */

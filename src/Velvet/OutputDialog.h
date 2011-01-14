@@ -29,6 +29,12 @@
 
 # include <stdarg.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct output_dialog *OutputDialog;
 
 OutputDialog OutputDialogCreate (Widget parent, String name, String *buttons, Cardinal num_buttons);
@@ -46,5 +52,11 @@ void OutputDialogPrintf (OutputDialog outputd, const String format, ...);
 void OutputDialogVprintf (OutputDialog outputd, const String format, va_list ap);
 
 Widget OutputDialogShell (OutputDialog outputd);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _OutputDialog_h */

@@ -27,7 +27,19 @@
 # ifndef _LOCATION_H
 # define _LOCATION_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int file_op (void);
 int line_op (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _LOCATION_H */

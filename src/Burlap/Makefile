@@ -16,6 +16,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 CFLAGS	= $(CCOPTS) -I. -I$(TOPDIR)/include -DEXECDEBUG
+CXXFLAGS = $(CXXOPTS) -I. -I$(TOPDIR)/include -DEXECDEBUG
 LEX	= flex
 LFLAGS  = -i -Pburlap_yy
 LDFLAGS	= $(LDOPTS)
@@ -37,7 +38,7 @@ TOPDIR	= ../..
 include $(TOPDIR)/etc/Makefile.bin
 
 
-interactive.o:	interactive.c
-		$(CC) $(CFLAGS) $(READLINE) -c interactive.c
+interactive.o:	interactive.cpp
+		$(CXX) $(CXXFLAGS) $(READLINE) -c interactive.cpp
 
-help.o:		help.c helptab.h
+help.o:		help.cpp helptab.h

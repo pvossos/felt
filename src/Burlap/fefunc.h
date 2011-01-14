@@ -27,6 +27,12 @@
 # ifndef _FEFUNC_H
 # define _FEFUNC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int area_func   (int n);
 int felt_func   (int n);
 int length_func (int n);
@@ -51,5 +57,11 @@ int restore_numbers_func	     (int n);
 int set_up_func		     (int n);
 int solve_displacements_func  (int n);
 int zero_constrained_func     (int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _FEFUNC_H */

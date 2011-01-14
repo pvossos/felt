@@ -27,8 +27,20 @@
 # ifndef _WRITE_H
 # define _WRITE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int write_func (int n);
 
 int writes_func (int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _WRITE_H */

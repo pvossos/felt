@@ -28,6 +28,12 @@
 # define _Figure_h
 # include "Cache.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # if NeedWidePrototypes
 # define FLOAT double
 # define BOOLEAN int
@@ -136,5 +142,11 @@ void DW_ClearFigure (DrawingWidget dw, Figure fig);
 void DW_Detach (DrawingWidget dw, Figure fig);
 
 void DW_Attach (DrawingWidget dw, Figure fig, Figure group);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Figure_h */

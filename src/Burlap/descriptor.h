@@ -35,6 +35,12 @@
 # include "matrix.h"			/* Matrix type definition   */
 # include "function.h"			/* Function type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define F_False	0
 # define F_True		1
 
@@ -134,5 +140,11 @@ void RecycleData (descriptor *d);
 void FreeData (descriptor *d);
 
 void PrintData (descriptor *d);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _DESCRIPTOR_H */

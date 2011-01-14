@@ -29,6 +29,12 @@
 # include "fe.h"
 # include "Tree.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct load_dialog *LoadDialog;
 
 typedef struct {
@@ -48,5 +54,11 @@ void LoadDialogUpdate (LoadDialog loadd, Tree tree);
 Distributed LoadDialogActive (LoadDialog loadd);
 
 void LoadDialogDisplay (LoadDialog loadd, Distributed load);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Load_h */

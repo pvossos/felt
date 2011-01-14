@@ -30,6 +30,12 @@
 # include "Layout.h"
 #include <X11/ConstrainP.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 #define GlueEqual(a,b)	((a).order == (b).order && (a).value == (b).value)
 
 #define AddGlue(r,a,b)	if (a.order == b.order) { \
@@ -211,4 +217,11 @@ typedef struct _LayoutRec {
     ConstraintPart constraint;
     LayoutPart     layout;
 } LayoutRec;
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
+
 #endif

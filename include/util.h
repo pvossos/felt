@@ -27,6 +27,12 @@
 # ifndef _UTIL_H
 # define _UTIL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 XtArgVal StringToLayout (Widget widget, String string);
 
 void CenterOnWidget (Widget shell, Widget center, Boolean force);
@@ -56,5 +62,11 @@ void AddAutoRepeatAction (XtAppContext app_context);
 Widget CreateHelpButton (Widget parent, String name);
 
 void UpdateHelpMessage (Widget button, String message, Dimension width);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _UTIL_H */

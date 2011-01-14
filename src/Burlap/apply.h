@@ -29,10 +29,22 @@
 # define _APPLY_H
 # include "descriptor.h"		/* descriptor type definition */
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int function_call (descriptor *object, int num_args);
 
 int apply_op (void);
 
 int rtn_op (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _APPLY_H */

@@ -349,7 +349,7 @@ void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoDeleteNode (found);
+    DoDeleteNode ((Node) found);
 }
 
 
@@ -426,7 +426,7 @@ void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    NodeDialogDisplay (node_d, found);
+    NodeDialogDisplay (node_d, (Node) found);
     NodeDialogPopup (node_d);
 }
 
@@ -656,7 +656,7 @@ void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoMoveNode (found, False);
+    DoMoveNode ((Node) found, False);
 }
 
 
@@ -783,7 +783,7 @@ void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    DoAssignMass (found);
+    DoAssignMass ((Node) found);
 }
 
 void SetMassAP (Widget w, XEvent *event, String *params, Cardinal *num)

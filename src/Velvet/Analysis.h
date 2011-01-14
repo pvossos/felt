@@ -29,6 +29,12 @@
 
 #include <X11/Xfuncproto.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct analysis_dialog *AnalysisDialog;
 
 AnalysisDialog AnalysisDialogCreate (Widget parent, String name, String title);
@@ -36,5 +42,11 @@ AnalysisDialog AnalysisDialogCreate (Widget parent, String name, String title);
 void AnalysisDialogPopup (AnalysisDialog analysisd);
 
 void AnalysisDialogUpdate (AnalysisDialog analysisd, Boolean force);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Analysis_h */

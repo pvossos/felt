@@ -29,6 +29,12 @@
 # define _VFE_H
 # include "Item.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef enum {
     DrawnElement, DrawnNode
 } DrawnType;
@@ -50,5 +56,11 @@ void SetNodeNumbering (int value);
 void SetElementNumbering (int value);
 
 void RecolorCanvas (void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _VFE_H */

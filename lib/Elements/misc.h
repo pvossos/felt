@@ -29,6 +29,12 @@
 # ifndef _MISC_H
 # define _MISC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 double ElementLength(Element element, unsigned int coords);
 
 /*!
@@ -94,5 +100,11 @@ Matrix ZeroRowCol(Matrix K, unsigned int dof);
 void PrincipalStresses3D(double *stress);
 
 void PrincipalStresses2D(double *stress);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _MISC_H */

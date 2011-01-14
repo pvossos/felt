@@ -27,6 +27,12 @@
 # ifndef _MISCFUNC_H
 # define _MISCFUNC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int concat_func	(int n);
 int eval_func	(int n);
 int exit_func	(int n);
@@ -38,5 +44,11 @@ int reads_func	(int n);
 int save_func	(int n);
 int system_func	(int n);
 int type_func	(int n);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _MISCFUNC_H */

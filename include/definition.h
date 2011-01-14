@@ -21,6 +21,11 @@
 # define _DEFINITION_H
 # include "fe.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
 
 void add_all_definitions(void);
 
@@ -39,5 +44,11 @@ int RemoveDefinition(Definition definition);
   Look up a definition by name in the set of definitions.
 */
 Definition LookupDefinition(char *name);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _DEFINITION_H */

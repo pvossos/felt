@@ -27,6 +27,12 @@
 # ifndef _APPEARANCE_H
 # define _APPEARANCE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 # define RECTANGLE 0
 # define POLYLINE  1
 # define TEXT      2
@@ -84,5 +90,11 @@ extern Appearance appearance;
   information.
  */
 void InitAppearance(void);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _APPEARANCE_H */

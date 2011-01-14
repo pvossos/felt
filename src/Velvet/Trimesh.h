@@ -28,10 +28,22 @@
 # define _Trimesh_h
 # include "mesh.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 typedef struct trimesh_dialog *TrimeshDialog;
 
 TrimeshDialog TrimeshDialogCreate (Widget parent, String name, String title);
 
 TriMesh TrimeshDialogPopup (TrimeshDialog trimeshd);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _Trimesh_h */

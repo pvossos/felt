@@ -28,6 +28,12 @@
 # ifndef _PATCHWORK_H
 # define _PATCHWORK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif 
+
+/*----------------------------------------------------------------------*/
+
 int InitializeProblem(void);
 
 Node AddNode(double x, double y, double z, Constraint constraint, Force force);
@@ -43,5 +49,11 @@ int WriteGraphFile (char *filename);
 int WriteLoganFile(char *name);
 
 int WriteOoglFile (char *filename);
+
+/*----------------------------------------------------------------------*/
+
+#ifdef __cplusplus
+}
+#endif 
 
 # endif /* _PATCHWORK_H */

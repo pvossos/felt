@@ -658,9 +658,9 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	   if (active -> constraint [i]) {
 	       value = GetTextString (constraintd -> dx[i]);
                if (!CompileCode (value))
-                   AssignConstraint (active, i, InCore, value, 1);
+                   AssignConstraint (active, (DOF) i, InCore, value, 1);
                else
-                   AssignConstraint (active, i, NULL, NULL, 1);
+                   AssignConstraint (active, (DOF) i, NULL, NULL, 1);
            }
         }
 
@@ -668,12 +668,12 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	   if (active -> constraint [i]) {
 	      value = GetTextString (constraintd -> dx[i]);
 	      if (!strcmp (value, "h") || !strcmp (value, "hinge"))
-                 AssignConstraint (active, i, NULL, NULL, 'h'); 
+              AssignConstraint (active, (DOF) i, NULL, NULL, 'h'); 
 	      else {
                   if (!CompileCode (value))
-	  	     AssignConstraint (active, i, InCore, value, 1);
+                      AssignConstraint (active, (DOF) i, InCore, value, 1);
                   else
-                     AssignConstraint (active, i, NULL, NULL, 1); 
+                      AssignConstraint (active, (DOF) i, NULL, NULL, 1); 
               }
 	   }
         }

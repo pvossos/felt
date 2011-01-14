@@ -178,7 +178,7 @@ typedef struct force {
 
 typedef struct constraint {
     char   *aux;			/* auxillary data pointer 	  */
-    const char   *name;		/* name of constraint     	  */
+    char   *name;		/* name of constraint     	  */
     char   *color;			/* name of color to use in velvet */
     char    constraint [7];		/* constraint vector     	  */
     double  ix [7];			/* initial displacement vector    */
@@ -192,7 +192,7 @@ typedef struct constraint {
 
 typedef struct material {
     char  *aux;				/* auxillary data pointer           */
-    const char  *name;		/* name of material                 */
+    char  *name;		/* name of material                 */
     char  *color;			/* name of color to use in velvet   */
     double E;				/* Young's modulus                  */
     double Ix;				/* moment of inertia about x-x axis */

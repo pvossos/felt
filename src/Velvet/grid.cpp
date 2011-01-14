@@ -424,7 +424,7 @@ static int GridDialogSet (GridDialog gridd)
        return 1;
     }
     else
-       gridd -> gr -> xrule = rule;
+        gridd -> gr -> xrule = (Rule) rule;
   
     XtGetValues (gridd -> rule [1], args, 1); 
     rule = MatchRuleName (value);
@@ -433,7 +433,7 @@ static int GridDialogSet (GridDialog gridd)
        return 1;
     }
     else
-       gridd -> gr -> yrule = rule;
+        gridd -> gr -> yrule = (Rule) rule;
 
     XtGetValues (gridd -> rule [2], args, 1); 
     rule = MatchRuleName (value);
@@ -442,7 +442,7 @@ static int GridDialogSet (GridDialog gridd)
        return 1;
     }
     else
-       gridd -> gr -> zrule = rule;
+        gridd -> gr -> zrule = (Rule) rule;
 
     return 0;
 }

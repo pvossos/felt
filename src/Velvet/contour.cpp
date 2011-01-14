@@ -46,7 +46,8 @@
 extern int    atoi ( );
 # endif
 
-Solution	solution;
+/* There is already one instance in solution.cpp */
+// Solution	solution;
 
 struct contour_dialog {
     Widget  shell;		/* topLevelShell  <specified>	*/

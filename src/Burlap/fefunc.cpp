@@ -1544,28 +1544,21 @@ int remove_constrained_func (int n)
 
 int renumber_nodes_func (int n)
 {
-    unsigned	num_elts;
-    unsigned	num_nodes;
     descriptor *result;
     int		handler;
-
 
     if (!problem.num_nodes) {
 	rterror ("no FElt problem loaded in renumber_nodes()");
 	return 1;
     }
 
-
-    num_elts = problem.num_elements;
-    num_nodes = problem.num_nodes;
-    
-    cvector1u cv = RenumberNodes (problem.nodes, problem.elements, num_nodes, num_elts);
-    unsigned  *v = cv.release1();
+    cvector1u cv = RenumberProblemNodes();
+    unsigned num_nodes = cv.size();
 
     result = push ( );
     handler = AddTrap (strict_assignment);
 
-    CreateData (result, NULL, NULL, T_Array, v, T_Int, num_nodes, handler);
+    CreateData (result, NULL, NULL, T_Array, cv.release1(), T_Int, num_nodes, handler);
     D_Trapped (result) = AddTrap (array_assignment);
 
     return 0;
@@ -1613,7 +1606,9 @@ int restore_numbers_func (int n)
 	if ((status = is_permutation ("restore_numbers", D_Array (arg)))) {
 	    ptr = (unsigned *) D_Array (arg) -> ptr;
 	    CreateData (result, NULL, NULL, T_Null);
-	    RestoreNodeNumbers (problem.nodes, ptr, problem.num_nodes);
+        cvector1u tmp(ptr, problem.num_nodes);
+	    RestoreProblemNodeNumbers(tmp);
+        tmp.release1();
 	}
 
     } else

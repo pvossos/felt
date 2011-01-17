@@ -362,8 +362,7 @@ int main (int argc, char **argv)
 	 */
 
     if (renumber) 
-        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
-                                     problem.num_nodes, problem.num_elements);
+        old_numbers = RenumberProblemNodes();
 
 	/*
 	 * switch on the problem type
@@ -452,7 +451,7 @@ int main (int argc, char **argv)
 
           R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (table)
              WriteStructuralResults (fp_out, title, R);
@@ -498,7 +497,7 @@ int main (int argc, char **argv)
           if (d == NullVector)
              Fatal("could not solve for displacements, probably a singularity");
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (table)
              WriteTemperatureResults (fp_out, title);
@@ -539,7 +538,7 @@ int main (int argc, char **argv)
           if (dtable == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (table)
              if (mode == StaticLoadCases)
@@ -573,7 +572,7 @@ int main (int argc, char **argv)
           if (dtable == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           if (table)
              WriteLoadRangeTable (dtable, fp_out);
@@ -603,7 +602,7 @@ int main (int argc, char **argv)
           if (d == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           if (table)
               WriteStructuralResults (fp_out, title, cvector1<Reaction>(0));

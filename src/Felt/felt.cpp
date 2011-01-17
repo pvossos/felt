@@ -239,8 +239,7 @@ int main (int argc, char *argv[])
 	 */
 
     if (renumber) 
-        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
-                                     problem.num_nodes, problem.num_elements);
+        old_numbers = RenumberProblemNodes();
 
 	/*
 	 * switch on the problem type (transient or static)
@@ -273,7 +272,7 @@ int main (int argc, char *argv[])
           else
              dtable = RosenbrockHyperbolicDE (K, M, C, &ttable);
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (dtable == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
@@ -310,7 +309,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (dotable)
              WriteTransientTable (dtable, NullMatrix, stdout);
@@ -346,7 +345,7 @@ int main (int argc, char *argv[])
     
           R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           WriteStructuralResults (stdout, title, R);
 
@@ -380,7 +379,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (dotable)
              if (mode == StaticLoadCases)
@@ -417,7 +416,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           if (dotable)
              WriteLoadRangeTable (dtable, stdout);
@@ -447,7 +446,7 @@ int main (int argc, char *argv[])
           if (d == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           WriteStructuralResults (stdout, title, cvector1<Reaction>(0));
 
@@ -474,7 +473,7 @@ int main (int argc, char *argv[])
           if (d == NullVector)
              exit (1);
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           WriteTemperatureResults (stdout, title);
 
@@ -550,7 +549,7 @@ int main (int argc, char *argv[])
                 break; 
           }
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (!dospectra) {
              if (dotable)

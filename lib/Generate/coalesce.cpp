@@ -23,6 +23,7 @@
 # include "objects.h"
 # include "mesh.h"
 # include "cvector1.hpp"
+# include "problem.h"
 
 # define TOLERANCE	0.001
 # define DIST(a,b)	(sqrt(((a) -> x - (b) -> x)*((a) -> x - (b) -> x) + \
@@ -165,3 +166,18 @@ CoalesceNodes(cvector1<Node> &node, cvector1<Element> &element)
 
    return new_nodes;
 }
+
+bool
+CoalesceProblemNodes()
+{
+    bool ret = false;
+    cvector1<Node> pn(problem.nodes, problem.num_nodes);
+    cvector1<Element> pe(problem.elements, problem.num_elements);
+    cvector1<Node> rn = CoalesceNodes(pn, pe);
+    bool samep = rn.c_ptr1() == pn.c_ptr1();
+    problem.num_nodes = rn.size();
+    problem.nodes = rn.release1();
+    pe.release1();
+    return samep;
+}
+

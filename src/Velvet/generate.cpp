@@ -80,21 +80,12 @@ static void VelvetCoalesceNodes (void)
    for (i = 1 ; i <= nn ; i++) 
       TreeDelete (problem.node_tree, problem.nodes [i]);
 
-   cvector1<Node> pn(problem.nodes, problem.num_nodes);
-   cvector1<Element> pe(problem.elements, problem.num_elements);
-   pn = CoalesceNodes(pn, pe);
-   problem.nodes = pn.release1();
-   problem.elements = pe.release1();
-
-   if (pn.c_ptr1() == problem.nodes) {
+   bool samep = CoalesceProblemNodes();
+   if (samep) {
       for (i = 1 ; i <= nn ; i++) 
          TreeInsert (problem.node_tree, problem.nodes [i]);
-
       return;
    }
-
-   problem.nodes = pn.release1();
-   pe.release1();
 
    DW_SetAutoRedraw (drawing, False);
 

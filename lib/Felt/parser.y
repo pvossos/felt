@@ -39,8 +39,8 @@
 
 # define VariableExpression 2	/* not 0, 1, or, 'h' */
 
-extern void yyerror (const char *msg);
-extern int  yylex  (void);
+extern "C" void yyerror (const char *msg);
+extern "C" int  yylex  (void);
 
 /* Last parameters (default for some parameters is to inherit the last). */
 

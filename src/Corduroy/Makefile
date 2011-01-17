@@ -23,7 +23,7 @@ LFLAGS	= -i -Pcord_yy
 LIBS	= $(LIBGEN) $(LIBFELT) $(LIBELT) $(LIBMTX) -lm
 OBJS	= corduroy.o debug.o error.o generator.o lexer.o parser.o
 PROG	= corduroy
-SRCS	= lexer.c parser.c
+SRCS	= lexer.c parser.y
 YACC	= bison
 YFLAGS	= -d -y -pcord_yy
 
@@ -35,3 +35,6 @@ include $(TOPDIR)/etc/Makefile.bin
 generator.o:	generator.cpp
 		$(CXX) $(CXXFLAGS) -DLIBDIR=\"$(DESTLIB)\" -DCPP=\"$(CPP)\" -c generator.cpp
 
+parser.o:	parser.y
+		$(YACC) $(YFLAGS) -o parser.cpp parser.y
+		$(CXX) $(CXXFLAGS) -c parser.cpp

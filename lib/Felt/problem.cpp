@@ -43,7 +43,7 @@
 # define CPP "/lib/cpp"
 # endif
 
-extern "C" int felt_yyparse (void);
+int felt_yyparse (void);
 
 Problem    problem;
 Analysis   analysis;

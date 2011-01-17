@@ -42,6 +42,7 @@
 # define CPP "/lib/cpp"
 # endif
 
+int	 cord_yyparse	(void);
 
 Generator generator;
 

@@ -29,6 +29,7 @@
 # include <string.h>
 # include "code.h"
 # include "error.h"
+# include "problem.h"
 # include "generator.h"
 # include "allocate.h"
 # include "definition.h"

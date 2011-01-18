@@ -31,10 +31,6 @@
 # include "appearance.h"
 # include "inptypes.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
 /*----------------------------------------------------------------------*/
 
 # define MaxNodesPerElement 32
@@ -128,9 +124,5 @@ void SetDetailStream(FILE *fp);
 FILE* GetDetailStream(void);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _PROBLEM_H */

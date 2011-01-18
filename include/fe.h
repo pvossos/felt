@@ -31,10 +31,6 @@
 # include "matrix.h"
 # include "inptypes.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
 /*----------------------------------------------------------------------*/
 
 # define TINY 1.0e-60
@@ -477,9 +473,5 @@ Matrix StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent);
 Matrix SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _FE_H */

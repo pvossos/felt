@@ -75,11 +75,6 @@ int ReadCorduroyFile (const char *input_name);
 
 int WriteCorduroyFile (const char *filename);
 
-/*!
-  Looks up an element definition by name.			
-*/
-Definition defnlookup(char *name);
-
 /*----------------------------------------------------------------------*/
 
 #ifdef __cplusplus

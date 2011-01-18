@@ -30,7 +30,8 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include "error.h"
-# include "problem.h"
+# include "inptypes.h"
+# include "appearance.h"
 # include "y.tab.h"
 
 static char *filename;
@@ -48,8 +49,8 @@ static char *copy_ptr = copied_text;
 
 # undef  YY_INPUT
 # define YY_INPUT(buf,result,max_size) \
-	if (problem.input) \
-	    result = (*buf = *problem.input ++) ? 1 : (problem.input --, 0); \
+	if (psource.input) \
+	    result = (*buf = *psource.input ++) ? 1 : (psource.input --, 0); \
 	else \
 	    if ((result = read (fileno (yyin), (char *) buf, max_size)) < 0) \
 		YY_FATAL_ERROR ("read() in flex scanner failed");
@@ -296,13 +297,13 @@ points{eq}			{return POINTS_EQ;}
 
 #[^\n]*$			{update_line ( );}
 [ \t]+				{}
-\n				{problem.line ++;}
+\n				{psource.line ++;}
 "/*"				{BEGIN comment;}
 
 <comment>[^*\n]*		{}
-<comment>[^*\n]*\n		{problem.line ++;}
+<comment>[^*\n]*\n		{psource.line ++;}
 <comment>"*"+[^*/\n]*		{}
-<comment>"*"+[^*/\n]*\n		{problem.line ++;}
+<comment>"*"+[^*/\n]*\n		{psource.line ++;}
 <comment>"*"+"/"		{BEGIN INITIAL;}
 
 .				{return *yytext;}
@@ -321,13 +322,13 @@ void felt_yyerror (const char *msg)
     extern int felt_yychar;
 
 
-    if (!problem.input)
+    if (!psource.input)
 	if (felt_yychar)
 	    error ("parse error before `%s'", yytext);
 	else
 	    error ("parse error before end of input");
     else
-	problem.input -= yyleng;
+	psource.input -= yyleng;
 }
 
 
@@ -349,8 +350,8 @@ void init_felt_lexer (FILE *fp)
 	yyrestart (fp);
 
     if (fp) {
-	problem.input = NULL;
-	filename = problem.filename;
+	psource.input = NULL;
+	filename = psource.filename;
     }
 }
 
@@ -374,19 +375,19 @@ static void update_line (void)
      line = strtol (yytext + 1, &ptr1, 10) - 1;
 
      if (ptr1) {
-	problem.line = line;
+	psource.line = line;
 
 	while (*ptr1 && *ptr1 ++ != '"');
 
 	if (*ptr1)
-	    problem.filename = filename;
+	    psource.filename = filename;
 
 	while (*ptr1 && *ptr1 != '"')
 	    *ptr2 ++ = *ptr1 ++;
 
 	*ptr2 = 0;
 	if (ptr2 != include_filename)
-	    problem.filename = include_filename;
+	    psource.filename = include_filename;
      }
 }
 

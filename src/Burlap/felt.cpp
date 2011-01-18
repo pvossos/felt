@@ -1830,8 +1830,8 @@ void error (const char *format, ...)
 
     va_start (ap, format);
 
-    if (problem.line)
-	fprintf (stderr, "%s:%d: ", problem.filename, problem.line);
+    if (psource.line)
+	fprintf (stderr, "%s:%d: ", psource.filename, psource.line);
     else
 	fprintf (stderr, "%s:%d: ", curr_file_name, curr_line_num);
 

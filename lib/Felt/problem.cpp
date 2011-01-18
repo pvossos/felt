@@ -46,6 +46,7 @@
 int felt_yyparse (void);
 
 Problem    problem;
+ProblemSource psource;
 Analysis   analysis;
 Appearance appearance;
 
@@ -489,7 +490,7 @@ ReadFeltFile(const char *filename)
     problem.num_elements     = 0;
     problem.num_loadcases    = 0;
     problem.num_errors	     = 0;
-    problem.line	     = 1;
+    psource.line	     = 1;
     problem.nodes	     = NULL;
     problem.elements	     = NULL;
     problem.node_tree	     = TreeCreate (node_cmp);
@@ -501,9 +502,9 @@ ReadFeltFile(const char *filename)
     problem.loadcase_tree    = TreeCreate (loadcase_cmp);
 
     if (filename)
-	problem.filename = strdup (streq (filename, "-") ? "stdin" : filename);
+	psource.filename = strdup (streq (filename, "-") ? "stdin" : filename);
     else
-	problem.filename = strdup ("");
+	psource.filename = strdup ("");
 
 
     /* Initialize the analysis structure. */
@@ -541,7 +542,7 @@ ReadFeltFile(const char *filename)
     if (filename) {
 	init_felt_lexer (input);
 	felt_yyparse ( );
-	problem.line = 0;
+	psource.line = 0;
 
 	if (cpp)
 	    pclose (input);
@@ -627,7 +628,7 @@ CompileCode(char *text)
     sprintf (input, "x = %s end", text);
 
     init_felt_lexer (NULL);
-    problem.input = input;
+    psource.input = input;
     return felt_yyparse ( );
 }
 
@@ -640,7 +641,7 @@ exptod(char *expr, char **ptr)
     code = CompileCode (expr) ? NULL : InCore;
 
     if (ptr)
-	*ptr = problem.input;
+	*ptr = psource.input;
 
     return EvalCode (code, 0.0);
 }

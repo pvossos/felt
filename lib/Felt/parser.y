@@ -31,6 +31,7 @@
 # include "error.h"
 # include "objects.h"
 # include "problem.h"
+# include "fe.h"
 # include "allocate.h"
 
 # if !defined (__GNUC__) && !defined (__sparc__)

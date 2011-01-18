@@ -29,6 +29,7 @@
 # define _FE_H
 # include "code.h"
 # include "matrix.h"
+# include "inptypes.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,23 +52,6 @@ extern "C" {
 #define M_PI_4          0.78539816339744830962  /* pi/4 */
 # endif
 
-/* Analysis types */
-
-typedef enum {
-    Static = 1,
-    Transient = 2,
-    Modal = 3,
-    StaticThermal = 4,
-    TransientThermal = 5,
-    Spectral = 6,
-    StaticSubstitution = 7,
-    StaticIncremental = 8,
-    StaticLoadCases = 9,
-    StaticLoadRange = 10,
-    StaticSubstitutionLoadRange = 11,
-    StaticIncrementalLoadRange = 12,
-} AnalysisType;
-
 
 /* Element shapes */
 
@@ -76,42 +60,6 @@ typedef enum {
     Planar = 2,
     Solid  = 3
 } Shape;
-
-
-/* Load directions */
-
-typedef enum {
-    LocalX        = 1,
-    LocalY        = 2,
-    LocalZ        = 3,
-    GlobalX	  = 4,
-    GlobalY	  = 5,
-    GlobalZ 	  = 6,
-    Parallel      = 7,
-    Perpendicular = 8,
-    Radial	  = 9,
-    Axial	  = 10
-} Direction;
-
-
-/* Degrees of freedom */
-
-typedef enum {
-    Tx = 1, Fx = 1,			/* translation/force along x axis */
-    Ty = 2, Fy = 2,			/* translation/force along y axis */
-    Tz = 3, Fz = 3,			/* translation/force along z axis */
-    Rx = 4, Mx = 4,			/* rotation/moment about x axis   */
-    Ry = 5, My = 5,			/* rotation/moment about y axis   */
-    Rz = 6, Mz = 6			/* rotation/moment about z axis   */
-} DOF;
-
-
-/* A node-magnitude pair */
-
-typedef struct pair {
-    unsigned node;			/* node number */
-    double   magnitude;			/* magnitude   */
-} Pair;
 
 
 /* Element stress */
@@ -256,12 +204,6 @@ struct NodeDOF {
     DOF		dof;
     Node	node;
 };
-
-
-typedef struct casepair {
-   unsigned	 noe;		/* node or element number */
-   char		*fol;		/* force or load name     */
-} CasePair;
 
 
 /* A Load Case */

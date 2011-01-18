@@ -29,6 +29,7 @@
 # include "fe.h"
 # include "Tree.h"
 # include "appearance.h"
+# include "inptypes.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,9 +42,7 @@ extern "C" {
 
 typedef struct {
     AnalysisType mode;			/* analysis mode	   */
-    char	*input;			/* possible lexer input	   */
     char	*title;			/* problem title	   */
-    char	*filename;		/* file name		   */
     Node	*nodes;			/* array of nodes	   */
     Element	*elements;		/* array of elements	   */
     LoadCase	*loadcases;
@@ -62,24 +61,10 @@ typedef struct {
     unsigned	 num_elements;		/* number of elements	   */
     unsigned	 num_loadcases;		/* number of load cases	   */
     unsigned	 num_errors;		/* number of errors	   */
-    unsigned	 line;			/* current line number	   */
 } Problem;
 
 extern Problem  problem;
 extern Analysis analysis;
-
-/*!
-  Specifies whether yytext should be copied into a local buffer.  The
-  text is put into a canonical form in which leading and trailing
-  white space is eliminated and all other sequences of white space are
-  replaced by a space.
-*/
-char *copy_input (int flag);
-
-/*!
-  Initializes the lexer for a new file.			
-*/
-void init_felt_lexer (FILE *fp);
 
 Definition defnlookup(char *name);
 

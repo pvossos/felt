@@ -42,7 +42,7 @@
 
 static unsigned op_count;
 
-static FigureAttributes null_attrib = {0};
+static FigureAttributes null_attrib = {(FigureType) 0};
 
 Tree figure_tree = NULL;
 

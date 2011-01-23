@@ -53,7 +53,7 @@
 # define BOOLEAN Boolean
 # endif
 
-extern void RecolorCanvas (void);
+extern "C" void RecolorCanvas (void);
 
 struct colors_dialog {
     Widget         shell;	/* topLevelShell  <specified>	 */

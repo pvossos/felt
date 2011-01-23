@@ -673,7 +673,7 @@ static AnalysisType GetAnalysisType (AnalysisDialog analysisd)
    XtGetValues (analysisd -> static_incremental, args, 1);
    if (state) return StaticIncremental;
 
-   return 0;
+   return (AnalysisType) 0;
 }
 
 /************************************************************************

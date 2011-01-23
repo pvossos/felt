@@ -58,7 +58,6 @@ typedef struct {
 extern Generator generator;
 
 void init_cord_lexer (FILE *fp);
-int	 cord_yyparse	(void);
 
 /*!
   Parses and removes the preprocesor options from the command line
@@ -75,11 +74,6 @@ int CorduroyCppOptions (int *argc, char **argv);
 int ReadCorduroyFile (const char *input_name);
 
 int WriteCorduroyFile (const char *filename);
-
-/*!
-  Looks up an element definition by name.			
-*/
-Definition defnlookup(char *name);
 
 /*----------------------------------------------------------------------*/
 

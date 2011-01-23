@@ -49,5 +49,7 @@ GenerateTriMesh(TriMesh trimesh, cvector1<Element> &element, cvector1<Node> &nod
 cvector1<Node>
 CoalesceNodes(cvector1<Node> &node, cvector1<Element> &element);
 
+bool
+CoalesceProblemNodes();
 
 #endif

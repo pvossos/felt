@@ -109,6 +109,14 @@ public:
             }
             N = n;
         }
+
+    // compatible interface with std::vector
+    void clear()
+        {
+            std::free(m);
+            m = NULL;
+            N = 0;
+        }
     
     // destructor. ATTN: non-virtual by design, do NOT subclass.
     ~cvector1() { if (m) std::free(m); }
@@ -133,6 +141,12 @@ public:
     bool empty() const { return 0 == N; }
     Value_T* c_ptr() { return &m[0]; }
     const Value_T* c_ptr() const { return &m[0]; }
+
+    // equality operator
+    bool operator==(const cvector1 &rhs)
+        {
+            return (this->m == rhs.m) && (this->N = rhs.N);
+        }
     
     // ATTN: deprecate asap. the original felt code, moved pointers to
     // allocated arrays one position backwards, in order to use

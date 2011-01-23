@@ -61,8 +61,8 @@ void error (const char *format, ...)
 
     if (buffer_errors == True) {
 	va_start (ap, format);
-	if (problem.line)
-	    fprintf (output, "%s:%d: ", problem.filename, problem.line);
+	if (psource.line)
+	    fprintf (output, "%s:%d: ", psource.filename, psource.line);
 	vfprintf (output, format, ap);
 	fprintf (output, "\n");
 	va_end (ap);

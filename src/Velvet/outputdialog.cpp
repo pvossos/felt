@@ -391,7 +391,7 @@ void OutputDialogView (OutputDialog outputd, String file_name, Cardinal max_line
  * Description: Uses OutputDialogVprintf() to simulate printf().	*
  ************************************************************************/
 
-void OutputDialogPrintf (OutputDialog outputd, const String format, ...)
+void OutputDialogPrintf (OutputDialog outputd, const char *format, ...)
 {
     va_list	     ap;
 
@@ -423,7 +423,7 @@ void OutputDialogPrintf (OutputDialog outputd, const String format, ...)
  *		importantly allows a file to viewed efficiently.	*
  ************************************************************************/
 
-void OutputDialogVprintf (OutputDialog outputd, const String format, va_list ap)
+void OutputDialogVprintf (OutputDialog outputd, const char *format, va_list ap)
 {
     Arg		     args [4];
     char	     buffer [2048];

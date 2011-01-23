@@ -120,11 +120,7 @@ int ReadDXFFile (char *name)
       }
    }       
 
-   cvector1<Node> pn(problem.nodes, problem.num_nodes);
-   cvector1<Element> pe(problem.elements, problem.num_elements);
-   pn = CoalesceNodes(pn, pe);
-   problem.nodes = pn.release1();
-   pe.release1();
+   CoalesceProblemNodes();
 
    if (input != stdin)
       fclose (input);

@@ -29,6 +29,7 @@
 # include <string.h>
 # include "code.h"
 # include "error.h"
+# include "problem.h"
 # include "generator.h"
 # include "allocate.h"
 # include "definition.h"
@@ -37,8 +38,8 @@
 # define alloca malloc		/* prevents alloca from being called */
 # endif
 
-extern void cord_yyerror (const char *msg);
-extern int  cord_yylex   (void);
+extern "C" void cord_yyerror (const char *msg);
+extern "C" int  cord_yylex   (void);
 
 
 typedef double xy_pair [2];
@@ -262,7 +263,7 @@ line_parameter
 
 	| RULE_EQ rule
 	    {
-		line.rule = $2;
+             line.rule = (Rule) $2;
 	    }
 	;
 
@@ -349,17 +350,17 @@ grid_parameter
 
 	| X_RULE_EQ rule
 	    {
-		grid.xrule = $2;
+             grid.xrule = (Rule) $2;
 	    }
 
 	| Y_RULE_EQ rule
 	    {
-		grid.yrule = $2;
+             grid.yrule = (Rule) $2;
 	    }
 
 	| Z_RULE_EQ rule
 	    {
-		grid.zrule = $2;
+             grid.zrule = (Rule) $2;
 	    }
 	;
 
@@ -437,12 +438,12 @@ quadgrid_parameter
 
 	| X_RULE_EQ rule
 	    {
-		quadgrid.xrule = $2;
+             quadgrid.xrule = (Rule) $2;
 	    }
 
 	| Y_RULE_EQ rule
 	    {
-		quadgrid.yrule = $2;
+             quadgrid.yrule = (Rule) $2;
 	    }
 	;
 
@@ -531,17 +532,17 @@ brickgrid_parameter
 
 	| X_RULE_EQ rule
 	    {
-		brickgrid.xrule = $2;
+             brickgrid.xrule = (Rule) $2;
 	    }
 
 	| Y_RULE_EQ rule
 	    {
-		brickgrid.yrule = $2;
+             brickgrid.yrule = (Rule) $2;
 	    }
 
 	| Z_RULE_EQ rule
 	    {
-		brickgrid.zrule = $2;
+             brickgrid.zrule = (Rule) $2;
 	    }
 	;
 

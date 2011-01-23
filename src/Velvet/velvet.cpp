@@ -129,7 +129,7 @@ ColorsDialog	  colors_d;
 
 Dialog 		*info_dialog;
 
-PanelId  last_command = -1;
+PanelId  last_command = InvalidId;
 
 /************************************************************************
  * Function:	 PanelCallback						*

@@ -31,6 +31,7 @@
 # include "error.h"
 # include "objects.h"
 # include "problem.h"
+# include "fe.h"
 # include "allocate.h"
 
 # if !defined (__GNUC__) && !defined (__sparc__)
@@ -39,8 +40,8 @@
 
 # define VariableExpression 2	/* not 0, 1, or, 'h' */
 
-extern void yyerror (const char *msg);
-extern int  yylex  (void);
+extern "C" void yyerror (const char *msg);
+extern "C" int  yylex  (void);
 
 /* Last parameters (default for some parameters is to inherit the last). */
 

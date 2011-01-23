@@ -39,6 +39,8 @@
 # define LIBDIR "/usr/local/lib/felt"
 # endif
 
+int	 cord_yyparse	(void);
+
 Generator generator;
 
 static char *cpp;

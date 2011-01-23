@@ -47,13 +47,13 @@ void ListAddCursorTranslations (Widget viewport);
 
 void ListAddCursorAccelerators (Widget viewport, Widget w);
 
-void SetTextString (Widget w, String value);
+void SetTextString (Widget w, const char *value);
 
 String GetTextString (Widget w);
 
 Cardinal GetTextWidth (XFontStruct *font, String text, Cardinal length);
 
-void SetLabelString (Widget w, String value);
+void SetLabelString (Widget w, const char *value);
 
 String GetLabelString (Widget w);
 

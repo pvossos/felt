@@ -96,16 +96,8 @@ int ReadGraphFile (char *filename)
       }
    }
 
-   cvector1<Node> pn(problem.nodes, problem.num_nodes);
-   cvector1<Element> pe(problem.elements, problem.num_elements);
-   pn = CoalesceNodes(pn, pe);
-   problem.nodes = pn.release1();
-   pe.release1();
+   CoalesceProblemNodes();
 
-   /*
-   problem.nodes = CoalesceNodes (problem.nodes, problem.elements,
-                                  &(problem.num_nodes), problem.num_elements);
-   */
    if (fp != stdin)
       fclose (fp);
 

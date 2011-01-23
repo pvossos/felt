@@ -43,12 +43,12 @@
 # include <stdlib.h>
 # endif
 
-extern void ToggleEltNumberStatus (void);
-extern void ToggleNodeNumberStatus (void);
-extern void ToggleGridStatus (void);
-extern void ToggleSnapStatus (void);
-extern void SetNodeNumberFlag (void);
-extern void SetEltNumberFlag (void);
+extern "C" void ToggleEltNumberStatus (void);
+extern "C" void ToggleNodeNumberStatus (void);
+extern "C" void ToggleGridStatus (void);
+extern "C" void ToggleSnapStatus (void);
+extern "C" void SetNodeNumberFlag (void);
+extern "C" void SetEltNumberFlag (void);
 
 Canvas	canvas;
 

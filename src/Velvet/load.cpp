@@ -493,7 +493,7 @@ static Direction GetRadioState (LoadDialog loadd)
    XtGetValues (loadd -> axial, args, 1);
    if (state) return Axial;
 
-   return 0; 
+   return (Direction) 0; 
 }
 
 

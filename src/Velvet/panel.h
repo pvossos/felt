@@ -36,6 +36,7 @@ extern "C" {
     /* Unique ids for each menu item on the control panel */
 
 typedef enum {
+    InvalidId = -1, 
     AddNode, DeleteNode, EditNode, MassNode,
     MoveNodeId, RenumberId, RenumberSolveId,
     AddElt, DeleteElt, SetType, Generate, EditElement,

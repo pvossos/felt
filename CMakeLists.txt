@@ -15,6 +15,7 @@ endif()
   
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
+find_package(Lua51 REQUIRED)
 
 include_directories(include)
 add_subdirectory(lib)

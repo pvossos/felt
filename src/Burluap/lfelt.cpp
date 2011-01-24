@@ -32,6 +32,18 @@ extern "C" {
 
 //----------------------------------------------------------------------!
 
+struct ElementArray 
+{
+    Element *data;
+    unsigned size;
+};
+
+//----------------------------------------------------------------------!
+
+static ElementArray* pushElementArray(lua_State *L, Element* data, unsigned size);
+
+//----------------------------------------------------------------------!
+
 // Node utilities
 
 #define NODE "FElt.Node"
@@ -198,7 +210,7 @@ static int Node_newidx(lua_State *L)
 // Node methods struct
 
 static const luaL_reg Node_meta[] = {
-    { "__gc",      Node_gc },
+    //{ "__gc",      Node_gc },
     { "__tostring", Node_tostring },
     { "__index", Node_idx },
     { "__newindex", Node_newidx},
@@ -304,12 +316,183 @@ pnodes(lua_State *L)
     return 1;
 }
 
+static int
+pelements(lua_State *L)
+{
+    pushElementArray(L, problem.elements, problem.num_elements);
+    return 1;
+}
+
 static const struct luaL_reg felt_reg[] = {
     {"version", version},
     {"felt", felt},
     {"pnodes", pnodes},
-    {"Node", Node_new},
+    {"pelements", pelements},
+    //{"Node", Node_new},
     {NULL, NULL} /* sentinel */
+};
+
+//----------------------------------------------------------------------!
+
+// Element utilities
+
+#define ELEMENT "FElt.Element"
+
+static Element toElement(lua_State *L, int index)
+{
+    Element *ee = (Element *) lua_touserdata(L, index);
+    if (ee == NULL)
+        luaL_typerror(L, index, ELEMENT);
+    return *ee;
+}
+
+static Element checkElement(lua_State *L, int index)
+{
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    Element *pp = (Element *) luaL_checkudata(L, index, ELEMENT);
+    if (pp == NULL)
+        luaL_typerror(L, index, ELEMENT);
+    Element ee = *pp;
+    if (!ee)
+        luaL_error(L, "null Element");
+    return ee;
+}
+
+static Element* pushElement(lua_State *L, Element ee)
+{
+    Element *pp = (Element *) lua_newuserdata(L, sizeof(Element));
+    *pp = ee;
+    luaL_getmetatable(L, ELEMENT);
+    lua_setmetatable(L, -2);
+    return pp;
+}
+
+//----------------------------------------------------------------------!
+
+// Element accessors
+
+static int Element_get_number(lua_State *L)
+{
+    Element ee = checkElement(L, 1);
+    lua_pushnumber(L, ee->number);
+    return 1;
+}
+
+static int Element_get_nodes(lua_State *L)
+{
+    Element ee = checkElement(L, 1);
+    pushNodeArray(L, ee->node, ee->definition->numnodes);
+    return 1;
+}
+
+//----------------------------------------------------------------------!
+
+// Element meta functions
+
+static int Element_tostring(lua_State *L)
+{
+    Element ee = toElement(L, 1);
+    lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
+    return 1;
+}
+
+static int Element_idx(lua_State *L)
+{
+    // check if key actually exists in metatable
+    luaL_getmetatable(L, ELEMENT);
+    lua_pushvalue(L, 2);
+    lua_rawget(L, -2);
+    if (!lua_isnil(L, -1))
+        return 1;
+    lua_pop(L, 1);
+
+    // check if getter exists in metatable
+    const char *key = luaL_checkstring(L, 2);
+    lua_pushfstring(L, "get_%s", key);
+    lua_rawget(L, -2);
+    if (!lua_isnil(L, -1)) {
+        lua_pushvalue(L, 1);
+        lua_call(L, 1, 1);
+        return 1;
+    }
+
+    // nothing found
+    lua_pushnil(L);
+    return 1;
+}
+
+//----------------------------------------------------------------------!
+
+// Element methods struct
+
+static const luaL_reg Element_meta[] = {
+    { "__tostring", Element_tostring },
+    { "__index", Element_idx },
+    { "get_number", Element_get_number },
+    { "get_nodes", Element_get_nodes },
+    { 0, 0 }
+};
+
+//----------------------------------------------------------------------!
+
+// ElementArray utilities
+
+#define ELEMENTARRAY "FElt.ElementArray"
+
+static ElementArray* toElementArray(lua_State *L, int index)
+{
+    ElementArray *aa = (ElementArray *) lua_touserdata(L, index);
+    if (aa == NULL)
+        luaL_typerror(L, index, ELEMENTARRAY);
+    return aa;
+}
+
+static ElementArray* checkElementArray(lua_State *L, int index)
+{
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    ElementArray *ee = (ElementArray *) luaL_checkudata(L, index, ELEMENTARRAY);
+    if (ee == NULL) 
+        luaL_typerror(L, index, ELEMENTARRAY);
+    return ee;
+}
+
+static ElementArray* pushElementArray(lua_State *L, Element* data, unsigned size)
+{
+    ElementArray *aa = (ElementArray *) lua_newuserdata(L, sizeof(ElementArray));
+    aa->data = data;
+    aa->size = size;
+    luaL_getmetatable(L, ELEMENTARRAY);
+    lua_setmetatable(L, -2);
+    return aa;
+}
+
+//----------------------------------------------------------------------!
+
+// ElementArray meta functions
+
+static int ElementArray_idx(lua_State *L)
+{
+    ElementArray *aa = checkElementArray(L, 1);
+    int idx = luaL_checknumber(L, 2);
+    if (idx > aa->size || idx <= 0) {
+        lua_pushnil(L);
+        return 1;
+    }
+    pushElement(L, aa->data[idx]);
+    return 1;
+}
+
+static int ElementArray_size(lua_State *L)
+{
+    ElementArray *ptr = checkElementArray(L, 1);
+    lua_pushnumber(L, ptr->size);
+    return 1;
+}
+
+static const luaL_reg ElementArray_meta[] = {
+    { "__len", ElementArray_size },
+    { "__index", ElementArray_idx },
+    { 0 , 0 }
 };
 
 //----------------------------------------------------------------------!
@@ -330,13 +513,23 @@ register_funs(lua_State *L, const char *tbl)
     luaL_newmetatable(L, NODEARRAY);
     luaL_register(L, NULL, NodeArray_meta);
 
+    // element methods
+    luaL_newmetatable(L, ELEMENT);
+    lua_pushliteral(L, "__index");
+    lua_pushvalue(L, -2);
+    lua_rawset(L, -3);
+    luaL_register(L, NULL, Element_meta);
+
+    // element array methods
+    luaL_newmetatable(L, ELEMENTARRAY);
+    luaL_register(L, NULL, ElementArray_meta);
+    
     // non-member functions
     luaL_register(L, tbl, felt_reg);
 
     return 1;
 }
 
-    
 extern "C" int
 luaopen_felt_g(lua_State *L)
 {

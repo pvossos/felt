@@ -18,6 +18,7 @@
 */
 
 #include <cstdlib>
+#include "udwpaux.hpp"
 
 extern "C" {
 #include "lua.h"
@@ -46,69 +47,24 @@ static ElementArray* pushElementArray(lua_State *L, Element* data, unsigned size
 
 // Node utilities
 
-#define NODE "FElt.Node"
+template<>
+struct udwp<node> 
+{ static std::string name() { return "FElt.Node"; } };
 
-static Node toNode(lua_State *L, int index)
-{
-    Node *nn = (Node *) lua_touserdata(L, index);
-    if (nn == NULL) 
-        luaL_typerror(L, index, NODE);
-    return *nn;
-}
-
-static Node checkNode (lua_State *L, int index)
-{
-    luaL_checktype(L, index, LUA_TUSERDATA);
-    Node *pi = (Node *) luaL_checkudata(L, index, NODE);
-    if (pi == NULL)
-        luaL_typerror(L, index, NODE);
-    Node im = *pi;
-    if (!im)
-        luaL_error(L, "null Node");
-    return im;
-}
-
-static Node* pushNode (lua_State *L, Node im)
-{
-    Node *pi = (Node *) lua_newuserdata(L, sizeof(Node));
-    *pi = im;
-    luaL_getmetatable(L, NODE);
-    lua_setmetatable(L, -2);
-    return pi;
-}
-
-//----------------------------------------------------------------------!
-
-// Node ctor + dtor
-
-static int Node_new(lua_State *L)
-{
-    int num = luaL_checkint(L, 1);
-    pushNode(L, CreateNode(num));
-    return 1;
-}
-
-static int Node_gc(lua_State *L)
-{
-    Node nd = toNode(L, 1);
-    DestroyNode(nd);
-    return 0;
-}
-
-//----------------------------------------------------------------------!
+typedef udwpaux<node> wNode;
 
 // Node accessors
 
 static int Node_get_number(lua_State *L)
 {
-    Node nd = checkNode(L, 1);
+    Node nd = wNode::check(L, 1);
     lua_pushnumber(L, nd->number);
     return 1;
 }
 
 static int Node_set_number(lua_State *L)
 {
-    Node nd = checkNode(L, 1);
+    Node nd = wNode::check(L, 1);
     int num = luaL_checkint(L, 2);
     nd->number = num;
     return 0;
@@ -116,106 +72,50 @@ static int Node_set_number(lua_State *L)
 
 static int Node_get_x(lua_State *L)
 {
-    Node nd = checkNode(L, 1);
+    Node nd = wNode::check(L, 1);
     lua_pushnumber(L, nd->x);
     return 1;
 }
 
 static int Node_get_y(lua_State *L)
 {
-    Node nd = checkNode(L, 1);
+    Node nd = wNode::check(L, 1);
     lua_pushnumber(L, nd->y);
     return 1;
 }
 
 static int Node_get_z(lua_State *L)
 {
-    Node nd = checkNode(L, 1);
+    Node nd = wNode::check(L, 1);
     lua_pushnumber(L, nd->z);
     return 1;
 }
 
 static int Node_get_m(lua_State *L)
 {
-    Node nd = checkNode(L, 1);
+    Node nd = wNode::check(L, 1);
     lua_pushnumber(L, nd->m);
     return 1;
 }
-
-//----------------------------------------------------------------------!
 
 // Node meta functions
 
 static int Node_tostring (lua_State *L)
 {
-    Node im = toNode(L, 1);
+    Node im = wNode::check(L, 1);
     lua_pushfstring(L, "Node %d @ [%f, %f, %f]",
                     im->number, im->x, im->y, im->z);
     return 1;
 }
 
-static int Node_idx(lua_State *L)
-{
-    // check if key actually exists in metatable
-    luaL_getmetatable(L, NODE);
-    lua_pushvalue(L, 2);
-    lua_rawget(L, -2);
-    if (!lua_isnil(L, -1))
-        return 1;
-    lua_pop(L, 1);
-
-    // check if getter exists in metatable
-    const char *key = luaL_checkstring(L, 2);
-    lua_pushfstring(L, "get_%s", key);
-    lua_rawget(L, -2);
-    if (!lua_isnil(L, -1)) {
-        lua_pushvalue(L, 1);
-        lua_call(L, 1, 1);
-        return 1;
-    }
-
-    // nothing found
-    lua_pushnil(L);
-    return 1;
-}
-
-static int Node_newidx(lua_State *L)
-{
-    // check if key actually exists in metatable
-    luaL_getmetatable(L, NODE);
-    lua_pushvalue(L, 2);
-    lua_rawget(L, -2);
-    if (!lua_isnil(L, -1))
-        return 1;
-    lua_pop(L, 1);
-    
-    // check if setter exists in metatable
-    const char *key = luaL_checkstring(L, 2);
-    lua_pushfstring(L, "set_%s", key);
-    lua_rawget(L, -2);
-    if (!lua_isnil(L, -1)) {
-        lua_pushvalue(L, 1);
-        lua_pushvalue(L, 3);
-        lua_call(L, 2, 0);
-        return 0;
-    }
-    
-    // nothing found, signal an error
-    luaL_error(L, "%s: property not found", key);
-    return 0;
-}
-
-//----------------------------------------------------------------------!
-
 // Node methods struct
 
 static const luaL_reg Node_meta[] = {
-    //{ "__gc",      Node_gc },
     { "__tostring", Node_tostring },
-    { "__index", Node_idx },
-    { "__newindex", Node_newidx},
-    { "get_number", Node_get_number},
-    { "set_number", Node_set_number},
+    { "__index", wNode::index_wprop },
+    { "__newindex", wNode::newindex_wprop },
+    { "get_number", Node_get_number },
+    { "set_number", Node_set_number },
     { "get_x", Node_get_x },
     { "get_y", Node_get_y },
     { "get_z", Node_get_z },
@@ -273,7 +173,7 @@ static int NodeArray_idx(lua_State *L)
         lua_pushnil(L);
         return 1;
     }
-    pushNode(L, ptr->data[idx]);
+    wNode::push(L, ptr->data[idx]);
     return 1;
 }
 
@@ -328,7 +228,7 @@ static const struct luaL_reg felt_reg[] = {
     {"felt", felt},
     {"pnodes", pnodes},
     {"pelements", pelements},
-    //{"Node", Node_new},
+
     {NULL, NULL} /* sentinel */
 };
 
@@ -336,98 +236,42 @@ static const struct luaL_reg felt_reg[] = {
 
 // Element utilities
 
-#define ELEMENT "FElt.Element"
+template<>
+struct udwp<element> 
+{ static std::string name() { return "FElt.Element"; } };
 
-static Element toElement(lua_State *L, int index)
-{
-    Element *ee = (Element *) lua_touserdata(L, index);
-    if (ee == NULL)
-        luaL_typerror(L, index, ELEMENT);
-    return *ee;
-}
-
-static Element checkElement(lua_State *L, int index)
-{
-    luaL_checktype(L, index, LUA_TUSERDATA);
-    Element *pp = (Element *) luaL_checkudata(L, index, ELEMENT);
-    if (pp == NULL)
-        luaL_typerror(L, index, ELEMENT);
-    Element ee = *pp;
-    if (!ee)
-        luaL_error(L, "null Element");
-    return ee;
-}
-
-static Element* pushElement(lua_State *L, Element ee)
-{
-    Element *pp = (Element *) lua_newuserdata(L, sizeof(Element));
-    *pp = ee;
-    luaL_getmetatable(L, ELEMENT);
-    lua_setmetatable(L, -2);
-    return pp;
-}
-
-//----------------------------------------------------------------------!
+typedef udwpaux<element> wElement;
 
 // Element accessors
 
 static int Element_get_number(lua_State *L)
 {
-    Element ee = checkElement(L, 1);
+    Element ee = wElement::check(L, 1);
     lua_pushnumber(L, ee->number);
     return 1;
 }
 
 static int Element_get_nodes(lua_State *L)
 {
-    Element ee = checkElement(L, 1);
+    Element ee = wElement::check(L, 1);
     pushNodeArray(L, ee->node, ee->definition->numnodes);
     return 1;
 }
-
-//----------------------------------------------------------------------!
 
 // Element meta functions
 
 static int Element_tostring(lua_State *L)
 {
-    Element ee = toElement(L, 1);
+    Element ee = wElement::check(L, 1);
     lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
     return 1;
 }
-
-static int Element_idx(lua_State *L)
-{
-    // check if key actually exists in metatable
-    luaL_getmetatable(L, ELEMENT);
-    lua_pushvalue(L, 2);
-    lua_rawget(L, -2);
-    if (!lua_isnil(L, -1))
-        return 1;
-    lua_pop(L, 1);
-
-    // check if getter exists in metatable
-    const char *key = luaL_checkstring(L, 2);
-    lua_pushfstring(L, "get_%s", key);
-    lua_rawget(L, -2);
-    if (!lua_isnil(L, -1)) {
-        lua_pushvalue(L, 1);
-        lua_call(L, 1, 1);
-        return 1;
-    }
-
-    // nothing found
-    lua_pushnil(L);
-    return 1;
-}
-
-//----------------------------------------------------------------------!
 
 // Element methods struct
 
 static const luaL_reg Element_meta[] = {
     { "__tostring", Element_tostring },
-    { "__index", Element_idx },
+    { "__index", wElement::index_wprop },
     { "get_number", Element_get_number },
     { "get_nodes", Element_get_nodes },
     { 0, 0 }
@@ -478,7 +322,7 @@ static int ElementArray_idx(lua_State *L)
         lua_pushnil(L);
         return 1;
     }
-    pushElement(L, aa->data[idx]);
+    wElement::push(L, aa->data[idx]);
     return 1;
 }
 
@@ -502,23 +346,13 @@ register_funs(lua_State *L, const char *tbl)
 {
     add_all_definitions ( );
 
-    // nodes methods
-    luaL_newmetatable(L, NODE);
-    lua_pushliteral(L, "__index");
-    lua_pushvalue(L, -2);
-    lua_rawset(L, -3);
-    luaL_register(L, NULL, Node_meta);
+    wNode::setup(L, Node_meta, NULL);
 
     // node array methods
     luaL_newmetatable(L, NODEARRAY);
     luaL_register(L, NULL, NodeArray_meta);
 
-    // element methods
-    luaL_newmetatable(L, ELEMENT);
-    lua_pushliteral(L, "__index");
-    lua_pushvalue(L, -2);
-    lua_rawset(L, -3);
-    luaL_register(L, NULL, Element_meta);
+    wElement::setup(L, Element_meta, NULL);
 
     // element array methods
     luaL_newmetatable(L, ELEMENTARRAY);

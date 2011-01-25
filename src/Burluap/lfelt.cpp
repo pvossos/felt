@@ -18,7 +18,7 @@
 */
 
 #include <cstdlib>
-#include "udwpaux.hpp"
+#include "templua.hpp"
 
 extern "C" {
 #include "lua.h"
@@ -48,61 +48,16 @@ static ElementArray* pushElementArray(lua_State *L, Element* data, unsigned size
 // Node utilities
 
 template<>
-struct udwp<node> 
-{ static std::string name() { return "FElt.Node"; } };
-
-typedef udwpaux<node> wNode;
-
-// Node accessors
-
-static int Node_get_number(lua_State *L)
+std::string tl_metaname<Node>()
 {
-    Node nd = wNode::check(L, 1);
-    lua_pushnumber(L, nd->number);
-    return 1;
-}
-
-static int Node_set_number(lua_State *L)
-{
-    Node nd = wNode::check(L, 1);
-    int num = luaL_checkint(L, 2);
-    nd->number = num;
-    return 0;
-}
-
-static int Node_get_x(lua_State *L)
-{
-    Node nd = wNode::check(L, 1);
-    lua_pushnumber(L, nd->x);
-    return 1;
-}
-
-static int Node_get_y(lua_State *L)
-{
-    Node nd = wNode::check(L, 1);
-    lua_pushnumber(L, nd->y);
-    return 1;
-}
-
-static int Node_get_z(lua_State *L)
-{
-    Node nd = wNode::check(L, 1);
-    lua_pushnumber(L, nd->z);
-    return 1;
-}
-
-static int Node_get_m(lua_State *L)
-{
-    Node nd = wNode::check(L, 1);
-    lua_pushnumber(L, nd->m);
-    return 1;
-}
+    return "FElt.Node";
+};
 
 // Node meta functions
 
 static int Node_tostring (lua_State *L)
 {
-    Node im = wNode::check(L, 1);
+    Node im = tl_check<Node>(L, 1);
     lua_pushfstring(L, "Node %d @ [%f, %f, %f]",
                     im->number, im->x, im->y, im->z);
     return 1;
@@ -110,18 +65,21 @@ static int Node_tostring (lua_State *L)
 
 // Node methods struct
 
+#define GETTER(typ, field) tl_getter<Node, typ, offsetof(struct node, field)>
+
 static const luaL_reg Node_meta[] = {
     { "__tostring", Node_tostring },
-    { "__index", wNode::index_wprop },
-    { "__newindex", wNode::newindex_wprop },
-    { "get_number", Node_get_number },
-    { "set_number", Node_set_number },
-    { "get_x", Node_get_x },
-    { "get_y", Node_get_y },
-    { "get_z", Node_get_z },
-    { "get_m", Node_get_m },
+    { "__index", tl_index_wprop<Node> },
+    { "__newindex", tl_newindex_wprop<Node> },
+    { "get_number", GETTER(unsigned, number) },
+    { "get_x", GETTER(double, x) },
+    { "get_y", GETTER(double, y) },
+    { "get_z", GETTER(double, z) },
+    { "get_m", GETTER(double, m) },
     {0, 0}
 };
+
+#undef GETTER
 
 //----------------------------------------------------------------------!
 
@@ -173,7 +131,7 @@ static int NodeArray_idx(lua_State *L)
         lua_pushnil(L);
         return 1;
     }
-    wNode::push(L, ptr->data[idx]);
+    tl_push(L, ptr->data[idx]);
     return 1;
 }
 
@@ -237,23 +195,14 @@ static const struct luaL_reg felt_reg[] = {
 // Element utilities
 
 template<>
-struct udwp<element> 
-{ static std::string name() { return "FElt.Element"; } };
-
-typedef udwpaux<element> wElement;
-
-// Element accessors
-
-static int Element_get_number(lua_State *L)
+std::string tl_metaname<Element>()
 {
-    Element ee = wElement::check(L, 1);
-    lua_pushnumber(L, ee->number);
-    return 1;
+    return "FElt.Element";
 }
 
 static int Element_get_nodes(lua_State *L)
 {
-    Element ee = wElement::check(L, 1);
+    Element ee = tl_check<Element>(L, 1);
     pushNodeArray(L, ee->node, ee->definition->numnodes);
     return 1;
 }
@@ -262,20 +211,24 @@ static int Element_get_nodes(lua_State *L)
 
 static int Element_tostring(lua_State *L)
 {
-    Element ee = wElement::check(L, 1);
+    Element ee = tl_check<Element>(L, 1);
     lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
     return 1;
 }
 
 // Element methods struct
 
+#define GETTER(typ, field) tl_getter<Element, typ, offsetof(struct element, field)>
+
 static const luaL_reg Element_meta[] = {
     { "__tostring", Element_tostring },
-    { "__index", wElement::index_wprop },
-    { "get_number", Element_get_number },
+    { "__index", tl_index_wprop<Element> },
+    { "get_number", GETTER(unsigned, number) },
     { "get_nodes", Element_get_nodes },
     { 0, 0 }
 };
+
+#undef GETTER
 
 //----------------------------------------------------------------------!
 
@@ -322,7 +275,7 @@ static int ElementArray_idx(lua_State *L)
         lua_pushnil(L);
         return 1;
     }
-    wElement::push(L, aa->data[idx]);
+    tl_push<Element>(L, aa->data[idx]);
     return 1;
 }
 
@@ -346,13 +299,13 @@ register_funs(lua_State *L, const char *tbl)
 {
     add_all_definitions ( );
 
-    wNode::setup(L, Node_meta, NULL);
+    tl_setup<Node>(L, Node_meta, NULL);
 
     // node array methods
     luaL_newmetatable(L, NODEARRAY);
     luaL_register(L, NULL, NodeArray_meta);
 
-    wElement::setup(L, Element_meta, NULL);
+    tl_setup<Element>(L, Element_meta, NULL);
 
     // element array methods
     luaL_newmetatable(L, ELEMENTARRAY);

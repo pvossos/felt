@@ -225,11 +225,54 @@ static const luaL_reg Element_meta[] = {
     { "__index", tl_index_wprop<Element> },
     { "get_number", GETTER(unsigned, number) },
     { "get_nodes", Element_get_nodes },
+    { "get_material", GETTER(Material, material) },
     { 0, 0 }
 };
 
 #undef GETTER
 
+//----------------------------------------------------------------------!
+
+// Materials
+
+template<>
+std::string tl_metaname<Material>()
+{
+    return "FElt.Material";
+}
+
+static int Material_tostring(lua_State *L)
+{
+    Material mt = tl_check<Material>(L, 1);
+    lua_pushfstring(L, "[Material %s @ %p]", mt->name, mt);
+    return 1;
+}
+
+#define GETTER(typ, field) tl_getter<Material, typ, offsetof(struct material, field)>
+
+static const luaL_reg Material_meta[] = {
+    { "__tostring", Material_tostring },
+    { "__index", tl_index_wprop<Material> },
+    { "get_E", GETTER(double, E) },
+    { "get_Ix", GETTER(double, Ix) },
+    { "get_Iy", GETTER(double, Iy) },
+    { "get_Iz", GETTER(double, Iz) },
+    { "get_A", GETTER(double, A) },
+    { "get_J", GETTER(double, J) },
+    { "get_G", GETTER(double, G) },
+    { "get_t", GETTER(double, t) },
+    { "get_rho", GETTER(double, rho) },
+    { "get_nu", GETTER(double, nu) },
+    { "get_kappa", GETTER(double, kappa) },
+    { "get_Rk", GETTER(double, Rk) },
+    { "get_Rm", GETTER(double, Rm) },        
+    { "get_Kx", GETTER(double, Kx) },        
+    { "get_Ky", GETTER(double, Ky) },        
+    { "get_Kz", GETTER(double, Kz) },        
+    { "get_c", GETTER(double, c) },
+    { 0, 0 }
+};
+        
 //----------------------------------------------------------------------!
 
 // ElementArray utilities
@@ -301,6 +344,8 @@ register_funs(lua_State *L, const char *tbl)
 
     tl_setup<Node>(L, Node_meta, NULL);
 
+    tl_setup<Material>(L, Material_meta, NULL);
+    
     // node array methods
     luaL_newmetatable(L, NODEARRAY);
     luaL_register(L, NULL, NodeArray_meta);

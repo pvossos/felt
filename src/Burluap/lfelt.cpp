@@ -33,27 +33,13 @@ extern "C" {
 
 //----------------------------------------------------------------------!
 
-struct ElementArray 
-{
-    Element *data;
-    unsigned size;
-};
-
-//----------------------------------------------------------------------!
-
-static ElementArray* pushElementArray(lua_State *L, Element* data, unsigned size);
-
-//----------------------------------------------------------------------!
-
-// Node utilities
+// Nodes
 
 template<>
 std::string tl_metaname<Node>()
 {
     return "FElt.Node";
 };
-
-// Node meta functions
 
 static int Node_tostring (lua_State *L)
 {
@@ -62,8 +48,6 @@ static int Node_tostring (lua_State *L)
                     im->number, im->x, im->y, im->z);
     return 1;
 }
-
-// Node methods struct
 
 #define GETTER(typ, field) tl_getter<Node, typ, offsetof(struct node, field)>
 
@@ -80,73 +64,6 @@ static const luaL_reg Node_meta[] = {
 };
 
 #undef GETTER
-
-//----------------------------------------------------------------------!
-
-// NodeArray utilities
-
-#define NODEARRAY "FElt.NodeArray"
-
-struct NodeArray {
-    Node *data;
-    unsigned size;
-};
-
-static NodeArray* toNodeArray(lua_State *L, int index)
-{
-    NodeArray *nn = (NodeArray *) lua_touserdata(L, index);
-    if (nn == NULL) 
-        luaL_typerror(L, index, NODEARRAY);
-    return nn;
-}
-
-static NodeArray* checkNodeArray(lua_State *L, int index)
-{
-    luaL_checktype(L, index, LUA_TUSERDATA);
-    NodeArray *nn = (NodeArray *) luaL_checkudata(L, index, NODEARRAY);
-    if (nn == NULL) 
-        luaL_typerror(L, index, NODEARRAY);
-    return nn;
-}
-
-static NodeArray* pushNodeArray(lua_State *L, Node* data, unsigned size)
-{
-    NodeArray *nn = (NodeArray *) lua_newuserdata(L, sizeof(NodeArray));
-    nn->data = data;
-    nn->size = size;
-    luaL_getmetatable(L, NODEARRAY);
-    lua_setmetatable(L, -2);
-    return nn;
-}
-
-//----------------------------------------------------------------------!
-
-// NodeArray meta functions
-
-static int NodeArray_idx(lua_State *L)
-{
-    NodeArray *ptr = checkNodeArray(L, 1);
-    int idx = luaL_checknumber(L, 2);
-    if (idx > ptr->size || idx <= 0) {
-        lua_pushnil(L);
-        return 1;
-    }
-    tl_push(L, ptr->data[idx]);
-    return 1;
-}
-
-static int NodeArray_size(lua_State *L)
-{
-    NodeArray *ptr = checkNodeArray(L, 1);
-    lua_pushnumber(L, ptr->size);
-    return 1;
-}
-
-static const luaL_reg NodeArray_meta[] = {
-    { "__len", NodeArray_size },
-    { "__index", NodeArray_idx },
-    { 0, 0 }
-};
 
 //----------------------------------------------------------------------!
 
@@ -170,14 +87,14 @@ felt(lua_State *L)
 static int
 pnodes(lua_State *L)
 {
-    pushNodeArray(L, problem.nodes, problem.num_nodes);
+    tl_pushn<Node>(L, problem.nodes+1, problem.num_nodes);
     return 1;
 }
 
 static int
 pelements(lua_State *L)
 {
-    pushElementArray(L, problem.elements, problem.num_elements);
+    tl_pushn<Element>(L, problem.elements+1, problem.num_elements);
     return 1;
 }
 
@@ -192,7 +109,7 @@ static const struct luaL_reg felt_reg[] = {
 
 //----------------------------------------------------------------------!
 
-// Element utilities
+// Elements
 
 template<>
 std::string tl_metaname<Element>()
@@ -203,11 +120,9 @@ std::string tl_metaname<Element>()
 static int Element_get_nodes(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
-    pushNodeArray(L, ee->node, ee->definition->numnodes);
+    tl_pushn<Node>(L, ee->node+1, ee->definition->numnodes);
     return 1;
 }
-
-// Element meta functions
 
 static int Element_tostring(lua_State *L)
 {
@@ -215,8 +130,6 @@ static int Element_tostring(lua_State *L)
     lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
     return 1;
 }
-
-// Element methods struct
 
 #define GETTER(typ, field) tl_getter<Element, typ, offsetof(struct element, field)>
 
@@ -275,68 +188,6 @@ static const luaL_reg Material_meta[] = {
         
 //----------------------------------------------------------------------!
 
-// ElementArray utilities
-
-#define ELEMENTARRAY "FElt.ElementArray"
-
-static ElementArray* toElementArray(lua_State *L, int index)
-{
-    ElementArray *aa = (ElementArray *) lua_touserdata(L, index);
-    if (aa == NULL)
-        luaL_typerror(L, index, ELEMENTARRAY);
-    return aa;
-}
-
-static ElementArray* checkElementArray(lua_State *L, int index)
-{
-    luaL_checktype(L, index, LUA_TUSERDATA);
-    ElementArray *ee = (ElementArray *) luaL_checkudata(L, index, ELEMENTARRAY);
-    if (ee == NULL) 
-        luaL_typerror(L, index, ELEMENTARRAY);
-    return ee;
-}
-
-static ElementArray* pushElementArray(lua_State *L, Element* data, unsigned size)
-{
-    ElementArray *aa = (ElementArray *) lua_newuserdata(L, sizeof(ElementArray));
-    aa->data = data;
-    aa->size = size;
-    luaL_getmetatable(L, ELEMENTARRAY);
-    lua_setmetatable(L, -2);
-    return aa;
-}
-
-//----------------------------------------------------------------------!
-
-// ElementArray meta functions
-
-static int ElementArray_idx(lua_State *L)
-{
-    ElementArray *aa = checkElementArray(L, 1);
-    int idx = luaL_checknumber(L, 2);
-    if (idx > aa->size || idx <= 0) {
-        lua_pushnil(L);
-        return 1;
-    }
-    tl_push<Element>(L, aa->data[idx]);
-    return 1;
-}
-
-static int ElementArray_size(lua_State *L)
-{
-    ElementArray *ptr = checkElementArray(L, 1);
-    lua_pushnumber(L, ptr->size);
-    return 1;
-}
-
-static const luaL_reg ElementArray_meta[] = {
-    { "__len", ElementArray_size },
-    { "__index", ElementArray_idx },
-    { 0 , 0 }
-};
-
-//----------------------------------------------------------------------!
-
 static int
 register_funs(lua_State *L, const char *tbl)
 {
@@ -346,16 +197,14 @@ register_funs(lua_State *L, const char *tbl)
 
     tl_setup<Material>(L, Material_meta, NULL);
     
-    // node array methods
-    luaL_newmetatable(L, NODEARRAY);
-    luaL_register(L, NULL, NodeArray_meta);
+    tl_array_wrapper<Node> anw;
+    anw.registerm(L);
 
     tl_setup<Element>(L, Element_meta, NULL);
 
-    // element array methods
-    luaL_newmetatable(L, ELEMENTARRAY);
-    luaL_register(L, NULL, ElementArray_meta);
-    
+    tl_array_wrapper<Element> aew;
+    aew.registerm(L);
+
     // non-member functions
     luaL_register(L, tbl, felt_reg);
 

@@ -264,6 +264,11 @@ struct tl_array_wrapper
             meta_["__index"] = tl_array_index<T>;
         }
     
+    lua_CFunction& operator[](const metamap::key_type &key)
+        {
+            return meta_[key];
+        }
+
     void registerm(lua_State *L) const
         {
             const size_t n = meta_.size();

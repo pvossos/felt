@@ -179,6 +179,7 @@ SetupStressMemory(Element element)
         if (element -> stress[i] -> values == NULL)
            Fatal ("allocation error setting up stress memory\n");
 
+        element -> stress[i] -> numvalues = element -> definition -> numstresses;
         UnitOffset (element -> stress[i] -> values);
     }
     

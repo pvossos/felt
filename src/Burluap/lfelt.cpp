@@ -66,21 +66,21 @@ static int Node_tostring (lua_State *L)
     return 1;
 }
 
-static int Node_get_dx(lua_State *L)
+static int Node_get_eq_force(lua_State *L)
 {
     Node nn = tl_check<Node>(L, 1);
-    double *dx = nn->dx;
-    tl_pushn<double>(L, dx+1, 6);
+    tl_pushn<double>(L, nn->stress+1, 6);
     return 1;
 }
 
 #define GETTER(typ, field) tl_getter<Node, typ, offsetof(struct node, field)>
+#define GETTERN(typ, field, nn) tl_gettern<Node, typ, offsetof(struct node, field), nn>
 
 static const luaL_reg Node_meta[] = {
     { "__tostring", Node_tostring },
     { "__index", tl_index_wprop<Node> },
     { "__newindex", tl_newindex_wprop<Node> },
-    { "get_dx", Node_get_dx },
+    { "get_dx", GETTERN(double, dx[1], 6) },
     { "get_number", GETTER(unsigned, number) },
     { "get_x", GETTER(double, x) },
     { "get_y", GETTER(double, y) },
@@ -88,10 +88,12 @@ static const luaL_reg Node_meta[] = {
     { "get_m", GETTER(double, m) },
     { "get_constraint", GETTER(Constraint, constraint) },
     { "get_force", GETTER(Force, force) },
+    { "get_eq_force", Node_get_eq_force },
     {0, 0}
 };
 
 #undef GETTER
+#undef GETTERN
 
 //----------------------------------------------------------------------!
 
@@ -137,6 +139,46 @@ static const struct luaL_reg felt_reg[] = {
 
 //----------------------------------------------------------------------!
 
+// Stresses
+
+template<> std::string tl_metaname<Stress>()
+{
+    return "FElt.Stress";
+}
+
+static int Stress_tostring(lua_State *L)
+{
+    Stress ss = tl_check<Stress>(L, 1);
+    lua_pushfstring(L, "Stress @ [%f, %f, %f]",
+                    ss->x, ss->y, ss->z);
+    return 1;
+}
+
+static int Stress_get_values(lua_State *L)
+{
+    Stress ss = tl_check<Stress>(L, 1);
+    tl_pushn<double>(L, ss->values+1, ss->numvalues);
+    return 1;
+}
+
+#define GETTER(typ, field) tl_getter<Stress, typ, offsetof(struct stress, field)>
+#define GETTERN(typ, field, nn) tl_gettern<Stress, typ, offsetof(struct stress, field), nn>
+
+static const luaL_reg Stress_meta[] = {
+    { "__tostring", Stress_tostring },
+    { "__index", tl_index_wprop<Stress> },
+    { "get_x", GETTER(double, x) },
+    { "get_y", GETTER(double, y) },
+    { "get_z", GETTER(double, z) },
+    { "get_values", Stress_get_values },
+    { 0, 0 }
+};
+
+#undef GETTER
+#undef GETTERN
+
+//----------------------------------------------------------------------!
+
 // Elements
 
 template<>
@@ -149,6 +191,13 @@ static int Element_get_nodes(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
     tl_pushn<Node>(L, ee->node+1, ee->definition->numnodes);
+    return 1;
+}
+
+static int Element_get_stresses(lua_State *L)
+{
+    Element ee = tl_check<Element>(L, 1);
+    tl_pushn<Stress>(L, ee->stress+1, ee->ninteg);
     return 1;
 }
 
@@ -177,6 +226,7 @@ static const luaL_reg Element_meta[] = {
     { "get_number", GETTER(unsigned, number) },
     { "get_nodes", Element_get_nodes },
     { "get_distributed", Element_get_distributed },
+    { "get_stresses", Element_get_stresses },
     { "get_material", GETTER(Material, material) },
     { 0, 0 }
 };
@@ -231,9 +281,6 @@ static const luaL_reg Material_meta[] = {
 
 // VarExpr arrays
 
-
-//typedef VarExpr* VarExprPtr;
-
 template<>
 std::string tl_metaname<VarExpr>()
 {
@@ -274,29 +321,17 @@ static int Force_tostring(lua_State *L)
     return 1;
 }
 
-static int Force_get_force(lua_State *L)
-{
-    Force ff = tl_check<Force>(L, 1);
-    VarExpr *dd = ff->force;
-    tl_pushn<VarExpr>(L, dd+1, 6);
-    return 1;
-}
-
-static int Force_get_spectrum(lua_State *L)
-{
-    Force ff = tl_check<Force>(L, 1);
-    VarExpr *ve = ff->spectrum;
-    tl_pushn<VarExpr>(L, ve+1, 6);
-    return 1;
-}
+#define GETTERN(typ, field, nn) tl_gettern<Force, typ, offsetof(struct force, field), nn>
 
 static const luaL_reg Force_meta[] = {
     { "__tostring", Force_tostring },
     { "__index", tl_index_wprop<Force> },
-    { "get_force", Force_get_force },
-    { "get_spectrum", Force_get_spectrum },
+    { "get_force", GETTERN(VarExpr, force[1], 6) },
+    { "get_spectrum", GETTERN(VarExpr, spectrum[1], 6) },
     { 0, 0 }
 };
+
+#undef GETTERN
 
 //----------------------------------------------------------------------!
 
@@ -315,56 +350,20 @@ static int Constraint_tostring(lua_State *L)
     return 1;
 }
 
-static int Constraint_get_constraint(lua_State *L)
-{
-    Constraint cc = tl_check<Constraint>(L, 1);
-    char *pp = cc->constraint;
-    tl_pushn<char>(L, pp+1, 6);
-    return 1;
-}
-
-static int Constraint_get_ix(lua_State *L)
-{
-    Constraint cc = tl_check<Constraint>(L, 1);
-    double *pp = cc->ix;
-    tl_pushn<double>(L, pp+1, 6);
-    return 1;
-}
-
-static int Constraint_get_vx(lua_State *L)
-{
-    Constraint cc = tl_check<Constraint>(L, 1);
-    double *pp = cc->vx;
-    tl_pushn<double>(L, pp+1, 3);
-    return 1;
-}
-
-static int Constraint_get_ax(lua_State *L)
-{
-    Constraint cc = tl_check<Constraint>(L, 1);
-    double *pp = cc->ax;
-    tl_pushn<double>(L, pp+1, 3);
-    return 1;
-}
-
-static int Constraint_get_dx(lua_State *L)
-{
-    Constraint cc = tl_check<Constraint>(L, 1);
-    VarExpr *pp = cc->dx;
-    tl_pushn<VarExpr>(L, pp+1, 6);
-    return 1;
-}
+#define GETTERN(typ, field, nn) tl_gettern<Constraint, typ, offsetof(struct constraint, field), nn>
 
 static const luaL_reg Constraint_meta[] = {
     { "__tostring", Force_tostring },
     { "__index", tl_index_wprop<Force> },
-    { "get_constraint", Constraint_get_constraint },
-    { "get_ix", Constraint_get_ix },
-    { "get_vx", Constraint_get_vx },
-    { "get_ax", Constraint_get_ax },
-    { "get_dx", Constraint_get_dx },
+    { "get_constraint", GETTERN(char, constraint[1], 6) },
+    { "get_ix", GETTERN(double, ix[1], 3) },
+    { "get_vx", GETTERN(double, vx[1], 3) },
+    { "get_ax", GETTERN(double, ax[1], 3) },
+    { "get_dx", GETTERN(VarExpr, dx[1], 6) },
     { 0, 0 }
 };
+
+#undef GETTERN
 
 //----------------------------------------------------------------------!
 
@@ -460,6 +459,133 @@ static const luaL_reg Distributed_meta[] = {
 
 //----------------------------------------------------------------------!
 
+// Definitions
+
+template<> std::string tl_metaname<Definition>()
+{
+    return "FElt.Definition";
+}
+
+static int Definition_tostring(lua_State *L)
+{
+    Definition dd = tl_check<Definition>(L, 1);
+    lua_pushfstring(L, "[Definition %s @ %p]", dd->name, dd);
+    return 1;
+}
+
+static int Definition_get_dofs(lua_State *L)
+{
+    Definition dd = tl_check<Definition>(L, 1);
+    tl_pushn<unsigned>(L, dd->dofs+1, dd->numdofs);
+    return 1;
+}
+
+#define GETTER(typ, field) tl_getter<Definition, typ, offsetof(struct definition, field)>
+#define GETTERN(typ, field, nn) tl_gettern<Definition, typ, offsetof(struct definition, field), nn>
+
+static const luaL_reg Definition_meta[] = {
+    { "__tostring", Definition_tostring },
+    { "__index", tl_index_wprop<Definition> },
+    { "get_num_nodes",  GETTER(unsigned, numnodes) },
+    { "get_shape_nodes",  GETTER(unsigned, shapenodes) },
+    { "get_num_stresses",  GETTER(unsigned, numstresses) },
+    { "get_retainK",  GETTER(unsigned, retainK) },
+    { "get_dofs", Definition_get_dofs },
+    { 0, 0 }
+};
+
+#undef GETTER
+#undef GETTERN
+
+//----------------------------------------------------------------------!
+
+template<> void tl_push<AnalysisType>(lua_State *L, AnalysisType at)
+{
+    lua_pushliteral(L, "AnalysisType");
+    lua_gettable(L, LUA_ENVIRONINDEX);
+    lua_pushinteger(L, (int) at);
+    lua_gettable(L, -2);
+}
+
+//----------------------------------------------------------------------!
+
+// Analysis struct
+
+typedef struct analysis* AnalysisPtr;
+
+template<> std::string tl_metaname<AnalysisPtr>()
+{
+    return "FElt.Analysis";
+}
+
+static int AnalysisPtr_tostring(lua_State *L)
+{
+    AnalysisPtr ap = tl_check<AnalysisPtr>(L, 1);
+    lua_pushfstring(L, "[Analysis @ %p]", ap);
+    return 1;
+}
+
+#define GETTER(typ, field) tl_getter<AnalysisPtr, typ, offsetof(struct analysis, field)>
+
+static const luaL_reg AnalysisPtr_meta[] = {
+    { "__tostring", AnalysisPtr_tostring },
+    { "__index", tl_index_wprop<AnalysisPtr> },
+    { "get_start", GETTER(double, start) },
+    { "get_step", GETTER(double, step) },
+    { "get_stop", GETTER(double, stop) },
+    { "get_gamma", GETTER(double, gamma) },
+    { "get_beta", GETTER(double, beta) },
+    { "get_alpha", GETTER(double, alpha) },
+    { "get_Rk", GETTER(double, Rk) },
+    { "get_Rm", GETTER(double, Rm) },
+    { "get_mass_mode", GETTER(char, mass_mode) },
+    { 0, 0 }
+};
+
+#undef GETTER
+
+//----------------------------------------------------------------------!
+
+// Problem struct
+
+typedef Problem* ProblemPtr;
+
+template<> std::string tl_metaname<ProblemPtr>()
+{
+    return "FElt.Problem";
+}
+
+static int ProblemPtr_tostring(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
+    lua_pushfstring(L, "[Problem '%s' @ %p]", pp->title, pp);
+    return 1;
+}
+
+static int ProblemPtr_get_nodes(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);    
+    tl_pushn<Node>(L, pp->nodes+1, pp->num_nodes);
+    return 1;
+}
+
+static int ProblemPtr_get_elements(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);    
+    tl_pushn<Element>(L, pp->elements+1, pp->num_elements);
+    return 1;
+}
+
+static const luaL_reg ProblemPtr_meta[] = {
+    { "__tostring", ProblemPtr_tostring },
+    { "__index", tl_index_wprop<ProblemPtr> },
+    { "get_nodes", ProblemPtr_get_nodes },
+    { "get_elements", ProblemPtr_get_elements },
+    { 0, 0 }
+};
+
+//----------------------------------------------------------------------!
+
 static int
 register_funs(lua_State *L, const char *tbl)
 {
@@ -485,8 +611,30 @@ register_funs(lua_State *L, const char *tbl)
         LUA_ENUM(L, Axial, i); i++;
     }
     lua_settable(L, -3);
-    
+
+    // setup AnalysisType enum
+    lua_pushliteral(L, "AnalysisType");
+    lua_newtable(L);
+    {
+        int i = 1;
+        LUA_ENUM(L, Static, i); i++;
+        LUA_ENUM(L, Transient, i); i++;
+        LUA_ENUM(L, Modal, i); i++;
+        LUA_ENUM(L, StaticThermal, i); i++;
+        LUA_ENUM(L, TransientThermal, i); i++;
+        LUA_ENUM(L, Spectral, i); i++;
+        LUA_ENUM(L, StaticSubstitution, i); i++;        
+        LUA_ENUM(L, StaticIncremental, i); i++;        
+        LUA_ENUM(L, StaticLoadCases, i); i++;        
+        LUA_ENUM(L, StaticLoadRange, i); i++;        
+        LUA_ENUM(L, StaticSubstitutionLoadRange, i); i++;        
+        LUA_ENUM(L, StaticIncrementalLoadRange, i); i++;
+    }
+    lua_settable(L, -1);
+        
     lua_replace(L, LUA_ENVIRONINDEX);
+
+    tl_setup<Definition>(L, Definition_meta, NULL);
     
     tl_setup<Node>(L, Node_meta, NULL);
 
@@ -499,6 +647,10 @@ register_funs(lua_State *L, const char *tbl)
     tl_setup<Constraint>(L, Constraint_meta, NULL);
 
     tl_setup<Distributed>(L, Distributed_meta, NULL);
+
+    tl_setup<AnalysisPtr>(L, AnalysisPtr_meta, NULL);
+    
+    tl_setup<ProblemPtr>(L, ProblemPtr_meta, NULL);
     
     tl_array_wrapper<Node>().registerm(L);
 
@@ -513,6 +665,15 @@ register_funs(lua_State *L, const char *tbl)
     // non-member functions
     luaL_register(L, tbl, felt_reg);
 
+    // global structs
+    lua_pushliteral(L, "analysis");
+    tl_push<AnalysisPtr>(L, &analysis);
+    lua_settable(L, -3);
+
+    lua_pushliteral(L, "problem");
+    tl_push<ProblemPtr>(L, &problem);
+    lua_settable(L, -3);
+    
     return 1;
 }
 

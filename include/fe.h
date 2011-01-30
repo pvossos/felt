@@ -122,6 +122,7 @@ typedef struct stress {
     double  y;				/* y coordinate		  */
     double  z;				/* z coordinate		  */
     double *values;			/* computed stress values */
+    unsigned numvalues;
 } *Stress;
 
 

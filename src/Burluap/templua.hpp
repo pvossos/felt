@@ -122,6 +122,16 @@ void tl_pushn(lua_State *L, T *p, size_t size)
 }
 
 template<typename T>
+int tl_array_tostring(lua_State *L)
+{
+    size_t size;
+    T *data = tl_checkn<T>(L, 1, size);
+    std::string mname = tl_metaname<T>();
+    lua_pushfstring(L, "[Array of %s @ %p]", mname.c_str(), data);
+    return 1;
+}
+
+template<typename T>
 int tl_array_index(lua_State *L)
 {
     size_t size;
@@ -166,6 +176,12 @@ template<>
 void tl_push(lua_State *L, float val)
 {
     lua_pushnumber(L, val);
+}
+
+template<>
+void tl_push(lua_State *L, char val)
+{
+    lua_pushfstring(L,"%c", (int) val);
 }
 
 template<typename T>
@@ -250,6 +266,16 @@ int tl_getter(lua_State *L)
     return 1;
 }
 
+template<typename T, typename V, size_t offs, size_t nn>
+int tl_gettern(lua_State *L)
+{
+    T p = tl_check<T>(L, 1);
+    char *pp = (char *) p;
+    V *vals = (V *) (pp + offs);
+    tl_pushn<V>(L, vals, nn);
+    return 1;
+}
+
 //----------------------------------------------------------------------!
 
 template<typename T>
@@ -262,6 +288,7 @@ struct tl_array_wrapper
             name_ = tl_metaname<T>() + "Array";
             meta_["__len"] = tl_array_size<T>;
             meta_["__index"] = tl_array_index<T>;
+            meta_["__tostring"] = tl_array_tostring<T>;
         }
     
     lua_CFunction& operator[](const metamap::key_type &key)

@@ -35,6 +35,11 @@ std::string tl_metaname()
     return "NONE";
 }
     
+template<> std::string tl_metaname<unsigned>()
+{
+    return "unsigned";
+}
+
 template<typename T>
 int tl_setup(lua_State *L, const luaL_reg *m, const luaL_reg *f) 
 {
@@ -43,7 +48,8 @@ int tl_setup(lua_State *L, const luaL_reg *m, const luaL_reg *f)
     lua_pushstring(L, "__index");
     lua_pushvalue(L, -2);
     lua_settable(L, -3);
-    luaL_register(L, NULL, m);
+    if (m)
+        luaL_register(L, NULL, m);
     if (f)
         luaL_register(L, name.c_str(), f);
     return 1;
@@ -96,6 +102,18 @@ T tl_check(lua_State *L, int index)
     return p;
 }
     
+template<>
+unsigned tl_check<unsigned>(lua_State *L, int index)
+{
+    return (unsigned) lua_tointeger(L, index);
+}
+
+template<>
+bool tl_check<bool>(lua_State *L, int index)
+{
+    return (bool) lua_tointeger(L, index);
+}
+
 template<typename T>
 void tl_push(lua_State *L, T p) 
 {
@@ -108,6 +126,36 @@ void tl_push(lua_State *L, T p)
 #ifdef SHOWNEWDELETE
     std::printf("NEW %s [%p]\n", name.c_str(), v);
 #endif
+}
+
+template<>
+void tl_push(lua_State *L, int ii)
+{
+    lua_pushinteger(L, ii);
+}
+
+template<>
+void tl_push(lua_State *L, unsigned val)
+{
+    lua_pushinteger(L, val);
+}
+
+template<>
+void tl_push(lua_State *L, double val)
+{
+    lua_pushnumber(L, val);
+}
+
+template<>
+void tl_push(lua_State *L, float val)
+{
+    lua_pushnumber(L, val);
+}
+
+template<>
+void tl_push(lua_State *L, char val)
+{
+    lua_pushfstring(L,"%c", (int) val);
 }
 
 template<typename T>
@@ -146,42 +194,26 @@ int tl_array_index(lua_State *L)
 }
 
 template<typename T>
+int tl_array_newindex(lua_State *L)
+{
+    size_t size;
+    T *data = tl_checkn<T>(L, 1, size);
+    int idx = luaL_checknumber(L, 2);
+    T val = tl_check<T>(L, 3);
+    if (idx > size || idx <= 0) {
+        return luaL_argerror(L, 3, "out of bounds");
+    }
+    data[idx-1] = val;
+    return 0;
+}
+
+template<typename T>
 int tl_array_size(lua_State *L)
 {
     size_t size;
     T *data = tl_checkn<T>(L, 1, size);
     lua_pushnumber(L, size);
     return 1;
-}
-
-template<>
-void tl_push(lua_State *L, int ii)
-{
-    lua_pushinteger(L, ii);
-}
-
-template<>
-void tl_push(lua_State *L, unsigned val)
-{
-    lua_pushinteger(L, val);
-}
-
-template<>
-void tl_push(lua_State *L, double val)
-{
-    lua_pushnumber(L, val);
-}
-
-template<>
-void tl_push(lua_State *L, float val)
-{
-    lua_pushnumber(L, val);
-}
-
-template<>
-void tl_push(lua_State *L, char val)
-{
-    lua_pushfstring(L,"%c", (int) val);
 }
 
 template<typename T>
@@ -266,6 +298,16 @@ int tl_getter(lua_State *L)
     return 1;
 }
 
+template<typename T, typename V, size_t offs>
+int tl_setter(lua_State *L)
+{
+    T p = tl_check<T>(L, 1);
+    V nu = tl_check<V>(L, 2);
+    char *pp = (char *) p;
+    *((V *) (pp + offs)) = nu;
+    return 0;
+}
+
 template<typename T, typename V, size_t offs, size_t nn>
 int tl_gettern(lua_State *L)
 {
@@ -283,11 +325,13 @@ struct tl_array_wrapper
 {
     typedef std::map<std::string, lua_CFunction> metamap;
 
-    tl_array_wrapper()
+    tl_array_wrapper(bool readonlyp = false)
         {
             name_ = tl_metaname<T>() + "Array";
             meta_["__len"] = tl_array_size<T>;
             meta_["__index"] = tl_array_index<T>;
+            if (!readonlyp)
+                meta_["__newindex"] = tl_array_newindex<T>;
             meta_["__tostring"] = tl_array_tostring<T>;
         }
     
@@ -316,8 +360,6 @@ struct tl_array_wrapper
     metamap meta_;
     std::string name_;
 };
-
-
 
 //----------------------------------------------------------------------!
 

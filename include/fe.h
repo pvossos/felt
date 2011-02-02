@@ -149,6 +149,7 @@ typedef struct definition {
     unsigned numdofs;		/* number of degrees of freedom       */
     unsigned dofs [7];		/* degrees of freedom                 */
     unsigned retainK;		/* retain element K after assemblage  */
+    void *udata;            /* user data pointer */
 } *Definition;
 
 

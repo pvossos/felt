@@ -18,6 +18,7 @@
 */
 
 #include <cstdlib>
+#include <cstring>
 #include "templua.hpp"
 
 extern "C" {
@@ -228,6 +229,7 @@ static const luaL_reg Element_meta[] = {
     { "get_distributed", Element_get_distributed },
     { "get_stresses", Element_get_stresses },
     { "get_material", GETTER(Material, material) },
+    { "get_definition", GETTER(Definition, definition) },
     { 0, 0 }
 };
 
@@ -304,6 +306,28 @@ int tl_array_index<VarExpr>(lua_State *L)
     return 1;
 }
 
+template<>
+VarExpr tl_check<VarExpr>(lua_State *L, int index) 
+{
+    // FIXME
+    VarExpr ve;
+    return ve;
+    /*
+    const std::string name = tl_metaname<T>();
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    T* v = (T*) luaL_checkudata(L, index, name.c_str());
+    if (!v) luaL_typerror(L, index, name.c_str());
+    T p = *v;
+    if (!p) {
+        char buf[100];
+        std::sprintf(buf, "NULL %s", name.c_str());
+        luaL_error(L, buf);
+    }
+    return p;
+    */
+}
+
+
 //----------------------------------------------------------------------!
 
 // Forces
@@ -367,7 +391,35 @@ static const luaL_reg Constraint_meta[] = {
 
 //----------------------------------------------------------------------!
 
-// Distributed
+// Shape enum
+
+template<> Shape tl_check<Shape>(lua_State *L, int argno)
+{
+    lua_pushliteral(L, "Shape");
+    lua_gettable(L, LUA_ENVIRONINDEX);
+
+    lua_pushvalue(L, argno);
+    lua_gettable(L, -2);
+    int val = lua_tonumber(L, -1);
+    if (lua_isnil(L, -1)) {
+        lua_pop(L, 1);
+        luaL_typerror(L, argno, "Shape");
+    }
+    return (Shape) val;
+}
+
+template<> void tl_push<Shape>(lua_State *L, Shape dd)
+{
+    lua_pushliteral(L, "Shape");
+    lua_gettable(L, LUA_ENVIRONINDEX);
+    lua_pushinteger(L, (int) dd);
+    lua_gettable(L, -2);
+}
+
+//----------------------------------------------------------------------!
+
+
+// Direction enum
 
 static int get_direction(lua_State *L, int argno)
 {
@@ -391,6 +443,10 @@ template<> void tl_push<Direction>(lua_State *L, Direction dd)
     lua_pushinteger(L, (int) dd);
     lua_gettable(L, -2);
 }
+
+//----------------------------------------------------------------------!
+
+// Distributed
 
 template<> std::string tl_metaname<Distributed>()
 {
@@ -461,6 +517,13 @@ static const luaL_reg Distributed_meta[] = {
 
 // Definitions
 
+struct DefnUdata
+{
+    lua_State *L;
+    int setup_ref;
+    int stress_ref;
+};
+
 template<> std::string tl_metaname<Definition>()
 {
     return "FElt.Definition";
@@ -473,6 +536,108 @@ static int Definition_tostring(lua_State *L)
     return 1;
 }
 
+static void push_mass_mode(lua_State *L, char mass_mode)
+{
+    if ('c' == mass_mode)
+        lua_pushliteral(L, "consistent");
+    else if ('l' == mass_mode)
+        lua_pushliteral(L, "lumped");
+    else {
+        assert(0 == mass_mode);
+        lua_pushnil(L);
+    }
+}
+
+static int setup_callback(Element ee, char mass_mode, int tangent)
+{
+    // get user pointer
+    DefnUdata *ud = (DefnUdata *) ee->definition->udata;
+    lua_State *L = ud->L;
+
+    // get function
+    lua_getref(L, ud->setup_ref);
+    
+    // setup arguments
+    tl_push<Element>(L, ee);
+    push_mass_mode(L, mass_mode);
+    lua_pushinteger(L, tangent);
+    
+    // call function + return
+    lua_call(L, 3, 1);
+    return lua_tointeger(L, -1);
+}
+
+static int stress_callback(Element ee)
+{
+    // get user pointer 
+    DefnUdata *ud = (DefnUdata *) ee->definition->udata;
+    lua_State *L = ud->L;
+    
+    // get function
+    lua_getref(L, ud->stress_ref);
+    
+    // setup args
+    tl_push<Element>(L, ee);
+    
+    // call function + return
+    lua_call(L, 1, 1);
+    return lua_tointeger(L, -1);
+}
+
+static int Definition_new(lua_State *L)
+{
+    const char *name = luaL_checkstring(L, 1);
+    luaL_checktype(L, 2, LUA_TFUNCTION);
+    luaL_checktype(L, 3, LUA_TFUNCTION);
+    Shape shape = tl_check<Shape>(L, 4);
+    int numnodes = luaL_checkint(L, 5);
+    int shapenodes = luaL_checkint(L, 6);
+    int numstresses = luaL_checkint(L, 7);
+    luaL_checktype(L, 8, LUA_TTABLE);
+    bool retainK = lua_toboolean(L, 9);
+    
+    Definition df = new definition;
+    df->name = strdup(name);
+    df->shape = shape;
+    df->numnodes = numnodes;
+    df->shapenodes = shapenodes;
+    df->numstresses = numstresses;
+    df->retainK = (unsigned) retainK;
+    
+    lua_pushvalue(L, 8);
+    for (int i = 1; i <= 6; i++) {
+        df->dofs[i] = 0;
+        lua_pushinteger(L, i);
+        lua_gettable(L, -2);
+        if (!lua_isnil(L, -1))
+            df->dofs[i] = lua_tointeger(L, -1);
+        lua_pop(L, 1);
+    }
+    
+    // setup udata & callbacks
+    DefnUdata *du = new DefnUdata;
+    du->L = L;
+    lua_pushvalue(L, 2);
+    du->setup_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+    lua_pushvalue(L, 3);
+    du->stress_ref = luaL_ref(L, LUA_REGISTRYINDEX);
+    df->setup = setup_callback;
+    df->stress = stress_callback;
+    df->udata = (void *) du;
+
+    tl_push<Definition>(L, df);
+    return 1;
+}
+
+static int Definition_gc(lua_State *L)
+{
+    Definition dd = tl_check<Definition>(L, 1);
+    DefnUdata *du = (DefnUdata *) dd->udata;
+    
+    //lua_unref(L, LUA_REGISTRYINDEX, du->setup_ref);
+    
+}
+
 static int Definition_get_dofs(lua_State *L)
 {
     Definition dd = tl_check<Definition>(L, 1);
@@ -481,20 +646,27 @@ static int Definition_get_dofs(lua_State *L)
 }
 
 #define GETTER(typ, field) tl_getter<Definition, typ, offsetof(struct definition, field)>
+#define SETTER(typ, field) tl_setter<Definition, typ, offsetof(struct definition, field)>
 #define GETTERN(typ, field, nn) tl_gettern<Definition, typ, offsetof(struct definition, field), nn>
 
 static const luaL_reg Definition_meta[] = {
     { "__tostring", Definition_tostring },
     { "__index", tl_index_wprop<Definition> },
+    { "__newindex", tl_newindex_wprop<Definition> },
     { "get_num_nodes",  GETTER(unsigned, numnodes) },
+    { "set_num_nodes",  SETTER(unsigned, numnodes) },
     { "get_shape_nodes",  GETTER(unsigned, shapenodes) },
+    { "set_shape_nodes",  SETTER(unsigned, shapenodes) },
     { "get_num_stresses",  GETTER(unsigned, numstresses) },
+    { "set_num_stresses",  SETTER(unsigned, numstresses) },
     { "get_retainK",  GETTER(unsigned, retainK) },
+    { "set_retainK",  SETTER(unsigned, retainK) },
     { "get_dofs", Definition_get_dofs },
     { 0, 0 }
 };
 
 #undef GETTER
+#undef SETTER
 #undef GETTERN
 
 //----------------------------------------------------------------------!
@@ -586,6 +758,39 @@ static const luaL_reg ProblemPtr_meta[] = {
 
 //----------------------------------------------------------------------!
 
+/*
+template<> std::string tl_metaname<DefnUdata>()
+{
+    return "FElt.DefnUdata";
+}
+*/
+
+
+int add_definition(lua_State *L)
+{
+    const char* name = luaL_checkstring(L, 1);
+    luaL_checktype(L, 2, LUA_TFUNCTION);
+    luaL_checktype(L, 3, LUA_TFUNCTION);
+
+
+
+
+    // alloc
+    Definition def = new definition;
+
+    return 0;
+}
+
+int remove_definition(lua_State *L)
+{
+    const char *name = luaL_checkstring(L, 1);
+    
+    //lua_unref(L, LUA_REGISTRYINDEX,
+
+}
+
+//----------------------------------------------------------------------!
+
 static int
 register_funs(lua_State *L, const char *tbl)
 {
@@ -612,6 +817,17 @@ register_funs(lua_State *L, const char *tbl)
     }
     lua_settable(L, -3);
 
+    // setup Shape enum
+    lua_pushliteral(L, "Shape");
+    lua_newtable(L);
+    {
+        int i = 1;
+        LUA_ENUM(L, Linear, i); i++;
+        LUA_ENUM(L, Planar, i); i++;
+        LUA_ENUM(L, Solid, i); i++;
+    }
+    lua_settable(L, -3);
+        
     // setup AnalysisType enum
     lua_pushliteral(L, "AnalysisType");
     lua_newtable(L);
@@ -634,6 +850,8 @@ register_funs(lua_State *L, const char *tbl)
         
     lua_replace(L, LUA_ENVIRONINDEX);
 
+    //tl_setup<DefnUdata>(L, NULL, NULL);
+    
     tl_setup<Definition>(L, Definition_meta, NULL);
     
     tl_setup<Node>(L, Node_meta, NULL);
@@ -651,6 +869,8 @@ register_funs(lua_State *L, const char *tbl)
     tl_setup<AnalysisPtr>(L, AnalysisPtr_meta, NULL);
     
     tl_setup<ProblemPtr>(L, ProblemPtr_meta, NULL);
+
+    tl_array_wrapper<unsigned>().registerm(L);
     
     tl_array_wrapper<Node>().registerm(L);
 
@@ -661,7 +881,7 @@ register_funs(lua_State *L, const char *tbl)
     tl_array_wrapper<VarExpr>().registerm(L);
 
     tl_array_wrapper<Distributed>().registerm(L);
-    
+
     // non-member functions
     luaL_register(L, tbl, felt_reg);
 

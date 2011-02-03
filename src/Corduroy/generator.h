@@ -28,6 +28,7 @@
 # define _GENERATOR_H
 # include "fe.h"
 # include "mesh.h"
+# include "geninput.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,7 +37,6 @@ extern "C" {
 /*----------------------------------------------------------------------*/
 
 typedef struct {
-    char     *filename;			/* file name			*/
     char     *material;			/* material name		*/
     char     *constraint;		/* constraint name		*/
     Line     *lines;			/* array of lines		*/
@@ -51,8 +51,6 @@ typedef struct {
     unsigned  num_quadgrids;		/* number of qgrid generators   */
     unsigned  num_brickgrids;		/* number of brick generators   */
     unsigned  num_trimeshes;		/* number of tri-meshes		*/
-    unsigned  line;			/* current line number		*/
-    unsigned  num_errors;		/* number of errors		*/
 } Generator;
 
 extern Generator generator;

@@ -59,7 +59,7 @@ std::string tl_metaname<Node>()
     return "FElt.Node";
 };
 
-static int Node_tostring (lua_State *L)
+static int Node_tostring(lua_State *L)
 {
     Node im = tl_check<Node>(L, 1);
     lua_pushfstring(L, "Node %d @ [%f, %f, %f]",
@@ -74,6 +74,32 @@ static int Node_get_eq_force(lua_State *L)
     return 1;
 }
 
+static int Node_new(lua_State *L)
+{
+    unsigned num = luaL_checkint(L, 1);
+    Node nn = CreateNode(num);
+    lua_pushlightuserdata(L, (void *) nn);
+    lua_pushboolean(L, 1);
+    lua_settable(L, LUA_ENVIRONINDEX);
+    tl_push<Node>(L, nn);
+    return 1;
+}
+
+static int Node_gc(lua_State *L)
+{
+    Node nn = tl_check<Node>(L, 1);
+    lua_pushlightuserdata(L, (void *) nn);
+    lua_gettable(L, LUA_ENVIRONINDEX);
+    if (!lua_isnil(L, -1)) {
+        lua_pushlightuserdata(L, (void *) nn);
+        lua_pushnil(L);
+        lua_settable(L, LUA_ENVIRONINDEX);
+        printf("Node_gc for Node @ %p\n", nn);
+        DestroyNode(nn);
+    }
+    return 0;
+}
+
 #define GETTER(typ, field) tl_getter<Node, typ, offsetof(struct node, field)>
 #define GETTERN(typ, field, nn) tl_gettern<Node, typ, offsetof(struct node, field), nn>
 
@@ -81,6 +107,7 @@ static const luaL_reg Node_meta[] = {
     { "__tostring", Node_tostring },
     { "__index", tl_index_wprop<Node> },
     { "__newindex", tl_newindex_wprop<Node> },
+    { "__gc", Node_gc },
     { "get_dx", GETTERN(double, dx[1], 6) },
     { "get_number", GETTER(unsigned, number) },
     { "get_x", GETTER(double, x) },
@@ -134,7 +161,7 @@ static const struct luaL_reg felt_reg[] = {
     {"felt", felt},
     {"pnodes", pnodes},
     {"pelements", pelements},
-
+    {"Node", Node_new},
     {NULL, NULL} /* sentinel */
 };
 

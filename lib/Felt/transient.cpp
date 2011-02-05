@@ -43,10 +43,8 @@
 int
 ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 {
-   Node		*node;
    Element	*element;
-   unsigned	numelts,
-		numnodes;
+   unsigned	numelts;
    unsigned	active;
    unsigned	*dofs;
    Vector	M, K, C;
@@ -71,10 +69,10 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 		err_count;
 
    active   = problem.num_dofs;
-   node     = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    element  = problem.elements;
    numelts  = problem.num_elements;
-   numnodes = problem.num_nodes;
+   const unsigned numnodes = problem.nodes.size();
    dofs     = problem.dofs_pos;
 
    err_count = 0;
@@ -273,9 +271,7 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 void
 AssembleTransientForce(double t, Vector F)
 {
-   Node		*node;
-   unsigned	numnodes,
-		active;
+   unsigned	active;
    unsigned	*dofs;
    unsigned	i,j,
 		base_dof;
@@ -283,8 +279,8 @@ AssembleTransientForce(double t, Vector F)
    double	force;
    double	factor;
 
-   node = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_num;
 
@@ -321,8 +317,6 @@ AssembleTransientForce(double t, Vector F)
 Matrix
 IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	count;
    unsigned	i,j;
    Matrix	dtable;
@@ -342,8 +336,8 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
    int		build_a0; 
    double	t;
 
-   node = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
    count = problem.num_dofs;
 
 	/*
@@ -372,7 +366,7 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 */
 
    nsteps = (analysis.stop + analysis.step/2.0) / analysis.step + 1.0;
-   dtable = CreateMatrix (nsteps, analysis.numnodes*analysis.numdofs);
+   dtable = CreateMatrix (nsteps, analysis.nodes.size()*analysis.numdofs);
 
 	/*
 	 * create the K' matrix
@@ -444,7 +438,7 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 * This is basically a copy of the code at the end of the loop.
 	 */
 
-   for (i = 1 ; i <= analysis.numnodes ; i++) {
+   for (i = 1 ; i <= analysis.nodes.size() ; i++) {
       for (j = 1 ; j <= analysis.numdofs ; j++) {
          MatrixData (dtable) [1][(i-1)*analysis.numdofs + j] = 
            sdata(d, GlobalDOF(analysis.nodes [i] -> number,analysis.dofs[j]),1);
@@ -524,7 +518,7 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 * into the displacement table
 	 */
 
-      for (i = 1 ; i <= analysis.numnodes ; i++) {
+      for (i = 1 ; i <= analysis.nodes.size() ; i++) {
          for (j = 1 ; j <= analysis.numdofs ; j++) {
             MatrixData (dtable) [step][(i-1)*analysis.numdofs + j] = 
                sdata(d, GlobalDOF(analysis.nodes [i] -> number,analysis.dofs[j]),1);
@@ -551,8 +545,6 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 Matrix
 IntegrateParabolicDE(Vector K, Vector M)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	count;
    unsigned	i, j;
    Matrix	dtable;
@@ -568,8 +560,8 @@ IntegrateParabolicDE(Vector K, Vector M)
    double	curr_time;
 
    count = problem.num_dofs;
-   node  = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
 
 	/*
 	 * a few constants that we will need
@@ -592,7 +584,7 @@ IntegrateParabolicDE(Vector K, Vector M)
 	 */
 
    nsteps = (analysis.stop + analysis.step/2.0) / analysis.step + 1.0;
-   dtable = CreateMatrix (nsteps, analysis.numnodes*analysis.numdofs);
+   dtable = CreateMatrix (nsteps, analysis.nodes.size()*analysis.numdofs);
 
 	/*
 	 * create the K' matrices and do a one time factorization.  We
@@ -625,7 +617,7 @@ IntegrateParabolicDE(Vector K, Vector M)
 	 * Copy the initial displacement vector into the table.
 	 */
 
-   for (i = 1 ; i <= analysis.numnodes ; i++) {
+   for (i = 1 ; i <= analysis.nodes.size() ; i++) {
       for (j = 1 ; j <= analysis.numdofs ; j++) {
          MatrixData (dtable) [1][(i-1)*analysis.numdofs + j] = 
            VectorData (d)[GlobalDOF (analysis.nodes [i] -> number,  analysis.dofs[j])];
@@ -689,7 +681,7 @@ IntegrateParabolicDE(Vector K, Vector M)
 
       CopyMatrix (d, F);	/* copy d(i+1) to d(i) for the next step */
 
-      for (i = 1 ; i <= analysis.numnodes ; i++) {
+      for (i = 1 ; i <= analysis.nodes.size() ; i++) {
          for (j = 1 ; j <= analysis.numdofs ; j++) {
             MatrixData (dtable) [step][(i-1)*analysis.numdofs + j] = 
               VectorData (d)[GlobalDOF (analysis.nodes [i] -> number,  analysis.dofs[j])];
@@ -715,8 +707,6 @@ IntegrateParabolicDE(Vector K, Vector M)
 int
 BuildHyperbolicIC(Vector d, Vector v, Vector a)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	active;
    unsigned	*dofs;
    unsigned	i,j,
@@ -724,9 +714,9 @@ BuildHyperbolicIC(Vector d, Vector v, Vector a)
    unsigned	size;
    int		build_a0;
 
-   numnodes = problem.num_nodes;
+   const unsigned numnodes = problem.nodes.size();
    active  = problem.num_dofs;
-   node = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    dofs = problem.dofs_num;
 
    size = numnodes*active;
@@ -767,20 +757,19 @@ void
 BuildParabolicIC(Vector d)
 {
    unsigned	*dofs;
-   Node		*node;
    unsigned	i,j,
 		base_dof;
    unsigned	size;
 
-   node = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    dofs = problem.dofs_num;
 
-   size = problem.num_nodes*problem.num_dofs;
+   size = problem.nodes.size()*problem.num_dofs;
 
    for (i = 1 ; i <= size ; i++) 
       VectorData (d) [i] = 0.0;
 
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (i = 1 ; i <= problem.nodes.size() ; i++) {
 
       base_dof = problem.num_dofs*(node[i] -> number - 1);
 
@@ -794,16 +783,14 @@ BuildParabolicIC(Vector d)
 cvector1i
 BuildConstraintMask(void)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	active;
    unsigned	*dofs;
    unsigned	i, j;
    unsigned	base_dof;
    int		numdofs;
 
-   node = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_num;
 
@@ -826,7 +813,6 @@ BuildConstraintMask(void)
 void
 ResolveBC(double t, Vector K, Vector F)
 {
-   Node		*node;
    unsigned	*dofs;
    unsigned	active;
    unsigned	i,j;
@@ -835,13 +821,13 @@ ResolveBC(double t, Vector K, Vector F)
    unsigned	numdofs;
    double	dx;
 
-   node = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    active = problem.num_dofs;
    dofs = problem.dofs_num;
 
-   numdofs = active*problem.num_nodes;
+   numdofs = active*problem.nodes.size();
 
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (i = 1 ; i <= problem.nodes.size() ; i++) {
       base_dof = active*(node[i] -> number - 1);
 
       for (j = 1 ; j <= active ; j++) {

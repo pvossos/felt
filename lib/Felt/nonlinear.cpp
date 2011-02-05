@@ -37,8 +37,7 @@ Matrix
 CreateNonlinearStiffness(int *status)
 {
    Element	*e;
-   unsigned	 ne,
-		 nn;
+   unsigned	 ne;
    unsigned	 active;
    unsigned	*dofs;
    unsigned	 row,
@@ -60,7 +59,7 @@ CreateNonlinearStiffness(int *status)
 
    e = problem.elements;
    ne = problem.num_elements;
-   nn = problem.num_nodes;
+   const unsigned nn = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
 
@@ -206,18 +205,16 @@ AssembleCurrentState(Matrix K, Matrix F, int tangent)
 int
 AssembleCurrentForce(Matrix F, Matrix Fnodal)
 {
-   Node		*node;
    unsigned	active;
-   unsigned	numnodes;
    unsigned	*dofs;
    unsigned	i,j,
 		base_dof;
    double	force;
 
-   node     = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    active   = problem.num_dofs;
    dofs     = problem.dofs_num;
-   numnodes = problem.num_nodes;
+   const unsigned numnodes = problem.nodes.size();
    
    for (i = 1 ; i <= numnodes ; i++) {
 
@@ -241,15 +238,14 @@ RestoreCoordinates(Matrix d)
 {
    int		base_dof;
    int		prob_dof;
-   Node	       *node;
    unsigned	active;
    unsigned    *dofs;
 
    active = problem.num_dofs;
    dofs   = problem.dofs_pos; 
-   node   = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
 
-   for (size_t i = 1 ; i <= problem.num_nodes ; i++) {
+   for (size_t i = 1 ; i <= problem.nodes.size(); i++) {
       base_dof = active*(node[i] -> number - 1);
       prob_dof = 1;
 
@@ -296,15 +292,14 @@ UpdateCoordinates(Matrix d)
 {
    int		base_dof;
    int		prob_dof;
-   Node	       *node;
    unsigned	active;
    unsigned    *dofs;
 
    active = problem.num_dofs;
    dofs   = problem.dofs_pos; 
-   node   = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
 
-   for (size_t i = 1 ; i <= problem.num_nodes ; i++) {
+   for (size_t i = 1 ; i <= problem.nodes.size() ; i++) {
       base_dof = active*(node[i] -> number - 1);
       prob_dof = 1;
       if (dofs [1]) {
@@ -421,7 +416,7 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
    num_cases = (fabs(analysis.stop - analysis.start) + 0.5*fabs(analysis.step))
                 / fabs(analysis.step) + 1;
 
-   dtable = CreateFullMatrix (num_cases, analysis.numdofs * analysis.numnodes);
+   dtable = CreateFullMatrix (num_cases, analysis.numdofs * analysis.nodes.size());
 
    n = Mrows(K);
 
@@ -491,7 +486,7 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
          AddMatrices (d_cum, d, d_cum);
       }
 
-      for (size_t k = 1 ; k <= analysis.numnodes ; k++) {
+      for (size_t k = 1 ; k <= analysis.nodes.size() ; k++) {
          for (size_t j = 1 ; j <= analysis.numdofs ; j++) {
             sdata(dtable, ca, (k-1)*analysis.numdofs + j) =
               mdata(d_cum, GlobalDOF (analysis.nodes [k] -> number, analysis.dofs[j]), 1);

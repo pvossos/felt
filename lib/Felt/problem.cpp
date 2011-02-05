@@ -369,21 +369,14 @@ resolve_names(void)
     struct node   n;
 
 
-    if (problem.num_nodes) {
-	if (!(problem.nodes = Allocate (Node, problem.num_nodes)))
-	    Fatal ("unable to allocate memory");
+    if (!problem.nodes.empty()) {
 
-	UnitOffset (problem.nodes);
-
-	for (i = 1; i <= problem.num_nodes; i ++)
-	    problem.nodes [i] = NULL;
-
-	TreeSetIterator (problem.node_tree, resolve_node);
-	TreeIterate (problem.node_tree);
-
-	for (i = 1; i <= problem.num_nodes; i ++)
-	    if (!problem.nodes [i])
-		error ("node %u is not defined", i);
+        TreeSetIterator (problem.node_tree, resolve_node);
+        TreeIterate (problem.node_tree);
+        
+        for (i = 1; i <= problem.nodes.size(); i ++)
+            if (!problem.nodes [i])
+                error ("node %u is not defined", i);
     }
 
     if (problem.num_elements) {
@@ -421,8 +414,8 @@ resolve_names(void)
 	 * resolve any node references given in the analysis parameters
 	 */
 
-    if (analysis.numnodes) {
-        for (i = 1 ; i <= analysis.numnodes ; i++) {
+    if (!analysis.nodes.empty()) {
+        for (i = 1 ; i <= analysis.nodes.size() ; i++) {
             n.number = (unsigned) analysis.nodes [i];
             analysis.nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
             if (analysis.nodes [i] == NULL)
@@ -486,12 +479,11 @@ ReadFeltFile(const char *filename)
     problem.mode	     = Static;
     problem.title	     = strdup ("");
     problem.num_dofs	     = 0;
-    problem.num_nodes	     = 0;
     problem.num_elements     = 0;
     problem.num_loadcases    = 0;
     problem.num_errors	     = 0;
     psource.line	     = 1;
-    problem.nodes	     = NULL;
+    problem.nodes.clear();
     problem.elements	     = NULL;
     problem.node_tree	     = TreeCreate (node_cmp);
     problem.element_tree     = TreeCreate (element_cmp);
@@ -522,8 +514,7 @@ ReadFeltFile(const char *filename)
     analysis.tolerance = 0.0;
     analysis.relaxation = 0.0;
     analysis.mass_mode = 0;
-    analysis.nodes     = NULL;
-    analysis.numnodes  = 0;
+    analysis.nodes.clear();
     analysis.numdofs   = 0;
     analysis.input_node = NULL;
     analysis.input_dof = 0;

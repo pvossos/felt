@@ -228,7 +228,7 @@ problem_parameter
 
 	| NODES_EQ INTEGER
 	    {
-		problem.num_nodes = $2;
+             problem.nodes.resize($2);
 	    }
 
 	| ELEMENTS_EQ INTEGER
@@ -289,12 +289,12 @@ node_definition
 node_number
 	: node_number_expression
 	    {
-		if ($1 < 1 || $1 > problem.num_nodes) {
-		    error ("node number %u is illegal", $1);
-		    node = &dummy_node;
-		    break;
-		}
-
+             if ($1 < 1 || $1 > problem.nodes.size()) {
+                  error ("node number %u is illegal", $1);
+                  node = &dummy_node;
+                  break;
+             }
+             
 		node = CreateNode ($1);
 		found = TreeInsert (problem.node_tree, node);
 
@@ -486,8 +486,8 @@ element_node_list
 element_node
 	: node_number_expression
 	    {
-		if ($1 > problem.num_nodes)
-		    error ("node number %u is illegal", $1);
+             if ($1 > problem.nodes.size())
+                  error ("node number %u is illegal", $1);
 	    }
 	;
 
@@ -761,8 +761,8 @@ value_pair_list
 value_pair
 	: '(' node_number_expression ',' constant_expression ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
 
 		$$.node = $2;
 		$$.magnitude = $4;
@@ -770,9 +770,9 @@ value_pair
 
 	| '(' node_number_expression constant_expression ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
-
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
+             
 		$$.node = $2;
 		$$.magnitude = $3;
 	    }
@@ -1192,8 +1192,8 @@ loadcase_pair_list
 loadcase_pair
 	: '(' node_number_expression ',' NAME ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
 
 		$$.noe = $2;
 		$$.fol = $4;
@@ -1201,8 +1201,8 @@ loadcase_pair
 
 	| '(' node_number_expression NAME ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
 
 		$$.noe = $2;
 		$$.fol = $3;
@@ -1298,13 +1298,9 @@ analysis_parameter
 		unsigned i;
 
 
-		analysis.numnodes = int_ptr - int_array;
+        analysis.nodes.resize(int_ptr - int_array);
 
-		if (!(analysis.nodes = Allocate (Node, analysis.numnodes)))
-		    Fatal ("unable to allocate memory for analysis nodes");
-
-		UnitOffset (analysis.nodes);
-		for (i = 1; i <= analysis.numnodes; i ++)
+		for (i = 1; i <= analysis.nodes.size(); i ++)
 		    analysis.nodes [i] = (Node) int_array [i - 1];
 	    }
 

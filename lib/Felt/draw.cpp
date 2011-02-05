@@ -115,9 +115,8 @@ void
 DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
 {
     unsigned	  i, j;
-    Node	 *n;
     Element	 *e;
-    unsigned	  nn, ne;
+    unsigned ne;
     int		  xs, ys;
     int		  xe, ye;
     double	  min_x, max_x;
@@ -126,9 +125,9 @@ DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
     int		  w, h;
     double	  ar;
 
-    n = problem.nodes;
+    const Node *n = problem.nodes.c_ptr1();
     e = problem.elements;
-    nn = problem.num_nodes;
+    const unsigned nn = problem.nodes.size();
     ne = problem.num_elements;
 
 	/*

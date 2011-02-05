@@ -233,8 +233,7 @@ typedef struct analysis {
     unsigned	iterations;		/* iteration count control      */
     unsigned	load_steps;		/* number of incremental steps  */
     char	mass_mode;		/* 'c'onsistent or 'l'umped	*/
-    Node       *nodes;			/* list of nodes of interest    */
-    unsigned	numnodes;		/* number of nodes of interest  */
+    cvector1<Node> nodes;			/* list of nodes of interest    */
     char	dofs [7];		/* dofs of interest		*/
     unsigned	numdofs;		/* number of dofs of interest	*/
     unsigned	input_dof;		/* input DOF # for range loads  */

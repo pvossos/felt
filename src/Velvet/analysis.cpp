@@ -818,14 +818,11 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
 	 * if there are new ones, make some room for them
 	 */
 
-    if (base + count > analysis.numnodes) {
-       analysis.numnodes = base + count;
-       ZeroOffset (analysis.nodes);
-       analysis.nodes = Reallocate (analysis.nodes, Node, analysis.numnodes);
-       UnitOffset (analysis.nodes);
+    if (base + count > analysis.nodes.size()) {
+        analysis.nodes.resize(base+count);
     }
-    else if (base + count < analysis.numnodes && base + count > 0)
-       analysis.numnodes = base + count;
+    else if (base + count < analysis.nodes.size() && base + count > 0)
+        analysis.nodes.resize(base+count);
 
 	/*	
  	 * update the nodes array 
@@ -848,7 +845,7 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
 	 */
 
     for (i = 0 ; i < 6 ; i++) {
-       if (base + i < analysis.numnodes)
+        if (base + i < analysis.nodes.size())
           sprintf (buffer,"%d", analysis.nodes[base+i+1] -> number);
        else
 	  buffer [0] = 0;

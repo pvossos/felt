@@ -26,6 +26,8 @@
 
 # ifndef _PROBLEM_H
 # define _PROBLEM_H
+
+# include "cvector1.hpp"
 # include "fe.h"
 # include "Tree.h"
 # include "appearance.h"
@@ -39,7 +41,7 @@
 typedef struct {
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
-    Node	*nodes;			/* array of nodes	   */
+    cvector1<Node> nodes;			/* array of nodes	   */
     Element	*elements;		/* array of elements	   */
     LoadCase	*loadcases;
     Tree	 definition_tree;	/* element defn tree	   */
@@ -53,7 +55,6 @@ typedef struct {
     unsigned	 dofs_pos [7];		/* global DOF position map */
     unsigned	 dofs_num [7];		/* global DOF number map   */
     unsigned	 num_dofs;		/* number of global DOF    */
-    unsigned	 num_nodes;		/* number of nodes	   */
     unsigned	 num_elements;		/* number of elements	   */
     unsigned	 num_loadcases;		/* number of load cases	   */
     unsigned	 num_errors;		/* number of errors	   */

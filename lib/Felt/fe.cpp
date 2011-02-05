@@ -95,8 +95,7 @@ Matrix
 ConstructStiffness(int *status)
 {
    Element	*element;
-   unsigned	numelts,
-		numnodes;
+   unsigned	numelts;
    unsigned	active;
    unsigned	*dofs;
    unsigned	row,
@@ -121,7 +120,7 @@ ConstructStiffness(int *status)
 
    element = problem.elements;
    numelts = problem.num_elements;
-   numnodes = problem.num_nodes;
+   const unsigned numnodes = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
 
@@ -272,9 +271,7 @@ ConstructStiffness(int *status)
 void
 RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond, Matrix *Ccond)
 {
-   Node		*node;
-   unsigned	numnodes,
-		active;
+    unsigned active;
    unsigned	*dofs;
    unsigned	orig_dofs;
    unsigned	new_dofs;
@@ -286,8 +283,8 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 		affected_dof,
 		base_dof;
 
-   numnodes = problem.num_nodes;
-   node     = problem.nodes;
+   const unsigned numnodes = problem.nodes.size();
+   const Node *node = problem.nodes.c_ptr1();
    active   = problem.num_dofs;
    dofs     = problem.dofs_num;
    
@@ -408,7 +405,6 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 void
 ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
 {
-   Node		*node;
    unsigned	active;
    unsigned	*dofs;
    Vector	Kcond;
@@ -417,7 +413,7 @@ ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
 		affected_dof,
 		base_dof;
 
-   node = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    active = problem.num_dofs;
    dofs = problem.dofs_num;
 
@@ -431,7 +427,7 @@ ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
    if (F != NULL)
       Fcond = CreateCopyMatrix (F);
    
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (i = 1 ; i <= problem.nodes.size(); i++) {
 
       base_dof = active*(node[i] -> number - 1);
 
@@ -510,9 +506,7 @@ ZeroCompactRowCol(Vector K, unsigned int dof)
 Vector
 ConstructForceVector(void)
 {
-   Node		*node;
    unsigned	active;
-   unsigned	numnodes;
    unsigned	*dofs;
    unsigned	i,j,
 		base_dof;
@@ -520,10 +514,10 @@ ConstructForceVector(void)
    double	force;
    Vector	F;
 
-   node     = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    active   = problem.num_dofs;
    dofs     = problem.dofs_num;
-   numnodes = problem.num_nodes;
+   const unsigned numnodes = problem.nodes.size();
    
    size = numnodes*active;
 
@@ -561,7 +555,7 @@ ClearNodes(void)
 {
    unsigned	i,j;
 
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (i = 1 ; i <= problem.nodes.size(); i++) {
       for (j = 1 ; j <= 6 ; j++) 
          problem.nodes [i] -> dx[j] = 0.0;
 
@@ -574,8 +568,6 @@ ClearNodes(void)
 int
 FactorStiffnessMatrix(Vector K)
 {
-   Node		*node;
-   unsigned      numnodes;
    unsigned	 active;
    unsigned	*dofs;
    unsigned	 i;
@@ -583,8 +575,8 @@ FactorStiffnessMatrix(Vector K)
 
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
-   node = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
 
    size = active*numnodes;
 
@@ -635,7 +627,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
    cvector1i mask     = BuildConstraintMask ( );
 
    dtable = CreateFullMatrix (problem.num_loadcases, 
-                              analysis.numnodes * analysis.numdofs);
+                              analysis.nodes.size() * analysis.numdofs);
 
    for (i = 1 ; i <= problem.num_loadcases ; i++) {
       lc = problem.loadcases [i];
@@ -661,7 +653,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
          return NullMatrix;
       }
 
-      for (k = 1 ; k <= analysis.numnodes ; k++) {
+      for (k = 1 ; k <= analysis.nodes.size() ; k++) {
          for (j = 1 ; j <= analysis.numdofs ; j++) {
             sdata(dtable, i, (k-1)*analysis.numdofs + j) =
               mdata(F, GlobalDOF (analysis.nodes [k] -> number, analysis.dofs[j]), 1);
@@ -690,7 +682,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
    num_cases = (fabs(analysis.stop - analysis.start) + 0.5*fabs(analysis.step)) 
                / fabs(analysis.step) + 1;
 
-   dtable = CreateFullMatrix (num_cases, analysis.numnodes * analysis.numdofs);
+   dtable = CreateFullMatrix (num_cases, analysis.nodes.size() * analysis.numdofs);
    
    input_pos = GlobalDOF (analysis.input_node -> number, analysis.input_dof);
 
@@ -710,7 +702,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
          return NullMatrix;
       }
 
-      for (k = 1 ; k <= analysis.numnodes ; k++) {
+      for (k = 1 ; k <= analysis.nodes.size() ; k++) {
          for (j = 1 ; j <= analysis.numdofs ; j++) {
             sdata(dtable, i, (k-1)*analysis.numdofs + j) =
               mdata(F, GlobalDOF (analysis.nodes [k] -> number, analysis.dofs[j]), 1);
@@ -759,15 +751,13 @@ ApplyNodalDisplacements(Matrix d)
    unsigned	i, j; 
    unsigned	base_dof;
    unsigned	prob_dof;
-   Node	       *node;
    unsigned    *dofs;
-   unsigned	numnodes; 
    unsigned	active;
 
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
-   node = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
 
    for (i = 1 ; i <= numnodes ; i++) {
       base_dof = active*(node[i] -> number - 1);
@@ -788,9 +778,7 @@ ApplyNodalDisplacements(Matrix d)
 cvector1<Reaction>
 SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
 {
-   Node		*node;
-   unsigned	numnodes,
-		active,
+   unsigned	active,
 		*dofs;
    unsigned	i,j,k,m,
 		affected_dof,
@@ -800,8 +788,8 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
    unsigned	address;
    double	sum;
 
-   node = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_num;
 
@@ -873,15 +861,13 @@ int
 ElementStresses(void)
 {
     Element	*e;
-    Node	*n;
     unsigned	 ne;
-    unsigned	 nn;
  
     e = problem.elements;
     ne = problem.num_elements;
-    n = problem.nodes;
-    nn = problem.num_nodes;
- 
+    const Node *n = problem.nodes.c_ptr1();
+    const unsigned nn = problem.nodes.size();
+    
     int status = 0;
 
     for (size_t i = 1 ; i <= ne ; i++)
@@ -911,10 +897,10 @@ CheckAnalysisParameters(AnalysisType mode)
    switch (mode) {
 
    case StaticLoadCases:
-      if (analysis.numnodes <= 0) {
-         error ("need to specify a node list for load cases w/static analysis");
-         count ++;
-      }
+       if (analysis.nodes.size() <= 0) {
+           error ("need to specify a node list for load cases w/static analysis");
+           count ++;
+       }
 
       if (analysis.numdofs <= 0) {
          error ("need to specify a DOF list for load cases w/static analysis");
@@ -923,10 +909,10 @@ CheckAnalysisParameters(AnalysisType mode)
       break;
 
    case StaticLoadRange:
-      if (analysis.numnodes == 0) {
-         error ("need to specify node list for load ranges w/static analysis");
-         count++;
-      }
+       if (analysis.nodes.empty()) {
+           error ("need to specify node list for load ranges w/static analysis");
+           count++;
+       }
 
       if (analysis.numdofs == 0) {
          error ("need to specify DOF list for load ranges w/static analysis");
@@ -990,9 +976,9 @@ CheckAnalysisParameters(AnalysisType mode)
          count++;
       }
 
-      if (analysis.numnodes == 0) {
-         error ("need to specify a node list for transient analysis");
-         count++;
+      if (analysis.nodes.empty()) {
+          error ("need to specify a node list for transient analysis");
+          count++;
       }
 
       if (analysis.numdofs == 0) {
@@ -1023,7 +1009,7 @@ CheckAnalysisParameters(AnalysisType mode)
          count++;
       }
 
-      if (analysis.numnodes == 0) {
+      if (analysis.nodes.empty()) {
          error ("need to specify an output node list for spectral analysis");
          count++;
       }
@@ -1051,7 +1037,7 @@ CheckAnalysisParameters(AnalysisType mode)
          count++;
       }
 
-      if (analysis.numnodes == 0) {
+      if (analysis.nodes.empty()) {
          error ("need to specify a node list for transient analysis");
          count++;
       }
@@ -1112,17 +1098,14 @@ LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_dof)
 cvector1<NodeDOF>
 FindForcedDOF()
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	*dofs;
    unsigned	active;
    unsigned	i, j;
    unsigned	n;
 
-   node     = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    active   = problem.num_dofs;
-   node     = problem.nodes;
-   numnodes = problem.num_nodes;
+   const unsigned numnodes = problem.nodes.size();
    dofs     = problem.dofs_num;
 
 	/*
@@ -1170,9 +1153,7 @@ FindForcedDOF()
 Matrix
 RemoveConstrainedMatrixDOF(Matrix a)
 {
-   Node		*node;
-   unsigned	numnodes,
-		active;
+   unsigned	active;
    unsigned	*dofs;
    unsigned	orig_dofs;
    unsigned	new_dofs;
@@ -1184,8 +1165,8 @@ RemoveConstrainedMatrixDOF(Matrix a)
 		affected_dof,
 		base_dof;
 
-   numnodes = problem.num_nodes;
-   node     = problem.nodes;
+   const unsigned numnodes = problem.nodes.size();
+   const Node *node = problem.nodes.c_ptr1();
    active   = problem.num_dofs;
    dofs     = problem.dofs_num;
    
@@ -1307,7 +1288,6 @@ RemoveConstrainedMatrixDOF(Matrix a)
 int
 ZeroConstrainedMatrixDOF(Matrix b, Matrix a)
 {
-   Node		*node;
    unsigned	active;
    unsigned	*dofs;
    unsigned	i,j,
@@ -1317,14 +1297,14 @@ ZeroConstrainedMatrixDOF(Matrix b, Matrix a)
    if (Mrows(a) != Mrows(b) || Mcols(a) != Mcols(b))
       return M_SIZEMISMATCH;
 
-   node = problem.nodes;
+   const Node *node = problem.nodes.c_ptr1();
    active = problem.num_dofs;
    dofs = problem.dofs_num;
 
    if (b != a)
       CopyMatrix (b, a);
 
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (i = 1 ; i <= problem.nodes.size(); i++) {
 
       base_dof = active*(node[i] -> number - 1);
 

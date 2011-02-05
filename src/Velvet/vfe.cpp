@@ -160,7 +160,7 @@ void DrawProblem (double z)
     ymin = 1;
     ymax = -1;
 
-    for (i = 1; i <= problem.num_nodes; i ++) {
+    for (i = 1; i <= problem.nodes.size(); i ++) {
 	n = problem.nodes [i];
 
 	if (n -> z == z)
@@ -179,8 +179,8 @@ void DrawProblem (double z)
 	    }
     }
 
-    if (xmin > xmax && problem.num_nodes)
-	error ("No nodes lie within the plane z = %g.", z);
+    if (xmin > xmax && !problem.nodes.empty())
+        error ("No nodes lie within the plane z = %g.", z);
 
 
     /* Expand the minimum and maximum a bit. */
@@ -328,9 +328,9 @@ void DrawProblem (double z)
 	if (problem.elements [i] != NULL)
          DrawElement (problem.elements [i]);
 
-    for (i = 1; i <= problem.num_nodes; i ++)
-	if (problem.nodes [i] != NULL)
-         DrawNode (problem.nodes [i]);
+    for (i = 1; i <= problem.nodes.size(); i ++)
+        if (problem.nodes [i] != NULL)
+            DrawNode (problem.nodes [i]);
 
     DrawDisplayList ( );
 

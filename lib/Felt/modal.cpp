@@ -154,8 +154,6 @@ ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
 Matrix
 ModalNodalDisplacements(Matrix x)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	*dofs;
    unsigned	numdofs;
    unsigned	i, m, n;
@@ -167,8 +165,8 @@ ModalNodalDisplacements(Matrix x)
    unsigned	rot_dofs [4];
    Matrix	d;
 
-   node     = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
    dofs     = problem.dofs_pos;
    numdofs  = problem.num_dofs;
 

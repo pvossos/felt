@@ -50,7 +50,7 @@ ConstructTFD(double t, double h, Vector dp)
   int            i;
     
   if (temp == NullMatrix) {
-     size= problem.num_nodes * problem.num_dofs; 
+      size= problem.nodes.size() * problem.num_dofs; 
      temp= CreateVector(size); 
   }
    
@@ -76,8 +76,6 @@ ConstructTFD(double t, double h, Vector dp)
 Matrix
 RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
 {
-  Node          *node;
-  unsigned      numnodes;
   unsigned      count, i,j;
   Matrix        dtable;
   Vector        y0, v0, a_dummy, p0, p0d; 
@@ -99,8 +97,8 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
   double        t;
      
 
-  node = problem.nodes;
-  numnodes = problem.num_nodes;
+  const Node *node = problem.nodes.c_ptr1();
+  const unsigned numnodes = problem.nodes.size();
   count = problem.num_dofs;
 
 
@@ -134,7 +132,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
          * create the table of nodal time displacements
          */
   nsteps= (analysis.stop + analysis.step/2.0) / analysis.step + 1.0;
-  dtable= CreateMatrix(nsteps, analysis.numnodes*analysis.numdofs);
+  dtable= CreateMatrix(nsteps, analysis.nodes.size()*analysis.numdofs);
   *ttable= CreateVector(nsteps); /* CHANGE: pn */ 
   
 
@@ -174,7 +172,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
          * Copy the initial displacement vector into the table.
          * This is basically a copy of the code at the end of the loop.
          */
-  for(i= 1; i<= analysis.numnodes; i++)
+  for(i= 1; i<= analysis.nodes.size(); i++)
     for(j= 1; j<= analysis.numdofs; j++)
       {
       MatrixData(dtable) [1][(i-1)*analysis.numdofs+ j] =
@@ -438,7 +436,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
          * copy the relevant parts of the displacement vector
          * into the displacement table
          */
-      for(i= 1; i<= analysis.numnodes; i++)
+      for(i= 1; i<= analysis.nodes.size(); i++)
         for(j= 1; j<= analysis.numdofs; j++)
           MatrixData(dtable)[step][(i-1)*analysis.numdofs+ j] =
                VectorData(y0)[GlobalDOF(analysis.nodes [i] -> number, analysis.dofs[j])];

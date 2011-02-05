@@ -406,7 +406,7 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
    cvector1<Matrix> H(numforced);
 
    for (i = 1 ; i <= numforced ; i++)
-      H [i] = CreateFullMatrix(nsteps, analysis.numdofs * analysis.numnodes);
+      H [i] = CreateFullMatrix(nsteps, analysis.numdofs * analysis.nodes.size());
 
    w = analysis.start;
    for (j = 1 ; j <= nsteps ; j++) {
@@ -423,7 +423,7 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
                     GlobalDOF(forced [input].node -> number, 
                               forced [input].dof));
 
-         for (i = 1 ; i <= analysis.numnodes ; i++) {
+         for (i = 1 ; i <= analysis.nodes.size() ; i++) {
             for (k = 1 ; k <= analysis.numdofs ; k++) {
                sdata(H [input], j, (i-1)*analysis.numdofs + k) = 
                   modulus(cmdata(Ht, GlobalDOF(analysis.nodes [i] -> number,
@@ -503,7 +503,7 @@ ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
 
    nsteps = (end - start + inc/2.0) / inc + 1.0;
 
-   So = CreateFullMatrix (nsteps, analysis.numnodes * analysis.numdofs);
+   So = CreateFullMatrix (nsteps, analysis.nodes.size() * analysis.numdofs);
    Si = CreateColumnVector (nsteps);
 
    ZeroMatrix (So);

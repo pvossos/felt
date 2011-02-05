@@ -549,13 +549,13 @@ WriteAnalysisParameters(void)
     else if (analysis.mass_mode == 'c')
 	fprintf (fp, "mass-mode=consistent\n");
 
-    if (analysis.numnodes > 0) {
+    if (!analysis.nodes.empty()) {
         fprintf (fp, "nodes=[");
-        for (i = 1; i <= analysis.numnodes; i ++)
-    	    if (i < analysis.numnodes)	
-	        fprintf (fp, "%d, ", analysis.nodes [i] -> number);
-	    else
-	        fprintf (fp, "%d]\n", analysis.nodes [i] -> number);
+        for (i = 1; i <= analysis.nodes.size(); i ++)
+    	    if (i < analysis.nodes.size())	
+                fprintf (fp, "%d, ", analysis.nodes [i] -> number);
+            else
+                fprintf (fp, "%d]\n", analysis.nodes [i] -> number);
     }
 
     if (analysis.numdofs > 0) {
@@ -727,7 +727,7 @@ WriteFile(char *flag)
     if (problem.title != NULL && strcmp (problem.title, ""))   
        fprintf (fp, "title=%s\n", Quote (problem.title));
 
-    fprintf (fp, "nodes=%u ", problem.num_nodes);
+    fprintf (fp, "nodes=%u ", problem.nodes.size());
     fprintf (fp, "elements=%u", problem.num_elements);
 
     if (problem.mode != Static)
@@ -758,11 +758,11 @@ WriteFile(char *flag)
     any_forces = 0;
     any_loads = 0;
 
-    if (problem.num_nodes) {
+    if (!problem.nodes.empty()) {
 	prev_node = NULL;
 	fprintf (fp, "\nnodes\n");
 
-	for (i = 1; i <= problem.num_nodes; i ++) {
+	for (i = 1; i <= problem.nodes.size(); i ++) {
 	    node = problem.nodes [i];
 	    WriteNode (node);
 	    prev_node = node;

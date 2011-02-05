@@ -270,7 +270,10 @@ else if (strncmp (element_name, "truss", 5) == 0) {
  * calculate the needet scale for thhe symbols
  *
  ***************************************************************/
-   for (i = 1  ; i <= problem.num_nodes ; i++) {
+
+   const unsigned numnodes = problem.nodes.size();
+
+   for (i = 1  ; i <= numnodes ; i++) {
    
      px[i-1] = problem.nodes [i] -> x;
      py[i-1] = problem.nodes [i] -> y;
@@ -279,22 +282,22 @@ else if (strncmp (element_name, "truss", 5) == 0) {
      forcey[i-1] = fabs(problem.nodes [i] -> force -> force [2].value);	  
      forcez[i-1] = fabs(problem.nodes [i] -> force -> force [3].value);	  
    }     
-       
-   qsort(px,problem.num_nodes,sizeof(double),dcomp);  
-   qsort(py,problem.num_nodes,sizeof(double),dcomp);  
-   qsort(pz,problem.num_nodes,sizeof(double),dcomp); 
-   qsort(forcex,problem.num_nodes,sizeof(double),dcomp);  
-   qsort(forcey,problem.num_nodes,sizeof(double),dcomp);  
-   qsort(forcez,problem.num_nodes,sizeof(double),dcomp); 
-   force[0]=forcex[problem.num_nodes-1]; 
-   force[1]=forcey[problem.num_nodes-1]; 
-   force[2]=forcez[problem.num_nodes-1]; 
+
+   qsort(px,numnodes,sizeof(double),dcomp);  
+   qsort(py,numnodes,sizeof(double),dcomp);  
+   qsort(pz,numnodes,sizeof(double),dcomp); 
+   qsort(forcex,numnodes,sizeof(double),dcomp);  
+   qsort(forcey,numnodes,sizeof(double),dcomp);  
+   qsort(forcez,numnodes,sizeof(double),dcomp); 
+   force[0]=forcex[numnodes-1]; 
+   force[1]=forcey[numnodes-1]; 
+   force[2]=forcez[numnodes-1]; 
    qsort(force,3,sizeof(double),dcomp);  
    fmax = force[2];
      
-   dx = px[0]-px[problem.num_nodes-1];
-   dy = py[0]-py[problem.num_nodes-1];
-   dz = pz[0]-pz[problem.num_nodes-1];
+   dx = px[0]-px[numnodes-1];
+   dy = py[0]-py[numnodes-1];
+   dz = pz[0]-pz[numnodes-1];
    
    scale = (sqrt ( dx*dx + dy*dy + dz*dz ))/10;
    
@@ -305,7 +308,7 @@ else if (strncmp (element_name, "truss", 5) == 0) {
  ***************************************************************/
     
    
-   for (i = 1 ; i <= problem.num_nodes ; i++) {
+   for (i = 1 ; i <= numnodes ; i++) {
      pnx = problem.nodes [i] -> x;
      pny = problem.nodes [i] -> y;
      pnz = problem.nodes [i] -> z;

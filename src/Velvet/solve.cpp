@@ -111,7 +111,6 @@ int SolveProblem (void)
 {
     unsigned	 numnodes;		/* total number of nodes	*/
     unsigned	 numelts;		/* total number of elements	*/
-    Node	*node;			/* the array of nodes		*/
     Element	*element;		/* array of elements		*/
     Matrix	 K,			/* global stiffness matrix	*/
 		 Kcond;			/* condensed stiffness matrix	*/
@@ -144,7 +143,7 @@ int SolveProblem (void)
 
     numnodes = CompactNodeNumbers ( );
     numelts  = CompactElementNumbers ( );
-    node     = problem.nodes;
+    const Node *node = problem.nodes.c_ptr1();
     element  = problem.elements;
 
     mode     = SetAnalysisMode ( );
@@ -671,20 +670,18 @@ int CompactNodeNumbers (void)
     unsigned		numnodes;
 
     numnodes = TreeSize (problem.node_tree);
-    if (numnodes == 0)
-       return problem.num_nodes = 0;
+    if (numnodes == 0) {
+        problem.nodes.clear();
+        return 0;
+    }
 
 	/*
 	 * build the array of _consecutive_ pointers to nodes by
 	 * creating new space for it and then iterating on the tree
 	 */
 
-    if (problem.nodes) {
-       ZeroOffset (problem.nodes); 
-       Deallocate (problem.nodes);
-    }
-    problem.nodes = Allocate (Node, numnodes);
-    UnitOffset (problem.nodes);
+    problem.nodes.clear();
+    problem.nodes.resize(numnodes);
 
     DW_SetAutoRedraw (drawing, False);
 
@@ -695,7 +692,7 @@ int CompactNodeNumbers (void)
     if (canvas -> node_numbers)
        DW_SetAutoRedraw (drawing, True);
 
-    return problem.num_nodes = numnodes;
+    return numnodes;
 }          
     
 int CompactElementNumbers (void)
@@ -749,9 +746,7 @@ void SetupAnimate (void)
     unsigned		numnodes, numelts;
     Matrix		dtable;
     cvector1u	old_numbers;
-    Node		*anodes;
     char		adofs [7];
-    unsigned		anumnodes;
     unsigned		anumdofs;
     double		z_plane;
     Boolean		draw3d;
@@ -792,11 +787,8 @@ void SetupAnimate (void)
     for (i = 1 ; i <= analysis.numdofs ; i++)
        adofs [i] = analysis.dofs [i];
 
-    anodes = analysis.nodes;
+    cvector1<Node> anodes = analysis.nodes;
     analysis.nodes = problem.nodes;
-
-    anumnodes = analysis.numnodes;
-    analysis.numnodes = numnodes;
 
     if (draw3d) {
        analysis.numdofs = 3;
@@ -830,17 +822,16 @@ void SetupAnimate (void)
        dtable = IntegrateHyperbolicDE (K, M, C);
 
        if (draw3d)
-          AnimateStructure3D (dtable, problem.nodes, problem.elements,
-                              numnodes, numelts);
+           AnimateStructure3D (dtable, problem.nodes.c_ptr1(), problem.elements,
+                               numnodes, numelts);
        else
-          AnimateStructure (dtable, problem.nodes, problem.elements,
-                            numnodes, numelts);
-
+           AnimateStructure (dtable, problem.nodes.c_ptr1(), problem.elements,
+                             numnodes, numelts);
+       
        RestoreProblemNodeNumbers(old_numbers);
     }
 
     analysis.nodes = anodes;
-    analysis.numnodes = anumnodes;
     analysis.numdofs = anumdofs;
 
     for (i = 1 ; i <= analysis.numdofs ; i++) 
@@ -951,7 +942,7 @@ void SetupDisplacements (Boolean build_arrays)
     }
     else {
         numelts = problem.num_elements;
-        numnodes = problem.num_nodes;
+        numnodes = problem.nodes.size();
     }
 
     if (numelts == 0 || numnodes == 0)
@@ -1004,12 +995,12 @@ void SetupModeShapes (Matrix phi, Matrix lambda)
     }
  
     if (draw3d)
-       DrawModeShapes3D (phi, lambda, problem.nodes, problem.elements, 
-                         problem.num_nodes, problem.num_elements);
+        DrawModeShapes3D (phi, lambda, problem.nodes.c_ptr1(), problem.elements, 
+                          problem.nodes.size(), problem.num_elements);
     else
-       DrawModeShapes (phi, lambda, problem.nodes, problem.elements, 
-                       problem.num_nodes, problem.num_elements);
-
+        DrawModeShapes (phi, lambda, problem.nodes.c_ptr1(), problem.elements, 
+                        problem.nodes.size(), problem.num_elements);
+    
     return;
 }
 

@@ -91,7 +91,7 @@ RestoreNodeNumbers(Node *node, const unsigned *old_numbers, unsigned int numnode
 void
 RestoreProblemNodeNumbers(const cvector1u &old)
 {
-    RestoreNodeNumbers(problem.nodes, old.c_ptr1(), problem.num_nodes);
+    RestoreNodeNumbers(problem.nodes.c_ptr1(), old.c_ptr1(), problem.nodes.size());
 }
 
 cvector1u
@@ -1079,9 +1079,9 @@ CheckReverse(int *bestbw, int *bestpf, unsigned *new_numbers, vector<cvector1u> 
 cvector1u
 RenumberProblemNodes()
 {
-    Node *node = problem.nodes;
+    Node *node = problem.nodes.c_ptr1();
     Element *element = problem.elements;
-    unsigned numnodes = problem.num_nodes;
+    unsigned numnodes = problem.nodes.size();
     unsigned numelts = problem.num_elements;
     cvector1u ret = RenumberNodes(node, element, numnodes, numelts);
     assert(ret.size() == numnodes);

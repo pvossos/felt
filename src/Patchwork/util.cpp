@@ -46,12 +46,10 @@ InitializeProblem(void)
 {
    ReadFeltFile (NULL);
 
-   problem.nodes = (Node *) malloc (sizeof (Node) * INITIAL_NODES);
+   problem.nodes.clear();
    problem.elements = (Element *) malloc (sizeof (Element) * INITIAL_ELEMENTS);
-   problem.nodes --;
    problem.elements --;
 
-   max_nodes = INITIAL_NODES;
    max_elements = INITIAL_ELEMENTS;
 
    return 0;
@@ -62,7 +60,7 @@ AddNode(double x, double y, double z, Constraint constraint, Force force)
 {
    Node		node;
 
-   node = CreateNode (++ problem.num_nodes);
+   node = CreateNode (problem.nodes.size()+1);
 
    node -> x = x;
    node -> y = y;
@@ -71,14 +69,7 @@ AddNode(double x, double y, double z, Constraint constraint, Force force)
    node -> force = force;
    node -> constraint = constraint;
 
-   if (problem.num_nodes > max_nodes) {
-      max_nodes += 50;
-      problem.nodes = (Node *) realloc (problem.nodes + 1, 
-                                        sizeof (Node) * max_nodes);
-      problem.nodes --;
-   }
-
-   problem.nodes [problem.num_nodes] = node;
+   problem.nodes.push_back(node);
 
    if (force) 
       TreeInsert (problem.force_tree, (Item) force);

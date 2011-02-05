@@ -60,9 +60,9 @@ void WriteWireframeFile (char *filename, double mag,
     zplane = e [1] -> node [1] -> z;
 
   
-    std::vector<cvector1c> adjacency(problem.num_nodes+1);
+    std::vector<cvector1c> adjacency(problem.nodes.size()+1);
    
-    for (i = 1 ; i <= problem.num_nodes ; i++)
+    for (i = 1 ; i <= problem.nodes.size() ; i++)
         adjacency[i] = cvector1c(i, 0);
 
     count = 0;
@@ -110,7 +110,7 @@ void WriteWireframeFile (char *filename, double mag,
         cnxtable[i] = cvector1<Node>(2);
 
     k = 1;
-    for (i = 1 ; i <= problem.num_nodes ; i++) {
+    for (i = 1 ; i <= problem.nodes.size() ; i++) {
        for (j = 1 ; j <= i ; j++) {
 
           if (adjacency [i][j]) {

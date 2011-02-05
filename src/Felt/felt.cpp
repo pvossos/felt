@@ -204,8 +204,8 @@ int main (int argc, char *argv[])
     if (debug) 
 	WriteFeltFile ("-");
 
-    if (problem.num_nodes == 0 || problem.num_elements == 0) 
-       Fatal ("nothing to do");
+    if (problem.nodes.empty() || problem.num_elements == 0) 
+        Fatal ("nothing to do");
 
     if (preview)
        DrawStructureASCII (stdout, 78, 22);

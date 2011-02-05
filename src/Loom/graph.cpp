@@ -44,7 +44,7 @@ void WriteLineGraph (Matrix d, const char *alt_title,
    if (fp == NULL)
       Fatal("temporary file error -> line graph");
 
-   numcurves = analysis.numdofs * analysis.numnodes;
+   numcurves = analysis.numdofs * analysis.nodes.size();
    numpoints = Mrows(d);
 
    if (problem.title == NULL || strcmp(problem.title, "") == 0)
@@ -56,7 +56,7 @@ void WriteLineGraph (Matrix d, const char *alt_title,
    fprintf(fp, "%s\n", ylabel);
    fprintf(fp, "%d\n", numcurves);
    fprintf(fp, "%d\n", numpoints);
-   for (i = 1 ; i <= analysis.numnodes ; i++) 
+   for (i = 1 ; i <= analysis.nodes.size() ; i++) 
       for (j = 1 ; j <= analysis.numdofs ; j++) 
          fprintf (fp, "%s (%d)\n", symbols [(int) analysis.dofs [j]], analysis.nodes [i] -> number);
 
@@ -89,7 +89,7 @@ void WriteLineGraphTransferFunctions (const Matrix *H, const NodeDOF *forced, un
    if (fp == NULL)
       Fatal("temporary file error -> line graph transfer function");
 
-   nn = analysis.numdofs * analysis.numnodes;
+   nn = analysis.numdofs * analysis.nodes.size();
    numcurves = nn * numforced;
    numpoints = Mrows(H [1]);
 
@@ -108,7 +108,7 @@ void WriteLineGraphTransferFunctions (const Matrix *H, const NodeDOF *forced, un
          fprintf (fp, "%s(%d)->%s(%d)\n",
                   symbols[idof], inode, 
                   symbols[(int) analysis.dofs[(j-1) % analysis.numdofs + 1]],
-                  analysis.nodes [(j-1) % analysis.numnodes + 1] -> number);
+                  analysis.nodes [(j-1) % analysis.nodes.size() + 1] -> number);
    }
 
    for (j = 1 ; j <= numpoints ; j++) {

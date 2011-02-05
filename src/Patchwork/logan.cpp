@@ -67,9 +67,9 @@ WriteLoganFile(char *name)
 
     if (strcmp (element_name, "truss") == 0) {
        fprintf (fp, "%s\n", problem.title);
-       fprintf (fp, "%d, %d\n", problem.num_elements, problem.num_nodes);
+       fprintf (fp, "%d, %d\n", problem.num_elements, problem.nodes.size());
 
-       for (i = 1 ; i <= problem.num_nodes ; i++) {
+       for (i = 1 ; i <= problem.nodes.size() ; i++) {
           fprintf (fp, "%d,%d,%d,%d,%g,%g,%g,", problem.nodes [i] -> number, 
                    problem.nodes [i] -> constraint -> constraint [1],
                    problem.nodes [i] -> constraint -> constraint [2], 
@@ -97,8 +97,8 @@ WriteLoganFile(char *name)
     else if (strcmp (element_name, "beam") == 0) {
        fprintf (fp, "1\n");
        fprintf (fp, "%s\n",problem.title);
-       fprintf (fp, "%d,%d\n", problem.num_elements,problem.num_nodes);
-       for (i = 1 ; i <= problem.num_nodes ; i++) {
+       fprintf (fp, "%d,%d\n", problem.num_elements,problem.nodes.size());
+       for (i = 1 ; i <= problem.nodes.size() ; i++) {
           fprintf (fp, "%d,%d,%d,%d,%g,%g,%g,", problem.nodes [i] -> number, 
              problem.nodes [i] -> constraint -> constraint [1],
              problem.nodes [i] -> constraint -> constraint [2], 
@@ -137,14 +137,14 @@ WriteLoganFile(char *name)
        else 
           code = 1;
 
-       fprintf (fp, "%d,%d,%d,%d,%d,0\n", problem.num_nodes, 
+       fprintf (fp, "%d,%d,%d,%d,%d,0\n", problem.nodes.size(), 
                                           problem.num_elements, 
                                           nummat, numst, code);
        fprintf (fp, "0,0\n");
        for (i = 0 ; i < nummat ; i++) 
           fprintf (fp, "%g,%g,%g,%g\n", material [i] -> E, material [i] -> nu, 
              material [i] -> rho, material [i] -> t);
-       for (i = 1 ; i <= problem.num_nodes ; i++) {
+       for (i = 1 ; i <= problem.nodes.size() ; i++) {
           code = GetKode (problem.nodes [i], &ulx, &vly);
           fprintf (fp, "%d,%d,%g,%g,%g,%g\n", problem.nodes [i] -> number, code, 
                    problem.nodes [i] -> x, problem.nodes [i] -> y, ulx, vly); 

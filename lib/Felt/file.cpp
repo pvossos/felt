@@ -479,19 +479,19 @@ WriteLoadCase(Item item)
 
    lc = (LoadCase) item;
 
-   fprintf (fp, "%s\n", lc -> name);
+   fprintf (fp, "%s\n", lc -> name.c_str());
 
-   if (lc -> numforces) {
+   if (!lc->forces.empty()) {
       fprintf (fp, "node-forces=");
-      for (i = 1 ; i <= lc -> numforces ; i++)
+      for (i = 1 ; i <= lc->forces.size(); i++)
          fprintf (fp, "(%d, %s) ", lc -> nodes [i] -> number, lc -> forces [i] -> name);
 
       fprintf (fp, "\n");
    }
 
-   if (lc -> numloads) {
+   if (!lc->loads.empty()) {
       fprintf (fp, "element-loads=");
-      for (i = 1 ; i <= lc -> numloads ; i++)
+      for (i = 1 ; i <= lc->loads.size(); i++)
          fprintf (fp, "(%d, %s) ", lc -> elements [i] -> number, lc -> loads [i] -> name);
 
       fprintf (fp, "\n");

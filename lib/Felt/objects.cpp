@@ -298,23 +298,10 @@ DestroyDistributed(Distributed distributed)
 }
 
 LoadCase
-CreateLoadCase(char *name)
+CreateLoadCase(const char *name)
 {
-    LoadCase	loadcase;
-
-
-    if (!(loadcase = AllocNew (struct loadcase)))
-	Fatal ("unable to allocate memory for new load case");
-
-    loadcase -> numforces = 0;
-    loadcase -> numloads  = 0;
-    loadcase -> nodes     = NULL;
-    loadcase -> elements  = NULL;
-    loadcase -> forces    = NULL;
-    loadcase -> loads     = NULL;
-
+    LoadCase loadcase = new struct loadcase;
     loadcase -> name = name;
-
     return loadcase;
 }
 
@@ -322,24 +309,7 @@ void
 DestroyLoadCase(LoadCase loadcase)
 {
     if (loadcase) {
-        if (loadcase -> forces) {
-	   ZeroOffset (loadcase -> forces);
-           Deallocate (loadcase -> forces);
-        }
-        if (loadcase -> loads) {
-	   ZeroOffset (loadcase -> loads); 
-           Deallocate (loadcase -> loads);
-        }
-        if (loadcase -> nodes) {
-	   ZeroOffset (loadcase -> nodes); 
-           Deallocate (loadcase -> nodes);
-        }
-        if (loadcase -> elements) {
-	   ZeroOffset (loadcase -> elements);
-           Deallocate (loadcase -> elements);
-        }
-
-	Deallocate (loadcase);
+        delete loadcase;
     }
 }
 

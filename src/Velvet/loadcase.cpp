@@ -24,6 +24,8 @@
  *		type definitions for the loadcase dialog box.		*
  ************************************************************************/
 
+# include <vector>
+# include <string>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -417,7 +419,7 @@ static int AppendLoadCaseName (Item item)
     if (dialog -> active == (LoadCase) item)
 	list_index = num_loadcases;
 
-    dialog -> loadcases [num_loadcases ++] = ((LoadCase) item) -> name;
+    dialog -> loadcases [num_loadcases ++] = XtNewString(((LoadCase) item) -> name.c_str());
     return 0;
 }
 
@@ -742,14 +744,14 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update all of the entries. */
 
-    SetTextString (loadcased -> name, active -> name);
+    SetTextString (loadcased -> name, active->name.c_str());
     
     loadcased -> node_base    = 0;
     loadcased -> element_base = 0;
-    loadcased -> num_forces = active -> numforces;
-    loadcased -> num_loads = active -> numloads;
+    loadcased -> num_forces = active->forces.size();
+    loadcased -> num_loads = active->loads.size();
     
-    for (i = 1 ; i <= active -> numforces ; i++) {
+    for (i = 1 ; i <= active->forces.size(); i++) {
         if (i <= 4) {
            sprintf (buffer, "%d", active -> nodes [i] -> number);
            SetTextString (loadcased -> node [i-1], buffer);
@@ -760,7 +762,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
         loadcased -> force_assignments [i - 1] = XtNewString (active -> forces [i] -> name);
     }
 
-    for (i = 1 ; i <= active -> numloads ; i++) {
+    for (i = 1 ; i <= active->loads.size(); i++) {
         if (i <= 4) {
            sprintf (buffer, "%d", active -> elements [i] -> number);
            SetTextString (loadcased -> element [i-1], buffer);
@@ -815,7 +817,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (loadcased -> name), 0);
 	SetFocus (loadcased -> name);
 	if (!loadcased -> new_copy)
-	    SetTextString (loadcased -> name, loadcased -> active -> name);
+	    SetTextString (loadcased -> name, loadcased->active->name.c_str());
 	else
 	    SetTextString (loadcased -> name, "");
 
@@ -825,12 +827,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new loadcase or new name as needed. */
 
 	if (loadcased -> new_copy)
-	    loadcased -> active = CreateLoadCase (XtNewString (dummy.name));
-	else if (strcmp (loadcased -> active -> name, dummy.name)) {
+	    loadcased -> active = CreateLoadCase(dummy.name.c_str());
+	else if (dummy.name != loadcased->active->name) {
             old.name = loadcased -> active -> name;
             TreeDelete (loadcased -> tree, &old);
-            XtFree (loadcased -> active -> name);
-            loadcased -> active -> name = XtNewString (dummy.name);
+            loadcased -> active -> name = dummy.name;
             TreeInsert (loadcased -> tree, loadcased -> active);
 	}
 
@@ -842,16 +843,13 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
 
         if (loadcased -> num_forces) {
-           active -> numforces = loadcased -> num_forces;
-
-           ZeroOffset (active -> nodes);   Deallocate (active -> nodes);
-           ZeroOffset (active -> forces);  Deallocate (active -> forces);
-           active -> nodes = Allocate(Node, loadcased -> num_forces);
-           active -> forces = Allocate(Force, loadcased -> num_forces);
-           UnitOffset (active -> nodes);
-           UnitOffset (active -> forces);
-
-           for (i = 1 ; i <= active -> numforces ; i++) {
+           active->nodes.clear();
+           active->nodes.resize(loadcased->num_forces);
+           
+           active->forces.clear();
+           active->forces.resize(loadcased->num_forces);
+           
+           for (i = 1 ; i <= active->forces.size(); i++) {
               n.number = loadcased -> node_assignments [i-1];                
               active -> nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
               if (active -> nodes [i] == NULL) {
@@ -869,16 +867,13 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         }
 
         if (loadcased -> num_loads) {
-           active -> numloads = loadcased -> num_loads;
+            active->loads.clear();
+            active->loads.resize(loadcased->num_loads);
+            
+            active->elements.clear();
+            active->elements.resize(loadcased->num_loads);
 
-           ZeroOffset (active -> elements);   Deallocate (active -> elements);
-           ZeroOffset (active -> loads);  Deallocate (active -> loads);
-           active -> elements = Allocate(Element, loadcased -> num_loads);
-           active -> loads = Allocate(Distributed, loadcased -> num_loads);
-           UnitOffset (active -> elements);
-           UnitOffset (active -> loads);
-
-           for (i = 1 ; i <= active -> numloads ; i++) {
+            for (i = 1 ; i <= active->loads.size(); i++) {
               e.number = loadcased -> element_assignments [i-1];                
               active -> elements [i] = (Element) TreeSearch (problem.element_tree, &e);
               if (active -> elements [i] == NULL) {
@@ -1409,6 +1404,11 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree,
     loadcased -> tree = tree;
     loadcased -> new_copy = False;
 
+    if (loadcased->loadcases != NULL) {
+        for (size_t i = 0; loadcased->loadcases[i]; i++)
+            XtFree(loadcased->loadcases[i]);
+    }
+    
     nbytes = (TreeSize (loadcased -> tree) + 1) * sizeof (String);
     loadcased -> loadcases = (String *) XtRealloc ((char *) loadcased -> loadcases, nbytes);
 

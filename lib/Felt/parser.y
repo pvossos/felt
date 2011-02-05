@@ -1137,14 +1137,9 @@ loadcase_parameter
 
 		size = case_ptr - case_array;
 
-		if (!(loadcase -> nodes = Allocate (Node, size)) ||
-                    !(loadcase -> forces = Allocate (Force, size)))
-		    Fatal ("unable to allocate memory for node case pairs");
-
-		UnitOffset (loadcase -> nodes);
-		UnitOffset (loadcase -> forces);
-		loadcase -> numforces = size;
-
+        loadcase->nodes.resize(size);
+        loadcase->forces.resize(size);
+        
 		for (i = 1; i <= size; i ++) {
 		    loadcase -> nodes [i] = (Node) case_array [i - 1].noe;
                     loadcase -> forces [i]   = (Force) case_array [i - 1].fol;
@@ -1162,14 +1157,9 @@ loadcase_parameter
 
 		size = case_ptr - case_array;
 
-		if (!(loadcase -> elements = Allocate (Element, size)) ||
-                    !(loadcase -> loads = Allocate (Distributed, size)))
-		    Fatal ("unable to allocate memory for element case pairs");
-
-		UnitOffset (loadcase -> elements);
-		UnitOffset (loadcase -> loads);
-		loadcase -> numloads = size;
-
+        loadcase->elements.resize(size);
+        loadcase->loads.resize(size);
+        
 		for (i = 1; i <= size; i ++) {
 		    loadcase -> elements [i] = (Element) case_array [i - 1].noe;
                     loadcase -> loads [i]   = (Distributed) case_array [i - 1].fol;

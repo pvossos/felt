@@ -137,7 +137,7 @@ void DestroyElement(Element element);
   CreateLoadCase creates and initializes a new load case structure.
   The name is assigned (not copied) and the array of values allocated.
 */
-LoadCase CreateLoadCase(char *name);
+LoadCase CreateLoadCase(const char *name);
 
 /*!
 DestroyLoadCase deallocates a load case structure.

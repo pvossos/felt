@@ -1231,7 +1231,7 @@ WriteLoadCaseTable(Matrix dtable, FILE *fp)
 	 */
 
       for (i = 1 ; i <= MatrixRows (dtable) ; i++) {
-         fprintf (fp,"%11s", problem.loadcases [i] -> name);
+          fprintf (fp,"%11s", problem.loadcases [i] -> name.c_str());
 
          number = 1;
          dof = start_dof;
@@ -1353,7 +1353,7 @@ PlotLoadCaseTable(Matrix dtable, FILE *fp)
          }
          fprintf (fp,"           %s\n",buffer1);
 
-         fprintf (fp,"%10s %67s\n", problem.loadcases [i] -> name, buffer);
+         fprintf (fp,"%10s %67s\n", problem.loadcases [i] -> name.c_str(), buffer);
          fprintf (fp,"           %s\n",buffer2);          
       }
       fprintf (fp, "\n");

@@ -163,7 +163,7 @@ constraint_cmp(Item c1, Item c2)
 static int 
 loadcase_cmp(Item lc1, Item lc2)
 {
-    return strcmp (((LoadCase) lc1) -> name, ((LoadCase) lc2) -> name);
+    return strcmp (((LoadCase) lc1) -> name.c_str(), ((LoadCase) lc2) -> name.c_str());
 }
 
 
@@ -315,32 +315,32 @@ resolve_loadcase(Item item)
     loadcase = (LoadCase) item;
     problem.loadcases [case_count] = loadcase;
 
-    for (i = 1 ; i <= loadcase -> numforces ; i++) {
+    for (i = 1 ; i <= loadcase->forces.size(); i++) {
        f.name = (char *) loadcase -> forces [i];
        n.number = (unsigned) loadcase -> nodes [i];
 
        loadcase -> nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
        if (!loadcase -> nodes [i])
-           error ("load case %s used undefined node %d", loadcase -> name, n.number);
+           error ("load case %s used undefined node %d", loadcase->name.c_str(), n.number);
 
        loadcase -> forces [i] = (Force) TreeSearch (problem.force_tree, &f);
        if (!loadcase -> forces [i])
-           error ("load case %s used undefined force %s", loadcase -> name, f.name);
+           error ("load case %s used undefined force %s", loadcase->name.c_str(), f.name);
 
        Deallocate (f.name);
     }
 
-    for (i = 1 ; i <= loadcase -> numloads ; i++) {
+    for (i = 1 ; i <= loadcase->loads.size(); i++) {
        l.name = (char *) loadcase -> loads [i];
        e.number = (unsigned) loadcase -> elements [i];
 
        loadcase -> elements [i] = (Element) TreeSearch (problem.element_tree, &e);
        if (!loadcase -> elements [i])
-           error ("load case %s used undefined element %d", loadcase -> name, e.number);
+           error ("load case %s used undefined element %d", loadcase->name.c_str(), e.number);
 
        loadcase -> loads [i] = (Distributed) TreeSearch (problem.distributed_tree, &f);
        if (!loadcase -> loads [i])
-           error ("load case %s used undefined load %s", loadcase -> name, l.name);
+           error ("load case %s used undefined load %s", loadcase->name.c_str(), l.name);
 
        Deallocate (l.name);
     }

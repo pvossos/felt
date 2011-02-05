@@ -27,6 +27,9 @@
 
 # ifndef _FE_H
 # define _FE_H
+
+# include <string>
+# include "cvector1.hpp"
 # include "code.h"
 # include "matrix.h"
 # include "inptypes.h"
@@ -205,13 +208,11 @@ struct NodeDOF {
 /* A Load Case */
 
 typedef struct loadcase {
-    char	*name;
-    unsigned	 numforces;
-    unsigned	 numloads;
-    Node	*nodes;
-    Element	*elements;
-    Force	*forces;
-    Distributed *loads;
+     std::string name;
+     cvector1<Node> nodes;
+     cvector1<Element> elements;
+     cvector1<Force> forces;
+     cvector1<Distributed> loads;
 } *LoadCase;
 
 

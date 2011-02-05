@@ -656,8 +656,8 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
       AddMatrices (F, F, Fbase);
 
       if (CroutBackSolveMatrix (K, F)) {
-         error ("could not back substitute for displacements in loadcase %s",
-                 lc -> name);
+          error ("could not back substitute for displacements in loadcase %s",
+                 lc->name.c_str());
          return NullMatrix;
       }
 
@@ -733,7 +733,7 @@ AssembleLoadCaseForce(Matrix F, LoadCase lc)
    active   = problem.num_dofs;
    dofs     = problem.dofs_num;
    
-   for (i = 1 ; i <= lc -> numforces ; i++) {
+   for (i = 1 ; i <= lc->forces.size(); i++) {
      
       base_dof = active*(lc -> nodes [i] -> number - 1);
 

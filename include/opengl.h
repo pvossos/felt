@@ -8,7 +8,7 @@ extern "C" {
 /*----------------------------------------------------------------------*/
 
 void CreateOpenGLShell(String name, String title, Boolean stress,
-                       int comp, Element *element, unsigned numelts, Boolean contour);
+                       int comp, const Element *element, unsigned numelts, Boolean contour);
 
 /*----------------------------------------------------------------------*/
 

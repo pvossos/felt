@@ -101,7 +101,7 @@ void DW_CacheDestroy (Cache cache)
    Description:	Looks up a named value in a cache.
  ************************************************************************/
 
-CacheData DW_CacheLookup (Cache cache, String name)
+CacheData DW_CacheLookup (Cache cache, const char *name)
 {
     unsigned  idx;
     CacheData ptr;
@@ -121,7 +121,7 @@ CacheData DW_CacheLookup (Cache cache, String name)
    Description:	Inserts a named value in a cache.
  ************************************************************************/
 
-CacheData DW_CacheInsert (Cache cache, String name, XtArgVal value)
+CacheData DW_CacheInsert (Cache cache, const char *name, XtArgVal value)
 {
     unsigned  idx;
     CacheData ptr;

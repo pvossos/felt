@@ -233,7 +233,7 @@ Boolean DW_SetAttributes (Widget gw, Figure fig, long unsigned int valuemask, Fi
 
 void DW_ClipBox (Figure fig, XRectangle *rect);
 
-Boolean DW_SetForeground (Widget gw, String name);
+Boolean DW_SetForeground (Widget gw, const char *name);
 
 Boolean DW_SetFont (Widget gw, String name);
 

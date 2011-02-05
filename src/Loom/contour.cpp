@@ -290,7 +290,10 @@ static unsigned char **LoadImage (float **z, int width, int height, unsigned cha
    return image;
 }
 
-static void PlotContourField (char *filename, Node *node, unsigned int numnodes, Element *element, unsigned int numelts, unsigned int nd, int component, int equalize, int plot_elt, int width, int height)
+static void PlotContourField (char *filename, 
+                              const Node *node, unsigned int numnodes, 
+                              const Element *element, unsigned int numelts,
+                              unsigned int nd, int component, int equalize, int plot_elt, int width, int height)
 {
    unsigned	i,j;
    unsigned	n;
@@ -482,7 +485,7 @@ static void PlotContourField (char *filename, Node *node, unsigned int numnodes,
    return;
 }  
 
-void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
+void PlotStressField (char *out, const Element *element, unsigned numelts, int comp,
                       int equalize, int plot_elt, int width, int height)
 {
    int		nd;
@@ -523,8 +526,8 @@ void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
                      equalize, plot_elt, width, height);
 }
 
-void PlotDisplacementField (char *out, Node *node, unsigned numnodes,
-                            Element *element, unsigned numelts, int comp, 
+void PlotDisplacementField (char *out, const Node *node, unsigned numnodes,
+                            const Element *element, unsigned numelts, int comp, 
                             int equalize, int plot_elt, int width, int height)
 {
    for (unsigned i = 1; i <= numelts ; i++) {

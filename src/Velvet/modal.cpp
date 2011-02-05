@@ -332,7 +332,7 @@ static void CreateModalShell (void)
    return; 
 }
 
-static void SetupArrays (Matrix phi, Element *element, unsigned int numelts, unsigned int numnodes)
+static void SetupArrays (Matrix phi, const Element *element, unsigned int numelts, unsigned int numnodes)
 {
    unsigned	i,j;
 
@@ -377,7 +377,7 @@ static void SetupArrays (Matrix phi, Element *element, unsigned int numelts, uns
 
 static int  	first_time = 1;
 
-void DrawModeShapes (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
+void DrawModeShapes (Matrix phi, Matrix lambda, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	x_max, x_min,
@@ -467,7 +467,7 @@ void DrawModeShapes (Matrix phi, Matrix lambda, Node *node, Element *element, un
    ChangeDisplayedMode (1);
 }
 
-void DrawModeShapes3D (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
+void DrawModeShapes3D (Matrix phi, Matrix lambda, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	maxX, minX, 

@@ -592,7 +592,7 @@ int DrawElement (Element element)
 }
 
 
-void MoveElement (Element element, Node *old_nodes)
+void MoveElement (Element element, const Node *old_nodes)
 {
     unsigned		i;
     unsigned		numnodes;

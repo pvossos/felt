@@ -58,7 +58,7 @@ static Material	   deleted_material;
  * Description:	Checks if the user want to proceed with a deletion.	*
  ************************************************************************/
 
-static int CheckOk (String object, String name)
+static int CheckOk (String object, const char *name)
 {
     String selected;
     char   title [64];

@@ -41,7 +41,7 @@
    Description:	Sets the cached color of the widget or a figure.
  ************************************************************************/
 
-static Boolean SetColor (DrawingWidget dw, CacheData *old_data, String name, Pixel *pixel)
+static Boolean SetColor (DrawingWidget dw, CacheData *old_data, const char *name, Pixel *pixel)
 {
     Display  *display;
     CacheData data;
@@ -422,7 +422,7 @@ Figure DW_DrawBitmap (Widget gw, float x, float y, Pixmap pixmap)
    Description:	Sets the foreground pixel value for drawing.
  ************************************************************************/
 
-Boolean DW_SetForeground (Widget gw, String name)
+Boolean DW_SetForeground (Widget gw, const char *name)
 {
     DrawingWidget dw;
 

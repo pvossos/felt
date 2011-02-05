@@ -136,7 +136,7 @@ void EditNodalMass (void);
 void EditNodeNumber (void);
 void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
-void MoveElement (Element element, Node *old_nodes);
+void MoveElement (Element element, const Node *old_nodes);
 void MoveNodeNumber (void);
 void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num);
 void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data);
@@ -209,7 +209,7 @@ void BackupOnePoint (Widget w, XEvent *event, String *params, Cardinal *num);
 
 void SetupAndSolve (void);
 void SetupAnimate (void);
-void AnimateStructure (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
+void AnimateStructure (Matrix dtable, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts);
 int  CompactNodeNumbers (void);
 int  CompactElementNumbers (void);
 int  SolveProblem (void);
@@ -232,12 +232,12 @@ void VelvetPlotSpectra(Matrix P, const char *xlabel, const char *ylabel, const c
 void VelvetPlotTransferFunctions(const Matrix *H, const struct NodeDOF *forced, unsigned int numforced, const char *xlabel, const char *ylabel, const char *alt_title);
 void VelvetPlotForce(Force force, char *quantity);
 void VelvetPlotLoadRange(Matrix dtable);
-void DrawModeShapes (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
-void DrawModeShapes3D (Matrix phi, Matrix lambda, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
-void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
+void DrawModeShapes (Matrix phi, Matrix lambda, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts);
+void DrawModeShapes3D (Matrix phi, Matrix lambda, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts);
+void PlotStressField (char *out, const Element *element, unsigned numelts, int comp,
                       int equalize, int plot_elt, int width, int height);
-void PlotDisplacementField (char *out, Node *node, unsigned numnodes,
-                            Element *element, unsigned numelts, int comp, 
+void PlotDisplacementField (char *out, const Node *node, unsigned numnodes,
+                            const Element *element, unsigned numelts, int comp, 
                             int equalize, int plot_elt, int width, int height);
 void SetupStresses (Boolean build_elt);
 void SetupDisplacements (Boolean build_arrays);
@@ -245,7 +245,7 @@ void SetupStructure (Boolean build_elt);
 void SetupModeShapes (Matrix phi, Matrix lambda);
 void VisualizeStructure (Element *element, unsigned int numelts);
 void VisualizeStructure3D (Element *element, unsigned int numelts);
-void AnimateStructure3D (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts);
+void AnimateStructure3D (Matrix dtable, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts);
 
 Widget
 CreateDrawingShell(String name, String title,

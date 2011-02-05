@@ -33,8 +33,8 @@
 # include "problem.h"
 # include "patchwork.h"
 
-Material *SetupMaterialArray    (Element *element, unsigned int numelts, int *nummat);
-int      CountSurfaceTractions  (Element *element, unsigned int numelts);
+Material *SetupMaterialArray    (const Element *element, unsigned int numelts, int *nummat);
+int      CountSurfaceTractions  (const Element *element, unsigned int numelts);
 int	 GetKode                (Node node, float *ulx, float *vly);
 
 int
@@ -234,7 +234,7 @@ int GetKode (Node node, float *ulx, float *vly)
    return code;
 } 
 
-Material *SetupMaterialArray (Element *element, unsigned int numelts, int *nummat)
+Material *SetupMaterialArray (const Element *element, unsigned int numelts, int *nummat)
 {
    unsigned	i,j,
 		count;
@@ -264,7 +264,7 @@ Material *SetupMaterialArray (Element *element, unsigned int numelts, int *numma
     return material;
 }
 
-int CountSurfaceTractions (Element *element, unsigned int numelts)
+int CountSurfaceTractions (const Element *element, unsigned int numelts)
 {
    unsigned	i, count;
 

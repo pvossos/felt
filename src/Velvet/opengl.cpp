@@ -463,7 +463,7 @@ static void HandleFocusEvent(Widget w, XtPointer client_data,
    RedrawFunction(inf -> mesa, (XtPointer) inf, NULL);
 }
    
-static void LoadResults(info *inf, Element *element, int numelts, float mag)
+static void LoadResults(info *inf, const Element *element, int numelts, float mag)
 {
    int		i, j, k, nd;
    int		epn;
@@ -559,7 +559,7 @@ static void LoadResults(info *inf, Element *element, int numelts, float mag)
    glEndList();
 }
 
-static void LoadContourResults(info *inf, Boolean stress, int comp, Element *element, int numelts)
+static void LoadContourResults(info *inf, Boolean stress, int comp, const Element *element, int numelts)
 {
    int		i, j, k, nd;
    int		epn;
@@ -726,7 +726,7 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
 }
 
 void CreateOpenGLShell(String name, String title, Boolean stress,
-                       int comp, Element *element, unsigned numelts, Boolean contour)
+                       int comp, const Element *element, unsigned numelts, Boolean contour)
 {
    static XVisualInfo  *vi = NULL;
    Widget               mesa, shell, layout, dismiss, save, toggle;

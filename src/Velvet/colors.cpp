@@ -316,7 +316,7 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
  *		color name						*
  ************************************************************************/
 
-static int FindColorIndex (ColorsDialog colorsd, String color)
+static int FindColorIndex (ColorsDialog colorsd, const char *color)
 {
    unsigned	i;
 

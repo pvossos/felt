@@ -110,6 +110,14 @@ public:
             N = n;
         }
 
+    // push back, extremely slow, optimize in future version
+    void push_back(const Value_T &val)
+        {
+            size_t prevN = N;
+            this->resize(prevN+1);
+            (*this)[prevN+1] = val;
+        }
+    
     // compatible interface with std::vector
     void clear()
         {

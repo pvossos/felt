@@ -573,7 +573,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     SetTextString (loadd -> name, active -> name);
 
     for (i = 1 ; i <= 4 ; i++) {
-       if (i <= active -> nvalues) {
+       if (i <= active -> value.size()) {
           sprintf (buffer, "%g", active -> value [i].magnitude);
           SetTextString (loadd -> magnitude[i-1], buffer);
 
@@ -682,12 +682,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
            }
         }
         
-        if (!loadd -> new_copy && count > loadd -> active -> nvalues) {
-	   loadd -> active -> nvalues = count;
-           ZeroOffset (loadd -> active -> value);
-	   XtFree ((char *) loadd -> active -> value);
-	   loadd -> active -> value = (Pair *) XtMalloc (sizeof (Pair) * count);
-           UnitOffset (loadd -> active -> value);
+        if (!loadd -> new_copy && count > loadd -> active -> value.size()) {
+            loadd->active->value.resize(count);
         }
 
 	/* Create a new load or new name as needed. */
@@ -712,7 +708,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         }
 
         active -> direction = GetRadioState (loadd);
-	active -> nvalues = count;
+        active -> value.resize(count);
         
 	if (loadd -> new_copy)
 	    TreeInsert (loadd -> tree, loadd -> active);

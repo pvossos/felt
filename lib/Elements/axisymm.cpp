@@ -324,7 +324,7 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 
    for (i = 1 ; i <= element -> numdistributed ; i++) {
 
-      if (element -> distributed[i] -> nvalues != 2) {
+      if (element -> distributed[i] -> value.size() != 2) {
          error ("load %s does not have 2 nodal values (element %d)",
                  element -> distributed[i] -> name, element -> number);
          count++;

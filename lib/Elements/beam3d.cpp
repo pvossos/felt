@@ -387,7 +387,7 @@ Beam3dEquivNodalForces(Element element, int *err_count)
 
    for (i = 1 ; i <= element -> numdistributed ; i++) {
 
-      if (element -> distributed[i] -> nvalues != 2) {
+      if (element -> distributed[i] -> value.size() != 2) {
          error ("beam3d elt %d must have 2 values for distributed load %s", 
                  element -> number, element -> distributed[i] -> name);
          count++;
@@ -399,7 +399,7 @@ Beam3dEquivNodalForces(Element element, int *err_count)
           count++;
       }
 
-      for (j = 1 ; j <= element -> distributed[i] -> nvalues ; j++) {
+      for (j = 1 ; j <= element -> distributed[i] -> value.size() ; j++) {
          if (element -> distributed[i] -> value[j].node < 1 || 
              element -> distributed[i] -> value[j].node > 2) {
 

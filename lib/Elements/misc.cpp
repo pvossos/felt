@@ -315,19 +315,8 @@ SetEquivalentForceMemory(Element element)
 	 */
 
     for (i = 1 ; i <= element -> definition -> numnodes ; i++) {
-        if (element -> node[i] -> eq_force == NULL) {
-            element -> node[i] -> eq_force = Allocate (double, 6); 
-
-            if (element -> node[i] -> eq_force == NULL)
-               Fatal ("allocation error setting equivalent force memory\n");
-
-	/*
-	 * make the array unit offset and initialize all entries to zero
-	 */
-
-            UnitOffset (element -> node[i] -> eq_force); 
-            for (j = 1 ; j <= 6 ; j++)
-                element -> node[i] -> eq_force[j] = 0.0;
+        if (element->node[i]->eq_force.empty()) {
+            element->node[i]->eq_force.resize(6, 0);
         }
     } 
 

@@ -725,11 +725,7 @@ load_parameter
 
 		size = pair_ptr - pair_array;
 
-		if (!(load -> value = Allocate (Pair, size)))
-		    Fatal ("unable to allocate memory for pairs");
-
-		UnitOffset (load -> value);
-		load -> nvalues = size;
+        load -> value.resize(size);
 
 		for (i = 1; i <= size; i ++)
 		    load -> value [i] = pair_array [i - 1];

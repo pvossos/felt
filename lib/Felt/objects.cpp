@@ -61,7 +61,7 @@ DestroyNode(Node node)
 {
     if (node) {
 	Deallocate (node -> aux);
-	Deallocate (node -> eq_force);
+    node->eq_force.clear();
 	Deallocate (node);
     }
 }
@@ -265,12 +265,8 @@ CreateDistributed(char *name, unsigned int nvalues)
     distributed -> color = NULL;
     distributed -> value = NULL;
 
-    if (nvalues && !(distributed -> value = Allocate (Pair, nvalues)))
-	Fatal ("unable to allocate memory values for new distributed");
-
     distributed -> name = name;
-    distributed -> nvalues = nvalues;
-    UnitOffset (distributed -> value);
+    distributed -> value.resize(nvalues);
 
     return distributed;
 }
@@ -279,8 +275,7 @@ void
 DestroyDistributed(Distributed distributed)
 {
     if (distributed) {
-	ZeroOffset (distributed -> value);
-	Deallocate (distributed -> value);
+        distributed->value.clear();
 	Deallocate (distributed -> name);
 	Deallocate (distributed -> color);
 	Deallocate (distributed -> aux);

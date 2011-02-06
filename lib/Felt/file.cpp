@@ -281,7 +281,7 @@ WriteLoad(Item item)
 
 	fprintf (fp, " direction=%s", direction_names [load -> direction]);
 
-	for (i = 1; i <= load -> nvalues; i ++) {
+	for (i = 1; i <= load -> value.size(); i ++) {
 	    fprintf (fp, i == 1 ? " values=" : " ");
 	    fprintf (fp, "(%u,", load -> value [i].node);
 	    fprintf (fp, "%g)", load -> value [i].magnitude);

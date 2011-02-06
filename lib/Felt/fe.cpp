@@ -535,7 +535,7 @@ ConstructForceVector(void)
             if (node[i] -> force -> force[dofs[j]].value) 
                force += node[i] -> force -> force[dofs[j]].value;
          }
-         if (node[i] -> eq_force != NULL) {
+         if (!node[i] -> eq_force.empty()) {
             if (node[i] -> eq_force[dofs[j]])
                force += node[i] -> eq_force[dofs[j]];
          }
@@ -555,7 +555,7 @@ ClearNodes(void)
       for (j = 1 ; j <= 6 ; j++) 
          problem.nodes [i] -> dx[j] = 0.0;
 
-      if (problem.nodes [i] -> eq_force != NULL)
+      if (!problem.nodes[i]->eq_force.empty())
          for (j = 1 ; j <= 6 ; j++)
             problem.nodes [i] -> eq_force[j] = 0.0;
    }
@@ -832,7 +832,7 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
                 reac[m].node = old_numbers [i];
 
             reac[m].dof = dofs[j];
-            if (node [i] -> eq_force != NULL)
+            if (!node[i]->eq_force.empty())
                sum -= node [i] -> eq_force [dofs[j]];
 
             reac[m++].force = sum; 

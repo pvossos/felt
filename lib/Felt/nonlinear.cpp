@@ -219,7 +219,7 @@ AssembleCurrentForce(Matrix F, Matrix Fnodal)
       for (j = 1 ; j <= active ; j++) {
          force = mdata(Fnodal, base_dof + j, 1); 
 
-         if (node[i] -> eq_force != NULL && node[i] -> eq_force[dofs[j]]) 
+         if (!node[i]->eq_force.empty() && node[i] -> eq_force[dofs[j]]) 
             force += node[i] -> eq_force[dofs[j]];
          
          sdata(F, base_dof + j, 1) = force;    

@@ -62,7 +62,7 @@ static int ScaleDistributed (Item item)
 {
    Distributed	d = (Distributed) item;
 
-   if (d -> nvalues > 2) 
+   if (d -> value.size() > 2) 
       error ("cannot convert distributed load %s (more than 2 values).", d -> name); 
    else {
       d -> value [1].magnitude *= mass;

@@ -105,8 +105,7 @@ typedef struct distributed {
     char     *name;			/* name of distributed load 	  */
     char     *color;			/* name of color to use in velvet */
     Direction direction;		/* direction of load        	  */
-    unsigned  nvalues;			/* number of values         	  */
-    Pair     *value;			/* nodes and magnitudes     	  */
+    cvector1<Pair> value;			/* nodes and magnitudes     	  */
 } *Distributed;
 
 
@@ -169,7 +168,7 @@ typedef struct node {
     Constraint constraint;		/* constrained degrees of freedom */
     Force      force;			/* force acting on node           */
     double     m;			/* lumped mass			  */
-    double    *eq_force;		/* equivalent force               */
+    cvector1<double> eq_force;		/* equivalent force               */
     double     dx [7];			/* displacement                   */
     double     x;			/* x coordinate                   */
     double     y;			/* y coordinate                   */

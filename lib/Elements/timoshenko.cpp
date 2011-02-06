@@ -609,7 +609,7 @@ EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
     }   
 
     for (i = 1; i <= element -> numdistributed; i++) {
-        if (element -> distributed[i] -> nvalues != 2) {
+        if (element -> distributed[i] -> value.size() != 2) {
             error ("Timoshenko beam element %d must have 2 values for load",
                    element -> number);
             count++;
@@ -635,7 +635,7 @@ EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
 	 * number 1 or 2)
 	 */
 
-        for (j = 1 ;j <= element -> distributed[i] -> nvalues; j++) {
+        for (j = 1 ;j <= element -> distributed[i] -> value.size(); j++) {
             if (element -> distributed[i] -> value[j].node < 1 ||
                 element -> distributed[i] -> value[j].node > 2) {
 

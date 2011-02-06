@@ -301,7 +301,7 @@ AssembleTransientForce(double t, Vector F)
             else if (node[i] -> force -> force[dofs[j]].value) 
                force += node[i] -> force -> force[dofs[j]].value;
          }
-         if (node[i] -> eq_force != NULL) {
+         if (!node[i]->eq_force.empty()) {
             if (node[i] -> eq_force[j])
                force += node[i] -> eq_force[dofs[j]];
          }

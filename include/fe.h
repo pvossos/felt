@@ -68,7 +68,7 @@ typedef struct stress {
     double  x;				/* x coordinate		  */
     double  y;				/* y coordinate		  */
     double  z;				/* z coordinate		  */
-    double *values;			/* computed stress values */
+    cvector1<double> values;			/* computed stress values */
 } *Stress;
 
 
@@ -173,7 +173,7 @@ typedef struct node {
     double     x;			/* x coordinate                   */
     double     y;			/* y coordinate                   */
     double     z;			/* z coordinate                   */
-    double    *stress;                  /* nodally averaged stress vector */
+    cvector1<double> stress;                  /* nodally averaged stress vector */
     int        numelts;			/* num of elts that use this node */
 } *Node;
 
@@ -191,7 +191,7 @@ typedef struct element {
     Definition  definition;		/* definition of element        */
     Distributed distributed [4];	/* distributed loads      	*/
     unsigned    numdistributed;		/* number of loads        	*/
-    Stress     *stress;			/* element stresses             */
+    cvector1<Stress> stress;			/* element stresses             */
     unsigned    ninteg;			/* number of integration points */
 } *Element;
 

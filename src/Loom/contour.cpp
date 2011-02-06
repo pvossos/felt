@@ -498,7 +498,7 @@ void PlotStressField (char *out, const Element *element, unsigned numelts, int c
           error ("cannot plot stresses for non-planar elements");
           return;
       }
-      if (element [i] -> stress == NULL) {
+      if (element [i] -> stress.empty()) {
          error ("could not get stresses for all elements");
         return;
       }

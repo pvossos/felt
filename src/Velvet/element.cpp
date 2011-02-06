@@ -1546,7 +1546,7 @@ void ElementDialogDisplay (ElementDialog eltd, Element element)
 	    eltd -> node_values [i - 1] = 0;
 
 
-    if (element -> ninteg == 0 || element -> stress == NULL)
+    if (element -> ninteg == 0 || element -> stress.empty())
 	SetLabelString (eltd -> stresses, "No stresses available");
     else {
 	count = 0;

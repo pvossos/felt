@@ -325,12 +325,12 @@ QuadElementStress(Element element, unsigned int type)
       element -> stress [i] -> values [5] = 0.0;
       element -> stress [i] -> values [6] = 0.0;
 
-      PrincipalStresses2D(element -> stress [i] -> values);
+      PrincipalStresses2D(element -> stress [i] -> values.c_ptr1());
    }
 
    for (i = 1 ; i <= numnodes ; i++) {
-      if (element -> node [i] -> stress == NULL)
-         AllocateNodalStress(element -> node [i]);
+       if (element -> node [i] -> stress.empty())
+           AllocateNodalStress(element -> node [i]);
 
       element -> node [i] -> numelts ++;
 

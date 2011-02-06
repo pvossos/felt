@@ -174,12 +174,12 @@ axisymmetricEltStress(Element element)
    element -> stress [1] -> values [5] = 0.0;
    element -> stress [1] -> values [6] = 0.0;
 
-   PrincipalStresses3D(element -> stress [1] -> values);
+   PrincipalStresses3D(element -> stress [1] -> values.c_ptr1());
 
    for (i = 1 ; i <= 3 ; i++) {
-      if (element -> node [i] -> stress == NULL) {
-         fprintf (stderr,"allocating stress array for node %d\n", element -> node [i] -> number);
-         AllocateNodalStress(element -> node [i]);
+       if (element -> node [i] -> stress.empty()) {
+           fprintf (stderr,"allocating stress array for node %d\n", element -> node [i] -> number);
+           AllocateNodalStress(element -> node [i]);
      }
 
       element -> node [i] -> numelts ++;

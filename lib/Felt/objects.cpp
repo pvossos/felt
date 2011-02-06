@@ -44,10 +44,10 @@ CreateNode(unsigned int number)
     node -> number     = number;
     node -> m          = 0.0;
     node -> force      = NULL;
-    node -> eq_force   = NULL;
+    node -> eq_force.clear();
     node -> constraint = NULL;
     node -> aux        = NULL;
-    node -> stress     = NULL;
+    node -> stress.clear();
     node -> numelts    = 0;
 
     for (i = 1; i <= 6; i ++)
@@ -60,9 +60,10 @@ void
 DestroyNode(Node node)
 {
     if (node) {
-	Deallocate (node -> aux);
-    node->eq_force.clear();
-	Deallocate (node);
+        Deallocate (node -> aux);
+        node->eq_force.clear();
+        node->stress.clear();
+        Deallocate (node);
     }
 }
 
@@ -107,14 +108,12 @@ DestroyElement(Element element)
 
     if (element) {
         for (i = 1; i <= element -> ninteg; i ++) {
-	    ZeroOffset (element -> stress [i] -> values);	
-	    Deallocate (element -> stress [i] -> values);		
-	    Deallocate (element -> stress [i]);
-	}
-	ZeroOffset (element -> stress);
-	Deallocate (element -> stress);
-	Deallocate (element -> aux);
-	Deallocate (element);
+            element->stress[i]->values.clear();
+            delete element->stress[i];
+        }
+        element->stress.clear();
+        Deallocate (element -> aux);
+        Deallocate (element);
     }
 }
 

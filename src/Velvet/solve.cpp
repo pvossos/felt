@@ -881,7 +881,7 @@ void SetupStresses (Boolean build_elt)
     nd = 0;
     flag = 1;
     for (i = 1; i <= numelts ; i++) {
-         if (e [i] -> node [1] -> stress == NULL) {
+        if (e [i] -> node [1] -> stress.empty()) {
             error ("could not get nodally averaged stresses for all elements");
             return;
          }

@@ -83,7 +83,7 @@ WriteStructuralResults(FILE *output, char *title, const cvector1<Reaction> &R)
     fprintf (output,"-------------------------------------------------------------------------------\n");
     for (i = 1; i <= numelts ; i++) {
         fprintf (output,"%3d: ", element[i] -> number);
-        if (element [i] -> ninteg == 0 || element[i] -> stress == NULL)
+        if (element [i] -> ninteg == 0 || element[i] -> stress.empty())
            fprintf (output,"  No stresses available for this element\n");
         else {
            count = 0;

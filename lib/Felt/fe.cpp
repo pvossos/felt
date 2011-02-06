@@ -871,7 +871,7 @@ ElementStresses(void)
 	 */
 
     for (size_t i = 1 ; i <= nn ; i++) {
-       if (n [i] -> stress && n [i] -> numelts) {
+        if (!n[i]->stress.empty() && n [i] -> numelts) {
           for (size_t j = 1 ; j <= 10 ; j++)
              n [i] -> stress [j] /= n [i] -> numelts;
        }

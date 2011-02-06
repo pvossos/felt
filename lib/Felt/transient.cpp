@@ -43,8 +43,6 @@
 int
 ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 {
-   Element	*element;
-   unsigned	numelts;
    unsigned	active;
    unsigned	*dofs;
    Vector	M, K, C;
@@ -70,8 +68,8 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
 
    active   = problem.num_dofs;
    const Node *node = problem.nodes.c_ptr1();
-   element  = problem.elements;
-   numelts  = problem.num_elements;
+   const Element *element = problem.elements.c_ptr1();
+   const unsigned numelts  = problem.elements.size();
    const unsigned numnodes = problem.nodes.size();
    dofs     = problem.dofs_pos;
 

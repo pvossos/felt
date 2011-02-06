@@ -324,7 +324,7 @@ void DrawProblem (double z)
 
     /* Draw the problem. */
 
-    for (i = 1; i <= problem.num_elements; i ++)
+    for (i = 1; i <= problem.elements.size(); i ++)
 	if (problem.elements [i] != NULL)
          DrawElement (problem.elements [i]);
 

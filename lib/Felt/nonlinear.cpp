@@ -36,8 +36,6 @@
 Matrix
 CreateNonlinearStiffness(int *status)
 {
-   Element	*e;
-   unsigned	 ne;
    unsigned	 active;
    unsigned	*dofs;
    unsigned	 row,
@@ -57,8 +55,8 @@ CreateNonlinearStiffness(int *status)
    Vector 	 K;
    int	 	 err_count;
 
-   e = problem.elements;
-   ne = problem.num_elements;
+   const Element *e = problem.elements.c_ptr1();
+   const unsigned ne = problem.elements.size();
    const unsigned nn = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
@@ -136,9 +134,7 @@ CreateNonlinearStiffness(int *status)
 int
 AssembleCurrentState(Matrix K, Matrix F, int tangent)
 {
-   Element	*element;
    Element	e;
-   unsigned	numelts;
    unsigned	active;
    unsigned	*dofs;
    unsigned	row, col;
@@ -150,8 +146,8 @@ AssembleCurrentState(Matrix K, Matrix F, int tangent)
    double	value;
    int	 	err;
 
-   element = problem.elements;
-   numelts = problem.num_elements;
+   const Element *element = problem.elements.c_ptr1();
+   const unsigned numelts = problem.elements.size();
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
 

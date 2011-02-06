@@ -42,8 +42,8 @@ typedef struct {
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
     cvector1<Node> nodes;			/* array of nodes	   */
-    Element	*elements;		/* array of elements	   */
-    LoadCase	*loadcases;
+    cvector1<Element> elements;		/* array of elements	   */
+    cvector1<LoadCase> loadcases;
     Tree	 definition_tree;	/* element defn tree	   */
     Tree	 node_tree;		/* node tree		   */
     Tree	 element_tree;		/* element tree		   */
@@ -55,8 +55,6 @@ typedef struct {
     unsigned	 dofs_pos [7];		/* global DOF position map */
     unsigned	 dofs_num [7];		/* global DOF number map   */
     unsigned	 num_dofs;		/* number of global DOF    */
-    unsigned	 num_elements;		/* number of elements	   */
-    unsigned	 num_loadcases;		/* number of load cases	   */
     unsigned	 num_errors;		/* number of errors	   */
 } Problem;
 

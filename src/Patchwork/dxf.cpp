@@ -148,7 +148,7 @@ int WriteDXFFile (char *name)
 
    WriteDXFHeader (fp);
 
-   for (j = 1 ; j <= problem.num_elements ; j++) {
+   for (j = 1 ; j <= problem.elements.size() ; j++) {
       e = problem.elements [j];
 
       switch (e -> definition -> shape) {

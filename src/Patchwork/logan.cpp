@@ -67,7 +67,7 @@ WriteLoganFile(char *name)
 
     if (strcmp (element_name, "truss") == 0) {
        fprintf (fp, "%s\n", problem.title);
-       fprintf (fp, "%d, %d\n", problem.num_elements, problem.nodes.size());
+       fprintf (fp, "%d, %d\n", problem.elements.size(), problem.nodes.size());
 
        for (i = 1 ; i <= problem.nodes.size() ; i++) {
           fprintf (fp, "%d,%d,%d,%d,%g,%g,%g,", problem.nodes [i] -> number, 
@@ -85,7 +85,7 @@ WriteLoganFile(char *name)
           else
              fprintf (fp, "0.0,0.0,0.0\n");
        }
-       for (i = 1 ; i <= problem.num_elements ; i++)
+       for (i = 1 ; i <= problem.elements.size() ; i++)
           fprintf (fp, "%d,%d,%d,%g,%g\n", problem.elements [i] -> number,
              problem.elements [i] -> node[1] -> number, 
              problem.elements [i] -> node[2] -> number,
@@ -97,7 +97,7 @@ WriteLoganFile(char *name)
     else if (strcmp (element_name, "beam") == 0) {
        fprintf (fp, "1\n");
        fprintf (fp, "%s\n",problem.title);
-       fprintf (fp, "%d,%d\n", problem.num_elements,problem.nodes.size());
+       fprintf (fp, "%d,%d\n", problem.elements.size(),problem.nodes.size());
        for (i = 1 ; i <= problem.nodes.size() ; i++) {
           fprintf (fp, "%d,%d,%d,%d,%g,%g,%g,", problem.nodes [i] -> number, 
              problem.nodes [i] -> constraint -> constraint [1],
@@ -114,7 +114,7 @@ WriteLoganFile(char *name)
           else
              fprintf (fp, "0.0,0.0,0.0\n");
        }
-       for (i = 1 ; i <= problem.num_elements ; i++)
+       for (i = 1 ; i <= problem.elements.size() ; i++)
           fprintf (fp, "%d,%d,%d,%g,%g,%g,%g,%g\n", 
              problem.elements [i] -> number,
              problem.elements [i] -> node[1] -> number, 
@@ -127,9 +127,9 @@ WriteLoganFile(char *name)
 
     }
     else if (strncmp (element_name, "CST", 3) == 0) {
-       material = SetupMaterialArray (problem.elements, 
-                                      problem.num_elements, &nummat);
-       numst = CountSurfaceTractions (problem.elements, problem.num_elements);
+       material = SetupMaterialArray (problem.elements.c_ptr1(), 
+                                      problem.elements.size(), &nummat);
+       numst = CountSurfaceTractions (problem.elements.c_ptr1(), problem.elements.size());
        fprintf (fp, "%s\n", problem.title);
 
        if (strcmp (element_name, "CSTPlaneStress") == 0)
@@ -138,7 +138,7 @@ WriteLoganFile(char *name)
           code = 1;
 
        fprintf (fp, "%d,%d,%d,%d,%d,0\n", problem.nodes.size(), 
-                                          problem.num_elements, 
+                                          problem.elements.size(), 
                                           nummat, numst, code);
        fprintf (fp, "0,0\n");
        for (i = 0 ; i < nummat ; i++) 
@@ -149,7 +149,7 @@ WriteLoganFile(char *name)
           fprintf (fp, "%d,%d,%g,%g,%g,%g\n", problem.nodes [i] -> number, code, 
                    problem.nodes [i] -> x, problem.nodes [i] -> y, ulx, vly); 
        }
-       for (i = 1 ; i <= problem.num_elements ; i++) {
+       for (i = 1 ; i <= problem.elements.size() ; i++) {
           for (j = 0 ; j < nummat ; j++) {
              if (problem.elements [i] -> material == material [j]) {
                 code = j+1;
@@ -163,7 +163,7 @@ WriteLoganFile(char *name)
              problem.elements [i] -> node[3] -> number, code);
        }
        if (numst > 0) {
-          for (i = 1 ; i <= problem.num_elements ; i++) {
+          for (i = 1 ; i <= problem.elements.size() ; i++) {
              if (problem.elements [i] -> numdistributed != 0) {
                 node1 = problem.elements[i] -> distributed [1] -> value[1].node;
                 node2 = problem.elements[i] -> distributed [1] -> value[2].node;

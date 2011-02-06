@@ -35,22 +35,13 @@
 # include "Tree.h"
 # include "patchwork.h"
 
-# define INITIAL_NODES		50
-# define INITIAL_ELEMENTS	50
-
-static int	max_nodes;
-static int	max_elements;
-
 int
 InitializeProblem(void)
 {
    ReadFeltFile (NULL);
 
    problem.nodes.clear();
-   problem.elements = (Element *) malloc (sizeof (Element) * INITIAL_ELEMENTS);
-   problem.elements --;
-
-   max_elements = INITIAL_ELEMENTS;
+   problem.elements.clear();
 
    return 0;
 }
@@ -87,7 +78,7 @@ AddElement(Definition defn, Node *nodes, Material material,
    unsigned	i;
    Element	element;
 
-   element = CreateElement (++ problem.num_elements, defn);
+   element = CreateElement (problem.elements.size()+1, defn);
    for (i = 1 ; i <= defn -> numnodes ; i++)
       element -> node [i] = nodes [i-1]; 
 
@@ -98,14 +89,7 @@ AddElement(Definition defn, Node *nodes, Material material,
       TreeInsert (problem.distributed_tree, distributed [i-1]);
    }
 
-   if (problem.num_elements > max_elements) {
-      max_elements += 50;
-      problem.elements = (Element *) realloc (problem.elements + 1, 
-                                        sizeof (Element) * max_elements);
-      problem.elements --;
-   }
-
-   problem.elements [problem.num_elements] = element;
+   problem.elements.push_back(element);
 
    if (material) 
       TreeInsert (problem.material_tree, (Item) material);

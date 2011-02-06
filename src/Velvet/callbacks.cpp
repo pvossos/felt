@@ -167,8 +167,8 @@ void ElementDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
     } else
 	for (i = 1; i <= numnodes; i ++)
 	    if (info -> original -> node [i] != info -> element -> node [i]) {
-		MoveElement (info -> element, info -> original -> node);
-		break;
+            MoveElement (info -> element, info -> original -> node.c_ptr1());
+            break;
 	    }
 
     changeflag = True;

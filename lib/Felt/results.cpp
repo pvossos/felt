@@ -53,16 +53,14 @@ void
 WriteStructuralResults(FILE *output, char *title, const cvector1<Reaction> &R)
 {
     FILE       *fd;
-    Element    *element;
-    unsigned	numelts;
     unsigned	i,j,k;
     unsigned	count;
     static const char	*dof_names [ ] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
 
-    element = problem.elements;
+    const Element *element = problem.elements.c_ptr1();
     const Node *node = problem.nodes.c_ptr1();
     const unsigned numnodes = problem.nodes.size();
-    numelts  = problem.num_elements;
+    const unsigned numelts  = problem.elements.size();
 
     fd = GetDetailStream( );
     if (fd)
@@ -918,8 +916,6 @@ PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced
 int
 WriteMaterialStatistics(FILE *output)
 {
-   Element	*element;
-   unsigned	numelts;
    unsigned	i,j,
  		num_materials,
 		number [50];
@@ -932,8 +928,8 @@ WriteMaterialStatistics(FILE *output)
 		l,v,a,
 		tot_mass;
 
-   element = problem.elements;
-   numelts = problem.num_elements;
+   const Element *element = problem.elements.c_ptr1();
+   const unsigned numelts = problem.elements.size();
 
    num_materials = 0;
    flag = 0;
@@ -1047,13 +1043,11 @@ WriteMaterialStatistics(FILE *output)
 int
 WriteGraphicsFile(char *filename, double mag)
 {
-   Element	*element;
-   unsigned	numelts;
    FILE		*output;
    unsigned	i,j;
 
-   numelts = problem.num_elements;
-   element = problem.elements;
+   const unsigned numelts = problem.elements.size();
+   const Element *element = problem.elements.c_ptr1();
 
    if ((output = fopen (filename, "w")) == NULL)
       return 1;

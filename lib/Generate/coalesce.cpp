@@ -172,11 +172,9 @@ CoalesceProblemNodes()
 {
     bool ret = false;
     const Node *prev = problem.nodes.c_ptr1();
-    cvector1<Element> pe(problem.elements, problem.num_elements);
-    cvector1<Node> rn = CoalesceNodes(problem.nodes, pe);
+    cvector1<Node> rn = CoalesceNodes(problem.nodes, problem.elements);
     bool samep = rn.c_ptr1() == prev;
     problem.nodes = rn;
-    pe.release1();
     return samep;
 }
 

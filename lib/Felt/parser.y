@@ -233,7 +233,7 @@ problem_parameter
 
 	| ELEMENTS_EQ INTEGER
 	    {
-		problem.num_elements = $2;
+             problem.elements.resize($2);
 	    }
 
 	| ANALYSIS_EQ ANALYSIS_TYPE
@@ -395,7 +395,7 @@ element_definition
 element_number
 	: element_number_expression
 	    {
-		if ($1 < 1 || $1 > problem.num_elements) {
+		if ($1 < 1 || $1 > problem.elements.size()) {
 		    error ("element number %u is illegal", $1);
 		    element = &dummy_element;
 		    break;

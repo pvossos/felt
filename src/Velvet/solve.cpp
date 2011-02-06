@@ -111,7 +111,6 @@ int SolveProblem (void)
 {
     unsigned	 numnodes;		/* total number of nodes	*/
     unsigned	 numelts;		/* total number of elements	*/
-    Element	*element;		/* array of elements		*/
     Matrix	 K,			/* global stiffness matrix	*/
 		 Kcond;			/* condensed stiffness matrix	*/
     Matrix	 M, C;
@@ -144,7 +143,7 @@ int SolveProblem (void)
     numnodes = CompactNodeNumbers ( );
     numelts  = CompactElementNumbers ( );
     const Node *node = problem.nodes.c_ptr1();
-    element  = problem.elements;
+    const Element *element = problem.elements.c_ptr1();
 
     mode     = SetAnalysisMode ( );
 
@@ -700,16 +699,13 @@ int CompactElementNumbers (void)
     unsigned		numelts;
 
     numelts = TreeSize (problem.element_tree);
-    if (numelts == 0) 
-       return problem.num_elements = 0;
-
-    if (problem.elements) {
-       ZeroOffset (problem.elements); 
-       Deallocate (problem.elements);
+    if (numelts == 0) {
+        problem.elements.clear();
+        return 0;
     }
 
-    problem.elements = Allocate (Element, numelts);
-    UnitOffset (problem.elements);
+    problem.elements.clear();
+    problem.elements.resize(numelts);
 
     DW_SetAutoRedraw (drawing, False);
 
@@ -720,7 +716,7 @@ int CompactElementNumbers (void)
     if (canvas -> element_numbers)
        DW_SetAutoRedraw (drawing, True);
 
-    return problem.num_elements = numelts;
+    return numelts;
 }
 
 void SetupAndSolve (void)
@@ -822,10 +818,10 @@ void SetupAnimate (void)
        dtable = IntegrateHyperbolicDE (K, M, C);
 
        if (draw3d)
-           AnimateStructure3D (dtable, problem.nodes.c_ptr1(), problem.elements,
+           AnimateStructure3D (dtable, problem.nodes.c_ptr1(), problem.elements.c_ptr1(),
                                numnodes, numelts);
        else
-           AnimateStructure (dtable, problem.nodes.c_ptr1(), problem.elements,
+           AnimateStructure (dtable, problem.nodes.c_ptr1(), problem.elements.c_ptr1(),
                              numnodes, numelts);
        
        RestoreProblemNodeNumbers(old_numbers);
@@ -854,7 +850,6 @@ void SetupAnimate (void)
 
 void SetupStresses (Boolean build_elt)
 {
-    Element    *e;
     unsigned	numelts;
     unsigned	nd,i,j;
     int		depth;
@@ -876,12 +871,12 @@ void SetupStresses (Boolean build_elt)
     if (build_elt) 
         numelts = CompactElementNumbers ( );
     else
-        numelts = problem.num_elements;
+        numelts = problem.elements.size();
 
     if (numelts == 0) 
        return;
 
-    e = problem.elements;
+    const Element *e = problem.elements.c_ptr1();
 
     nd = 0;
     flag = 1;
@@ -941,7 +936,7 @@ void SetupDisplacements (Boolean build_arrays)
         numnodes = CompactNodeNumbers ( );
     }
     else {
-        numelts = problem.num_elements;
+        numelts = problem.elements.size();
         numnodes = problem.nodes.size();
     }
 
@@ -964,7 +959,7 @@ void SetupDisplacements (Boolean build_arrays)
 
     SetWaitCursor (drawing);
     CreateOpenGLShell("displShell", "Displacement Plot", False,
-                      solution -> d_component, problem.elements, numelts, True);
+                      solution -> d_component, problem.elements.c_ptr1(), numelts, True);
     SetNormalCursor (drawing);
 
     return;
@@ -975,9 +970,8 @@ void SetupModeShapes (Matrix phi, Matrix lambda)
     unsigned	i,j;
     double	z_plane;
     Boolean	draw3d;
-    unsigned	numelts;
 
-    numelts = problem.num_elements;
+    const unsigned numelts = problem.elements.size();
 
     draw3d = False;
     z_plane = problem.elements[1] -> node[1] -> z;
@@ -995,11 +989,11 @@ void SetupModeShapes (Matrix phi, Matrix lambda)
     }
  
     if (draw3d)
-        DrawModeShapes3D (phi, lambda, problem.nodes.c_ptr1(), problem.elements, 
-                          problem.nodes.size(), problem.num_elements);
+        DrawModeShapes3D (phi, lambda, problem.nodes.c_ptr1(), problem.elements.c_ptr1(), 
+                          problem.nodes.size(), problem.elements.size());
     else
-        DrawModeShapes (phi, lambda, problem.nodes.c_ptr1(), problem.elements, 
-                        problem.nodes.size(), problem.num_elements);
+        DrawModeShapes (phi, lambda, problem.nodes.c_ptr1(), problem.elements.c_ptr1(), 
+                        problem.nodes.size(), problem.elements.size());
     
     return;
 }
@@ -1011,13 +1005,13 @@ void SetupStructure (Boolean build_elt)
     if (build_elt) 
        numelts = CompactElementNumbers ( );
     else
-       numelts = problem.num_elements;
+       numelts = problem.elements.size();
 
     if (numelts == 0)
        return;
 
     CreateOpenGLShell("structShell", "Structure Plot", False, 0,
-                      problem.elements, numelts, False);
+                      problem.elements.c_ptr1(), numelts, False);
 }
 
 void OptimizeNumbering (void)

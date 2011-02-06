@@ -1080,9 +1080,9 @@ cvector1u
 RenumberProblemNodes()
 {
     Node *node = problem.nodes.c_ptr1();
-    Element *element = problem.elements;
+    Element *element = problem.elements.c_ptr1();
     unsigned numnodes = problem.nodes.size();
-    unsigned numelts = problem.num_elements;
+    unsigned numelts = problem.elements.size();
     cvector1u ret = RenumberNodes(node, element, numnodes, numelts);
     assert(ret.size() == numnodes);
     return ret;

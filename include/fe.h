@@ -184,7 +184,7 @@ typedef struct node {
 typedef struct element {
     char       *aux;			/* auxillary data pointer 	*/
     unsigned    number;			/* element number         	*/
-    Node       *node;			/* array of nodes         	*/
+    cvector1<Node> node;			/* array of nodes         	*/
     Matrix      K;			/* stiffness matrix       	*/
     Matrix	M;			/* mass matrix			*/
     Matrix	f;			/* element residual force	*/

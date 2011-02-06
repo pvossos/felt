@@ -870,13 +870,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Copy the original element if necessary. */
 
     if (eltd -> active != NULL) {
-	original = *eltd -> active;
-	original.node = original_nodes;
-	for (i = 1; i <= eltd -> definition -> numnodes; i ++)
-	    original_nodes [i] = eltd -> active -> node [i];
+        original = *eltd -> active;
+        original.node = eltd -> active -> node;
     }
-
-
+    
     /* Retrieve the material. */
 
     m_dummy.name = GetTextString (eltd -> m_name);

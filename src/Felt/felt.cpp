@@ -204,7 +204,7 @@ int main (int argc, char *argv[])
     if (debug) 
 	WriteFeltFile ("-");
 
-    if (problem.nodes.empty() || problem.num_elements == 0) 
+    if (problem.nodes.empty() || problem.elements.empty()) 
         Fatal ("nothing to do");
 
     if (preview)

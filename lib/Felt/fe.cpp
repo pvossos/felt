@@ -45,8 +45,6 @@ extern "C" Matrix ZeroRowCol(Matrix K, unsigned int dof);
 int
 FindDOFS(void)
 {
-   Element	*e;
-   unsigned	ne;
    unsigned	i,
 		j;
    Definition	type,
@@ -54,8 +52,8 @@ FindDOFS(void)
    unsigned	flag[7];
    unsigned	count;
 
-   ne = problem.num_elements;
-   e = problem.elements;
+   const unsigned ne = problem.elements.size();
+   const Element *e = problem.elements.c_ptr1();
 
    for (i = 1 ; i <= 6 ; i++) {
       flag[i] = 0;
@@ -94,8 +92,6 @@ FindDOFS(void)
 Matrix
 ConstructStiffness(int *status)
 {
-   Element	*element;
-   unsigned	numelts;
    unsigned	active;
    unsigned	*dofs;
    unsigned	row,
@@ -118,8 +114,8 @@ ConstructStiffness(int *status)
    int	 	err,
 		err_count;
 
-   element = problem.elements;
-   numelts = problem.num_elements;
+   const Element *element = problem.elements.c_ptr1();
+   const unsigned numelts = problem.elements.size();
    const unsigned numnodes = problem.nodes.size();
    active = problem.num_dofs;
    dofs = problem.dofs_pos;
@@ -626,10 +622,10 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
 
    cvector1i mask     = BuildConstraintMask ( );
 
-   dtable = CreateFullMatrix (problem.num_loadcases, 
+   dtable = CreateFullMatrix (problem.loadcases.size(), 
                               analysis.nodes.size() * analysis.numdofs);
 
-   for (i = 1 ; i <= problem.num_loadcases ; i++) {
+   for (i = 1 ; i <= problem.loadcases.size() ; i++) {
       lc = problem.loadcases [i];
 
       ZeroMatrix (F);
@@ -860,11 +856,8 @@ ElementSetup(Element element, char mass_mode)
 int
 ElementStresses(void)
 {
-    Element	*e;
-    unsigned	 ne;
- 
-    e = problem.elements;
-    ne = problem.num_elements;
+    const Element *e = problem.elements.c_ptr1();
+    const unsigned ne = problem.elements.size();
     const Node *n = problem.nodes.c_ptr1();
     const unsigned nn = problem.nodes.size();
     

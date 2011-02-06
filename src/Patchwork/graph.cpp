@@ -120,7 +120,7 @@ int WriteGraphFile (char *filename)
       }
    }
 
-   for (i = 1 ; i <= problem.num_elements ; i++) {
+   for (i = 1 ; i <= problem.elements.size() ; i++) {
 
       e = problem.elements [i];
 

@@ -76,23 +76,16 @@ CreateElement(unsigned int number, Definition defn)
     if (!(element = AllocNew (struct element)))
 	Fatal ("unable to allocate memory for new element");
 
-    element -> node = NULL;
-
-    if (defn && !(element -> node = Allocate (Node, defn -> numnodes)))
-	Fatal ("unable to allocate memory for nodes of new element");
-
+    element->node.clear();
+    if (defn)
+        element->node.resize(defn->numnodes, NULL);
+    
     element -> K  	  = NullMatrix;
     element -> M	  = NullMatrix;
     element -> f	  = NullMatrix;
     element -> aux 	  = NULL;
     element -> number 	  = number;
     element -> definition = defn;
-
-    if (element -> node) {
-	UnitOffset (element -> node);
-	for (i = 1; i <= defn -> numnodes; i ++)
-	    element -> node [i] = NULL;
-    }
 
     element -> material = NULL;
     element -> numdistributed = 0;
@@ -120,8 +113,6 @@ DestroyElement(Element element)
 	}
 	ZeroOffset (element -> stress);
 	Deallocate (element -> stress);
-	ZeroOffset (element -> node);
-	Deallocate (element -> node);
 	Deallocate (element -> aux);
 	Deallocate (element);
     }

@@ -115,8 +115,6 @@ void
 DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
 {
     unsigned	  i, j;
-    Element	 *e;
-    unsigned ne;
     int		  xs, ys;
     int		  xe, ye;
     double	  min_x, max_x;
@@ -126,9 +124,9 @@ DrawStructureASCII(FILE *fp, unsigned cols, unsigned rows)
     double	  ar;
 
     const Node *n = problem.nodes.c_ptr1();
-    e = problem.elements;
+    const Element *e = problem.elements.c_ptr1();
     const unsigned nn = problem.nodes.size();
-    ne = problem.num_elements;
+    const unsigned ne = problem.elements.size();
 
 	/*
 	 * allocate the bitmap and clear it

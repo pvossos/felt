@@ -46,15 +46,13 @@ void WriteWireframeFile (char *filename, double mag,
     double	zplane;
     char	draw3d;
     unsigned    count;	
-    Element    *e;
-    unsigned    ne;
 
     fp = fopen(filename, "w");
     if (fp == NULL) 
        Fatal ("temporary file error -> wireframe");
 
-    ne = problem.num_elements;
-    e = problem.elements;
+    const unsigned ne = problem.elements.size();
+    const Element *e = problem.elements.c_ptr1();
 
     draw3d = 0;
     zplane = e [1] -> node [1] -> z;

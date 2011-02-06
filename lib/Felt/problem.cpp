@@ -379,31 +379,19 @@ resolve_names(void)
                 error ("node %u is not defined", i);
     }
 
-    if (problem.num_elements) {
-	if (!(problem.elements = Allocate (Element, problem.num_elements)))
-	    Fatal ("unable to allocate memory");
+    if (!problem.elements.empty()) {
 
-	UnitOffset (problem.elements);
+        TreeSetIterator (problem.element_tree, resolve_element);
+        TreeIterate (problem.element_tree);
 
-	for (i = 1; i <= problem.num_elements; i ++)
-	    problem.elements [i] = NULL;
-
-	TreeSetIterator (problem.element_tree, resolve_element);
-	TreeIterate (problem.element_tree);
-
-	for (i = 1; i <= problem.num_elements; i ++)
-	    if (!problem.elements [i])
-		error ("element %u is not defined", i);
+        for (i = 1; i <= problem.elements.size(); i ++)
+            if (!problem.elements [i])
+                error ("element %u is not defined", i);
     }
 
-    if ((problem.num_loadcases = TreeSize(problem.loadcase_tree))) {
-        if (!(problem.loadcases = Allocate (LoadCase, problem.num_loadcases)))
-            Fatal ("unable to allocate memory");
-
-        UnitOffset (problem.loadcases);
-
-        for (i = 1 ; i <= problem.num_loadcases ; i ++)
-            problem.loadcases [i] = NULL;
+    problem.loadcases.resize(TreeSize(problem.loadcase_tree), NULL);
+    
+    if (!problem.loadcases.empty()) {
 
         case_count = 1;
         TreeSetIterator (problem.loadcase_tree, resolve_loadcase);
@@ -479,12 +467,11 @@ ReadFeltFile(const char *filename)
     problem.mode	     = Static;
     problem.title	     = strdup ("");
     problem.num_dofs	     = 0;
-    problem.num_elements     = 0;
-    problem.num_loadcases    = 0;
+    problem.loadcases.clear();
     problem.num_errors	     = 0;
     psource.line	     = 1;
     problem.nodes.clear();
-    problem.elements	     = NULL;
+    problem.elements.clear();
     problem.node_tree	     = TreeCreate (node_cmp);
     problem.element_tree     = TreeCreate (element_cmp);
     problem.material_tree    = TreeCreate (material_cmp);
@@ -559,7 +546,7 @@ ReadFeltFile(const char *filename)
 AnalysisType
 SetAnalysisMode(void)
 {
-    if (problem.mode == Static && problem.num_loadcases > 0)
+    if (problem.mode == Static && problem.loadcases.size() > 0)
         return StaticLoadCases;
     else if (problem.mode == Static && 
              (analysis.input_node || analysis.input_dof))

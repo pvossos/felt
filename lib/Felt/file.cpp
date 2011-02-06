@@ -728,7 +728,7 @@ WriteFile(char *flag)
        fprintf (fp, "title=%s\n", Quote (problem.title));
 
     fprintf (fp, "nodes=%u ", problem.nodes.size());
-    fprintf (fp, "elements=%u", problem.num_elements);
+    fprintf (fp, "elements=%u", problem.elements.size());
 
     if (problem.mode != Static)
 	fprintf (fp, " analysis=%s", analysis_names [problem.mode]);
@@ -778,10 +778,10 @@ WriteFile(char *flag)
 
     /* Write the elements section marking referenced objects. */
 
-    if (problem.num_elements) {
+    if (!problem.elements.empty()) {
 	prev_element = NULL;
 
-	for (i = 1; i <= problem.num_elements; i ++) {
+	for (i = 1; i <= problem.elements.size(); i ++) {
 	    element = problem.elements [i];
 	    definition = element -> definition;
 

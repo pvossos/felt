@@ -188,15 +188,15 @@ int WriteOoglFile (char *filename)
    
 if (strncmp (element_name, "beam", 4) == 0) {
    fprintf (output,"{VECT\n");
-   fprintf (output,"%d %d 1\n",problem.num_elements,2*problem.num_elements);
+   fprintf (output,"%d %d 1\n",problem.elements.size(),2*problem.elements.size());
    fprintf (output,"\n");
-   for (i = 1 ; i <= problem.num_elements ; i++) fprintf (output,"2 ");
+   for (i = 1 ; i <= problem.elements.size() ; i++) fprintf (output,"2 ");
    fprintf (output,"\n");
    fprintf (output,"1 ");
-   for (i = 1 ; i <= problem.num_elements-1 ; i++) fprintf (output,"0 ");
+   for (i = 1 ; i <= problem.elements.size()-1 ; i++) fprintf (output,"0 ");
    fprintf (output,"\n\n");
 
-   for (i = 1 ; i <= problem.num_elements ; i++) {
+   for (i = 1 ; i <= problem.elements.size() ; i++) {
    
       e = problem.elements [i];
       
@@ -213,7 +213,7 @@ if (strncmp (element_name, "beam", 4) == 0) {
    fputs (color1,output);
 }
 else if (strncmp (element_name, "CST", 3) == 0) {      
-   for (i = 1 ; i <= problem.num_elements ; i++) {
+   for (i = 1 ; i <= problem.elements.size() ; i++) {
    fprintf (output,"{ QUAD  ");
     
       e = problem.elements [i];
@@ -230,7 +230,7 @@ else if (strncmp (element_name, "CST", 3) == 0) {
    }     
 }
 else if (strncmp (element_name, "quad", 4) == 0) {      
-   for (i = 1 ; i <= problem.num_elements ; i++) {
+   for (i = 1 ; i <= problem.elements.size() ; i++) {
    fprintf (output,"{ QUAD  ");
     
       e = problem.elements [i];
@@ -245,7 +245,7 @@ else if (strncmp (element_name, "quad", 4) == 0) {
    }     
 }
 else if (strncmp (element_name, "truss", 5) == 0) {      
-   for (i = 1 ; i <= problem.num_elements ; i++) {
+   for (i = 1 ; i <= problem.elements.size() ; i++) {
    fprintf (output,"{ VECT \n1 2 1\n2\n1\n\n");
     
       e = problem.elements [i];

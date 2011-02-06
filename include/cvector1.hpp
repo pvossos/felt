@@ -110,6 +110,15 @@ public:
             N = n;
         }
 
+    // resize + initialize
+    void resize(size_type n, const Value_T &init)
+        {
+            size_t prevN = N;
+            this->resize(n);
+            for (size_t i = prevN+1; i <= N; i++)
+                (*this)[i] = init;
+        }
+    
     // push back, extremely slow, optimize in future version
     void push_back(const Value_T &val)
         {

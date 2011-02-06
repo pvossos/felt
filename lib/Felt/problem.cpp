@@ -241,7 +241,7 @@ resolve_element(Item item)
     unsigned	       number;
     Tree	       tree;
     Element	       element;
-
+    char *buf;
 
     /* Store the element in the array. */
 
@@ -253,18 +253,16 @@ resolve_element(Item item)
 
     /* Resolve the material. */
 
-    tree = problem.material_tree;
-    m.name = (char *) element -> material;
+    m.name = element->material->name;
+    delete element->material;
 
     if (!m.name.empty()) {
-        element -> material = (Material) TreeSearch (tree, &m);
-        
-        if (!element -> material)
+        Problem::MaterialSet::iterator it = problem.material_set.find(&m);
+        if (it == problem.material_set.end())
             error ("element %u uses undefined material %s", number, m.name.c_str());
-        
-        m.name = "";
+        element->material = *it;
     } else
-	element -> material = &default_material;
+        element -> material = &default_material;
 
 
     /* Resolve the loads. */
@@ -475,7 +473,6 @@ ReadFeltFile(const char *filename)
     problem.elements.clear();
     problem.node_tree	     = TreeCreate (node_cmp);
     problem.element_tree     = TreeCreate (element_cmp);
-    problem.material_tree    = TreeCreate (material_cmp);
     problem.distributed_tree = TreeCreate (distributed_cmp);
     problem.force_tree	     = TreeCreate (force_cmp);
     problem.constraint_tree  = TreeCreate (constraint_cmp);

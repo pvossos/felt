@@ -24,6 +24,7 @@
  *		type definitions for the material dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -84,7 +85,7 @@ struct material_dialog {
     String        *materials;
     Material       active;
     Boolean        new_copy;
-    Tree           tree;
+    Problem::MaterialSet *tree;
 };
 
 static String labels [ ] = {
@@ -425,9 +426,9 @@ force. 'New' empties all fields. 'Copy' empties the name field only.";
  *		index of the active material is also set.		*
  ************************************************************************/
 
-static int AppendMaterialName (Item item)
+static int AppendMaterialName (Material item)
 {
-    if (dialog -> active == (Material) item)
+    if (dialog -> active == item)
 	list_index = num_materials;
 
     dialog -> materials [num_materials ++] = XtNewString(((Material) item) -> name.c_str());
@@ -486,7 +487,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 	    return;
 
 	dummy.name = info -> string;
-	materiald -> active = (Material) TreeSearch (materiald -> tree, &dummy);
+	materiald -> active = *materiald->tree->find(&dummy);
     }
 
     active = materiald -> active;
@@ -580,7 +581,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the material. */
 
     dummy.name = GetTextString (materiald -> name);
-    found = (Material) TreeSearch (materiald -> tree, &dummy);
+    Problem::MaterialSet::iterator it = materiald->tree->find(&dummy);
+    found = it != materiald->tree->end() ? *it : NULL;
     duplicate=found && (found != materiald -> active || materiald -> new_copy);
 
 
@@ -603,9 +605,9 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	    materiald -> active = CreateMaterial (dummy.name.c_str());
 	else if (strcmp (materiald -> active -> name.c_str(), dummy.name.c_str())) {
         old.name = materiald -> active -> name;
-        TreeDelete (materiald -> tree, &old);
+        materiald->tree->erase(&old);
         materiald->active->name = dummy.name;
-        TreeInsert (materiald -> tree, materiald -> active);
+        materiald->tree->insert(materiald->active);
 	}
 
 	active = materiald -> active;
@@ -628,7 +630,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	active -> c	= exptod (GetTextString (materiald -> c), NULL);
 
 	if (materiald -> new_copy)
-	    TreeInsert (materiald -> tree, materiald -> active);
+        materiald->tree->insert(materiald->active);
 
 	if (materiald -> callback != NULL) {
 	    w = materiald -> shell;
@@ -687,7 +689,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	TreeDelete (materiald -> tree, materiald -> active);
+    materiald->tree->erase(materiald->active);
 	DestroyMaterial (materiald -> active);
 	materiald -> active = NULL;
     }
@@ -1082,7 +1084,7 @@ void MaterialDialogDisplay (MaterialDialog materiald, Material material)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void MaterialDialogUpdate (MaterialDialog materiald, Tree tree)
+void MaterialDialogUpdate (MaterialDialog materiald, Problem::MaterialSet *tree)
 {
     Cardinal nbytes;
 
@@ -1093,7 +1095,7 @@ void MaterialDialogUpdate (MaterialDialog materiald, Tree tree)
 	tree = materiald -> tree;
 
     if (materiald -> active == NULL || tree != materiald -> tree)
-	materiald -> active = (Material) TreeMinimum (tree);
+        materiald -> active = *(tree->begin());
 
 
     /* Construct the array of material names. */
@@ -1104,12 +1106,11 @@ void MaterialDialogUpdate (MaterialDialog materiald, Tree tree)
     materiald -> tree = tree;
     materiald -> new_copy = False;
 
-    nbytes = (TreeSize (materiald -> tree) + 1) * sizeof (String);
+    nbytes = (materiald->tree->size() + 1) * sizeof (String);
     materiald -> materials = 
              (String *) XtRealloc ((char *) materiald -> materials, nbytes);
 
-    TreeSetIterator (materiald -> tree, AppendMaterialName);
-    TreeIterate (materiald -> tree);
+    std::for_each(materiald->tree->begin(), materiald->tree->end(), AppendMaterialName);
     materiald -> materials [num_materials] = NULL;
 
 

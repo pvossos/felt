@@ -24,6 +24,7 @@
  *		definitions for writing FElt files and objects.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <ctype.h>
 # include <string.h>
@@ -217,13 +218,8 @@ WriteElement(Element element)
  ************************************************************************/
 
 static int
-WriteMaterial(Item item)
+WriteMaterial(Material material)
 {
-    Material material;
-
-
-    material = (Material) item;
-
     if (material -> aux == mark_flag) {
 	fprintf (fp, "%s", Quote (material -> name.c_str()));
 
@@ -802,10 +798,9 @@ WriteFile(char *flag)
 
     /* Write the materials section. */
 
-    if (TreeSize (problem.material_tree) > 0) {
-	fprintf (fp, "\nmaterial properties\n");
-	TreeSetIterator (problem.material_tree, WriteMaterial);
-	TreeIterate (problem.material_tree);
+    if (!problem.material_set.empty()) {
+        fprintf (fp, "\nmaterial properties\n");
+        std::for_each(problem.material_set.begin(), problem.material_set.end(), WriteMaterial);
     }
 
 

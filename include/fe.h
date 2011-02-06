@@ -97,6 +97,13 @@ typedef struct definition {
     unsigned retainK;		/* retain element K after assemblage  */
 } *Definition;
 
+struct LtDefinition
+{
+     bool operator()(const Definition a, const Definition b) const
+          {
+               return strcmp(a->name,b->name) < 0;
+          }
+};
 
 /* A distributed load */
 
@@ -158,6 +165,14 @@ typedef struct material {
     double Kz;				/* conductivity in z direction      */
     double c;				/* heat capacity		    */
 } *Material;
+
+struct LtMaterial
+{
+     bool operator()(const Material a, const Material b) const
+          {
+               return a->name < b->name;
+          }
+};
 
 
 /* A node */

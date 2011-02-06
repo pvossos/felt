@@ -27,6 +27,8 @@
 # ifndef _PROBLEM_H
 # define _PROBLEM_H
 
+# include <vector>
+# include <set>
 # include "cvector1.hpp"
 # include "fe.h"
 # include "Tree.h"
@@ -37,17 +39,19 @@
 
 # define MaxNodesPerElement 32
 
-
 typedef struct {
+    typedef std::set<Definition, LtDefinition> DefinitionSet;
+    typedef std::set<Material, LtMaterial> MaterialSet;
+     
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
     cvector1<Node> nodes;			/* array of nodes	   */
     cvector1<Element> elements;		/* array of elements	   */
     cvector1<LoadCase> loadcases;
-    Tree	 definition_tree;	/* element defn tree	   */
+    DefinitionSet definition_set;
     Tree	 node_tree;		/* node tree		   */
     Tree	 element_tree;		/* element tree		   */
-    Tree	 material_tree;		/* material tree	   */
+    MaterialSet material_set;
     Tree	 distributed_tree;	/* distributed load tree   */
     Tree	 force_tree;		/* force tree		   */
     Tree	 constraint_tree;	/* constraint tree	   */

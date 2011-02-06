@@ -24,6 +24,7 @@
  *		visualization of the finite element structures.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <X11/Intrinsic.h>
@@ -350,7 +351,7 @@ void DrawProblem (double z)
  * Description:	Destroy the current problem invocation.			*
  ************************************************************************/
 
-void DestroyProblem (ItemDestructor material_op)
+void DestroyProblem (MaterialDestructor material_op)
 {
     (void) TreeSetDestructor (problem.node_tree, (ItemDestructor)
 		DestroyNode);
@@ -364,9 +365,9 @@ void DestroyProblem (ItemDestructor material_op)
 		DestroyForce);
     (void) TreeDestroy (problem.force_tree);
 
-    (void) TreeSetDestructor (problem.material_tree, (ItemDestructor)
-		material_op);
-    (void) TreeDestroy (problem.material_tree);
+    if (material_op)
+        std::for_each(problem.material_set.begin(), problem.material_set.end(), material_op);
+    problem.material_set.clear();
 
     (void) TreeSetDestructor (problem.constraint_tree, (ItemDestructor)
 		DestroyConstraint);

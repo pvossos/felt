@@ -26,6 +26,7 @@
  *
  ****************************************************************************/
 
+# include <algorithm>
 # include "problem.h"
 # include "error.h"
 # include "yardstick.h"
@@ -38,10 +39,8 @@ static double	density;
 static double	length4;
 static double	length2;
 
-static int ScaleMaterial (Item item)
+static int ScaleMaterial (Material m)
 {
-   Material m = (Material) item;
-
    m -> E *= stress;
    m -> G *= stress;
 
@@ -187,8 +186,7 @@ void ScaleFeltFile (double l, double f)
    TreeSetIterator (problem.node_tree, ScaleNode);
    TreeIterate (problem.node_tree);
 
-   TreeSetIterator (problem.material_tree, ScaleMaterial);
-   TreeIterate (problem.material_tree);
+   std::for_each(problem.material_set.begin(), problem.material_set.end(), ScaleMaterial);
 
    TreeSetIterator (problem.distributed_tree, ScaleDistributed);
    TreeIterate (problem.distributed_tree);

@@ -411,8 +411,9 @@ element_number
 		    break;
 		}
 
-		element -> material = last_material ?
-			(Material) strdup (last_material) : NULL;
+        if (!element->material)
+             element -> material = new struct material;
+		element -> material->name = last_material ? last_material : ""; 
 	    }
 	;
 
@@ -455,7 +456,10 @@ element_parameter
 
 	| MATERIAL_EQ NAME
 	    {
-		element -> material = (Material) (last_material = $2);
+             last_material = $2;
+             if (!element->material)
+                  element->material = new struct material;
+             element -> material -> name = last_material;
 	    }
 
 	| LOAD_EQ element_load_list
@@ -550,14 +554,14 @@ material_definition
 material_name
 	: NAME
 	    {
-		material = CreateMaterial ($1);
-		found = TreeInsert (problem.material_tree, material);
-
-		if (found != (Item) material) {
-		    error ("material %s is previously defined", $1);
-		    DestroyMaterial (material);
-		    material = &dummy_material;
-		}
+             material = CreateMaterial ($1);
+             
+             if (problem.material_set.count(material) > 0) {
+                  error ("material %s is previously defined", $1);
+                  DestroyMaterial (material);
+                  material = &dummy_material;
+             } else 
+                  problem.material_set.insert(material);
 	    }
 	;
 

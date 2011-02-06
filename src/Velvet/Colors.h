@@ -27,9 +27,7 @@
 # ifndef _Colors_h
 # define _Colors_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+#include "problem.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -39,12 +37,10 @@ ColorsDialog ColorsDialogCreate (Widget parent, String name, String title);
 
 void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted);
 
+void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted);
+     
 void ColorsDialogPopup (ColorsDialog colorsd);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Colors_h */

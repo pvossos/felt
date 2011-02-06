@@ -24,6 +24,7 @@
  *		definitions for the element dialog box.			*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -85,7 +86,7 @@ struct element_dialog {
     Element	   active;
     unsigned	   node_values [32];
     Tree	   elements;
-    Tree           materials;
+    Problem::MaterialSet *materials;
     Tree           loads;
     Tree           nodes;
 };
@@ -506,7 +507,7 @@ static void UpdateLoadName (Widget w, XtPointer client_data, XtPointer call_data
  *		the specified material.					*
  ************************************************************************/
 
-static int SetMaterialEntry (Item item)
+static int SetMaterialEntry (Material item)
 {
     SetLabelString (children [child_number], ((Material) item) -> name.c_str());
 
@@ -545,7 +546,7 @@ static void UpdateMaterialMenu (Widget w, XtPointer client_data, XtPointer call_
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_materials = TreeSize (eltd -> materials);
+    num_materials = eltd->materials->size();
 
     if (num_materials <= 0) {
 	num_materials ++;
@@ -571,8 +572,7 @@ static void UpdateMaterialMenu (Widget w, XtPointer client_data, XtPointer call_
     XtGetValues (w, args, 2);
 
     child_number = 0;
-    TreeSetIterator (eltd -> materials, SetMaterialEntry);
-    TreeIterate (eltd -> materials);
+    std::for_each(eltd->materials->begin(), eltd->materials->end(), SetMaterialEntry);
 
     XtSetArg (args [0], XtNwidth, max_width);
     XtSetValues (w, args, 1);
@@ -877,7 +877,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the material. */
 
     m_dummy.name = GetTextString (eltd -> m_name);
-    material = (Material) TreeSearch (eltd -> materials, &m_dummy);
+    Problem::MaterialSet::iterator it = eltd->materials->find(&m_dummy);
+    material = it != eltd->materials->end() ? *it : NULL;
     if (material == NULL) {
 	XBell (XtDisplay (eltd -> shell), 0);
 	SetTextString (eltd -> m_name, "");
@@ -1357,7 +1358,7 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     CreateTabGroup (eltd -> shell, group, XtNumber(group), highlight, True);
     XtRealizeWidget (eltd -> shell);
     SetFocus (eltd -> up);
-    SetType (eltd, (Definition) TreeMinimum (problem.definition_tree));
+    SetType (eltd, (Definition) *(problem.definition_set.begin()));
 
     button_args [0].value = (XtArgVal) "Load 1:";
     XtSetValues (eltd -> l_button [0], button_args, 1);
@@ -1444,7 +1445,7 @@ void ElementDialogPopup (ElementDialog eltd)
  *		trees.							*
  ************************************************************************/
 
-void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tree loads, Tree nodes)
+void ElementDialogUpdate (ElementDialog eltd, Tree elements, Problem::MaterialSet *materials, Tree loads, Tree nodes)
 {
     /* Remember to update the menus if necessary. */
 

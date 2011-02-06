@@ -24,6 +24,7 @@
  *		the file menu.						*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
@@ -211,16 +212,16 @@ int VelvetReadFeltFile (char *file)
     ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
     ForceDialogUpdate	   (force_d, problem.force_tree);
     LoadDialogUpdate	   (load_d, problem.distributed_tree);
-    MaterialDialogUpdate   (material_d, problem.material_tree);
+    MaterialDialogUpdate   (material_d, &problem.material_set);
     NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
 			    problem.constraint_tree);
     ElementDialogUpdate	   (element_d, problem.element_tree,
-			    problem.material_tree, problem.distributed_tree,
-			    problem.node_tree);
+                            &problem.material_set, problem.distributed_tree,
+                            problem.node_tree);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
                             problem.force_tree, problem.distributed_tree);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.material_tree, False);
+    ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
     ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
     ColorsDialogUpdateObjectList (colors_d, problem.force_tree, False);
     ColorsDialogUpdateObjectList (colors_d, problem.distributed_tree, False);
@@ -256,7 +257,7 @@ void StartNew (void)
     SolutionDialogUpdate (solution_d);
 
     DW_RemoveAll (drawing);
-    DestroyProblem ((ItemDestructor) DestroyMaterial);
+    DestroyProblem ((MaterialDestructor) DestroyMaterial);
     TreeDestroy (figure_tree);
 
     ElementListSet (element_l, NULL);
@@ -270,16 +271,16 @@ void StartNew (void)
     ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
     ForceDialogUpdate	   (force_d, problem.force_tree);
     LoadDialogUpdate	   (load_d, problem.distributed_tree);
-    MaterialDialogUpdate   (material_d, problem.material_tree);
+    MaterialDialogUpdate   (material_d, &problem.material_set);
     NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
 			    problem.constraint_tree);
     ElementDialogUpdate	   (element_d, problem.element_tree,
-			    problem.material_tree, problem.distributed_tree,
-			    problem.node_tree);
+                            &problem.material_set, problem.distributed_tree,
+                            problem.node_tree);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
                             problem.force_tree, problem.distributed_tree);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.material_tree, False);
+    ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
     ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
     ColorsDialogUpdateObjectList (colors_d, problem.force_tree, False);
     ColorsDialogUpdateObjectList (colors_d, problem.distributed_tree, False);
@@ -335,30 +336,26 @@ void QuitVelvet (void)
 
 Problem     saved;
 
-static int UpdateMaterial (Item item)
+static int UpdateMaterial (Material nu)
 {
-    Item     found;
-    Material old;
-    Material nu;
-
-
-    found = TreeInsert (saved.material_tree, item);
-    if (found != item) {
-	nu = (Material) item;
-	old = (Material) found;
-	old -> E = nu -> E;
-	old -> A = nu -> A;
-	old -> Ix = nu -> Ix;
-	old -> Iy = nu -> Iy;
-	old -> Iz = nu -> Iz;
-	old -> J = nu -> J;
-	old -> G = nu -> G;
-	old -> nu = nu -> nu;
-	old -> t = nu -> t;
-	old -> rho = nu -> rho;
-	old -> kappa = nu -> kappa;
-	DestroyMaterial (nu);
-    }
+    Problem::MaterialSet::iterator it = saved.material_set.find(nu);
+    if (it != saved.material_set.end()) {
+        Material old = *it;
+        old -> E = nu -> E;
+        old -> A = nu -> A;
+        old -> Ix = nu -> Ix;
+        old -> Iy = nu -> Iy;
+        old -> Iz = nu -> Iz;
+        old -> J = nu -> J;
+        old -> G = nu -> G;
+        old -> nu = nu -> nu;
+        old -> t = nu -> t;
+        old -> rho = nu -> rho;
+        old -> kappa = nu -> kappa;
+        DestroyMaterial (nu);
+    } else 
+        saved.material_set.insert(nu);
+    
     return 0;
 }
 
@@ -388,20 +385,18 @@ void OpenMaterialFile (void)
     BufferErrors (False);
 
     if (status)
-	DestroyProblem ((ItemDestructor) DestroyMaterial);
-    else {
-	(void) TreeSetIterator (problem.material_tree, UpdateMaterial);
-	(void) TreeIterate (problem.material_tree);
-    }
+        DestroyProblem ((MaterialDestructor) DestroyMaterial);
+    else 
+        std::for_each(problem.material_set.begin(), problem.material_set.end(), UpdateMaterial);
 
     DestroyProblem (NULL);
 
     problem = saved;
 
-    MaterialDialogUpdate (material_d, problem.material_tree);
-    ColorsDialogUpdateObjectList (colors_d, problem.material_tree, False);
+    MaterialDialogUpdate (material_d, &problem.material_set);
+    ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
     ElementDialogUpdate	(element_d, problem.element_tree,
-			 problem.material_tree, NULL, NULL);
+                         &problem.material_set, NULL, NULL);
 
     changeflag = True;
 }
@@ -412,11 +407,8 @@ void OpenMaterialFile (void)
 
 static FILE *fp;
 
-static int WriteMaterial (Item item)
+static int WriteMaterial (Material material)
 {
-    Material material = (Material) item;
-
-
     if (strpbrk (material -> name.c_str(), "- \t\n=[]\",+*/()#"))
         fprintf (fp, "\"%s\"  ", material -> name.c_str());
     else
@@ -456,8 +448,7 @@ void WriteMaterialFile (void)
     }
 
     fprintf (fp, "material properties\n");
-    (void) TreeSetIterator (problem.material_tree, WriteMaterial);
-    (void) TreeIterate (problem.material_tree);
+    std::for_each(problem.material_set.begin(), problem.material_set.end(), WriteMaterial);
     fprintf (fp, "\nend\n");
     (void) fclose (fp);
 }

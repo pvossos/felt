@@ -91,8 +91,8 @@ AddElement(Definition defn, Node *nodes, Material material,
 
    problem.elements.push_back(element);
 
-   if (material) 
-      TreeInsert (problem.material_tree, (Item) material);
+   if (material)
+       problem.material_set.insert(material);
 
    return element;
 }

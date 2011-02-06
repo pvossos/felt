@@ -24,6 +24,7 @@
  *		type definitions for the colors dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -53,7 +54,7 @@
 # define BOOLEAN Boolean
 # endif
 
-extern "C" void RecolorCanvas (void);
+extern  void RecolorCanvas (void);
 
 struct colors_dialog {
     Widget         shell;	/* topLevelShell  <specified>	 */
@@ -359,7 +360,7 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
 
     if (active_list == colorsd -> mlist) {
        m.name = info -> string;
-       current_material = (Material) TreeSearch (problem.material_tree, &m);
+       current_material = *problem.material_set.find(&m);
        color = current_material -> color;
     }
     else if (active_list == colorsd -> clist) {
@@ -476,7 +477,7 @@ static int	 object_count;
 static String	*object_names = NULL;
 static String	*object_colors = NULL;
 
-static int AddMaterial (Item item)
+static int AddMaterial (Material item)
 {
     object_colors [object_count] = XtNewString(((Material) item) -> color.c_str());
     object_names [object_count ++] = XtNewString(((Material) item) -> name.c_str());
@@ -534,6 +535,31 @@ static void UpdateList (Widget w, Tree tree, Boolean deleted)
    return;
 }
 
+template<typename Set, typename Unary>
+void UpdateList (Widget w, Set tree, Boolean deleted, Unary fun)
+{
+   unsigned	size;
+   unsigned	number_of_items;
+
+   object_count = 0;
+  
+   number_of_items = tree->size();
+   if (deleted)
+      number_of_items --;
+ 
+   size = (number_of_items + 1)*sizeof (String);
+   object_names = (String *) XtRealloc ((char *) object_names, size);
+   object_colors = (String *) XtRealloc ((char *) object_colors, size);
+
+   std::for_each(tree->begin(), tree->end(), fun);
+
+   object_names [number_of_items] = NULL;
+
+   XawListChange (w, object_names, 0, 0, False);
+
+   return;
+}
+
 /************************************************************************
  * Function:	ColorsDialogUpdateObjectList				*
  *									*
@@ -546,14 +572,7 @@ void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean dele
 {
    unsigned	i;
 
-   if (tree == problem.material_tree) { 
-      TreeSetIterator (tree, AddMaterial);
-      object_names = colorsd -> materials;
-      UpdateList (colorsd -> mlist, tree, deleted);
-      colorsd -> materials = object_names;
-   } 
-
-   else if (tree == problem.constraint_tree) {
+   if (tree == problem.constraint_tree) {
       TreeSetIterator (tree, AddConstraint);
       object_names = colorsd -> constraints;
       UpdateList (colorsd -> clist, tree, deleted);
@@ -575,6 +594,18 @@ void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean dele
    } 
 
    for (i = 0 ; i < object_count ; i++)
+      InsertColor (colorsd, object_colors [i]);
+  
+   return;
+}
+
+void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted)
+{
+   object_names = colorsd -> materials;
+   UpdateList (colorsd -> mlist, tree, deleted, AddMaterial);
+   colorsd -> materials = object_names;
+
+   for (unsigned i = 0 ; i < object_count ; i++)
       InsertColor (colorsd, object_colors [i]);
   
    return;

@@ -367,12 +367,12 @@ void MaterialDialogChanged (Widget w, XtPointer client_data, XtPointer call_data
 
     if (info -> proceed == True) {
 	changeflag = True;
-	ElementDialogUpdate(element_d, NULL, problem.material_tree, NULL, NULL);
+	ElementDialogUpdate(element_d, NULL, &problem.material_set, NULL, NULL);
 	element = ElementDialogActive (element_d);
 	if (element != NULL && info -> material == element -> material)
 	    ElementDialogDisplay (element_d, element);
 
-        ColorsDialogUpdateObjectList (colors_d, problem.material_tree, info -> deleted);
+        ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, info -> deleted);
     }
 }
 

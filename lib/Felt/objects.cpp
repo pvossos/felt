@@ -34,13 +34,7 @@
 Node
 CreateNode(unsigned int number)
 {
-    Node     node;
-    unsigned i;
-
-
-    if (!(node = AllocNew (struct node)))
-	Fatal ("unable to allocate memory for new node");
-
+    Node node = new struct node;
     node -> number     = number;
     node -> m          = 0.0;
     node -> force      = NULL;
@@ -50,8 +44,8 @@ CreateNode(unsigned int number)
     node -> stress.clear();
     node -> numelts    = 0;
 
-    for (i = 1; i <= 6; i ++)
-	node -> dx [i] = 0;
+    for (unsigned i = 1; i <= 6; i ++)
+        node -> dx [i] = 0;
 
     return node;
 }
@@ -63,19 +57,14 @@ DestroyNode(Node node)
         Deallocate (node -> aux);
         node->eq_force.clear();
         node->stress.clear();
-        Deallocate (node);
+        delete node;
     }
 }
 
 Element
 CreateElement(unsigned int number, Definition defn)
 {
-    unsigned i;
-    Element  element;
-
-
-    if (!(element = AllocNew (struct element)))
-	Fatal ("unable to allocate memory for new element");
+    Element element = new struct element;
 
     element->node.clear();
     if (defn)
@@ -91,8 +80,8 @@ CreateElement(unsigned int number, Definition defn)
     element -> material = NULL;
     element -> numdistributed = 0;
 
-    for (i = 0; i <= 3; i ++)
-	element -> distributed [i] = NULL;
+    for (unsigned i = 0; i <= 3; i ++)
+        element -> distributed [i] = NULL;
 
     element -> stress = NULL;
     element -> ninteg = 0;
@@ -103,40 +92,32 @@ CreateElement(unsigned int number, Definition defn)
 void
 DestroyElement(Element element)
 {
-    unsigned i;
-
-
     if (element) {
-        for (i = 1; i <= element -> ninteg; i ++) {
+        for (unsigned i = 1; i <= element -> ninteg; i ++) {
             element->stress[i]->values.clear();
             delete element->stress[i];
         }
         element->stress.clear();
         Deallocate (element -> aux);
-        Deallocate (element);
+        delete element;
     }
 }
 
 Force
 CreateForce(char *name)
 {
-    int   i;
-    Force force;
-
-
-    if (!(force = AllocNew (struct force)))
-	Fatal ("unable to allocate memory for new force");
+    Force force = new struct force;
 
     force -> aux = NULL;
     force -> color = NULL;
     force -> name = name;
-    for (i = 0; i < 7; i ++) {
-	force -> force [i].value = 0;
-	force -> force [i].expr  = NULL;
-	force -> force [i].text  = NULL;
-	force -> spectrum [i].value = 0;
-	force -> spectrum [i].expr  = NULL;
-	force -> spectrum [i].text  = NULL;
+    for (unsigned i = 0; i < 7; i ++) {
+        force -> force [i].value = 0;
+        force -> force [i].expr  = NULL;
+        force -> force [i].text  = NULL;
+        force -> spectrum [i].value = 0;
+        force -> spectrum [i].expr  = NULL;
+        force -> spectrum [i].text  = NULL;
     }
 
     return force;
@@ -145,29 +126,22 @@ CreateForce(char *name)
 void
 DestroyForce(Force force)
 {
-    int i;
-
-
     if (force) {
-	for (i = 1; i <= 6; i ++) {
-	    FreeCode (force -> force [i].expr);
-	    Deallocate (force -> force [i].text);
-	}
-	Deallocate (force -> name);
-	Deallocate (force -> color);
-	Deallocate (force -> aux);
-	Deallocate (force);
+        for (unsigned i = 1; i <= 6; i ++) {
+            FreeCode (force -> force [i].expr);
+            Deallocate (force -> force [i].text);
+        }
+        Deallocate (force -> name);
+        Deallocate (force -> color);
+        Deallocate (force -> aux);
+        delete force;
     }
 }
 
 Material
 CreateMaterial(char *name)
 {
-    Material material;
-
-
-    if (!(material = AllocNew (struct material)))
-	Fatal ("unable to allocate memory for new material");
+    Material material = new struct material;
 
     material -> aux   = NULL;
     material -> color = NULL;
@@ -197,37 +171,32 @@ void
 DestroyMaterial(Material material)
 {
     if (material) {
-	Deallocate (material -> name);
-	Deallocate (material -> color);
-	Deallocate (material -> aux);
-	Deallocate (material);
+        Deallocate (material -> name);
+        Deallocate (material -> color);
+        Deallocate (material -> aux);
+        delete material;
     }
 }
 
 Constraint
 CreateConstraint(char *name)
 {
-    int        i;
-    Constraint constraint;
-
-
-    if (!(constraint = AllocNew (struct constraint)))
-	Fatal ("unable to allocate memory for new constraint");
+    Constraint constraint = new struct constraint;
 
     constraint -> aux = NULL;
     constraint -> color = NULL;
     constraint -> name = name;
-    for (i = 0; i < 7; i ++) {
-	constraint -> constraint [i] = 0;
-	constraint -> dx [i].expr  = NULL;
-	constraint -> dx [i].text  = NULL;
-	constraint -> dx [i].value = 0;
-	constraint -> ix [i] = 0;
+    for (unsigned i = 0; i < 7; i ++) {
+        constraint -> constraint [i] = 0;
+        constraint -> dx [i].expr  = NULL;
+        constraint -> dx [i].text  = NULL;
+        constraint -> dx [i].value = 0;
+        constraint -> ix [i] = 0;
     }
 
-    for (i = 0; i < 4; i ++) {
-	constraint -> vx [i] = 0;
-	constraint -> ax [i] = UnspecifiedValue;
+    for (unsigned i = 0; i < 4; i ++) {
+        constraint -> vx [i] = 0;
+        constraint -> ax [i] = UnspecifiedValue;
     }
 
     return constraint;
@@ -236,29 +205,22 @@ CreateConstraint(char *name)
 void
 DestroyConstraint(Constraint constraint)
 {
-    int i;
-
-
     if (constraint) {
-	for (i = 1; i <= 6; i ++) {
+	for (unsigned i = 1; i <= 6; i ++) {
 	    FreeCode (constraint -> dx [i].expr);
 	    Deallocate (constraint -> dx [i].text);
 	}
 	Deallocate (constraint -> name);
 	Deallocate (constraint -> color);
 	Deallocate (constraint -> aux);
-	Deallocate (constraint);
+    delete constraint;
     }
 }
 
 Distributed
 CreateDistributed(char *name, unsigned int nvalues)
 {
-    Distributed distributed;
-
-
-    if (!(distributed = AllocNew (struct distributed)))
-	Fatal ("unable to allocate memory for new distributed");
+    Distributed distributed = new struct distributed;
 
     distributed -> aux = NULL;
     distributed -> color = NULL;
@@ -278,7 +240,7 @@ DestroyDistributed(Distributed distributed)
 	Deallocate (distributed -> name);
 	Deallocate (distributed -> color);
 	Deallocate (distributed -> aux);
-	Deallocate (distributed);
+    delete distributed;
     }
 }
 

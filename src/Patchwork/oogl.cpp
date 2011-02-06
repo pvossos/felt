@@ -170,7 +170,7 @@ int WriteOoglFile (char *filename)
    		scalefz,
    		scale;
    		
-   char *element_color;
+   std::string element_color;
 
    if (strcmp (filename, "-") == 0)
       output = stdout;

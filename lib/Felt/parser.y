@@ -570,8 +570,7 @@ material_parameter_list
 material_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (material -> color);
-                material -> color = $2;
+             material -> color = $2;
 	    }
 
 	| E_EQ constant_expression
@@ -705,8 +704,7 @@ load_parameter_list
 load_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (load -> color);
-                load -> color = $2;
+             load -> color = $2;
 	    }
 
 	| DIRECTION_EQ DIRECTION
@@ -817,8 +815,7 @@ force_parameter_list
 force_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (force -> color);
-                force -> color = $2;
+             force -> color = $2;
 	    }
 
 	| FX_EQ enable_copy variable_expression
@@ -927,8 +924,7 @@ constraint_parameter_list
 constraint_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (constraint -> color);
-                constraint -> color = $2;
+             constraint -> color = $2;
 	    }
 
 	| TX_EQ enable_copy translation

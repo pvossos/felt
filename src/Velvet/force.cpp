@@ -346,7 +346,7 @@ static int AppendForceName (Item item)
     if (dialog -> active == (Force) item)
 	list_index = num_forces;
 
-    dialog -> forces [num_forces ++] = ((Force) item) -> name;
+    dialog -> forces [num_forces ++] = XtNewString(((Force) item) -> name.c_str());
     return 0;
 }
 
@@ -510,7 +510,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update all of the text entries. */
 
-    SetTextString (forced -> name, active -> name);
+    SetTextString (forced -> name, active -> name.c_str());
     LoadForceValues (forced);
 }
 
@@ -567,7 +567,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (forced -> name), 0);
 	SetFocus (forced -> name);
 	if (!forced -> new_copy)
-	    SetTextString (forced -> name, forced -> active -> name);
+	    SetTextString (forced -> name, forced -> active -> name.c_str());
 	else
 	    SetTextString (forced -> name, "");
 
@@ -577,12 +577,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new force or new name as needed. */
 
 	if (forced -> new_copy)
-	    forced -> active = CreateForce (XtNewString (dummy.name));
-	else if (strcmp (forced -> active -> name, dummy.name)) {
+	    forced -> active = CreateForce (dummy.name.c_str());
+	else if (strcmp (forced -> active -> name.c_str(), dummy.name.c_str())) {
             old.name = forced -> active -> name;
             TreeDelete (forced -> tree, &old);
-            XtFree (forced -> active -> name);
-            forced -> active -> name = XtNewString (dummy.name);
+            forced->active->name = dummy.name;
             TreeInsert (forced -> tree, forced -> active);
 	}
 

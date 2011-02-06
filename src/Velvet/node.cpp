@@ -372,7 +372,7 @@ static XtWidgetGeometry	preferred;
 
 static int SetForceEntry (Item item)
 {
-    SetLabelString (children [child_number], ((Force) item) -> name);
+    SetLabelString (children [child_number], ((Force) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -471,7 +471,7 @@ static void UpdateForceName (Widget w, XtPointer client_data, XtPointer call_dat
 
 static int SetConstraintEntry (Item item)
 {
-    SetLabelString (children [child_number], ((Constraint) item) -> name);
+    SetLabelString (children [child_number], ((Constraint) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -1246,12 +1246,12 @@ void NodeDialogDisplay (NodeDialog noded, Node node)
     SetTextString (noded -> rot_z, buffer);
 
     if (active -> force != NULL)
-	SetTextString (noded -> f_name, active -> force -> name);
+        SetTextString (noded -> f_name, active -> force -> name.c_str());
     else
-	SetTextString (noded -> f_name, "");
+        SetTextString (noded -> f_name, "");
 
     if (active -> constraint != NULL)
-	SetTextString (noded -> c_name, active -> constraint -> name);
+        SetTextString (noded -> c_name, active -> constraint -> name.c_str());
     else
-	SetTextString (noded -> c_name, "");
+        SetTextString (noded -> c_name, "");
 }

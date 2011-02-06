@@ -63,7 +63,7 @@ static int ScaleDistributed (Item item)
    Distributed	d = (Distributed) item;
 
    if (d -> value.size() > 2) 
-      error ("cannot convert distributed load %s (more than 2 values).", d -> name); 
+       error ("cannot convert distributed load %s (more than 2 values).", d -> name.c_str()); 
    else {
       d -> value [1].magnitude *= mass;
       d -> value [2].magnitude *= mass;
@@ -82,7 +82,7 @@ static int ScaleForce (Item item)
          f -> force [i].value *= force;
  
       if (f -> force [i].expr != NULL)
-         error ("expression not converted in force %s.", f -> name);
+          error ("expression not converted in force %s.", f -> name.c_str());
    }
 
    return 0;

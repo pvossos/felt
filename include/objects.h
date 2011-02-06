@@ -40,7 +40,7 @@ extern "C" {
   structure.  The name is assigned (not copied) and the array of
   values allocated.
 */
-Distributed CreateDistributed(char *name, unsigned int nvalues);
+Distributed CreateDistributed(const char *name, unsigned int nvalues);
 
 /*!
   DestroyDistributed deallocates a distributed structure.  The array
@@ -53,7 +53,7 @@ void DestroyDistributed(Distributed distributed);
   the force is assigned (not copied) and the force components are
   initialized to zero.
 */
-Force CreateForce(char *name);
+Force CreateForce(const char *name);
 
 /*!
   DestroyForce deallocates a force structure.  The name and auxillary
@@ -77,7 +77,7 @@ void AssignSpectrum(Force force, DOF dof, Code expr, char *text);
   The name is assigned (not copied) and the fields are initialized to
   zero.
 */
-Constraint CreateConstraint(char *name);
+Constraint CreateConstraint(const char *name);
 
 /*!
   DestroyConstraint deallocates a constraint structure.  The name
@@ -97,7 +97,7 @@ void AssignConstraint(Constraint constraint, DOF dof, Code expr, char *text, int
   The name is assigned (not copied) and the fields are initialized to
   zero.
 */
-Material CreateMaterial(char *name);
+Material CreateMaterial(const char *name);
 
 /*!
   DestroyMaterial deallocates a material structure.  The name and

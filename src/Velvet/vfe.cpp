@@ -501,18 +501,20 @@ static int RecolorNode (Item item)
    n = (Node) item;
    drawn = (Drawn) n -> aux;
 
-   if (n -> force && n -> force -> color) 
-      attrib.color = n -> force -> color; 
-   else if (n -> constraint -> color) 
-      attrib.color = n -> constraint -> color; 
+   if (n -> force && !n -> force -> color.c_str()) 
+       attrib.color = XtNewString(n -> force -> color.c_str()); 
+   else if (!n -> constraint -> color.empty()) 
+       attrib.color = XtNewString(n -> constraint -> color.c_str()); 
    else 
-      attrib.color = canvas -> node_color;
+       attrib.color = XtNewString(canvas->node_color);
 
    if (drawn -> figure)
       DW_SetAttributes (drawing, drawn -> figure, DW_FigureColor, &attrib);
    if (drawn -> label)
       DW_SetAttributes (drawing, drawn -> label, DW_FigureColor, &attrib);
 
+   XtFree(attrib.color);
+   
    return 0;
 }
 
@@ -525,18 +527,20 @@ static int RecolorElement (Item item)
    e = (Element) item;
    drawn = (Drawn) e -> aux;
 
-   if (e -> numdistributed && e -> distributed[1] -> color) 
-      attrib.color = e -> distributed[1] -> color; 
-   else if (e -> material -> color) 
-      attrib.color = e -> material -> color; 
+   if (e -> numdistributed && !e -> distributed[1] -> color.empty()) 
+       attrib.color = XtNewString(e -> distributed[1] -> color.c_str()); 
+   else if (!e -> material -> color.empty()) 
+       attrib.color = XtNewString(e -> material -> color.c_str()); 
    else 
-      attrib.color = canvas -> element_color;
+       attrib.color = XtNewString(canvas -> element_color);
 
    if (drawn -> figure)
       DW_SetAttributes (drawing, drawn -> figure, DW_FigureColor, &attrib);
    if (drawn -> label)
       DW_SetAttributes (drawing, drawn -> label, DW_FigureColor, &attrib);
-
+   
+   XtFree(attrib.color);
+   
    return 0;
 } 
 

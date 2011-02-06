@@ -453,7 +453,7 @@ static int AppendConstraintName (Item item)
     if (dialog -> active == (Constraint) item)
 	list_index = num_constraints;
 
-    dialog -> constraints [num_constraints ++] = ((Constraint) item) -> name;
+    dialog -> constraints [num_constraints ++] = XtNewString(((Constraint) item) -> name.c_str());
     return 0;
 }
 
@@ -520,7 +520,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update the name. */
 
-    SetTextString (constraintd -> name, active -> name);
+    SetTextString (constraintd -> name, active -> name.c_str());
 
 
     /* Update the toggle buttons. */
@@ -629,7 +629,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (constraintd -> name), 0);
 	SetFocus (constraintd -> name);
 	if (!constraintd -> new_copy)
-	    SetTextString (constraintd -> name, constraintd -> active -> name);
+	    SetTextString (constraintd -> name, constraintd -> active -> name.c_str());
 	else
 	    SetTextString (constraintd -> name, "");
 
@@ -639,12 +639,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new constraint or new name as needed. */
        
 	if (constraintd -> new_copy)
-	    constraintd -> active = CreateConstraint (XtNewString (dummy.name));
-	else if (strcmp (constraintd -> active -> name, dummy.name)) {
+	    constraintd -> active = CreateConstraint (dummy.name.c_str());
+	else if (strcmp (constraintd -> active -> name.c_str(), dummy.name.c_str())) {
             old.name = constraintd -> active -> name;
             TreeDelete (constraintd -> tree, &old);
-	    XtFree (constraintd -> active -> name);
-	    constraintd -> active -> name = XtNewString (dummy.name);
+            constraintd -> active -> name = dummy.name;
             TreeInsert (constraintd -> tree, constraintd -> active);
 	}
         

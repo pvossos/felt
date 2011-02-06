@@ -90,7 +90,7 @@ static int CheckConstraintReferences (Item item)
     node = (Node) item;
 
     if (node -> constraint == deleted_constraint) {
-	error ("Constraint %s is still in use.", deleted_constraint -> name);
+        error ("Constraint %s is still in use.", deleted_constraint -> name.c_str());
 	return 1;
     }
 
@@ -190,7 +190,7 @@ static int CheckForceReferences (Item item)
 
     if (node -> force == deleted_force) {
 	if (first_time) {
-	    if (!CheckOk ("Force", deleted_force -> name))
+	    if (!CheckOk ("Force", deleted_force -> name.c_str()))
 		return 1;
 	    first_time = False;
 	}
@@ -260,7 +260,7 @@ static int CheckLoadReferences (Item item)
     for (i = 1; i <= element -> numdistributed; i ++)
 	if (element -> distributed [i] == deleted_load) {
 	    if (first_time) {
-		if (!CheckOk ("Load", deleted_load -> name))
+            if (!CheckOk ("Load", deleted_load -> name.c_str()))
 		    return 1;
 		first_time = False;
 	    }
@@ -334,7 +334,7 @@ static int CheckMaterialReferences (Item item)
     element = (Element) item;
 
     if (element -> material == deleted_material) {
-	error ("Material %s is still in use.", deleted_material -> name);
+        error ("Material %s is still in use.", deleted_material -> name.c_str());
 	return 1;
     }
 

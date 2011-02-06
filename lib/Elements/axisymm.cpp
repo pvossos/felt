@@ -326,14 +326,14 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 
       if (element -> distributed[i] -> value.size() != 2) {
          error ("load %s does not have 2 nodal values (element %d)",
-                 element -> distributed[i] -> name, element -> number);
+                element -> distributed[i] -> name.c_str(), element -> number);
          count++;
       }
 
       if (element -> distributed[i] -> direction != Axial &&
          element -> distributed[i] -> direction != Radial) {
           error ("invalid direction specified for load %s (element %d)",
-                 element -> distributed[i] -> name, element -> number);
+                 element -> distributed[i] -> name.c_str(), element -> number);
           count++;
       }
 
@@ -342,13 +342,13 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 
       if (node_a < 1 || node_a > 3 || node_b < 1 || node_b > 3) {
          error ("incorrect node numbering for load %s (element %d)", 
-                element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(),element -> number);
          count++;
       }
 
       if (node_a == node_b) {
          error ("incorrect node numbering for load %s (element %d)", 
-                element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(),element -> number);
          count++;
       }
 

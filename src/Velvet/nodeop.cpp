@@ -461,12 +461,12 @@ int DrawNode (Node node)
     if (DW_SetFont (drawing, canvas -> label_font) == False)
         (void) DW_SetFont (drawing, "fixed");
 
-    if (node -> force && node -> force -> color) {
-        if (DW_SetForeground (drawing, node -> force -> color) == False)
+    if (node -> force && !node -> force -> color.empty()) {
+        if (DW_SetForeground (drawing, node -> force -> color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
-    else if (node -> constraint -> color) {
-        if (DW_SetForeground (drawing, node -> constraint -> color) == False)
+    else if (!node -> constraint -> color.empty()) {
+        if (DW_SetForeground (drawing, node -> constraint -> color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
     else {

@@ -102,8 +102,8 @@ typedef struct definition {
 
 typedef struct distributed {
     char     *aux;			/* auxillary data pointer   	  */
-    char     *name;			/* name of distributed load 	  */
-    char     *color;			/* name of color to use in velvet */
+    std::string name;			/* name of distributed load 	  */
+    std::string color;			/* name of color to use in velvet */
     Direction direction;		/* direction of load        	  */
     cvector1<Pair> value;			/* nodes and magnitudes     	  */
 } *Distributed;
@@ -113,8 +113,8 @@ typedef struct distributed {
 
 typedef struct force {
     char   *aux;			/* auxillary data pointer 	  */
-    char   *name;			/* name of force          	  */
-    char   *color;			/* name of color to use in velvet */
+    std::string name;			/* name of force          	  */
+    std::string color;			/* name of color to use in velvet */
     VarExpr force [7];			/* force vector			  */
     VarExpr spectrum [7];		/* input spectra		  */
 } *Force;
@@ -124,8 +124,8 @@ typedef struct force {
 
 typedef struct constraint {
     char   *aux;			/* auxillary data pointer 	  */
-    char   *name;		/* name of constraint     	  */
-    char   *color;			/* name of color to use in velvet */
+    std::string name;		/* name of constraint     	  */
+    std::string color;			/* name of color to use in velvet */
     char    constraint [7];		/* constraint vector     	  */
     double  ix [7];			/* initial displacement vector    */
     double  vx [4];			/* initial velocity vector	  */
@@ -138,8 +138,8 @@ typedef struct constraint {
 
 typedef struct material {
     char  *aux;				/* auxillary data pointer           */
-    char  *name;		/* name of material                 */
-    char  *color;			/* name of color to use in velvet   */
+    std::string name;		/* name of material                 */
+    std::string color;			/* name of color to use in velvet   */
     double E;				/* Young's modulus                  */
     double Ix;				/* moment of inertia about x-x axis */
     double Iy;				/* moment of inertia about y-y axis */

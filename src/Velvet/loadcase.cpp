@@ -755,22 +755,22 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
         if (i <= 4) {
            sprintf (buffer, "%d", active -> nodes [i] -> number);
            SetTextString (loadcased -> node [i-1], buffer);
-           SetTextString (loadcased -> force [i-1], active -> forces [i] -> name);
+           SetTextString (loadcased -> force [i-1], active -> forces [i] -> name.c_str());
         }
 
         loadcased -> node_assignments [i - 1] = active -> nodes [i] -> number;
-        loadcased -> force_assignments [i - 1] = XtNewString (active -> forces [i] -> name);
+        loadcased -> force_assignments [i - 1] = XtNewString (active -> forces [i] -> name.c_str());
     }
 
     for (i = 1 ; i <= active->loads.size(); i++) {
         if (i <= 4) {
            sprintf (buffer, "%d", active -> elements [i] -> number);
            SetTextString (loadcased -> element [i-1], buffer);
-           SetTextString (loadcased -> load [i-1], active -> loads [i] -> name);
+           SetTextString (loadcased -> load [i-1], active -> loads [i] -> name.c_str());
         }
 
         loadcased -> element_assignments [i - 1] = active -> elements [i] -> number;
-        loadcased -> load_assignments [i - 1] = XtNewString (active -> loads [i] -> name);
+        loadcased -> load_assignments [i - 1] = XtNewString (active -> loads [i] -> name.c_str());
     }
 }
 
@@ -860,7 +860,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
               f.name = loadcased -> force_assignments [i-1];
               active -> forces [i] = (Force) TreeSearch (problem.force_tree, &f);
               if (active -> forces [i] == NULL) {
-                 error ("force %s is not defined", f.name);
+                  error ("force %s is not defined", f.name.c_str());
                  return;
               }
            }
@@ -884,7 +884,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
               l.name = loadcased -> load_assignments [i-1];
               active -> loads [i] = (Distributed) TreeSearch (problem.distributed_tree, &l);
               if (active -> loads [i] == NULL) {
-                 error ("distributed load %s is not defined", l.name);
+                  error ("distributed load %s is not defined", l.name.c_str());
                  return;
               }
            }
@@ -1338,7 +1338,7 @@ static XtWidgetGeometry preferred;
 
 static int SetForceEntry (Item item)
 {
-    SetLabelString (children [child_number], ((Force) item) -> name);
+    SetLabelString (children [child_number], ((Force) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -1356,7 +1356,7 @@ static int SetForceEntry (Item item)
 
 static int SetLoadEntry (Item item)
 {
-    SetLabelString (children [child_number], ((Distributed) item) -> name);
+    SetLabelString (children [child_number], ((Distributed) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)

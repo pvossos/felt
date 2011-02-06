@@ -640,7 +640,7 @@ EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
                 element -> distributed[i] -> value[j].node > 2) {
 
                 error ("invalid node numbering for elt %d distributed load %s",
-                       element -> number, element -> distributed[i] -> name);
+                       element -> number, element -> distributed[i] -> name.c_str());
                 count++;
             }
         }
@@ -649,7 +649,7 @@ EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
             element -> distributed[i] -> value[2].node) {
 
             error ("incorrect node numbering for elt %d distributed load %s",
-                   element -> number, element -> distributed[i] -> name);
+                   element -> number, element -> distributed[i] -> name.c_str());
             count++;
         }
     }

@@ -160,10 +160,10 @@ WriteNode(Node node)
     fprintf (fp, "y=%g z=%g", node -> y, node -> z);
 
     if (!prev_node || node -> constraint != prev_node -> constraint)
-	fprintf (fp, " constraint=%s", Quote (node -> constraint -> name));
+	fprintf (fp, " constraint=%s", Quote (node -> constraint -> name.c_str()));
 
     if (node -> force)
-	fprintf (fp, " force=%s", Quote (node -> force -> name));
+	fprintf (fp, " force=%s", Quote (node -> force -> name.c_str()));
 
     if (node -> m)
         fprintf (fp, " mass=%g", node -> m);
@@ -197,11 +197,11 @@ WriteElement(Element element)
     }
 
     if (!prev_element || element -> material != prev_element -> material)
-	fprintf (fp, " material=%s", Quote (element -> material -> name));
+	fprintf (fp, " material=%s", Quote (element -> material -> name.c_str()));
 
     for (i = 1; i <= element -> numdistributed; i ++) {
 	fprintf (fp, i == 1 ? " load=" : " ");
-	fprintf (fp, "%s", Quote (element -> distributed [i] -> name));
+	fprintf (fp, "%s", Quote (element -> distributed [i] -> name.c_str()));
     }
 
     fprintf (fp, "\n");
@@ -225,10 +225,10 @@ WriteMaterial(Item item)
     material = (Material) item;
 
     if (material -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (material -> name));
+	fprintf (fp, "%s", Quote (material -> name.c_str()));
 
-        if (material -> color)
-            fprintf (fp, " color=%s", material -> color);
+        if (material -> color.c_str())
+            fprintf (fp, " color=%s", material -> color.c_str());
 
 	cfprintf (fp, " E=%g",     material -> E);
 	cfprintf (fp, " A=%g",     material -> A);
@@ -274,10 +274,10 @@ WriteLoad(Item item)
     load = (Distributed) item;
 
     if (load -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (load -> name));
+	fprintf (fp, "%s", Quote (load -> name.c_str()));
 
-        if (load -> color)
-            fprintf (fp, " color=%s", load -> color);
+        if (load -> color.c_str())
+            fprintf (fp, " color=%s", load -> color.c_str());
 
 	fprintf (fp, " direction=%s", direction_names [load -> direction]);
 
@@ -312,10 +312,10 @@ WriteConstraint(Item item)
     constraint = (Constraint) item;
 
     if (constraint -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (constraint -> name));
+	fprintf (fp, "%s", Quote (constraint -> name.c_str()));
 
-        if (constraint -> color)
-            fprintf (fp, " color=%s", constraint -> color);
+        if (constraint -> color.c_str())
+            fprintf (fp, " color=%s", constraint -> color.c_str());
 
         if (constraint -> dx [Tx].expr == NULL)
 	   fprintf (fp, " Tx=%s", ConstraintSymbol (constraint, Tx));
@@ -393,10 +393,10 @@ WriteForce(Item item)
 
 
     if (force -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (force -> name));
+	fprintf (fp, "%s", Quote (force -> name.c_str()));
 
-        if (force -> color)
-            fprintf (fp, " color=%s", force -> color);
+        if (force -> color.c_str())
+            fprintf (fp, " color=%s", force -> color.c_str());
 
 	if (force -> force [Fx].expr)
 	    fprintf (fp, " Fx=%s", force -> force [Fx].text);
@@ -482,17 +482,17 @@ WriteLoadCase(Item item)
    fprintf (fp, "%s\n", lc -> name.c_str());
 
    if (!lc->forces.empty()) {
-      fprintf (fp, "node-forces=");
-      for (i = 1 ; i <= lc->forces.size(); i++)
-         fprintf (fp, "(%d, %s) ", lc -> nodes [i] -> number, lc -> forces [i] -> name);
-
+       fprintf (fp, "node-forces=");
+       for (i = 1 ; i <= lc->forces.size(); i++)
+           fprintf (fp, "(%d, %s) ", lc -> nodes [i] -> number, lc -> forces [i] -> name.c_str());
+       
       fprintf (fp, "\n");
    }
 
    if (!lc->loads.empty()) {
       fprintf (fp, "element-loads=");
       for (i = 1 ; i <= lc->loads.size(); i++)
-         fprintf (fp, "(%d, %s) ", lc -> elements [i] -> number, lc -> loads [i] -> name);
+          fprintf (fp, "(%d, %s) ", lc -> elements [i] -> number, lc -> loads [i] -> name.c_str());
 
       fprintf (fp, "\n");
    }
@@ -631,12 +631,11 @@ WriteFigureList(void)
     unsigned i;
     unsigned j;
     char    *last_font;
-    char    *last_color;
+    std::string last_color = "";
     FigInfo *figure;
 
 
     last_font = NULL;
-    last_color = NULL;
     fprintf (fp, "\nfigure list\n");
 
     for (i = 0; i < appearance.num_figures; i ++) {
@@ -686,9 +685,9 @@ WriteFigureList(void)
 	}
 
 	if (figure -> color)
-	    if (!last_color || strcmp (figure -> color, last_color)) {
-		fprintf (fp, " color=%s", Quote (figure -> color));
-		last_color = figure -> color;
+	    if (last_color.empty() || strcmp (figure -> color, last_color.c_str())) {
+            fprintf (fp, " color=%s", Quote (figure -> color));
+            last_color = figure -> color;
 	    }
 
 	fprintf (fp, "\n");

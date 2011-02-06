@@ -104,12 +104,12 @@ DestroyElement(Element element)
 }
 
 Force
-CreateForce(char *name)
+CreateForce(const char *name)
 {
     Force force = new struct force;
 
     force -> aux = NULL;
-    force -> color = NULL;
+    force -> color = "";
     force -> name = name;
     for (unsigned i = 0; i < 7; i ++) {
         force -> force [i].value = 0;
@@ -131,20 +131,20 @@ DestroyForce(Force force)
             FreeCode (force -> force [i].expr);
             Deallocate (force -> force [i].text);
         }
-        Deallocate (force -> name);
-        Deallocate (force -> color);
+        //Deallocate (force -> name);
+        //Deallocate (force -> color);
         Deallocate (force -> aux);
         delete force;
     }
 }
 
 Material
-CreateMaterial(char *name)
+CreateMaterial(const char *name)
 {
     Material material = new struct material;
 
     material -> aux   = NULL;
-    material -> color = NULL;
+    material -> color = "";
     material -> name  = name;
     material -> E     = 0;
     material -> Ix    = 0;
@@ -171,20 +171,20 @@ void
 DestroyMaterial(Material material)
 {
     if (material) {
-        Deallocate (material -> name);
-        Deallocate (material -> color);
+        //Deallocate (material -> name);
+        //Deallocate (material -> color);
         Deallocate (material -> aux);
         delete material;
     }
 }
 
 Constraint
-CreateConstraint(char *name)
+CreateConstraint(const char *name)
 {
     Constraint constraint = new struct constraint;
 
     constraint -> aux = NULL;
-    constraint -> color = NULL;
+    constraint -> color = "";
     constraint -> name = name;
     for (unsigned i = 0; i < 7; i ++) {
         constraint -> constraint [i] = 0;
@@ -210,20 +210,18 @@ DestroyConstraint(Constraint constraint)
 	    FreeCode (constraint -> dx [i].expr);
 	    Deallocate (constraint -> dx [i].text);
 	}
-	Deallocate (constraint -> name);
-	Deallocate (constraint -> color);
-	Deallocate (constraint -> aux);
+    Deallocate (constraint -> aux);
     delete constraint;
     }
 }
 
 Distributed
-CreateDistributed(char *name, unsigned int nvalues)
+CreateDistributed(const char *name, unsigned int nvalues)
 {
     Distributed distributed = new struct distributed;
 
     distributed -> aux = NULL;
-    distributed -> color = NULL;
+    distributed -> color = "";
     distributed -> value = NULL;
 
     distributed -> name = name;
@@ -237,8 +235,6 @@ DestroyDistributed(Distributed distributed)
 {
     if (distributed) {
         distributed->value.clear();
-	Deallocate (distributed -> name);
-	Deallocate (distributed -> color);
 	Deallocate (distributed -> aux);
     delete distributed;
     }

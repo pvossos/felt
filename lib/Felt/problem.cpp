@@ -111,7 +111,7 @@ element_cmp(Item e1, Item e2)
 static int 
 material_cmp(Item m1, Item m2)
 {
-    return strcmp (((Material) m1) -> name, ((Material) m2) -> name);
+    return strcmp (((Material) m1) -> name.c_str(), ((Material) m2) -> name.c_str());
 }
 
 
@@ -124,7 +124,7 @@ material_cmp(Item m1, Item m2)
 static int 
 distributed_cmp(Item d1, Item d2)
 {
-    return strcmp (((Distributed) d1) -> name, ((Distributed) d2) -> name);
+    return strcmp (((Distributed) d1) -> name.c_str(), ((Distributed) d2) -> name.c_str());
 }
 
 
@@ -137,7 +137,7 @@ distributed_cmp(Item d1, Item d2)
 static int 
 force_cmp(Item f1, Item f2)
 {
-    return strcmp (((Force) f1) -> name, ((Force) f2) -> name);
+    return strcmp (((Force) f1) -> name.c_str(), ((Force) f2) -> name.c_str());
 }
 
 
@@ -150,7 +150,7 @@ force_cmp(Item f1, Item f2)
 static int
 constraint_cmp(Item c1, Item c2)
 {
-    return strcmp (((Constraint) c1) -> name, ((Constraint) c2) -> name);
+    return strcmp (((Constraint) c1) -> name.c_str(), ((Constraint) c2) -> name.c_str());
 }
 
 
@@ -181,8 +181,7 @@ resolve_node(Item item)
     unsigned	      number;
     Tree	      tree;
     Node	      node;
-
-
+    char *buf;
 
     /* Store the node in the array. */
 
@@ -194,15 +193,16 @@ resolve_node(Item item)
     /* Resolve the constraint. */
 
     tree = problem.constraint_tree;
-    c.name = (char *) node -> constraint;
+    buf = (char *) node->constraint;
 
-    if (c.name) {
-	node -> constraint = (Constraint) TreeSearch (tree, &c);
-
-	if (!node -> constraint)
-	    error ("node %u used undefined constraint %s", number, c.name);
-
-	Deallocate (c.name);
+    if (buf) {
+        c.name = buf;
+        node -> constraint = (Constraint) TreeSearch (tree, &c);
+        
+        if (!node -> constraint)
+            error ("node %u used undefined constraint %s", number, c.name.c_str());
+        
+        c.name = "";
     } else
 	node -> constraint = &default_constraint;
 
@@ -210,15 +210,16 @@ resolve_node(Item item)
     /* Resolve the force. */
 
     tree = problem.force_tree;
-    f.name = (char *) node -> force;
+    buf = (char *) node -> force;
 
-    if (f.name) {
-	node -> force = (Force) TreeSearch (tree, &f);
+    if (buf) {
+        f.name = buf;
+        node -> force = (Force) TreeSearch (tree, &f);
 
-	if (!node -> force)
-	    error ("node %u uses undefined force %s", number, f.name);
+        if (!node -> force)
+            error ("node %u uses undefined force %s", number, f.name.c_str());
 
-	Deallocate (f.name);
+        f.name = "";
     }
 
     return 0;
@@ -255,13 +256,13 @@ resolve_element(Item item)
     tree = problem.material_tree;
     m.name = (char *) element -> material;
 
-    if (m.name) {
-	element -> material = (Material) TreeSearch (tree, &m);
-
-	if (!element -> material)
-	    error ("element %u uses undefined material %s", number, m.name);
-
-	Deallocate (m.name);
+    if (!m.name.empty()) {
+        element -> material = (Material) TreeSearch (tree, &m);
+        
+        if (!element -> material)
+            error ("element %u uses undefined material %s", number, m.name.c_str());
+        
+        m.name = "";
     } else
 	element -> material = &default_material;
 
@@ -275,9 +276,9 @@ resolve_element(Item item)
 	element -> distributed [i] = (Distributed) TreeSearch (tree, &d);
 
 	if (!element -> distributed)
-	    error ("element %u used undefined load %s", number, d.name);
-
-	Deallocate (d.name);
+	    error ("element %u used undefined load %s", number, d.name.c_str());
+    
+	d.name = "";
     }
 
 
@@ -325,9 +326,9 @@ resolve_loadcase(Item item)
 
        loadcase -> forces [i] = (Force) TreeSearch (problem.force_tree, &f);
        if (!loadcase -> forces [i])
-           error ("load case %s used undefined force %s", loadcase->name.c_str(), f.name);
+           error ("load case %s used undefined force %s", loadcase->name.c_str(), f.name.c_str());
 
-       Deallocate (f.name);
+       f.name = "";
     }
 
     for (i = 1 ; i <= loadcase->loads.size(); i++) {
@@ -340,9 +341,9 @@ resolve_loadcase(Item item)
 
        loadcase -> loads [i] = (Distributed) TreeSearch (problem.distributed_tree, &f);
        if (!loadcase -> loads [i])
-           error ("load case %s used undefined load %s", loadcase->name.c_str(), l.name);
+           error ("load case %s used undefined load %s", loadcase->name.c_str(), l.name.c_str());
 
-       Deallocate (l.name);
+       l.name = "";
     }
 
     case_count ++;

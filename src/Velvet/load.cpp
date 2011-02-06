@@ -405,7 +405,7 @@ static int AppendLoadName (Item item)
     if (dialog -> active == (Distributed) item)
 	list_index = num_loads;
 
-    dialog -> loads [num_loads ++] = ((Distributed) item) -> name;
+    dialog -> loads [num_loads ++] = XtNewString(((Distributed) item) -> name.c_str());
     return 0;
 }
 
@@ -570,7 +570,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update all of the text entries. */
 
-    SetTextString (loadd -> name, active -> name);
+    SetTextString (loadd -> name, active -> name.c_str());
 
     for (i = 1 ; i <= 4 ; i++) {
        if (i <= active -> value.size()) {
@@ -667,7 +667,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (loadd -> name), 0);
 	SetFocus (loadd -> name);
 	if (!loadd -> new_copy)
-	    SetTextString (loadd -> name, loadd -> active -> name);
+	    SetTextString (loadd -> name, loadd -> active -> name.c_str());
 	else
 	    SetTextString (loadd -> name, "");
 
@@ -689,12 +689,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new load or new name as needed. */
 
 	if (loadd -> new_copy)
-	   loadd -> active=CreateDistributed (XtNewString (dummy.name), count);
-	else if (strcmp (loadd -> active -> name, dummy.name)) {
+        loadd -> active = CreateDistributed(dummy.name.c_str(), count);
+	else if (strcmp (loadd -> active -> name.c_str(), dummy.name.c_str())) {
            old.name = loadd -> active -> name;
            TreeDelete (loadd -> tree, &old);
-           XtFree (loadd -> active -> name);
-	   loadd -> active -> name = XtNewString (dummy.name);
+           loadd->active->name = dummy.name;
            TreeInsert (loadd -> tree, loadd -> active);
 	}
 

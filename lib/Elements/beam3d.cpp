@@ -389,13 +389,13 @@ Beam3dEquivNodalForces(Element element, int *err_count)
 
       if (element -> distributed[i] -> value.size() != 2) {
          error ("beam3d elt %d must have 2 values for distributed load %s", 
-                 element -> number, element -> distributed[i] -> name);
+                 element -> number, element -> distributed[i] -> name.c_str());
          count++;
       }
 
       if (element -> distributed[i] -> direction == Perpendicular) {
           error ("invalid direction for beam3d elt %d distributed load %s", 
-                  element -> number, element -> distributed[i] -> name);
+                  element -> number, element -> distributed[i] -> name.c_str());
           count++;
       }
 
@@ -404,7 +404,7 @@ Beam3dEquivNodalForces(Element element, int *err_count)
              element -> distributed[i] -> value[j].node > 2) {
 
              error ("invalid node numbering for beam3d elt %d distrib load %s",
-                     element -> number, element -> distributed[i] -> name);
+                     element -> number, element -> distributed[i] -> name.c_str());
              count++;
          }
       }
@@ -413,7 +413,7 @@ Beam3dEquivNodalForces(Element element, int *err_count)
           element -> distributed[i] -> value[2].node) {
 
           error ("incorrect node numbering for elt %d distributed load %s", 
-                  element -> number, element -> distributed[i] -> name);
+                  element -> number, element -> distributed[i] -> name.c_str());
           count++;
       }
    }

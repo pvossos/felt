@@ -430,7 +430,7 @@ static int AppendMaterialName (Item item)
     if (dialog -> active == (Material) item)
 	list_index = num_materials;
 
-    dialog -> materials [num_materials ++] = ((Material) item) -> name;
+    dialog -> materials [num_materials ++] = XtNewString(((Material) item) -> name.c_str());
     return 0;
 }
 
@@ -495,7 +495,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update all of the text entries. */
 
-    SetTextString (materiald -> name, active -> name);
+    SetTextString (materiald -> name, active -> name.c_str());
 
     sprintf (buffer, (active -> E ? "%g" : ""), active -> E);
     SetTextString (materiald -> E, buffer);
@@ -590,7 +590,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (materiald -> name), 0);
 	SetFocus (materiald -> name);
 	if (!materiald -> new_copy)
-	    SetTextString (materiald -> name, materiald -> active -> name);
+	    SetTextString (materiald -> name, materiald -> active -> name.c_str());
 	else
 	    SetTextString (materiald -> name, "");
 
@@ -600,13 +600,12 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new material or new name as needed. */
 
 	if (materiald -> new_copy)
-	    materiald -> active = CreateMaterial (XtNewString (dummy.name));
-	else if (strcmp (materiald -> active -> name, dummy.name)) {
-            old.name = materiald -> active -> name;
-            TreeDelete (materiald -> tree, &old);
-	    XtFree (materiald -> active -> name);
-	    materiald -> active -> name = XtNewString (dummy.name);
-            TreeInsert (materiald -> tree, materiald -> active);
+	    materiald -> active = CreateMaterial (dummy.name.c_str());
+	else if (strcmp (materiald -> active -> name.c_str(), dummy.name.c_str())) {
+        old.name = materiald -> active -> name;
+        TreeDelete (materiald -> tree, &old);
+        materiald->active->name = dummy.name;
+        TreeInsert (materiald -> tree, materiald -> active);
 	}
 
 	active = materiald -> active;

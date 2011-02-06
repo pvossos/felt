@@ -339,14 +339,13 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ColorsDialog	colorsd;
     XawListReturnStruct	*info;
-    String		color;
+    std::string color = "";
     struct material	m;
     struct constraint	c;
     struct force	f;
     struct distributed	l;
     int			item;
   
-    color = NULL;
     colorsd = (ColorsDialog) client_data;
 
     if (active_list != w && active_list != NULL)
@@ -379,8 +378,8 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
        color = current_load -> color;
     }
 
-    if (color != NULL) {
-       item = FindColorIndex (colorsd, color);
+    if (!color.empty()) {
+        item = FindColorIndex (colorsd, color.c_str());
        if (item != -1)
           XawListHighlight (colorsd -> colorlist, item);
        else
@@ -410,20 +409,16 @@ static void ColorChange (Widget w, XtPointer client_data, XtPointer call_data)
        return;
 
     if (active_list == colorsd -> mlist) {
-       XtFree (current_material -> color);
-       current_material -> color = XtNewString (info -> string);
+       current_material -> color = info -> string;
     }
     else if (active_list == colorsd -> llist) {
-       XtFree (current_load -> color);
-       current_load -> color = XtNewString (info -> string); 
+        current_load -> color = info -> string; 
     }
     else if (active_list == colorsd -> clist) {
-       XtFree (current_constraint -> color);
-       current_constraint -> color = XtNewString (info -> string);
+        current_constraint -> color = info -> string;
     }
     else if (active_list == colorsd -> flist) {
-       XtFree (current_force -> color);
-       current_force -> color = XtNewString (info -> string);
+        current_force -> color = info -> string;
     }
     else 
        XawListUnhighlight (colorsd -> colorlist);
@@ -483,29 +478,29 @@ static String	*object_colors = NULL;
 
 static int AddMaterial (Item item)
 {
-   object_colors [object_count] = ((Material) item) -> color;
-   object_names [object_count ++] = ((Material) item) -> name;
+    object_colors [object_count] = XtNewString(((Material) item) -> color.c_str());
+    object_names [object_count ++] = XtNewString(((Material) item) -> name.c_str());
    return 0;
 }
 
 static int AddConstraint (Item item)
 {
-   object_colors [object_count] = ((Constraint) item) -> color;
-   object_names [object_count ++] = ((Constraint) item) -> name;
+    object_colors [object_count] = XtNewString(((Constraint) item) -> color.c_str());
+    object_names [object_count ++] = XtNewString(((Constraint) item) -> name.c_str());
    return 0;
 }
 
 static int AddLoad (Item item)
 {
-   object_colors [object_count] = ((Distributed) item) -> color;
-   object_names [object_count ++] = ((Distributed) item) -> name;
+    object_colors [object_count] = XtNewString(((Distributed) item) -> color.c_str());
+    object_names [object_count ++] = XtNewString(((Distributed) item) -> name.c_str());
    return 0;
 }
 
 static int AddForce (Item item)
 {
-   object_colors [object_count] = ((Force) item) -> color;
-   object_names [object_count ++] = ((Force) item) -> name;
+    object_colors [object_count] = XtNewString(((Force) item) -> color.c_str());
+    object_names [object_count ++] = XtNewString(((Force) item) -> name.c_str());
    return 0;
 }
 

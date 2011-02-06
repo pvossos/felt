@@ -400,7 +400,7 @@ static Widget		menu_button;
 
 static int SetLoadEntry (Item item)
 {
-    SetLabelString (children [child_number], ((Distributed) item) -> name);
+    SetLabelString (children [child_number], ((Distributed) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -508,7 +508,7 @@ static void UpdateLoadName (Widget w, XtPointer client_data, XtPointer call_data
 
 static int SetMaterialEntry (Item item)
 {
-    SetLabelString (children [child_number], ((Material) item) -> name);
+    SetLabelString (children [child_number], ((Material) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -1526,13 +1526,13 @@ void ElementDialogDisplay (ElementDialog eltd, Element element)
     SetType   (eltd, active -> definition);
 
     if (active -> material != NULL)
-	SetTextString (eltd -> m_name, active -> material -> name);
+        SetTextString (eltd -> m_name, active -> material -> name.c_str());
     else
-	SetTextString (eltd -> m_name, "");
+        SetTextString (eltd -> m_name, "");
 
     for (i = 1; i <= 3; i ++)
 	if (active -> numdistributed >= i && (load = active -> distributed [i]))
-	    SetTextString (eltd -> l_name [i - 1], load -> name);
+	    SetTextString (eltd -> l_name [i - 1], load -> name.c_str());
 	else
 	    SetTextString (eltd -> l_name [i - 1], "");
 

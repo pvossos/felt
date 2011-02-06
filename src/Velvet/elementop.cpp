@@ -508,12 +508,12 @@ int DrawElement (Element element)
     if (DW_SetFont (drawing, canvas -> label_font) == False)
         (void) DW_SetFont (drawing, "fixed");
 
-    if (element -> numdistributed && element -> distributed[1] -> color) {
-        if (DW_SetForeground (drawing,element->distributed[1]->color) == False)
+    if (element -> numdistributed && !element -> distributed[1] -> color.empty()) {
+        if (DW_SetForeground (drawing,element->distributed[1]->color.c_str()) == False)
 	    (void) DW_SetForeground (drawing, "black");
     }
-    else if (element -> material -> color) {
-        if (DW_SetForeground (drawing, element -> material -> color) == False)
+    else if (!element -> material -> color.empty()) {
+        if (DW_SetForeground (drawing, element -> material -> color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
     else {

@@ -417,10 +417,10 @@ static int WriteMaterial (Item item)
     Material material = (Material) item;
 
 
-    if (strpbrk (material -> name, "- \t\n=[]\",+*/()#"))
-	fprintf (fp, "\"%s\"  ", material -> name);
+    if (strpbrk (material -> name.c_str(), "- \t\n=[]\",+*/()#"))
+        fprintf (fp, "\"%s\"  ", material -> name.c_str());
     else
-	fprintf (fp, "%s  ", material -> name);
+        fprintf (fp, "%s  ", material -> name.c_str());
 
     fprintf (fp, "E=%g A=%g ", material -> E, material -> A);
     fprintf (fp, "Ix=%g Iy=%g ", material -> Ix, material -> Iy);

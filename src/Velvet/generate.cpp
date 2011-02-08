@@ -106,7 +106,7 @@ static void VelvetCoalesceNodes (void)
    }
 
    for (i = 1 ; i <= ne ; i++) {
-      TreeDelete (problem.element_tree, problem.elements [i]);
+      problem.element_set.erase(problem.elements[i]);
 
       Deallocate (problem.elements [i] -> aux);
       problem.elements [i] -> aux = NULL;
@@ -157,7 +157,6 @@ void GenerateElements (void)
 void SetupGridGeneration (void)
 {
    static GridDialog	grid_d = NULL;
-   Element	mxelt;
    Node		mxnode;
    unsigned	mxnode_number,
 		mxelt_number;
@@ -170,11 +169,10 @@ void SetupGridGeneration (void)
    else
       mxnode_number = 0;
 
-   mxelt = (Element) TreeMaximum (problem.element_tree);
-   if (mxelt != NULL)
-      mxelt_number = mxelt -> number;
-   else
-      mxelt_number = 0;
+   mxelt_number =
+       !problem.element_set.empty() ?
+       (*problem.element_set.rbegin())->number
+       : 0;
 
    if (grid_d == NULL)
       grid_d = GridDialogCreate (toplevel, "gridDialog", "Generation Parameters");
@@ -332,10 +330,8 @@ void DoAddCurvePoint (float x, float y)
 static void
 DoTriMeshGeneration(void)
 {
-   Element	mxelt;
    Node		mxnode;
    unsigned	maxnode;
-   unsigned	maxelt;
    unsigned	i;
 
   
@@ -345,11 +341,10 @@ DoTriMeshGeneration(void)
    else
       maxnode = 0;
 
-   mxelt = (Element) TreeMaximum (problem.element_tree);
-   if (mxelt != NULL)
-      maxelt = mxelt -> number; 
-   else
-      maxelt = 0;
+   unsigned maxelt = 
+       !problem.element_set.empty() ?
+       (*problem.element_set.rbegin())->number
+       : 0;
  
    DW_SetAutoRedraw (drawing, False);
     

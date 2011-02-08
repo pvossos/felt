@@ -25,6 +25,7 @@
  *		dialogs.						*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include "Constraint.h"
@@ -248,20 +249,16 @@ void ForceDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
  * Description:	Tree iterator to check references to a load.		*
  ************************************************************************/
 
-static int CheckLoadReferences (Item item)
+static bool CheckLoadReferences (Element element)
 {
     Cardinal i;
     Cardinal j;
-    Element  element;
-
-
-    element = (Element) item;
 
     for (i = 1; i <= element -> numdistributed; i ++)
 	if (element -> distributed [i] == deleted_load) {
 	    if (first_time) {
             if (!CheckOk ("Load", deleted_load -> name.c_str()))
-		    return 1;
+		    return true;
 		first_time = False;
 	    }
 	    for (j = i + 1; j <= element -> numdistributed; j ++)
@@ -269,7 +266,7 @@ static int CheckLoadReferences (Item item)
 	    element -> numdistributed --;
 	}
 
-    return 0;
+    return false;
 }
 
 
@@ -299,15 +296,14 @@ void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 
 
     if (info -> deleted == True) {
-	first_time = True;
-	deleted_load = info -> load;
-
-	TreeSetIterator (problem.element_tree, CheckLoadReferences);
-	if (TreeIterate (problem.element_tree)) {
-	    info -> proceed = False;
-	    return;
-	}
-
+        first_time = True;
+        deleted_load = info -> load;
+        
+        if (problem.element_set.end()
+            == std::find_if(problem.element_set.begin(),
+                            problem.element_set.end(),
+                            CheckLoadReferences))
+            info->proceed = False;
     }
 
     changeflag = True;
@@ -326,19 +322,14 @@ void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
  * Description:	Tree iterator to check references to a material.	*
  ************************************************************************/
 
-static int CheckMaterialReferences (Item item)
+static bool CheckMaterialReferences (Element element)
 {
-    Element element;
-
-
-    element = (Element) item;
-
     if (element -> material == deleted_material) {
         error ("Material %s is still in use.", deleted_material -> name.c_str());
-	return 1;
+	return true;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -360,9 +351,10 @@ void MaterialDialogChanged (Widget w, XtPointer client_data, XtPointer call_data
     element_d = (ElementDialog) client_data;
 
     if (info -> deleted == True) {
-	deleted_material = info -> material;
-	TreeSetIterator (problem.element_tree, CheckMaterialReferences);
-	info -> proceed = TreeIterate (problem.element_tree) ? False : True;
+        deleted_material = info -> material;
+        Problem::ElementSet::iterator it;
+        it = std::find_if(problem.element_set.begin(), problem.element_set.end(), CheckMaterialReferences);
+        info -> proceed = it == problem.element_set.end();
     }
 
     if (info -> proceed == True) {

@@ -874,8 +874,9 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
             active->elements.resize(loadcased->num_loads);
 
             for (i = 1 ; i <= active->loads.size(); i++) {
-              e.number = loadcased -> element_assignments [i-1];                
-              active -> elements [i] = (Element) TreeSearch (problem.element_tree, &e);
+              e.number = loadcased -> element_assignments [i-1];
+              Problem::ElementSet::iterator it = problem.element_set.find(&e);
+              active -> elements [i] = it != problem.element_set.end() ? *it : NULL;
               if (active -> elements [i] == NULL) {
                  error ("element %d is not defined", e.number);
                  return;

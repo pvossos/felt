@@ -83,15 +83,15 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	newinfo = True;
 	DW_RemoveFigure (drawing, drawn -> figure);
 	DW_RemoveFigure (drawing, drawn -> label);
-        
-	(void) TreeDelete (problem.element_tree, element);
+    
+    problem.element_set.erase(element);
 	DestroyElement (element);
     }
 
 
     if (newinfo == True) {
 	ElementDialogDisplay (element_d, NULL);
-	ElementDialogUpdate (element_d, problem.element_tree, NULL, NULL, NULL);
+	ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
     }
 
     if (firsttime == False) {
@@ -126,14 +126,19 @@ DoDeleteElt(Element element)
     sprintf (message, "Element %d deleted.  Select element:", element -> number);
 
     if (element == ElementDialogActive (element_d)) {
-	newelement = (Element) TreePredecessor (problem.element_tree, element);
-	if (newelement == NULL)
-	    newelement = (Element) TreeSuccessor (problem.element_tree, element);
-	ElementDialogDisplay (element_d, newelement);
+        Problem::ElementSet::iterator it;
+        it = problem.element_set.lower_bound(element);
+        newelement = it != problem.element_set.begin() ? *(--it) : NULL;
+        if (!newelement) {
+            it = problem.element_set.upper_bound(element);
+            newelement = it != problem.element_set.end() ? *it : NULL;
+        }
+        
+        ElementDialogDisplay (element_d, newelement);
     }
 
-    (void) TreeDelete (problem.element_tree, element);
-    ElementDialogUpdate (element_d, problem.element_tree, NULL, NULL, NULL);
+    problem.element_set.erase(element);
+    ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
 
     DestroyElement (element);
     ChangeStatusLine (message, True);
@@ -197,7 +202,9 @@ void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
+    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
+    found = it != problem.element_set.end() ? *it : NULL;
+
     if (found == NULL) {
 	error ("Element %d does not exist.", dummy.number);
 	return;
@@ -268,19 +275,17 @@ void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
-    Item           found;
-
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
-
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Element %d does not exist.", dummy.number);
-	return;
+    
+    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
+    if (it == problem.element_set.end()) {
+        error ("Element %d does not exist.", dummy.number);
+        return;
     }
 
-    ElementDialogDisplay (element_d, (Element) found);
+    ElementDialogDisplay (element_d, *it);
     ElementDialogPopup (element_d);
 }
 
@@ -347,8 +352,7 @@ void DoAddElement (Node node)
 	return;
     }
 
-
-    element = (Element) TreeMaximum (problem.element_tree);
+    element = !problem.element_set.empty() ? *(problem.element_set.rbegin()) : NULL;
     max = element != NULL ? element -> number : 0;
 
     element = CreateElement (max + 1, ElementListDefinition (element_l));
@@ -362,7 +366,7 @@ void DoAddElement (Node node)
     sprintf (message, "Added element %d.  Select first node:", max + 1);
     ChangeStatusLine (message, True);
 
-    ElementDialogUpdate (element_d, problem.element_tree, NULL, NULL, NULL);
+    ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
     ElementDialogDisplay (element_d, element);
 }
 
@@ -495,15 +499,13 @@ int DrawElement (Element element)
     Drawn            drawn;
     unsigned         num;
     unsigned         j;
-    Item	     found;
     float	     x;
     float	     y;
     Figure	     label;
     char	     buffer [10];
 
-    found = TreeInsert (problem.element_tree, element);
-    if (found != (Item) element)
-	return 1;
+    if (0 == problem.element_set.count(element))
+        return 1;
 
     if (DW_SetFont (drawing, canvas -> label_font) == False)
         (void) DW_SetFont (drawing, "fixed");

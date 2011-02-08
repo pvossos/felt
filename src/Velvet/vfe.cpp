@@ -357,9 +357,8 @@ void DestroyProblem (MaterialDestructor material_op)
 		DestroyNode);
     (void) TreeDestroy (problem.node_tree);
 
-    (void) TreeSetDestructor (problem.element_tree, (ItemDestructor)
-		DestroyElement);
-    (void) TreeDestroy (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), DestroyElement);
+    problem.element_set.clear();
 
     (void) TreeSetDestructor (problem.force_tree, (ItemDestructor)
 		DestroyForce);
@@ -443,17 +442,15 @@ void SetNodeNumbering (int value)
  * Description:	Sets the element numbering for a specified element.	*
  ************************************************************************/
 
-static int setelementnum (Item item)
+static int setelementnum (Element element)
 {
     static char	     number [10];
     FigureAttributes attr;
-    Element	     element;
     Drawn	     drawn;
     float	     x;
     float	     y;
 
 
-    element = (Element) item;
     drawn = (Drawn) element -> aux;
 
     if (drawn -> figure == NULL)
@@ -488,8 +485,7 @@ void SetElementNumbering (int value)
 
     attributes.visible = value;
     DW_SetAutoRedraw (drawing, False);
-    (void) TreeSetIterator (problem.element_tree, setelementnum);
-    (void) TreeIterate (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), setelementnum);
     DW_SetAutoRedraw (drawing, True);
 }
 
@@ -519,13 +515,11 @@ static int RecolorNode (Item item)
    return 0;
 }
 
-static int RecolorElement (Item item)
+static int RecolorElement (Element e)
 {
    FigureAttributes	attrib;
-   Element		e;
    Drawn		drawn;
 
-   e = (Element) item;
    drawn = (Drawn) e -> aux;
 
    if (e -> numdistributed && !e -> distributed[1] -> color.empty()) 
@@ -559,8 +553,7 @@ void RecolorCanvas (void)
    TreeSetIterator (problem.node_tree, RecolorNode);
    TreeIterate (problem.node_tree);
 
-   TreeSetIterator (problem.element_tree, RecolorElement);
-   TreeIterate (problem.element_tree);
+   std::for_each(problem.element_set.begin(), problem.element_set.end(), RecolorElement);
 
    DW_SetAutoRedraw (drawing, True);
 

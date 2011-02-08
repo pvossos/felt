@@ -17,6 +17,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+# include <algorithm>
 # include <stdio.h>
 # include <unistd.h>
 # include <X11/Intrinsic.h>
@@ -73,14 +74,12 @@ static int BuildNodeArray (Item item)
    return 0;
 }
 
-static int BuildElementArray (Item item)
+static int BuildElementArray (Element element)
 {
    FigureAttributes	attr;
    char			buffer [10];
-   Element		element;
    Drawn		drawn; 
 
-   element = (Element) item;
    problem.elements [++array_count] = element;
 
    if (array_count != element -> number) {
@@ -696,9 +695,7 @@ int CompactNodeNumbers (void)
     
 int CompactElementNumbers (void)
 {
-    unsigned		numelts;
-
-    numelts = TreeSize (problem.element_tree);
+    unsigned numelts = problem.element_set.size();
     if (numelts == 0) {
         problem.elements.clear();
         return 0;
@@ -710,8 +707,7 @@ int CompactElementNumbers (void)
     DW_SetAutoRedraw (drawing, False);
 
     array_count = 0;
-    TreeSetIterator (problem.element_tree, BuildElementArray);
-    TreeIterate (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), BuildElementArray);
 
     if (canvas -> element_numbers)
        DW_SetAutoRedraw (drawing, True);

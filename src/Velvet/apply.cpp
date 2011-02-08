@@ -434,8 +434,6 @@ void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
-    Item           found;
-
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -443,13 +441,13 @@ void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Element %d does not exist.", dummy.number);
-	return;
+    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
+    if (it == problem.element_set.end()) {
+        error ("Element %d does not exist.", dummy.number);
+        return;
     }
 
-    DoApplyLoad ((Element) found);
+    DoApplyLoad (*it);
 }
 
 
@@ -571,8 +569,6 @@ void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     struct element dummy;
-    Item           found;
-
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -580,13 +576,13 @@ void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Element %d does not exist.", dummy.number);
-	return;
+    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
+    if (it == problem.element_set.end()) {
+        error ("Element %d does not exist.", dummy.number);
+        return;
     }
 
-    DoApplyMaterial ((Element) found);
+    DoApplyMaterial (*it);
 }
 
 

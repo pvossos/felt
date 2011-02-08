@@ -42,6 +42,7 @@
 typedef struct {
     typedef std::set<Definition, LtDefinition> DefinitionSet;
     typedef std::set<Material, LtMaterial> MaterialSet;
+    typedef std::set<Element, LtElement> ElementSet;
      
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
@@ -50,7 +51,7 @@ typedef struct {
     cvector1<LoadCase> loadcases;
     DefinitionSet definition_set;
     Tree	 node_tree;		/* node tree		   */
-    Tree	 element_tree;		/* element tree		   */
+    ElementSet element_set;
     MaterialSet material_set;
     Tree	 distributed_tree;	/* distributed load tree   */
     Tree	 force_tree;		/* force tree		   */

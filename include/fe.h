@@ -210,6 +210,14 @@ typedef struct element {
     unsigned    ninteg;			/* number of integration points */
 } *Element;
 
+struct LtElement
+{
+     bool operator()(const Element a, const Element b) const
+          {
+               return a->number < b->number;
+          }
+};
+
 
 /* A nodal DOF */
 

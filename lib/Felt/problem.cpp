@@ -24,6 +24,7 @@
  *		definitions for the creation of a problem instance.	*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
@@ -233,19 +234,17 @@ resolve_node(Item item)
  ************************************************************************/
 
 static int
-resolve_element(Item item)
+resolve_element(Element element)
 {
     struct distributed d;
     struct material    m;
     unsigned	       i;
     unsigned	       number;
     Tree	       tree;
-    Element	       element;
     char *buf;
 
     /* Store the element in the array. */
 
-    element = (Element) item;
     number = element -> number;
     problem.elements [number] = element;
 
@@ -333,7 +332,8 @@ resolve_loadcase(Item item)
        l.name = (char *) loadcase -> loads [i];
        e.number = (unsigned) loadcase -> elements [i];
 
-       loadcase -> elements [i] = (Element) TreeSearch (problem.element_tree, &e);
+       Problem::ElementSet::iterator it = problem.element_set.find(&e);
+       loadcase -> elements [i] = it != problem.element_set.end() ? *it : NULL;
        if (!loadcase -> elements [i])
            error ("load case %s used undefined element %d", loadcase->name.c_str(), e.number);
 
@@ -380,8 +380,7 @@ resolve_names(void)
 
     if (!problem.elements.empty()) {
 
-        TreeSetIterator (problem.element_tree, resolve_element);
-        TreeIterate (problem.element_tree);
+        std::for_each(problem.element_set.begin(), problem.element_set.end(), resolve_element);
 
         for (i = 1; i <= problem.elements.size(); i ++)
             if (!problem.elements [i])
@@ -472,7 +471,6 @@ ReadFeltFile(const char *filename)
     problem.nodes.clear();
     problem.elements.clear();
     problem.node_tree	     = TreeCreate (node_cmp);
-    problem.element_tree     = TreeCreate (element_cmp);
     problem.distributed_tree = TreeCreate (distributed_cmp);
     problem.force_tree	     = TreeCreate (force_cmp);
     problem.constraint_tree  = TreeCreate (constraint_cmp);

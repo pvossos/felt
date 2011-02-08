@@ -402,14 +402,13 @@ element_number
 		}
 
 		element = CreateElement ($1, definition);
-		found = TreeInsert (problem.element_tree, element);
 
-		if (found != (Item) element) {
-		    error ("element number %u is repeated", $1);
-		    DestroyElement (element);
-		    element = &dummy_element;
-		    break;
-		}
+        if (!problem.element_set.insert(element).second) {
+             error ("element number %u is repeated", $1);
+             DestroyElement (element);
+             element = &dummy_element;
+             break;
+        } 
 
         if (!element->material)
              element -> material = new struct material;

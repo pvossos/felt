@@ -17,6 +17,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
@@ -120,11 +121,10 @@ static Figure           ghost_figure;
 static FigureAttributes attr;
 
 
-static int MoveNode (Item item)
+static int MoveNode (Element element)
 {
     unsigned i;
     unsigned numnodes;
-    Element  element = (Element) item;
     Drawn    drawn;
 
 
@@ -172,8 +172,7 @@ void DoWalkNode (Node node)
     DW_SetAutoRedraw (drawing, False);
     DW_SetAttributes (drawing, drawn -> figure, DW_FigureLocation, &attr);
     DW_SetAttributes (drawing, drawn -> label, DW_FigureLocation, &attr);
-    (void) TreeSetIterator (problem.element_tree, MoveNode);
-    (void) TreeIterate (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), MoveNode);
     DW_SetAutoRedraw (drawing, True);
 
     NodeDialogDisplay (node_d, node);

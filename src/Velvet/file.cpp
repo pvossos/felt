@@ -215,7 +215,7 @@ int VelvetReadFeltFile (char *file)
     MaterialDialogUpdate   (material_d, &problem.material_set);
     NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
 			    problem.constraint_tree);
-    ElementDialogUpdate	   (element_d, problem.element_tree,
+    ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, problem.distributed_tree,
                             problem.node_tree);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
@@ -229,9 +229,9 @@ int VelvetReadFeltFile (char *file)
     AnalysisDialogUpdate (analysis_d, True);
     SolutionDialogUpdate (solution_d);
 
-    elt = (Element) TreeMinimum (problem.element_tree);
-    if (elt != NULL) 
-        ElementListSet (element_l, elt -> definition);
+    Problem::ElementSet::iterator it = problem.element_set.begin();
+    if (it != problem.element_set.end()) 
+        ElementListSet (element_l, (*it) -> definition);
     else 
         ElementListSet (element_l, NULL);
 
@@ -274,7 +274,7 @@ void StartNew (void)
     MaterialDialogUpdate   (material_d, &problem.material_set);
     NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
 			    problem.constraint_tree);
-    ElementDialogUpdate	   (element_d, problem.element_tree,
+    ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, problem.distributed_tree,
                             problem.node_tree);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
@@ -395,7 +395,7 @@ void OpenMaterialFile (void)
 
     MaterialDialogUpdate (material_d, &problem.material_set);
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
-    ElementDialogUpdate	(element_d, problem.element_tree,
+    ElementDialogUpdate	(element_d, &problem.element_set,
                          &problem.material_set, NULL, NULL);
 
     changeflag = True;

@@ -85,7 +85,7 @@ struct element_dialog {
     Definition	   definition;
     Element	   active;
     unsigned	   node_values [32];
-    Tree	   elements;
+    Problem::ElementSet	 *elements;
     Problem::MaterialSet *materials;
     Tree           loads;
     Tree           nodes;
@@ -755,7 +755,8 @@ static void Up (Widget w, XtPointer client_data, XtPointer call_data)
     if (eltd -> active == NULL)
 	return;
 
-    element = (Element) TreeSuccessor (eltd -> elements, eltd -> active);
+    Problem::ElementSet::iterator it = problem.element_set.upper_bound(eltd->active);
+    element = it != problem.element_set.end() ? *it : NULL;
 
     if (element != NULL)
 	ElementDialogDisplay (eltd, element);
@@ -779,7 +780,8 @@ static void Down (Widget w, XtPointer client_data, XtPointer call_data)
     if (eltd -> active == NULL)
 	return;
 
-    element = (Element) TreePredecessor (eltd -> elements, eltd -> active);
+    Problem::ElementSet::iterator it = problem.element_set.lower_bound(eltd->active);
+    element = it != problem.element_set.begin() ? *(--it) : NULL;
 
     if (element != NULL)
 	ElementDialogDisplay (eltd, element);
@@ -937,8 +939,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new element as needed. */
 
     if (eltd -> new_copy) {
-	eltd -> active = CreateElement (eltd -> new_copy, eltd -> definition);
-	TreeInsert (eltd -> elements, eltd -> active);
+        eltd -> active = CreateElement (eltd -> new_copy, eltd -> definition);
+        problem.element_set.insert(eltd->active);
     }
 
     active = eltd -> active;
@@ -1024,10 +1026,15 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
 	active = eltd -> active;
 
-	if (!(element = (Element) TreePredecessor (eltd -> elements, active)))
-	    element = (Element) TreeSuccessor (eltd -> elements, active);
+    Problem::ElementSet::iterator it = eltd->elements->lower_bound(active);
+    element = it != eltd->elements->begin() ? *(--it) : NULL;
+    if (!element) {
+        it = eltd->elements->upper_bound(active);
+        element = it != eltd->elements->end() ? *it : NULL;
+    }
+    
 
-	TreeDelete (eltd -> elements, active);
+    eltd->elements->erase(active);
 	DestroyElement (active);
 	eltd -> active = element;
     }
@@ -1053,7 +1060,7 @@ static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 
     eltd = (ElementDialog) client_data;
 
-    element = (Element) TreeMaximum (eltd -> elements);
+    element = eltd->elements->empty() ? NULL : *(eltd->elements->rbegin());
     eltd -> new_copy = element != NULL ? element -> number + 1 : 1;
 
     SetNumber (eltd, eltd -> new_copy);
@@ -1445,7 +1452,7 @@ void ElementDialogPopup (ElementDialog eltd)
  *		trees.							*
  ************************************************************************/
 
-void ElementDialogUpdate (ElementDialog eltd, Tree elements, Problem::MaterialSet *materials, Tree loads, Tree nodes)
+void ElementDialogUpdate (ElementDialog eltd, Problem::ElementSet *elements, Problem::MaterialSet *materials, Tree loads, Tree nodes)
 {
     /* Remember to update the menus if necessary. */
 
@@ -1465,11 +1472,11 @@ void ElementDialogUpdate (ElementDialog eltd, Tree elements, Problem::MaterialSe
 
     /* Determine a new active element if necessary. */
 
-    if (elements == NULL && eltd -> active == NULL)
-	eltd -> active = (Element) TreeMinimum (eltd -> elements);
+    if (!elements && eltd -> active == NULL)
+        eltd -> active = *(eltd->elements->begin());
 
     if (elements && (eltd -> active == NULL || eltd -> elements != elements))
-	eltd -> active = (Element) TreeMinimum (elements);
+        eltd -> active = *(elements->begin());
 
     if (elements != NULL) {
 	eltd -> elements = elements;

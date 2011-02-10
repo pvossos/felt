@@ -156,13 +156,13 @@ void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
+    if (it == problem.node_set.end()) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoApplyForce ((Node) found);
+    DoApplyForce (*it);
 }
 
 
@@ -292,14 +292,14 @@ void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	    SelectGroup (NULL, ApplyConstraintGroup);
 	return;
     }
-
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    
+    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
+    if (it == problem.node_set.end()) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
-
-    DoApplyConstraint ((Node) found);
+    
+    DoApplyConstraint (*it);
 }
 
 

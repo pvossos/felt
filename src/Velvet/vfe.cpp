@@ -353,9 +353,8 @@ void DrawProblem (double z)
 
 void DestroyProblem (MaterialDestructor material_op)
 {
-    (void) TreeSetDestructor (problem.node_tree, (ItemDestructor)
-		DestroyNode);
-    (void) TreeDestroy (problem.node_tree);
+    std::for_each(problem.node_set.begin(), problem.node_set.end(), DestroyNode);
+    problem.node_set.clear();
 
     std::for_each(problem.element_set.begin(), problem.element_set.end(), DestroyElement);
     problem.element_set.clear();
@@ -384,17 +383,15 @@ void DestroyProblem (MaterialDestructor material_op)
  * Description:	Sets the node numbering for a specified node.		*
  ************************************************************************/
 
-static int setnodenum (Item item)
+static int setnodenum (Node node)
 {
     static char	     number [10];
     FigureAttributes attr;
-    Node	     node;
     Drawn	     drawn;
     float	     x;
     float	     y;
 
 
-    node = (Node) item;
     drawn = (Drawn) node -> aux;
 
     if (drawn -> figure == NULL)
@@ -430,8 +427,7 @@ void SetNodeNumbering (int value)
 
     attributes.visible = value;
     DW_SetAutoRedraw (drawing, False);
-    (void) TreeSetIterator (problem.node_tree, setnodenum);
-    (void) TreeIterate (problem.node_tree);
+    std::for_each(problem.node_set.begin(), problem.node_set.end(), setnodenum);
     DW_SetAutoRedraw (drawing, True);
 }
 
@@ -489,13 +485,11 @@ void SetElementNumbering (int value)
     DW_SetAutoRedraw (drawing, True);
 }
 
-static int RecolorNode (Item item)
+static int RecolorNode (Node n)
 {
-   Node			n;
    FigureAttributes	attrib;
    Drawn		drawn;
 
-   n = (Node) item;
    drawn = (Drawn) n -> aux;
 
    if (n -> force && !n -> force -> color.c_str()) 
@@ -550,8 +544,7 @@ void RecolorCanvas (void)
 {
    DW_SetAutoRedraw (drawing, False);
 
-   TreeSetIterator (problem.node_tree, RecolorNode);
-   TreeIterate (problem.node_tree);
+   std::for_each(problem.node_set.begin(), problem.node_set.end(), RecolorNode);
 
    std::for_each(problem.element_set.begin(), problem.element_set.end(), RecolorElement);
 

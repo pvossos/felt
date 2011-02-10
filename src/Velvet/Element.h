@@ -47,7 +47,9 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
 
 void ElementDialogPopup (ElementDialog eltd);
 
-void ElementDialogUpdate (ElementDialog eltd, Problem::ElementSet *elements, Problem::MaterialSet *materials, Tree loads, Tree nodes);
+void ElementDialogUpdate (ElementDialog eltd,
+                          Problem::ElementSet *elements, Problem::MaterialSet *materials,
+                          Tree loads, Problem::NodeSet *nodes);
 
 Element ElementDialogActive (ElementDialog eltd);
 

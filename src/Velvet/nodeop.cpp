@@ -90,7 +90,7 @@ void DoAddNode (float x, float y, float z)
    Node     node;
    unsigned max;
 
-   node = (Node) TreeMaximum (problem.node_tree);
+   node = problem.node_set.empty() ? NULL : *(problem.node_set.rbegin());
    max = node != NULL ? node -> number : 0;
 
    node = CreateNode (max + 1);
@@ -108,7 +108,7 @@ void DoAddNode (float x, float y, float z)
    /* The node dialog needs to know that the new node is in
       the tree before it can display it. */
 
-   NodeDialogUpdate (node_d, problem.node_tree, NULL, NULL);
+   NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
    NodeDialogDisplay (node_d, node);
 
    changeflag = True;
@@ -221,14 +221,14 @@ DeleteNodeGroup(Figure *figures, unsigned nfigures)
 	newinfo = True;
 	DW_RemoveFigure (drawing, drawn -> figure);
 	DW_RemoveFigure (drawing, drawn -> label);
-	(void) TreeDelete (problem.node_tree, node);
+    problem.node_set.erase(node);
 	DestroyNode (node);
     }
 
 
     if (newinfo) {
         NodeDialogDisplay (node_d, NULL);
-	NodeDialogUpdate (node_d, problem.node_tree, NULL, NULL);
+	NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
     }
 
 
@@ -270,15 +270,19 @@ DoDeleteNode(Node node)
     sprintf (message, "Node %d deleted.  Select node:", node -> number);
 
     if (node == NodeDialogActive (node_d)) {
-	newnode = (Node) TreePredecessor (problem.node_tree, node);
-	if (newnode == NULL)
-	    newnode = (Node) TreeSuccessor (problem.node_tree, node);
+        Problem::NodeSet::iterator it;
+        it = problem.node_set.lower_bound(node);
+        newnode = it != problem.node_set.begin() ? *(--it) : NULL;
+        if (!newnode) {
+            it = problem.node_set.upper_bound(node);
+            newnode = it != problem.node_set.end() ? *it : NULL;
+        }
 
-	NodeDialogDisplay (node_d, newnode);
+        NodeDialogDisplay (node_d, newnode);
     }
-
-    (void) TreeDelete (problem.node_tree, node);
-    NodeDialogUpdate (node_d, problem.node_tree, NULL, NULL);
+    
+    problem.node_set.erase(node);
+    NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
 
     DestroyNode (node);
     ChangeStatusLine (message, True);
@@ -333,7 +337,6 @@ void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
-    Item        found;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -342,13 +345,13 @@ void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
+    if (it == problem.node_set.end()) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
-
-    DoDeleteNode ((Node) found);
+    
+    DoDeleteNode (*it);
 }
 
 
@@ -413,19 +416,18 @@ void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
-    Item        found;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
+    if (it == problem.node_set.end()) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
-
-    NodeDialogDisplay (node_d, (Node) found);
+    
+    NodeDialogDisplay (node_d, *it);
     NodeDialogPopup (node_d);
 }
 
@@ -452,10 +454,8 @@ int DrawNode (Node node)
     Item		found;
     Drawn               drawn;
 
-
-    found = TreeInsert (problem.node_tree, (Item) node);
-    if (found != (Item) node)
-	return 1;
+    if (0 == problem.node_set.count(node))
+        return 1;
 
     if (DW_SetFont (drawing, canvas -> label_font) == False)
         (void) DW_SetFont (drawing, "fixed");
@@ -643,19 +643,18 @@ void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
-    Item        found;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
 
-    found = TreeSearch (problem.node_tree, &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
+    if (it != problem.node_set.end()) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoMoveNode ((Node) found, False);
+    DoMoveNode (*it, False);
 }
 
 
@@ -767,7 +766,6 @@ void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     struct node dummy;
-    Item        found;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -776,13 +774,13 @@ void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
+    if (it == problem.node_set.end()) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoAssignMass ((Node) found);
+    DoAssignMass (*it);
 }
 
 void SetMassAP (Widget w, XEvent *event, String *params, Cardinal *num)

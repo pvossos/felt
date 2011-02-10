@@ -850,8 +850,9 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
            active->forces.resize(loadcased->num_forces);
            
            for (i = 1 ; i <= active->forces.size(); i++) {
-              n.number = loadcased -> node_assignments [i-1];                
-              active -> nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
+              n.number = loadcased -> node_assignments [i-1];
+              Problem::NodeSet::iterator it = problem.node_set.find(&n);
+              active -> nodes [i] = it != problem.node_set.end() ? *it : NULL;
               if (active -> nodes [i] == NULL) {
                  error ("node %d is not defined", n.number);
                  return;

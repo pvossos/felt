@@ -77,16 +77,16 @@ static void VelvetCoalesceNodes (void)
    if (nn == 0 || ne == 0)
       return;
 
-   for (i = 1 ; i <= nn ; i++) 
-      TreeDelete (problem.node_tree, problem.nodes [i]);
+   for (i = 1 ; i <= nn ; i++)
+       problem.node_set.erase(problem.nodes[i]);
 
    bool samep = CoalesceProblemNodes();
    if (samep) {
       for (i = 1 ; i <= nn ; i++) 
-         TreeInsert (problem.node_tree, problem.nodes [i]);
+          problem.node_set.insert(problem.nodes[i]);
       return;
    }
-
+   
    DW_SetAutoRedraw (drawing, False);
 
    figure = DW_RetrieveAll (drawing, False, &num_figures);
@@ -157,21 +157,17 @@ void GenerateElements (void)
 void SetupGridGeneration (void)
 {
    static GridDialog	grid_d = NULL;
-   Node		mxnode;
-   unsigned	mxnode_number,
-		mxelt_number;
    unsigned	i;
    Grid	    	grid;
 
-   mxnode = (Node) TreeMaximum (problem.node_tree);
-   if (mxnode != NULL)
-      mxnode_number = mxnode -> number;
-   else
-      mxnode_number = 0;
+   unsigned mxnode_number
+       = !problem.node_set.empty()
+       ? (*problem.node_set.rbegin())->number
+       : 0;
 
-   mxelt_number =
-       !problem.element_set.empty() ?
-       (*problem.element_set.rbegin())->number
+   unsigned mxelt_number
+       = !problem.element_set.empty()
+       ? (*problem.element_set.rbegin())->number
        : 0;
 
    if (grid_d == NULL)
@@ -330,20 +326,17 @@ void DoAddCurvePoint (float x, float y)
 static void
 DoTriMeshGeneration(void)
 {
-   Node		mxnode;
-   unsigned	maxnode;
-   unsigned	i;
+    unsigned	i;
 
   
-   mxnode = (Node) TreeMaximum (problem.node_tree);
-   if (mxnode != NULL)
-      maxnode = mxnode -> number;
-   else
-      maxnode = 0;
+   unsigned maxnode
+       = !problem.node_set.empty()
+       ? (*problem.node_set.rbegin())->number
+       : 0;
 
-   unsigned maxelt = 
-       !problem.element_set.empty() ?
-       (*problem.element_set.rbegin())->number
+   unsigned maxelt 
+       = !problem.element_set.empty()
+       ? (*problem.element_set.rbegin())->number
        : 0;
  
    DW_SetAutoRedraw (drawing, False);

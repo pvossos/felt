@@ -730,7 +730,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     XtGetValues (analysisd -> input_node, args, 1);
     if (strcmp(value, "") != 0) {
        n.number = atoi(value);
-       analysis.input_node = (Node) TreeSearch (problem.node_tree, &n);
+       Problem::NodeSet::iterator it = problem.node_set.find(&n);
+       analysis.input_node = it != problem.node_set.end() ? *it : NULL;
 
        if (analysis.input_node == NULL) 
           error ("node %d not defined in current problem", n.number);
@@ -784,7 +785,6 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
     Arg		    args [1];
     AnalysisDialog  analysisd;
     Node	    current [6];
-    Node	    node;
     struct node	    n;
     unsigned	    count;
     String	    value;
@@ -800,17 +800,17 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
     XtSetArg (args [0], XtNstring,  &value);
 
     count = 0;
+    Problem::NodeSet::iterator it;
     for (i = 0 ; i < 6 ; i++) {
        XtGetValues (analysisd -> node[i], args, 1);
        n.number = atoi (value);
        if (n.number != 0) {
-          node = (Node) TreeSearch (problem.node_tree, &n);
-          if (node == NULL) {
-             error ("node %d is not defined", n.number);
-             return;
-          }
- 
-          current [count++] = node;
+           it = problem.node_set.find(&n);
+           if (it == problem.node_set.end()) {
+               error ("node %d is not defined", n.number);
+               return;
+           }
+           current [count++] = *it;
        }
     }
 

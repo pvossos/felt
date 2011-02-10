@@ -51,14 +51,12 @@ extern NodeDialog    node_d;
 
 static unsigned	array_count;
 
-static int BuildNodeArray (Item item)
+static int BuildNodeArray (Node node)
 {
    FigureAttributes	attr;
    char			buffer [10];
-   Node			node;
    Drawn		drawn; 
 
-   node = (Node) item;
    problem.nodes [++array_count] = node;
 
    if (array_count != node -> number) {
@@ -665,9 +663,7 @@ int SolveProblem (void)
 
 int CompactNodeNumbers (void)
 {
-    unsigned		numnodes;
-
-    numnodes = TreeSize (problem.node_tree);
+    unsigned numnodes = problem.node_set.size();
     if (numnodes == 0) {
         problem.nodes.clear();
         return 0;
@@ -684,8 +680,7 @@ int CompactNodeNumbers (void)
     DW_SetAutoRedraw (drawing, False);
 
     array_count = 0;
-    TreeSetIterator (problem.node_tree, BuildNodeArray);
-    TreeIterate (problem.node_tree);
+    std::for_each(problem.node_set.begin(), problem.node_set.end(), BuildNodeArray);
 
     if (canvas -> node_numbers)
        DW_SetAutoRedraw (drawing, True);
@@ -1028,14 +1023,14 @@ void OptimizeNumbering (void)
        return;
   
     for (i = 1 ; i <= numnodes ; i++) 
-       TreeDelete (problem.node_tree, problem.nodes [i]);
+        problem.node_set.erase(problem.nodes[i]);
 
     RenumberProblemNodes();
 
     DW_SetAutoRedraw (drawing, False);
     for (i = 1 ; i <= numnodes ; i++) {
        node = problem.nodes [i];
-       TreeInsert (problem.node_tree, node);
+       problem.node_set.insert(node);
 
        drawn = (Drawn) (node -> aux);
        if (drawn -> label != NULL) {     

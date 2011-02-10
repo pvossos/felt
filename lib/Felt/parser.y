@@ -296,9 +296,8 @@ node_number
              }
              
 		node = CreateNode ($1);
-		found = TreeInsert (problem.node_tree, node);
 
-		if (found != (Item) node) {
+		if (!problem.node_set.insert(node).second) {
 		    error ("node number %u is repeated", $1);
 		    DestroyNode (node);
 		    node = &dummy_node;

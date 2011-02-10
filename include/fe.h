@@ -192,6 +192,13 @@ typedef struct node {
     int        numelts;			/* num of elts that use this node */
 } *Node;
 
+struct LtNode
+{
+     bool operator()(const Node a, const Node b) const
+          {
+               return a->number < b->number;
+          }
+};
 
 /* An element */
 

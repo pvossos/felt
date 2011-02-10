@@ -81,7 +81,7 @@ struct node_dialog {
     Boolean	   new_forces;
     Boolean	   new_constraints;
     Node           active;
-    Tree           nodes;
+    Problem::NodeSet *nodes;
     Tree           forces;
     Tree           constraints;
 };
@@ -622,10 +622,10 @@ static void Up (Widget w, XtPointer client_data, XtPointer call_data)
     if (noded -> active == NULL)
 	return;
 
-    node = (Node) TreeSuccessor (noded -> nodes, noded -> active);
+    Problem::NodeSet::iterator it = noded->nodes->upper_bound(noded->active);
 
-    if (node != NULL)
-	NodeDialogDisplay (noded, node);
+    if (it != noded->nodes->end())
+        NodeDialogDisplay (noded, *it);
 }
 
 
@@ -646,10 +646,10 @@ static void Down (Widget w, XtPointer client_data, XtPointer call_data)
     if (noded -> active == NULL)
 	return;
 
-    node = (Node) TreePredecessor (noded -> nodes, noded -> active);
+    Problem::NodeSet::iterator it = noded->nodes->lower_bound(noded->active);
 
-    if (node != NULL)
-	NodeDialogDisplay (noded, node);
+    if (it != noded->nodes->begin())
+        NodeDialogDisplay (noded, *(--it));
 }
 
 
@@ -694,8 +694,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new node as needed. */
 
     if (noded -> new_copy) {
-	noded -> active = CreateNode (noded -> new_copy);
-	TreeInsert (noded -> nodes, noded -> active);
+        noded -> active = CreateNode (noded -> new_copy);
+        noded->nodes->insert(noded->active);
     }
 
     active = noded -> active;
@@ -777,10 +777,15 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	if (!(node = (Node) TreePredecessor (noded -> nodes, noded -> active)))
-	    node = (Node) TreeSuccessor (noded -> nodes, noded -> active);
-
-	TreeDelete (noded -> nodes, noded -> active);
+    Problem::NodeSet::iterator it;
+    it = noded->nodes->lower_bound(noded->active);
+    node = it != noded->nodes->begin() ? *(--it) : NULL;
+    if (!node) {
+        it = noded->nodes->upper_bound(noded->active);
+        node = it != noded->nodes->end() ? *it : NULL;
+    }
+    
+    noded->nodes->erase(noded->active);
 	DestroyNode (noded -> active);
 	noded -> active = node;
     }
@@ -805,7 +810,7 @@ static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 
     noded = (NodeDialog) client_data;
 
-    node = (Node) TreeMaximum (noded -> nodes);
+    node = noded->nodes->empty() ? NULL : *(noded->nodes->rbegin());
     noded -> new_copy = node != NULL ? node -> number + 1 : 1;
 
     SetNumber (noded, noded -> new_copy);
@@ -1143,7 +1148,7 @@ void NodeDialogPopup (NodeDialog noded)
  *		trees.							*
  ************************************************************************/
 
-void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constraints)
+void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes, Tree forces, Tree constraints)
 {
     /* Remember to update the menus if necessary. */
 
@@ -1161,10 +1166,10 @@ void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constrain
     /* Determine a new active node if necessary. */
 
     if (nodes == NULL && noded -> active == NULL)
-	noded -> active = (Node) TreeMinimum (noded -> nodes);
+        noded->active = noded->nodes->empty() ? NULL : *(noded->nodes->begin());
 
     if (nodes != NULL && (noded -> active == NULL || noded -> nodes != nodes))
-	noded -> active = (Node) TreeMinimum (nodes);
+        noded->active = nodes->empty() ? NULL : *(nodes->begin());
 
     if (nodes != NULL) {
 	noded -> nodes = nodes;

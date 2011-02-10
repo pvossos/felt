@@ -78,19 +78,6 @@ defnlookup(char *name)
 
 
 /************************************************************************
- * Function:	node_cmp						*
- *									*
- * Description:	Compares two nodes by number.				*
- ************************************************************************/
-
-static int
-node_cmp(Item n1, Item n2)
-{
-    return ((Node) n1) -> number - ((Node) n2) -> number;
-}
-
-
-/************************************************************************
  * Function:	element_cmp						*
  *									*
  * Description:	Compares two elements by number.			*
@@ -175,18 +162,16 @@ loadcase_cmp(Item lc1, Item lc2)
  ************************************************************************/
 
 static int 
-resolve_node(Item item)
+resolve_node(Node node)
 {
     struct force      f;
     struct constraint c;
     unsigned	      number;
     Tree	      tree;
-    Node	      node;
     char *buf;
 
     /* Store the node in the array. */
 
-    node = (Node) item;
     number = node -> number;
     problem.nodes [number] = node;
 
@@ -317,7 +302,8 @@ resolve_loadcase(Item item)
        f.name = (char *) loadcase -> forces [i];
        n.number = (unsigned) loadcase -> nodes [i];
 
-       loadcase -> nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
+       Problem::NodeSet::iterator it = problem.node_set.find(&n);
+       loadcase -> nodes [i] = it != problem.node_set.end() ? *it : NULL;
        if (!loadcase -> nodes [i])
            error ("load case %s used undefined node %d", loadcase->name.c_str(), n.number);
 
@@ -370,8 +356,7 @@ resolve_names(void)
 
     if (!problem.nodes.empty()) {
 
-        TreeSetIterator (problem.node_tree, resolve_node);
-        TreeIterate (problem.node_tree);
+        std::for_each(problem.node_set.begin(), problem.node_set.end(), resolve_node);
         
         for (i = 1; i <= problem.nodes.size(); i ++)
             if (!problem.nodes [i])
@@ -400,10 +385,13 @@ resolve_names(void)
 	 * resolve any node references given in the analysis parameters
 	 */
 
+    Problem::NodeSet::iterator it;
+                
     if (!analysis.nodes.empty()) {
         for (i = 1 ; i <= analysis.nodes.size() ; i++) {
             n.number = (unsigned) analysis.nodes [i];
-            analysis.nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
+            it = problem.node_set.find(&n);
+            analysis.nodes [i] = it != problem.node_set.end() ? *it : NULL;
             if (analysis.nodes [i] == NULL)
                 error ("analysis node %d not defined", n.number);
         }
@@ -411,7 +399,8 @@ resolve_names(void)
 
     if (analysis.input_node) {
         n.number = (unsigned) analysis.input_node;
-        analysis.input_node = (Node) TreeSearch (problem.node_tree, &n);
+        it = problem.node_set.find(&n);
+        analysis.input_node = it != problem.node_set.end() ? *it : NULL;
         if (analysis.input_node == NULL)
             error ("analysis input node %d not defined", n.number);
     }
@@ -470,7 +459,6 @@ ReadFeltFile(const char *filename)
     psource.line	     = 1;
     problem.nodes.clear();
     problem.elements.clear();
-    problem.node_tree	     = TreeCreate (node_cmp);
     problem.distributed_tree = TreeCreate (distributed_cmp);
     problem.force_tree	     = TreeCreate (force_cmp);
     problem.constraint_tree  = TreeCreate (constraint_cmp);

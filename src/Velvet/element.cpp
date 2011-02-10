@@ -88,7 +88,7 @@ struct element_dialog {
     Problem::ElementSet	 *elements;
     Problem::MaterialSet *materials;
     Tree           loads;
-    Tree           nodes;
+    Problem::NodeSet *nodes;
 };
 
 static String labels [ ] = {
@@ -916,7 +916,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	    nodes [i] = NULL;
 
 	} else {
-	    node = (Node) TreeSearch (eltd -> nodes, &n_dummy);
+        Problem::NodeSet::iterator it = eltd->nodes->find(&n_dummy);
+        node = it != eltd->nodes->end() ? *it : NULL;
 	    if (node == NULL) {
 		if (i < eltd -> offset) {
 		    eltd -> offset = i;
@@ -1452,7 +1453,9 @@ void ElementDialogPopup (ElementDialog eltd)
  *		trees.							*
  ************************************************************************/
 
-void ElementDialogUpdate (ElementDialog eltd, Problem::ElementSet *elements, Problem::MaterialSet *materials, Tree loads, Tree nodes)
+void ElementDialogUpdate (ElementDialog eltd,
+                          Problem::ElementSet *elements, Problem::MaterialSet *materials,
+                          Tree loads, Problem::NodeSet *nodes)
 {
     /* Remember to update the menus if necessary. */
 

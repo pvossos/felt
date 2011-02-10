@@ -110,10 +110,8 @@ static int ScaleConstraint (Item item)
    return 0;
 }
 
-static int ScaleNode (Item item)
+static int ScaleNode (Node n)
 {
-   Node	n = (Node) item;
-
    n -> x *= length;
    n -> y *= length;
    n -> z *= length;
@@ -183,8 +181,7 @@ void ScaleFeltFile (double l, double f)
    mass = force / length;
    density = mass / (length2*length);
 
-   TreeSetIterator (problem.node_tree, ScaleNode);
-   TreeIterate (problem.node_tree);
+   std::for_each(problem.node_set.begin(), problem.node_set.end(), ScaleNode);
 
    std::for_each(problem.material_set.begin(), problem.material_set.end(), ScaleMaterial);
 

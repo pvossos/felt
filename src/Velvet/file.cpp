@@ -213,11 +213,11 @@ int VelvetReadFeltFile (char *file)
     ForceDialogUpdate	   (force_d, problem.force_tree);
     LoadDialogUpdate	   (load_d, problem.distributed_tree);
     MaterialDialogUpdate   (material_d, &problem.material_set);
-    NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
-			    problem.constraint_tree);
+    NodeDialogUpdate	   (node_d, &problem.node_set, problem.force_tree,
+                            problem.constraint_tree);
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, problem.distributed_tree,
-                            problem.node_tree);
+                            &problem.node_set);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
                             problem.force_tree, problem.distributed_tree);
 
@@ -272,11 +272,11 @@ void StartNew (void)
     ForceDialogUpdate	   (force_d, problem.force_tree);
     LoadDialogUpdate	   (load_d, problem.distributed_tree);
     MaterialDialogUpdate   (material_d, &problem.material_set);
-    NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
+    NodeDialogUpdate	   (node_d, &problem.node_set, problem.force_tree,
 			    problem.constraint_tree);
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, problem.distributed_tree,
-                            problem.node_tree);
+                            &problem.node_set);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
                             problem.force_tree, problem.distributed_tree);
 

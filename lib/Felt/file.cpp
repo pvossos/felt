@@ -377,14 +377,8 @@ WriteConstraint(Item item)
  ************************************************************************/
 
 static int
-WriteForce(Item item)
+WriteForce(Force force)
 {
-    Force force;
-
-
-    force = (Force) item;
-
-
     if (force -> aux == mark_flag) {
 	fprintf (fp, "%s", Quote (force -> name.c_str()));
 
@@ -821,9 +815,8 @@ WriteFile(char *flag)
     /* Write the forces section. */
 
     if (any_forces || !mark_flag) {
-	fprintf (fp, "\nforces\n");
-	TreeSetIterator (problem.force_tree, WriteForce);
-	TreeIterate (problem.force_tree);
+        fprintf (fp, "\nforces\n");
+        std::for_each(problem.force_set.begin(), problem.force_set.end(), WriteForce);
     }
 
 

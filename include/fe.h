@@ -134,6 +134,14 @@ typedef struct force {
     VarExpr spectrum [7];		/* input spectra		  */
 } *Force;
 
+struct LtForce
+{
+     bool operator()(const Force a, const Force b) const
+          {
+               return a->name < b->name;
+          }
+};
+
 
 /* A constraint (boundary and initial conditions) */
 

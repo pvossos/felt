@@ -230,9 +230,9 @@ void ForceDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
     }
     
     changeflag = True;
-    NodeDialogUpdate (node_d, NULL, problem.force_tree, NULL);
+    NodeDialogUpdate (node_d, NULL, &problem.force_set, NULL);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.force_tree, info -> deleted);
+    ColorsDialogUpdateForcesList (colors_d, &problem.force_set, info -> deleted);
 
     if (displayed == True)
 	NodeDialogDisplay (node_d, node);

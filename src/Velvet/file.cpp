@@ -210,20 +210,20 @@ int VelvetReadFeltFile (char *file)
     DrawProblem (0.0);
 
     ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
-    ForceDialogUpdate	   (force_d, problem.force_tree);
+    ForceDialogUpdate	   (force_d, &problem.force_set);
     LoadDialogUpdate	   (load_d, &problem.distributed_set);
     MaterialDialogUpdate   (material_d, &problem.material_set);
-    NodeDialogUpdate	   (node_d, &problem.node_set, problem.force_tree,
+    NodeDialogUpdate	   (node_d, &problem.node_set, &problem.force_set,
                             problem.constraint_tree);
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, &problem.distributed_set,
                             &problem.node_set);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
-                            problem.force_tree, &problem.distributed_set);
+                            &problem.force_set, &problem.distributed_set);
 
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
     ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.force_tree, False);
+    ColorsDialogUpdateForcesList (colors_d, &problem.force_set, False);
     ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, False);
 
     AnalysisDialogUpdate (analysis_d, True);
@@ -269,20 +269,20 @@ void StartNew (void)
     figure_tree	= TreeCreate (figure_cmp);
 
     ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
-    ForceDialogUpdate	   (force_d, problem.force_tree);
+    ForceDialogUpdate	   (force_d, &problem.force_set);
     LoadDialogUpdate	   (load_d, &problem.distributed_set);
     MaterialDialogUpdate   (material_d, &problem.material_set);
-    NodeDialogUpdate	   (node_d, &problem.node_set, problem.force_tree,
-			    problem.constraint_tree);
+    NodeDialogUpdate	   (node_d, &problem.node_set, &problem.force_set,
+                            problem.constraint_tree);
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, &problem.distributed_set,
                             &problem.node_set);
     LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
-                            problem.force_tree, &problem.distributed_set);
+                            &problem.force_set, &problem.distributed_set);
 
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
     ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.force_tree, False);
+    ColorsDialogUpdateForcesList (colors_d, &problem.force_set, False);
     ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, False);
 }
 

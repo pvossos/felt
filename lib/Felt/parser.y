@@ -795,14 +795,13 @@ force_definition
 force_name
 	: NAME
 	    {
-		force = CreateForce ($1);
-		found = TreeInsert (problem.force_tree, force);
-
-		if (found != (Item) force) {
-		    error ("force %s is previously defined", $1);
-		    DestroyForce (force);
-		    force = &dummy_force;
-		}
+             force = CreateForce ($1);
+             
+             if (!problem.force_set.insert(force).second) {
+                  error ("force %s is previously defined", $1);
+                  DestroyForce (force);
+                  force = &dummy_force;
+             }
 	    }
 	;
 

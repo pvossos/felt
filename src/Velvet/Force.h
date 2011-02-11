@@ -26,12 +26,10 @@
 
 # ifndef _Force_h
 # define _Force_h
+
+# include "problem.h"
 # include "fe.h"
 # include "Tree.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
 
 /*----------------------------------------------------------------------*/
 
@@ -48,16 +46,12 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
 
 void ForceDialogPopup (ForceDialog forced);
 
-void ForceDialogUpdate (ForceDialog forced, Tree tree);
+void ForceDialogUpdate (ForceDialog forced, Problem::ForceSet *tree);
 
 Force ForceDialogActive (ForceDialog forced);
 
 void ForceDialogDisplay (ForceDialog forced, Force force);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Force_h */

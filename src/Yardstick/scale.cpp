@@ -69,9 +69,8 @@ static int ScaleDistributed (Distributed d)
    return 0;
 }
 
-static int ScaleForce (Item item)
+static int ScaleForce (Force f)
 {
-   Force 	f = (Force) item;
    unsigned	i;
 
    for (i = 1 ; i <= 6 ; i++) {
@@ -185,8 +184,7 @@ void ScaleFeltFile (double l, double f)
 
    std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), ScaleDistributed);
 
-   TreeSetIterator (problem.force_tree, ScaleForce);
-   TreeIterate (problem.force_tree);
+   std::for_each(problem.force_set.begin(), problem.force_set.end(), ScaleForce);
 
    TreeSetIterator (problem.constraint_tree, ScaleConstraint);
    TreeIterate (problem.constraint_tree);

@@ -195,16 +195,16 @@ resolve_node(Node node)
 
     /* Resolve the force. */
 
-    tree = problem.force_tree;
     buf = (char *) node -> force;
 
     if (buf) {
         f.name = buf;
-        node -> force = (Force) TreeSearch (tree, &f);
-
+        Problem::ForceSet::iterator it = problem.force_set.find(&f);
+        node -> force = it != problem.force_set.end() ? *it : NULL;
+        
         if (!node -> force)
             error ("node %u uses undefined force %s", number, f.name.c_str());
-
+        
         f.name = "";
     }
 
@@ -303,7 +303,8 @@ resolve_loadcase(Item item)
        if (!loadcase -> nodes [i])
            error ("load case %s used undefined node %d", loadcase->name.c_str(), n.number);
 
-       loadcase -> forces [i] = (Force) TreeSearch (problem.force_tree, &f);
+       Problem::ForceSet::iterator itf = problem.force_set.find(&f);
+       loadcase -> forces [i] = itf != problem.force_set.end() ? *itf : NULL;
        if (!loadcase -> forces [i])
            error ("load case %s used undefined force %s", loadcase->name.c_str(), f.name.c_str());
 
@@ -456,7 +457,6 @@ ReadFeltFile(const char *filename)
     psource.line	     = 1;
     problem.nodes.clear();
     problem.elements.clear();
-    problem.force_tree	     = TreeCreate (force_cmp);
     problem.constraint_tree  = TreeCreate (constraint_cmp);
     problem.loadcase_tree    = TreeCreate (loadcase_cmp);
 

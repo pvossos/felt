@@ -24,6 +24,7 @@
  *		type definitions for the node dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -82,7 +83,7 @@ struct node_dialog {
     Boolean	   new_constraints;
     Node           active;
     Problem::NodeSet *nodes;
-    Tree           forces;
+    Problem::ForceSet *forces;
     Tree           constraints;
 };
 
@@ -370,9 +371,9 @@ static XtWidgetGeometry	preferred;
  *		the specified force.					*
  ************************************************************************/
 
-static int SetForceEntry (Item item)
+static int SetForceEntry (Force item)
 {
-    SetLabelString (children [child_number], ((Force) item) -> name.c_str());
+    SetLabelString (children [child_number],item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -409,7 +410,7 @@ static void UpdateForceMenu (Widget w, XtPointer client_data, XtPointer call_dat
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_forces = TreeSize (noded -> forces) + 1;
+    num_forces = noded->forces->size() + 1;
 
     for (i = num_children; i < num_forces; i ++) {
 	sprintf (buffer, "force%d", i);
@@ -430,8 +431,7 @@ static void UpdateForceMenu (Widget w, XtPointer client_data, XtPointer call_dat
     max_width = preferred.width;
 
     child_number = 1;
-    TreeSetIterator (noded -> forces, SetForceEntry);
-    TreeIterate (noded -> forces);
+    std::for_each(noded->forces->begin(), noded->forces->end(), SetForceEntry);
     noded -> new_forces = False;
 
     XtSetArg (args [0], XtNwidth, max_width);
@@ -709,7 +709,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the force. */
 
     f_dummy.name = GetTextString (noded -> f_name);
-    active -> force = (Force) TreeSearch (noded -> forces, &f_dummy);
+    Problem::ForceSet::iterator it = noded->forces->find(&f_dummy);
+    active -> force = it != noded->forces->end() ? *it : NULL;
 
 
     /* Retrieve the values from the text entries. */
@@ -1148,13 +1149,13 @@ void NodeDialogPopup (NodeDialog noded)
  *		trees.							*
  ************************************************************************/
 
-void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes, Tree forces, Tree constraints)
+void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes, Problem::ForceSet *forces, Tree constraints)
 {
     /* Remember to update the menus if necessary. */
 
     if (forces != NULL) {
-	noded -> forces = forces;
-	noded -> new_forces = True;
+        noded -> forces = forces;
+        noded -> new_forces = True;
     }
 
     if (constraints != NULL) {

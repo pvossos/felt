@@ -63,7 +63,7 @@ AddNode(double x, double y, double z, Constraint constraint, Force force)
    problem.nodes.push_back(node);
 
    if (force) 
-      TreeInsert (problem.force_tree, (Item) force);
+       problem.force_set.insert(force);
 
    if (constraint)
       TreeInsert (problem.constraint_tree, (Item) constraint);

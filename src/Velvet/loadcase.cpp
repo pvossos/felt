@@ -860,7 +860,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
               }
 
               f.name = loadcased -> force_assignments [i-1];
-              active -> forces [i] = (Force) TreeSearch (problem.force_tree, &f);
+              Problem::ForceSet::iterator itf = problem.force_set.find(&f);
+              active -> forces [i] = itf != problem.force_set.end() ? *itf : NULL;
               if (active -> forces [i] == NULL) {
                   error ("force %s is not defined", f.name.c_str());
                  return;
@@ -1340,9 +1341,9 @@ static XtWidgetGeometry preferred;
  *              the specified force.                                    *
  ************************************************************************/
 
-static int SetForceEntry (Item item)
+static int SetForceEntry (Force item)
 {
-    SetLabelString (children [child_number], ((Force) item) -> name.c_str());
+    SetLabelString (children [child_number], item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -1379,7 +1380,7 @@ static int SetLoadEntry (Distributed item)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Problem::DistributedSet *load_tree)
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Problem::ForceSet *force_tree, Problem::DistributedSet *load_tree)
 {
     char	buffer [32];
     Arg		args [2];
@@ -1437,7 +1438,7 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree,
        XtSetArg (args [1], XtNnumChildren, &num_children);
        XtGetValues (loadcased -> force_menu, args, 2);
 
-       num_forces = TreeSize (force_tree) + 1;
+       num_forces = force_tree->size() + 1;
 
        for (i = num_children; i < num_forces; i ++) {
            sprintf (buffer, "force_entry%d", i);
@@ -1458,8 +1459,7 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree,
        max_width = preferred.width;
 
        child_number = 1;
-       TreeSetIterator (force_tree, SetForceEntry);
-       TreeIterate (force_tree);
+       std::for_each(force_tree->begin(), force_tree->end(), SetForceEntry);
 
        XtSetArg (args [0], XtNwidth, max_width);
        XtSetValues (loadcased -> force_menu, args, 1);

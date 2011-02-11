@@ -370,7 +370,7 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
     }
     else if (active_list == colorsd -> flist) {
        f.name = info -> string;
-       current_force = (Force) TreeSearch (problem.force_tree, &f);
+       current_force = *(problem.force_set.find(&f));
        color = current_force -> color;
     }
     else if (active_list == colorsd -> llist) {
@@ -498,10 +498,10 @@ static int AddLoad (Distributed item)
    return 0;
 }
 
-static int AddForce (Item item)
+static int AddForce (Force item)
 {
-    object_colors [object_count] = XtNewString(((Force) item) -> color.c_str());
-    object_names [object_count ++] = XtNewString(((Force) item) -> name.c_str());
+    object_colors [object_count] = XtNewString(item -> color.c_str());
+    object_names [object_count ++] = XtNewString(item -> name.c_str());
    return 0;
 }
 
@@ -579,13 +579,6 @@ void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean dele
       colorsd -> constraints = object_names;
    }
  
-   else if (tree == problem.force_tree) {
-      TreeSetIterator (tree, AddForce);
-      object_names = colorsd -> forces;
-      UpdateList (colorsd -> flist, tree, deleted);
-      colorsd -> forces = object_names;
-   } 
-
    for (i = 0 ; i < object_count ; i++)
       InsertColor (colorsd, object_colors [i]);
   
@@ -614,6 +607,18 @@ void ColorsDialogUpdateDistributedList (ColorsDialog colorsd, Problem::Distribut
       InsertColor (colorsd, object_colors [i]);
   
    return;
+}
+
+void ColorsDialogUpdateForcesList (ColorsDialog colorsd, Problem::ForceSet *tree, Boolean deleted)
+{
+    object_names = colorsd -> forces;
+    UpdateList (colorsd -> flist, tree, deleted, AddForce);
+    colorsd -> forces = object_names;
+    
+    for (unsigned i = 0 ; i < object_count ; i++)
+        InsertColor (colorsd, object_colors [i]);
+    
+    return;
 }
 
 /************************************************************************

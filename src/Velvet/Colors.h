@@ -40,6 +40,8 @@ void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean dele
 void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted);
 
 void ColorsDialogUpdateDistributedList (ColorsDialog colorsd, Problem::DistributedSet *tree, Boolean deleted);
+
+void ColorsDialogUpdateForcesList (ColorsDialog colorsd, Problem::ForceSet *tree, Boolean deleted);
      
 void ColorsDialogPopup (ColorsDialog colorsd);
 

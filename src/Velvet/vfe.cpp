@@ -359,9 +359,8 @@ void DestroyProblem (MaterialDestructor material_op)
     std::for_each(problem.element_set.begin(), problem.element_set.end(), DestroyElement);
     problem.element_set.clear();
 
-    (void) TreeSetDestructor (problem.force_tree, (ItemDestructor)
-		DestroyForce);
-    (void) TreeDestroy (problem.force_tree);
+    std::for_each(problem.force_set.begin(), problem.force_set.end(), DestroyForce);
+    problem.force_set.clear();
 
     if (material_op)
         std::for_each(problem.material_set.begin(), problem.material_set.end(), material_op);

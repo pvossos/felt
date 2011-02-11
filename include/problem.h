@@ -45,7 +45,8 @@ typedef struct {
     typedef std::set<Element, LtElement> ElementSet;
     typedef std::set<Node, LtNode> NodeSet;
     typedef std::set<Distributed, LtDistributed> DistributedSet;
-
+    typedef std::set<Force, LtForce> ForceSet;
+     
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
     cvector1<Node> nodes;			/* array of nodes	   */
@@ -56,7 +57,7 @@ typedef struct {
     ElementSet element_set;
     MaterialSet material_set;
     DistributedSet distributed_set;
-    Tree	 force_tree;		/* force tree		   */
+    ForceSet force_set;
     Tree	 constraint_tree;	/* constraint tree	   */
     Tree	 loadcase_tree;		/* load case tree	   */
     unsigned	 dofs_pos [7];		/* global DOF position map */

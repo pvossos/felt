@@ -39,7 +39,7 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title);
 
 void LoadCaseDialogPopup (LoadCaseDialog loadcased);
 
-void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Problem::DistributedSet *load_tree);
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Problem::ForceSet *force_tree, Problem::DistributedSet *load_tree);
 
 LoadCase LoadCaseDialogActive (LoadCaseDialog loadcased);
 

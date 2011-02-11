@@ -1100,17 +1100,16 @@ loadcase_definition
 
 loadcase_name
 	: NAME
-	    {
-		loadcase = CreateLoadCase ($1);
-		found = TreeInsert (problem.loadcase_tree, loadcase);
-
-		if (found != (Item) loadcase) {
-		    error ("loadcase %s is previously defined", $1);
-		    DestroyLoadCase (loadcase);
-		    loadcase = &dummy_loadcase;
-		}
-	    }
-	;
+        {
+             loadcase = CreateLoadCase ($1);
+             
+             if (!problem.loadcase_set.insert(loadcase).second) {
+                  error ("loadcase %s is previously defined", $1);
+                  DestroyLoadCase (loadcase);
+                  loadcase = &dummy_loadcase;
+             }
+        }
+    ;
 
 loadcase_parameter_list
 	: loadcase_parameter_list loadcase_parameter

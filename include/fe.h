@@ -260,6 +260,14 @@ typedef struct loadcase {
      cvector1<Distributed> loads;
 } *LoadCase;
 
+struct LtLoadCase
+{
+     bool operator()(const LoadCase a, const LoadCase b) const
+          {
+               return a->name < b->name;
+          }
+};
+
 
 /* The different analyses definitions */
 

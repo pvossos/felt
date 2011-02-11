@@ -218,7 +218,7 @@ int VelvetReadFeltFile (char *file)
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, &problem.distributed_set,
                             &problem.node_set);
-    LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
+    LoadCaseDialogUpdate   (loadcase_d, &problem.loadcase_set,
                             &problem.force_set, &problem.distributed_set);
 
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
@@ -277,7 +277,7 @@ void StartNew (void)
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, &problem.distributed_set,
                             &problem.node_set);
-    LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
+    LoadCaseDialogUpdate   (loadcase_d, &problem.loadcase_set,
                             &problem.force_set, &problem.distributed_set);
 
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);

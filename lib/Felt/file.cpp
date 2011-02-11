@@ -459,12 +459,9 @@ WriteForce(Force force)
  ************************************************************************/
 
 static int
-WriteLoadCase(Item item)
+WriteLoadCase(LoadCase lc)
 {
-   LoadCase	lc;
    unsigned     i;
-
-   lc = (LoadCase) item;
 
    fprintf (fp, "%s\n", lc -> name.c_str());
 
@@ -732,10 +729,9 @@ WriteFile(char *flag)
 
     /* Write and load case definitions */
 
-    if (TreeSize (problem.loadcase_tree)) {
+    if (!problem.loadcase_set.empty()) {
         fprintf (fp, "\nload cases\n");
-        TreeSetIterator (problem.loadcase_tree, WriteLoadCase);
-        TreeIterate (problem.loadcase_tree);
+        std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), WriteLoadCase);
     }
 
     /* Write the nodes section marking referenced objects. */

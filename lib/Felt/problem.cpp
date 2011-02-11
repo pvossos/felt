@@ -279,19 +279,17 @@ static int case_count;
  ************************************************************************/
 
 static int
-resolve_loadcase(Item item)
+resolve_loadcase(LoadCase loadcase)
 {
     struct force       f;
     struct node	       n;
     struct distributed l;
     struct element     e;
-    LoadCase	       loadcase;
     unsigned	       i;
 
 
     /* Store the loadcase in the array. */
 
-    loadcase = (LoadCase) item;
     problem.loadcases [case_count] = loadcase;
 
     for (i = 1 ; i <= loadcase->forces.size(); i++) {
@@ -370,13 +368,12 @@ resolve_names(void)
                 error ("element %u is not defined", i);
     }
 
-    problem.loadcases.resize(TreeSize(problem.loadcase_tree), NULL);
+    problem.loadcases.resize(problem.loadcase_set.size(), NULL);
     
     if (!problem.loadcases.empty()) {
 
         case_count = 1;
-        TreeSetIterator (problem.loadcase_tree, resolve_loadcase);
-        TreeIterate (problem.loadcase_tree);
+        std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), resolve_loadcase);
     }
 
 	/*
@@ -458,7 +455,6 @@ ReadFeltFile(const char *filename)
     problem.nodes.clear();
     problem.elements.clear();
     problem.constraint_tree  = TreeCreate (constraint_cmp);
-    problem.loadcase_tree    = TreeCreate (loadcase_cmp);
 
     if (filename)
 	psource.filename = strdup (streq (filename, "-") ? "stdin" : filename);

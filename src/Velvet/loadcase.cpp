@@ -82,7 +82,7 @@ struct loadcase_dialog {
     String	  *loadcases;
     LoadCase	   active;
     Boolean        new_copy;
-    Tree           tree;
+    Problem::LoadCaseSet *tree;
     unsigned	   node_base;
     unsigned	   element_base;
     String	   force_assignments [100];
@@ -415,12 +415,12 @@ static String help_message ="";
  *		index of the active loadcase is also set.		*
  ************************************************************************/
 
-static int AppendLoadCaseName (Item item)
+static int AppendLoadCaseName (LoadCase item)
 {
-    if (dialog -> active == (LoadCase) item)
+    if (dialog -> active == item)
 	list_index = num_loadcases;
 
-    dialog -> loadcases [num_loadcases ++] = XtNewString(((LoadCase) item) -> name.c_str());
+    dialog -> loadcases [num_loadcases ++] = XtNewString(item -> name.c_str());
     return 0;
 }
 
@@ -731,12 +731,13 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the active loadcase from the tree if selected. */
 
     if (w != NULL) {
-	info = (XawListReturnStruct *) call_data;
-	if (info -> list_index == XAW_LIST_NONE)
-	    return;
-
-	dummy.name = info -> string;
-	loadcased -> active = (LoadCase) TreeSearch (loadcased -> tree, &dummy);
+        info = (XawListReturnStruct *) call_data;
+        if (info -> list_index == XAW_LIST_NONE)
+            return;
+        
+        dummy.name = info -> string;
+        Problem::LoadCaseSet::iterator it = loadcased->tree->find(&dummy);
+        loadcased -> active = it != loadcased->tree->end() ? *it : NULL;
     }
 
     active = loadcased -> active;
@@ -808,7 +809,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the loadcase. */
 
     dummy.name = GetTextString (loadcased -> name);
-    found = (LoadCase) TreeSearch (loadcased -> tree, &dummy);
+    Problem::LoadCaseSet::iterator it = loadcased->tree->find(&dummy);
+    found = it != loadcased->tree->end() ? *it : NULL;
     duplicate = found && (found != loadcased -> active || loadcased -> new_copy);
 
 
@@ -831,9 +833,9 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	    loadcased -> active = CreateLoadCase(dummy.name.c_str());
 	else if (dummy.name != loadcased->active->name) {
             old.name = loadcased -> active -> name;
-            TreeDelete (loadcased -> tree, &old);
+            loadcased->tree->erase(&old);
             loadcased -> active -> name = dummy.name;
-            TreeInsert (loadcased -> tree, loadcased -> active);
+            loadcased->tree->insert(loadcased->active);
 	}
 
 	active = loadcased -> active;
@@ -896,7 +898,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         }
 
 	if (loadcased -> new_copy)
-	    TreeInsert (loadcased -> tree, loadcased -> active);
+        loadcased->tree->insert(loadcased->active);
 
 	LoadCaseDialogUpdate (loadcased, loadcased -> tree, NULL, NULL);
     }
@@ -934,9 +936,9 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
     loadcased = (LoadCaseDialog) client_data;
 
     if (!loadcased -> new_copy) {
-	TreeDelete (loadcased -> tree, loadcased -> active);
-	DestroyLoadCase (loadcased -> active);
-	loadcased -> active = NULL;
+        loadcased->tree->erase(loadcased->active);
+        DestroyLoadCase (loadcased -> active);
+        loadcased -> active = NULL;
     }
 
     LoadCaseDialogUpdate (loadcased, loadcased -> tree, NULL, NULL);
@@ -1380,7 +1382,8 @@ static int SetLoadEntry (Distributed item)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Problem::ForceSet *force_tree, Problem::DistributedSet *load_tree)
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Problem::LoadCaseSet *tree,
+                           Problem::ForceSet *force_tree, Problem::DistributedSet *load_tree)
 {
     char	buffer [32];
     Arg		args [2];
@@ -1398,7 +1401,7 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Problem::ForceSe
 	tree = loadcased -> tree;
 
     if (loadcased -> active == NULL || tree != loadcased -> tree)
-	loadcased -> active = (LoadCase) TreeMinimum (tree);
+        loadcased -> active = tree->empty() ? NULL : *(tree->begin());
 
 
     /* Construct the array of loadcase names. */
@@ -1414,11 +1417,10 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Problem::ForceSe
             XtFree(loadcased->loadcases[i]);
     }
     
-    nbytes = (TreeSize (loadcased -> tree) + 1) * sizeof (String);
+    nbytes = (loadcased->tree->size() + 1) * sizeof (String);
     loadcased -> loadcases = (String *) XtRealloc ((char *) loadcased -> loadcases, nbytes);
 
-    TreeSetIterator (loadcased -> tree, AppendLoadCaseName);
-    TreeIterate (loadcased -> tree);
+    std::for_each(loadcased->tree->begin(), loadcased->tree->end(), AppendLoadCaseName);
     loadcased -> loadcases [num_loadcases] = NULL;
 
 

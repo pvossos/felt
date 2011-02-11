@@ -83,12 +83,12 @@ struct load_dialog {
     Problem::DistributedSet *tree;
 };
 
-static String labels [ ] = {
+static const char* labels [ ] = {
     "Name:", "LocalX", "LocalY", "LocalZ", "GlobalX", "GlobalY", 
     "GlobalZ", "perpend", "parallel", "radial", "axial", "Node", "Magnitude"
 };
 
-static String names [ ] = {
+static const char* names [ ] = {
      "nameLabel","localX_label","localY_label","localZ_label","globalX_label",
      "globalY_label", "globalZ_label", "perpendicular_label",
      "parallel_label", "radial_label", "axial_label", "node_label", "magnitude_label"

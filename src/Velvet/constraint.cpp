@@ -70,13 +70,13 @@ struct constraint_dialog {
     Problem::ConstraintSet *tree;
 };
 
-static String labels [ ] = {
+static const char* labels [ ] = {
     "Name:", "X:", "Y:", "Z:", "Trans BC", "Rot BC", 
     "Init Trans", "Init Rot", "Init Vel", "Init Accel", 
     "X:", "Y:", "Z:", "X:", "Y:", "Z:"
 };
 
-static String names [ ] = {
+static const char* names [ ] = {
     "nameLabel", "x", "y", "z", "translation", "rotation", 
     "translation_ic", "rotation_ic", "velocity", "acceleration", 
     "x1", "y1", "z1", "x2", "y2", "z2"

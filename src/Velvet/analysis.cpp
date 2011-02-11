@@ -97,7 +97,7 @@ struct analysis_dialog {
 };
 
 
-static String labels [ ] = {
+static const char* labels [ ] = {
     "title:", 
     "static", "static-thermal", "spectral",
     "transient", "transient-thermal", "modal", 
@@ -109,7 +109,7 @@ static String labels [ ] = {
     "output nodes:"
 };
 
-static String label_names [ ] = {
+static const char* label_names [ ] = {
     "title_name", 
     "static_name", "static_thermal_name", "spectral_name",
     "transient_name", "transient_thermal_name", "modal_name",
@@ -122,7 +122,7 @@ static String label_names [ ] = {
     "nodes_name"
 };
 
-static String parameter_labels [ ] = {
+static const char* parameter_labels [ ] = {
     "start:", "stop:", "step:", 
     "b:", "g:", "a:", 
     "Rk:", "Rm:", "relaxation:",
@@ -131,7 +131,7 @@ static String parameter_labels [ ] = {
     "input node:"
 };
 
-static String parameter_names [ ] = {
+static const char* parameter_names [ ] = {
     "start_name", "stop_name", "step_name", 
     "beta_name", "gamma_name", "alpha_name",
     "Rk_name", "Rm_name", "relaxation_name",
@@ -140,7 +140,7 @@ static String parameter_names [ ] = {
     "input_node_name"
 };
 
-static String parameter_help [ ] = {
+static const char* parameter_help [ ] = {
     "starting frequency (=0.0 for time domain) or starting load range value",
     "total time duration, final frequency, or final load range value",
     "time or frequency increment in numerical integration or load range increment",

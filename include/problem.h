@@ -31,7 +31,6 @@
 # include <set>
 # include "cvector1.hpp"
 # include "fe.h"
-# include "Tree.h"
 # include "appearance.h"
 # include "inptypes.h"
 

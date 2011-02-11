@@ -32,7 +32,6 @@
 # include "fe.h"
 # include "problem.h"
 # include "objects.h"
-# include "Tree.h"
 # include "patchwork.h"
 
 int

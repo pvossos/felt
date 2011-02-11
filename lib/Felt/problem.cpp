@@ -88,7 +88,6 @@ resolve_node(Node node)
     struct force      f;
     struct constraint c;
     unsigned	      number;
-    Tree	      tree;
     char *buf;
 
     /* Store the node in the array. */

@@ -27,7 +27,6 @@
 # ifndef _OBJECTS_H
 # define _OBJECTS_H
 # include "fe.h"
-# include "Tree.h"
 
 #ifdef __cplusplus
 extern "C" {

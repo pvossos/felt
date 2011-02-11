@@ -33,7 +33,6 @@
 # include "error.h"
 # include "Drawing.h"
 # include "Canvas.h"
-# include "Tree.h"
 # include "pslib.h"
 # include "procedures.h"
 

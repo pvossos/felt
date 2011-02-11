@@ -28,7 +28,6 @@
 # define _Node_h
 
 # include "problem.h"
-# include "Tree.h"
 # include "fe.h"
 
 /*----------------------------------------------------------------------*/

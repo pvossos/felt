@@ -37,7 +37,6 @@
 # include "fe.h"
 # include "text_entry.h"
 # include "Drawing.h"
-# include "Tree.h"
 # include "globals.h"
 # include "procedures.h"
 

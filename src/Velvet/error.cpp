@@ -31,7 +31,6 @@
 # include "fe.h"
 # include "util.h"
 # include "error.h"
-# include "Tree.h"
 # include "problem.h"
 # include "globals.h"
 # include "procedures.h"

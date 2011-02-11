@@ -55,7 +55,6 @@ static char		 *last_material;	/* name of last material   */
 
 /* Current objects (inherited attributes). */
 
-static Item		  found;		/* current object	   */
 static Node		  node;			/* current node		   */
 static Element		  element;		/* current element	   */
 static Material		  material;		/* current material	   */

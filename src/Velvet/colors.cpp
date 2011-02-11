@@ -512,30 +512,6 @@ static int AddForce (Force item)
  * Description:	Does the actual dirty work for a given list and tree	*
  ************************************************************************/
 
-static void UpdateList (Widget w, Tree tree, Boolean deleted)
-{
-   unsigned	size;
-   unsigned	number_of_items;
-
-   object_count = 0;
-  
-   number_of_items = TreeSize (tree);
-   if (deleted)
-      number_of_items --;
- 
-   size = (number_of_items + 1)*sizeof (String);
-   object_names = (String *) XtRealloc ((char *) object_names, size);
-   object_colors = (String *) XtRealloc ((char *) object_colors, size);
-
-   TreeIterate (tree);
-
-   object_names [number_of_items] = NULL;
-
-   XawListChange (w, object_names, 0, 0, False);
-
-   return;
-}
-
 template<typename Set, typename Unary>
 void UpdateList (Widget w, Set tree, Boolean deleted, Unary fun)
 {

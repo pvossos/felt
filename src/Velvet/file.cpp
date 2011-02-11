@@ -209,12 +209,12 @@ int VelvetReadFeltFile (char *file)
     DW_RemoveAll (drawing);
     DrawProblem (0.0);
 
-    ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
+    ConstraintDialogUpdate (constraint_d, &problem.constraint_set);
     ForceDialogUpdate	   (force_d, &problem.force_set);
     LoadDialogUpdate	   (load_d, &problem.distributed_set);
     MaterialDialogUpdate   (material_d, &problem.material_set);
     NodeDialogUpdate	   (node_d, &problem.node_set, &problem.force_set,
-                            problem.constraint_tree);
+                            &problem.constraint_set);
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, &problem.distributed_set,
                             &problem.node_set);
@@ -222,7 +222,7 @@ int VelvetReadFeltFile (char *file)
                             &problem.force_set, &problem.distributed_set);
 
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
+    ColorsDialogUpdateConstraintList (colors_d, &problem.constraint_set, False);
     ColorsDialogUpdateForcesList (colors_d, &problem.force_set, False);
     ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, False);
 
@@ -268,12 +268,12 @@ void StartNew (void)
 
     figure_tree	= TreeCreate (figure_cmp);
 
-    ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
+    ConstraintDialogUpdate (constraint_d, &problem.constraint_set);
     ForceDialogUpdate	   (force_d, &problem.force_set);
     LoadDialogUpdate	   (load_d, &problem.distributed_set);
     MaterialDialogUpdate   (material_d, &problem.material_set);
     NodeDialogUpdate	   (node_d, &problem.node_set, &problem.force_set,
-                            problem.constraint_tree);
+                            &problem.constraint_set);
     ElementDialogUpdate	   (element_d, &problem.element_set,
                             &problem.material_set, &problem.distributed_set,
                             &problem.node_set);
@@ -281,7 +281,7 @@ void StartNew (void)
                             &problem.force_set, &problem.distributed_set);
 
     ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
+    ColorsDialogUpdateConstraintList (colors_d, &problem.constraint_set, False);
     ColorsDialogUpdateForcesList (colors_d, &problem.force_set, False);
     ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, False);
 }

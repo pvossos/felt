@@ -156,6 +156,14 @@ typedef struct constraint {
     VarExpr dx [7];			/* boundary displacement vector	  */
 } *Constraint;
 
+struct LtConstraint
+{
+     bool operator()(const Constraint a, const Constraint b) const
+          {
+               return a->name < b->name;
+          }
+};
+
 
 /* A material */
 

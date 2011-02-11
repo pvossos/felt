@@ -122,12 +122,12 @@ void ConstraintDialogChanged (Widget w, XtPointer client_data, XtPointer call_da
 
     if (info -> proceed == True) {
 	changeflag = True;
-	NodeDialogUpdate (node_d, NULL, NULL, problem.constraint_tree);
+	NodeDialogUpdate (node_d, NULL, NULL, &problem.constraint_set);
 	node = NodeDialogActive (node_d);
 	if (node != NULL && info -> constraint == node -> constraint)
 	    NodeDialogDisplay (node_d, node);
 
-        ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, info -> deleted);
+        ColorsDialogUpdateConstraintList (colors_d, &problem.constraint_set, info -> deleted);
     }
 }
 

@@ -297,13 +297,8 @@ WriteLoad(Distributed load)
  ************************************************************************/
 
 static int
-WriteConstraint(Item item)
+WriteConstraint(Constraint constraint)
 {
-    Constraint constraint;
-
-
-    constraint = (Constraint) item;
-
     if (constraint -> aux == mark_flag) {
 	fprintf (fp, "%s", Quote (constraint -> name.c_str()));
 
@@ -801,10 +796,9 @@ WriteFile(char *flag)
 
     /* Write the constraints section. */
 
-    if (TreeSize (problem.constraint_tree) > 0) {
-	fprintf (fp, "\nconstraints\n");
-	TreeSetIterator (problem.constraint_tree, WriteConstraint);
-	TreeIterate (problem.constraint_tree);
+    if (!problem.constraint_set.empty()) {
+        fprintf (fp, "\nconstraints\n");
+        std::for_each(problem.constraint_set.begin(), problem.constraint_set.end(), WriteConstraint);
     }
 
 

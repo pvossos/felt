@@ -84,9 +84,8 @@ static int ScaleForce (Force f)
    return 0;
 }
 
-static int ScaleConstraint (Item item)
+static int ScaleConstraint (Constraint c)
 {
-   Constraint	c = (Constraint) item;
    unsigned	i;
 
    for (i = 1 ; i <= 6 ; i++)  {
@@ -186,8 +185,7 @@ void ScaleFeltFile (double l, double f)
 
    std::for_each(problem.force_set.begin(), problem.force_set.end(), ScaleForce);
 
-   TreeSetIterator (problem.constraint_tree, ScaleConstraint);
-   TreeIterate (problem.constraint_tree);
+   std::for_each(problem.constraint_set.begin(), problem.constraint_set.end(), ScaleConstraint);
 
    ScaleAppearance ( );
 

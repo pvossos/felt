@@ -35,7 +35,7 @@ typedef struct colors_dialog *ColorsDialog;
 
 ColorsDialog ColorsDialogCreate (Widget parent, String name, String title);
 
-void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted);
+void ColorsDialogUpdateConstraintList (ColorsDialog colorsd, Problem::ConstraintSet *tree, Boolean deleted);
 
 void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted);
 

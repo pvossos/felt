@@ -365,7 +365,8 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
     }
     else if (active_list == colorsd -> clist) {
        c.name = info -> string;
-       current_constraint = (Constraint) TreeSearch (problem.constraint_tree, &c);
+       Problem::ConstraintSet::iterator it = problem.constraint_set.find(&c);
+       current_constraint = it != problem.constraint_set.end() ? *it : NULL;
        color = current_constraint -> color;
     }
     else if (active_list == colorsd -> flist) {
@@ -484,10 +485,10 @@ static int AddMaterial (Material item)
    return 0;
 }
 
-static int AddConstraint (Item item)
+static int AddConstraint (Constraint item)
 {
-    object_colors [object_count] = XtNewString(((Constraint) item) -> color.c_str());
-    object_names [object_count ++] = XtNewString(((Constraint) item) -> name.c_str());
+    object_colors [object_count] = XtNewString(item -> color.c_str());
+    object_names [object_count ++] = XtNewString(item -> name.c_str());
    return 0;
 }
 
@@ -561,28 +562,23 @@ void UpdateList (Widget w, Set tree, Boolean deleted, Unary fun)
 }
 
 /************************************************************************
- * Function:	ColorsDialogUpdateObjectList				*
+ * Function:	ColorsDialogUpdateConstraintList				*
  *									*
  * Description:	Sets the list of names for one of the given object	*
  *		lists; the list is determined from the tree that	*
  *	 	is passed in.						*
  ************************************************************************/
 
-void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted)
+void ColorsDialogUpdateConstraintList (ColorsDialog colorsd, Problem::ConstraintSet *tree, Boolean deleted)
 {
-   unsigned	i;
-
-   if (tree == problem.constraint_tree) {
-      TreeSetIterator (tree, AddConstraint);
-      object_names = colorsd -> constraints;
-      UpdateList (colorsd -> clist, tree, deleted);
-      colorsd -> constraints = object_names;
-   }
- 
-   for (i = 0 ; i < object_count ; i++)
-      InsertColor (colorsd, object_colors [i]);
-  
-   return;
+    object_names = colorsd -> constraints;
+    UpdateList (colorsd -> clist, tree, deleted, AddConstraint);
+    colorsd -> constraints = object_names;
+    
+    for (unsigned i = 0 ; i < object_count ; i++)
+        InsertColor (colorsd, object_colors [i]);
+    
+    return;
 }
 
 void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted)

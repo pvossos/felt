@@ -178,12 +178,12 @@ resolve_node(Node node)
 
     /* Resolve the constraint. */
 
-    tree = problem.constraint_tree;
     buf = (char *) node->constraint;
 
     if (buf) {
         c.name = buf;
-        node -> constraint = (Constraint) TreeSearch (tree, &c);
+        Problem::ConstraintSet::iterator it = problem.constraint_set.find(&c);
+        node -> constraint = it != problem.constraint_set.end() ? *it : NULL;
         
         if (!node -> constraint)
             error ("node %u used undefined constraint %s", number, c.name.c_str());
@@ -454,7 +454,6 @@ ReadFeltFile(const char *filename)
     psource.line	     = 1;
     problem.nodes.clear();
     problem.elements.clear();
-    problem.constraint_tree  = TreeCreate (constraint_cmp);
 
     if (filename)
 	psource.filename = strdup (streq (filename, "-") ? "stdin" : filename);

@@ -48,7 +48,8 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
 
 void NodeDialogPopup (NodeDialog noded);
 
-void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes, Problem::ForceSet *forces, Tree constraints);
+void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes,
+                       Problem::ForceSet *forces, Problem::ConstraintSet *constraints);
 
 Node NodeDialogActive (NodeDialog noded);
 

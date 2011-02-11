@@ -47,6 +47,7 @@ typedef struct {
     typedef std::set<Distributed, LtDistributed> DistributedSet;
     typedef std::set<Force, LtForce> ForceSet;
     typedef std::set<LoadCase, LtLoadCase> LoadCaseSet;
+    typedef std::set<Constraint, LtConstraint> ConstraintSet;
      
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
@@ -59,7 +60,7 @@ typedef struct {
     MaterialSet material_set;
     DistributedSet distributed_set;
     ForceSet force_set;
-    Tree	 constraint_tree;	/* constraint tree	   */
+    ConstraintSet constraint_set;
     LoadCaseSet	 loadcase_set;		/* load case tree	   */
     unsigned	 dofs_pos [7];		/* global DOF position map */
     unsigned	 dofs_num [7];		/* global DOF number map   */

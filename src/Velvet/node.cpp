@@ -84,7 +84,7 @@ struct node_dialog {
     Node           active;
     Problem::NodeSet *nodes;
     Problem::ForceSet *forces;
-    Tree           constraints;
+    Problem::ConstraintSet *constraints;
 };
 
 static String labels [ ] = {
@@ -469,9 +469,9 @@ static void UpdateForceName (Widget w, XtPointer client_data, XtPointer call_dat
  *		the specified constraint.				*
  ************************************************************************/
 
-static int SetConstraintEntry (Item item)
+static int SetConstraintEntry (Constraint item)
 {
-    SetLabelString (children [child_number], ((Constraint) item) -> name.c_str());
+    SetLabelString (children [child_number], item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -508,7 +508,7 @@ static void UpdateConstraintMenu (Widget w, XtPointer client_data, XtPointer cal
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_constraints = TreeSize (noded -> constraints);
+    num_constraints = noded->constraints->size();
 
     if (num_constraints <= 0) {
 	num_constraints ++;
@@ -534,8 +534,7 @@ static void UpdateConstraintMenu (Widget w, XtPointer client_data, XtPointer cal
     XtGetValues (w, args, 2);
 
     child_number = 0;
-    TreeSetIterator (noded -> constraints, SetConstraintEntry);
-    TreeIterate (noded -> constraints);
+    std::for_each(noded->constraints->begin(), noded->constraints->end(), SetConstraintEntry);
     noded -> new_constraints = False;
 
     XtSetArg (args [0], XtNwidth, max_width);
@@ -682,7 +681,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the constraint. */
 
     c_dummy.name = GetTextString (noded -> c_name);
-    constraint = (Constraint) TreeSearch (noded -> constraints, &c_dummy);
+    Problem::ConstraintSet::iterator it = noded->constraints->find(&c_dummy);
+    constraint = it != noded->constraints->end() ? *it : NULL;
     if (constraint == NULL) {
 	XBell (XtDisplay (noded -> shell), 0);
 	SetTextString (noded -> c_name, "");
@@ -707,11 +707,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
 
     /* Retrieve the force. */
-
-    f_dummy.name = GetTextString (noded -> f_name);
-    Problem::ForceSet::iterator it = noded->forces->find(&f_dummy);
-    active -> force = it != noded->forces->end() ? *it : NULL;
-
+    {
+        f_dummy.name = GetTextString (noded -> f_name);
+        Problem::ForceSet::iterator it = noded->forces->find(&f_dummy);
+        active -> force = it != noded->forces->end() ? *it : NULL;
+    }
 
     /* Retrieve the values from the text entries. */
 
@@ -1149,7 +1149,8 @@ void NodeDialogPopup (NodeDialog noded)
  *		trees.							*
  ************************************************************************/
 
-void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes, Problem::ForceSet *forces, Tree constraints)
+void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes,
+                       Problem::ForceSet *forces, Problem::ConstraintSet *constraints)
 {
     /* Remember to update the menus if necessary. */
 
@@ -1159,8 +1160,8 @@ void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes, Problem::Force
     }
 
     if (constraints != NULL) {
-	noded -> constraints = constraints;
-	noded -> new_constraints = True;
+        noded -> constraints = constraints;
+        noded -> new_constraints = True;
     }
 
 

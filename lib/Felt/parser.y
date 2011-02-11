@@ -903,14 +903,13 @@ constraint_definition
 constraint_name
 	: NAME
 	    {
-		constraint = CreateConstraint ($1);
-		found = TreeInsert (problem.constraint_tree, constraint);
-
-		if (found != (Item) constraint) {
-		    error ("constraint %s is previously defined", $1);
-		    DestroyConstraint (constraint);
-		    constraint = &dummy_constraint;
-		}
+             constraint = CreateConstraint ($1);
+             
+             if (!problem.constraint_set.insert(constraint).second) {
+                  error ("constraint %s is previously defined", $1);
+                  DestroyConstraint (constraint);
+                  constraint = &dummy_constraint;
+             }
 	    }
 	;
 

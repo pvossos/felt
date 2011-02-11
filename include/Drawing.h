@@ -20,9 +20,8 @@
 # ifndef _Drawing_h
 # define _Drawing_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include <set>
+# include <stdint.h>
 
 /*----------------------------------------------------------------------*/
 
@@ -121,6 +120,18 @@ extern WidgetClass drawingWidgetClass;
 /* Declare public types */
 
 typedef struct figure *Figure;
+
+struct LtFigure
+{
+     bool operator()(const Figure a, const Figure b) const
+          {
+               uintptr_t ai = (uintptr_t) a;
+               uintptr_t bi = (uintptr_t) b;
+               return ai < bi;
+          };
+};
+
+typedef std::set<Figure, LtFigure> FigureSet;
 
 typedef struct {
     float x, y;
@@ -266,9 +277,5 @@ void DW_TranslateCoords (Widget gw, int x, int y, float *rx, float *ry);
 XtArgVal Float2Arg (float value);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Drawing_h */

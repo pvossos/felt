@@ -46,6 +46,7 @@
 
 
 extern CanvasDialog	canvas_d;
+extern FigureSet figure_set;
 static FigureAttributes	attributes;
 
 
@@ -85,7 +86,7 @@ static void DrawDisplayList (void)
 	case RECTANGLE:
 	    figure = DW_DrawRectangle (drawing, True, info -> x, info -> y,
 					info -> width, info -> height);
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 
 	case POLYLINE:
@@ -105,7 +106,7 @@ static void DrawDisplayList (void)
 					info -> num_points);
 	    }
 
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 
 	case TEXT:
@@ -114,14 +115,14 @@ static void DrawDisplayList (void)
 
 	    figure = DW_DrawText (drawing, True, info -> x, info -> y,
 					info -> text);
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 
 	case ARC:
 	    figure = DW_DrawArc (drawing, True, info -> x, info -> y,
 					info -> width, info -> height,
 					info -> start, info -> length);
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 	}
     }

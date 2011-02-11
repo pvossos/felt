@@ -44,8 +44,7 @@ static unsigned op_count;
 
 static FigureAttributes null_attrib = {(FigureType) 0};
 
-Tree figure_tree = NULL;
-
+FigureSet figure_set;
 
 int figure_cmp (Item item1, Item item2)
 {
@@ -88,7 +87,7 @@ DeleteFigureGroup(Figure *figures, unsigned nfigures)
 	    DW_SetAutoRedraw (drawing, False);
 	}
 
-        TreeDelete (figure_tree, fig);
+    figure_set.erase(fig);
 	DW_RemoveFigure (drawing, fig);
     }
 
@@ -128,8 +127,8 @@ void DeleteToolCB (Widget w, XtPointer clientData, XtPointer callData)
    if (figure != NULL) {
       DW_GetAttributes (w, figure, &attributes);
       if (attributes.user_data == NULL) {
-         DW_RemoveFigure (w, figure);
-	 TreeDelete (figure_tree, figure);
+          DW_RemoveFigure (w, figure);
+          figure_set.erase(figure);
       }
    }
 }
@@ -175,12 +174,12 @@ void DoLineAP (Widget w, XEvent *event, String *params, Cardinal *num)
    else if (op_count == 1) {
       status = GetTextCoordinates (&xe, &ye, NULL);
       if (status == NULL) {
-         line = DW_DrawLine (drawing, xs, ys, xe, ye);
-         DW_SetAttributes (drawing, line, DW_FigureUserData, &null_attrib);
-         TreeInsert (figure_tree, line);
-         SetNormalMode ();
-	 changeflag = True;
-         op_count = 0;
+          line = DW_DrawLine (drawing, xs, ys, xe, ye);
+          DW_SetAttributes (drawing, line, DW_FigureUserData, &null_attrib);
+          figure_set.insert(line);
+          SetNormalMode ();
+          changeflag = True;
+          op_count = 0;
       }
    }
 }
@@ -213,7 +212,7 @@ void DoLineCB (Widget w, XtPointer clientData, XtPointer callData)
       DW_SetInteractive (w, False);
       line = DW_DrawLine (w, start.x, start.y, report->snapped.x, report->snapped.y);
       DW_SetAttributes (w, line, DW_FigureUserData, &null_attrib);
-      TreeInsert (figure_tree, line);
+      figure_set.insert(line);
       SetNormalMode ();
       changeflag = True;
       break;
@@ -299,7 +298,7 @@ void DoRectangleCB (Widget w, XtPointer clientData, XtPointer callData)
       rect = DW_DrawRectangle (w, True, corner.x, corner.y, 
                                  attributes.width, attributes.height);
       DW_SetAttributes (w, rect, DW_FigureUserData, &null_attrib); 
-      TreeInsert (figure_tree, rect);
+      figure_set.insert(rect);
       SetNormalMode ();
       changeflag = True;
       break;
@@ -364,7 +363,7 @@ void DoCircleCB (Widget w, XtPointer clientData, XtPointer callData)
       circle = DW_DrawArc (w, True, center.x, center.y, 
              attributes.width, attributes.height, 0.0, 360.0);
       DW_SetAttributes (w, circle, DW_FigureUserData, &null_attrib);
-      TreeInsert (figure_tree, circle);
+      figure_set.insert(circle);
       SetNormalMode ();
       changeflag = True;
       break;
@@ -391,7 +390,7 @@ void DoCircleAP (Widget w, XEvent *event, String *params, Cardinal *num)
       if (status == NULL) {
          circle = DW_DrawArc (drawing, True, xc, yc, 2*radius, 2*radius, 0.0, 360.0);
          DW_SetAttributes (drawing, circle, DW_FigureUserData, &null_attrib);
-         TreeInsert (figure_tree, circle);
+         figure_set.insert(circle);
          SetNormalMode ();
          changeflag = True;
          op_count = 0;
@@ -470,7 +469,7 @@ void DoArcCB (Widget w, XtPointer clientData, XtPointer callData)
       DW_SetInteractive (w, False);
       arc = DW_DrawArc (w, True, edge.x-x, edge.y, 2*x, 2*y, start, 90.0);
       DW_SetAttributes (w, arc, DW_FigureUserData, &null_attrib);
-      TreeInsert (figure_tree, arc);
+      figure_set.insert(arc);
       SetNormalMode ();
       changeflag = True;
       break;
@@ -508,7 +507,7 @@ void QuitPolygon (Widget w, XEvent *event, String *params, Cardinal *num)
     DW_SetInteractive (drawing, False);
     poly = DW_DrawPolygon (drawing, True, points, currline + 1);
     DW_SetAttributes (drawing, poly, DW_FigureUserData, &null_attrib);
-    TreeInsert (figure_tree, poly);
+    figure_set.insert(poly);
     SetNormalMode ( );
     changeflag = True;
 }
@@ -635,10 +634,10 @@ void DoPolygonButtonCB (Widget w, XtPointer clientData, XtPointer callData)
 
 	    DW_SetInteractive (w, False);
 	    poly = DW_DrawPolygon (w, True, points, currline + 1);
-            DW_SetAttributes (w, poly, DW_FigureUserData, &null_attrib);
-            TreeInsert (figure_tree, poly);
+        DW_SetAttributes (w, poly, DW_FigureUserData, &null_attrib);
+        figure_set.insert(poly);
 	    SetNormalMode ( );
-            changeflag = True;
+        changeflag = True;
 	    break;
 	}
    }
@@ -685,7 +684,7 @@ void DoTextAP (Widget w, XEvent *event, String *params, Cardinal *num)
       if (status == NULL) {
          text = DW_DrawText (drawing, True, x, y, result);
          DW_SetAttributes (drawing, text, DW_FigureUserData, &null_attrib);
-         TreeInsert (figure_tree, text);
+         figure_set.insert(text);
          SetNormalMode ();
          changeflag = True;
       }
@@ -704,7 +703,7 @@ void DoTextCB (Widget w, XtPointer clientData, XtPointer callData)
    text = DW_DrawText (drawing, True, report -> snapped.x, 
                                report -> snapped.y, result);
    DW_SetAttributes (w, text, DW_FigureUserData, &null_attrib);
-   TreeInsert (figure_tree, text);
+   figure_set.insert(text);
 
    SetNormalMode ();
    changeflag = True;

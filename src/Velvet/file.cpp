@@ -71,6 +71,7 @@ extern ElementDialog	element_d;
 extern NodeDialog	node_d;
 extern ColorsDialog	colors_d;
 extern LoadCaseDialog   loadcase_d;
+extern FigureSet figure_set;
 
 static void CanvasToAppearance (void);
 
@@ -258,15 +259,13 @@ void StartNew (void)
 
     DW_RemoveAll (drawing);
     DestroyProblem ((MaterialDestructor) DestroyMaterial);
-    TreeDestroy (figure_tree);
+    figure_set.clear();
 
     ElementListSet (element_l, NULL);
 
     ReadFeltFile (NULL);
 
     AnalysisDialogUpdate (analysis_d, True);
-
-    figure_tree	= TreeCreate (figure_cmp);
 
     ConstraintDialogUpdate (constraint_d, &problem.constraint_set);
     ForceDialogUpdate	   (force_d, &problem.force_set);
@@ -652,7 +651,7 @@ static void CanvasToAppearance (void)
     /* Initialize the structure and retrieve the display list. */
 
     appearance.num_figures = 0;
-    size = TreeSize (figure_tree) * sizeof (FigInfo);
+    size = figure_set.size() * sizeof (FigInfo);
     appearance.figures = (FigInfo *) XtMalloc (size);
 
     last_font = NULL;

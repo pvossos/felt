@@ -257,17 +257,14 @@ WriteMaterial(Material material)
  ************************************************************************/
 
 static int
-WriteLoad(Item item)
+WriteLoad(Distributed load)
 {
     unsigned	 i;
-    Distributed  load;
     static const char *direction_names [ ] = {"", "LocalX", "LocalY", "LocalZ",
 					"GlobalX", "GlobalY", "GlobalZ",
 					"parallel", "perpendicular", 
 					"radial", "axial"};
 
-
-    load = (Distributed) item;
 
     if (load -> aux == mark_flag) {
 	fprintf (fp, "%s", Quote (load -> name.c_str()));
@@ -807,9 +804,8 @@ WriteFile(char *flag)
     /* Write the distributed loads section. */
 
     if (any_loads || !mark_flag) {
-	fprintf (fp, "\ndistributed loads\n");
-	TreeSetIterator (problem.distributed_tree, WriteLoad);
-	TreeIterate (problem.distributed_tree);
+        fprintf (fp, "\ndistributed loads\n");
+        std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), WriteLoad);
     }
 
 

@@ -225,7 +225,6 @@ resolve_element(Element element)
     struct material    m;
     unsigned	       i;
     unsigned	       number;
-    Tree	       tree;
     char *buf;
 
     /* Store the element in the array. */
@@ -251,16 +250,13 @@ resolve_element(Element element)
 
     /* Resolve the loads. */
 
-    tree = problem.distributed_tree;
-
     for (i = 1; i <= element -> numdistributed; i ++) {
-	d.name = (char *) element -> distributed [i];
-	element -> distributed [i] = (Distributed) TreeSearch (tree, &d);
-
-	if (!element -> distributed)
-	    error ("element %u used undefined load %s", number, d.name.c_str());
-    
-	d.name = "";
+        d.name = (char *) element -> distributed [i];
+        Problem::DistributedSet::iterator it = problem.distributed_set.find(&d);
+        if (it == problem.distributed_set.end())
+            error ("element %u used undefined load %s", number, d.name.c_str());
+        element -> distributed [i] = *it;
+        d.name = "";
     }
 
 
@@ -323,7 +319,8 @@ resolve_loadcase(Item item)
        if (!loadcase -> elements [i])
            error ("load case %s used undefined element %d", loadcase->name.c_str(), e.number);
 
-       loadcase -> loads [i] = (Distributed) TreeSearch (problem.distributed_tree, &f);
+       Problem::DistributedSet::iterator itl = problem.distributed_set.find(&l);
+       loadcase -> loads [i] = itl != problem.distributed_set.end() ? *itl : NULL;
        if (!loadcase -> loads [i])
            error ("load case %s used undefined load %s", loadcase->name.c_str(), l.name.c_str());
 
@@ -459,7 +456,6 @@ ReadFeltFile(const char *filename)
     psource.line	     = 1;
     problem.nodes.clear();
     problem.elements.clear();
-    problem.distributed_tree = TreeCreate (distributed_cmp);
     problem.force_tree	     = TreeCreate (force_cmp);
     problem.constraint_tree  = TreeCreate (constraint_cmp);
     problem.loadcase_tree    = TreeCreate (loadcase_cmp);

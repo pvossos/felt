@@ -115,6 +115,14 @@ typedef struct distributed {
     cvector1<Pair> value;			/* nodes and magnitudes     	  */
 } *Distributed;
 
+struct LtDistributed
+{
+     bool operator()(const Distributed a, const Distributed b) const
+          {
+               return a->name < b->name;
+          }
+};
+
 
 /* A force */
 

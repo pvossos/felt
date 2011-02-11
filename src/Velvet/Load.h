@@ -26,12 +26,10 @@
 
 # ifndef _Load_h
 # define _Load_h
+
+# include "problem.h"
 # include "fe.h"
 # include "Tree.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
 
 /*----------------------------------------------------------------------*/
 
@@ -49,16 +47,12 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
 
 void LoadDialogPopup (LoadDialog loadd);
 
-void LoadDialogUpdate (LoadDialog loadd, Tree tree);
+void LoadDialogUpdate (LoadDialog loadd, Problem::DistributedSet *tree);
 
 Distributed LoadDialogActive (LoadDialog loadd);
 
 void LoadDialogDisplay (LoadDialog loadd, Distributed load);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Load_h */

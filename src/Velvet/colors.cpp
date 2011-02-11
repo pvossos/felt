@@ -375,7 +375,7 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
     }
     else if (active_list == colorsd -> llist) {
        l.name = info -> string;
-       current_load = (Distributed) TreeSearch (problem.distributed_tree, &l);
+       current_load = *(problem.distributed_set.find(&l));
        color = current_load -> color;
     }
 
@@ -491,10 +491,10 @@ static int AddConstraint (Item item)
    return 0;
 }
 
-static int AddLoad (Item item)
+static int AddLoad (Distributed item)
 {
-    object_colors [object_count] = XtNewString(((Distributed) item) -> color.c_str());
-    object_names [object_count ++] = XtNewString(((Distributed) item) -> name.c_str());
+    object_colors [object_count] = XtNewString(item->color.c_str());
+    object_names [object_count ++] = XtNewString(item->name.c_str());
    return 0;
 }
 
@@ -579,13 +579,6 @@ void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean dele
       colorsd -> constraints = object_names;
    }
  
-   else if (tree == problem.distributed_tree) { 
-      TreeSetIterator (tree, AddLoad);
-      object_names = colorsd -> loads;
-      UpdateList (colorsd -> llist, tree, deleted);
-      colorsd -> loads = object_names;
-   }
- 
    else if (tree == problem.force_tree) {
       TreeSetIterator (tree, AddForce);
       object_names = colorsd -> forces;
@@ -604,6 +597,18 @@ void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet 
    object_names = colorsd -> materials;
    UpdateList (colorsd -> mlist, tree, deleted, AddMaterial);
    colorsd -> materials = object_names;
+
+   for (unsigned i = 0 ; i < object_count ; i++)
+      InsertColor (colorsd, object_colors [i]);
+  
+   return;
+}
+
+void ColorsDialogUpdateDistributedList (ColorsDialog colorsd, Problem::DistributedSet *tree, Boolean deleted)
+{
+    object_names = colorsd -> loads;
+    UpdateList (colorsd -> llist, tree, deleted, AddLoad);
+    colorsd -> loads = object_names;
 
    for (unsigned i = 0 ; i < object_count ; i++)
       InsertColor (colorsd, object_colors [i]);

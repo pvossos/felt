@@ -86,7 +86,7 @@ AddElement(Definition defn, Node *nodes, Material material,
 
    for (i = 1 ; i <= numdistributed ; i++) {
       element -> distributed [i] = distributed [i-1];
-      TreeInsert (problem.distributed_tree, distributed [i-1]);
+      problem.distributed_set.insert(distributed[i-1]);
    }
 
    problem.elements.push_back(element);

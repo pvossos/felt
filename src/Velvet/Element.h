@@ -49,7 +49,7 @@ void ElementDialogPopup (ElementDialog eltd);
 
 void ElementDialogUpdate (ElementDialog eltd,
                           Problem::ElementSet *elements, Problem::MaterialSet *materials,
-                          Tree loads, Problem::NodeSet *nodes);
+                          Problem::DistributedSet *loads, Problem::NodeSet *nodes);
 
 Element ElementDialogActive (ElementDialog eltd);
 

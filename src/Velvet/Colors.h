@@ -38,6 +38,8 @@ ColorsDialog ColorsDialogCreate (Widget parent, String name, String title);
 void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted);
 
 void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted);
+
+void ColorsDialogUpdateDistributedList (ColorsDialog colorsd, Problem::DistributedSet *tree, Boolean deleted);
      
 void ColorsDialogPopup (ColorsDialog colorsd);
 

@@ -303,9 +303,9 @@ void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
     }
 
     changeflag = True;
-    ElementDialogUpdate (element_d, NULL, NULL, problem.distributed_tree, NULL);
+    ElementDialogUpdate (element_d, NULL, NULL, &problem.distributed_set, NULL);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.distributed_tree, info -> deleted);
+    ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, info -> deleted);
 
     if (displayed == True)
 	ElementDialogDisplay (element_d, element);

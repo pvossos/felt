@@ -685,14 +685,13 @@ load_definition
 load_name
 	: NAME
 	    {
-		load = CreateDistributed ($1, 0);
-		found = TreeInsert (problem.distributed_tree, load);
-
-		if (found != (Item) load) {
-		    error ("load %s is previously defined", $1);
-		    DestroyDistributed (load);
-		    load = &dummy_load;
-		}
+             load = CreateDistributed ($1, 0);
+             
+             if (!problem.distributed_set.insert(load).second) {
+                  error ("load %s is previously defined", $1);
+                  DestroyDistributed (load);
+                  load = &dummy_load;
+             }
 	    }
 	;
 

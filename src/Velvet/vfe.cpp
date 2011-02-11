@@ -371,9 +371,8 @@ void DestroyProblem (MaterialDestructor material_op)
 		DestroyConstraint);
     (void) TreeDestroy (problem.constraint_tree);
 
-    (void) TreeSetDestructor (problem.distributed_tree, (ItemDestructor)
-		DestroyDistributed);
-    (void) TreeDestroy (problem.distributed_tree);
+    std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), DestroyDistributed);
+    problem.distributed_set.clear();
 }
 
 

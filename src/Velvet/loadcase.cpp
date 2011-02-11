@@ -26,6 +26,7 @@
 
 # include <vector>
 # include <string>
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -884,7 +885,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
               }
 
               l.name = loadcased -> load_assignments [i-1];
-              active -> loads [i] = (Distributed) TreeSearch (problem.distributed_tree, &l);
+              Problem::DistributedSet::iterator itd = problem.distributed_set.find(&l);
+              active -> loads [i] = itd != problem.distributed_set.end() ? *itd : NULL;
               if (active -> loads [i] == NULL) {
                   error ("distributed load %s is not defined", l.name.c_str());
                  return;
@@ -1356,9 +1358,9 @@ static int SetForceEntry (Item item)
  *              the specified load.                                     *
  ************************************************************************/
 
-static int SetLoadEntry (Item item)
+static int SetLoadEntry (Distributed item)
 {
-    SetLabelString (children [child_number], ((Distributed) item) -> name.c_str());
+    SetLabelString (children [child_number], item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -1377,7 +1379,7 @@ static int SetLoadEntry (Item item)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Tree load_tree)
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Problem::DistributedSet *load_tree)
 {
     char	buffer [32];
     Arg		args [2];
@@ -1472,7 +1474,7 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree,
        XtSetArg (args [1], XtNnumChildren, &num_children);
        XtGetValues (loadcased -> load_menu, args, 2);
 
-       num_loads = TreeSize (load_tree) + 1;
+       num_loads = load_tree->size() + 1;
 
        for (i = num_children; i < num_loads; i ++) {
            sprintf (buffer, "load_entry%d", i);
@@ -1493,8 +1495,7 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree,
        max_width = preferred.width;
    
        child_number = 1;
-       TreeSetIterator (load_tree, SetLoadEntry);
-       TreeIterate (load_tree);
+       std::for_each(load_tree->begin(), load_tree->end(), SetLoadEntry);
    
        XtSetArg (args [0], XtNwidth, max_width);
        XtSetValues (loadcased -> load_menu, args, 1);

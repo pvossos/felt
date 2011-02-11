@@ -87,7 +87,7 @@ struct element_dialog {
     unsigned	   node_values [32];
     Problem::ElementSet	 *elements;
     Problem::MaterialSet *materials;
-    Tree           loads;
+    Problem::DistributedSet *loads;
     Problem::NodeSet *nodes;
 };
 
@@ -399,9 +399,9 @@ static Widget		menu_button;
  *		the specified load.					*
  ************************************************************************/
 
-static int SetLoadEntry (Item item)
+static int SetLoadEntry (Distributed item)
 {
-    SetLabelString (children [child_number], ((Distributed) item) -> name.c_str());
+    SetLabelString (children [child_number], item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -438,7 +438,7 @@ static void UpdateLoadMenu (Widget w, XtPointer client_data, XtPointer call_data
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_loads = TreeSize (eltd -> loads) + 1;
+    num_loads = eltd->loads->size() + 1;
 
     for (i = num_children; i < num_loads; i ++) {
 	sprintf (buffer, "load%d", i);
@@ -459,8 +459,7 @@ static void UpdateLoadMenu (Widget w, XtPointer client_data, XtPointer call_data
     max_width = preferred.width;
 
     child_number = 1;
-    TreeSetIterator (eltd -> loads, SetLoadEntry);
-    TreeIterate (eltd -> loads);
+    std::for_each(eltd->loads->begin(), eltd->loads->end(), SetLoadEntry);
     eltd -> new_loads = False;
 
     XtSetArg (args [0], XtNwidth, max_width);
@@ -853,7 +852,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     unsigned	       numnodes;
     unsigned	       shapenodes;
     Material	       material;
-    Distributed	       load;
     struct element     original;
     struct distributed l_dummy;
     struct material    m_dummy;
@@ -952,10 +950,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
     active -> numdistributed = 0;
     for (i = 0; i < 3; i ++) {
-	l_dummy.name = GetTextString (eltd -> l_name [i]);
-	load = (Distributed) TreeSearch (eltd -> loads, &l_dummy);
-	if (load != NULL)
-	    active -> distributed [++ active -> numdistributed] = load;
+        l_dummy.name = GetTextString (eltd -> l_name [i]);
+        Problem::DistributedSet::iterator it = eltd->loads->find(&l_dummy);
+        if (it != eltd->loads->end())
+            active -> distributed [++ active -> numdistributed] = *it;
     }
 
     for (i = active -> numdistributed + 1; i <= 3; i ++)
@@ -1455,7 +1453,7 @@ void ElementDialogPopup (ElementDialog eltd)
 
 void ElementDialogUpdate (ElementDialog eltd,
                           Problem::ElementSet *elements, Problem::MaterialSet *materials,
-                          Tree loads, Problem::NodeSet *nodes)
+                          Problem::DistributedSet *loads, Problem::NodeSet *nodes)
 {
     /* Remember to update the menus if necessary. */
 

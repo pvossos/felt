@@ -24,6 +24,7 @@
  *		type definitions for the load dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -79,7 +80,7 @@ struct load_dialog {
     String        *loads;
     Distributed    active;
     Boolean        new_copy;
-    Tree           tree;
+    Problem::DistributedSet *tree;
 };
 
 static String labels [ ] = {
@@ -400,12 +401,12 @@ empties all fields.  'Copy' empties the name field only.";
  *		index of the active load is also set.			*
  ************************************************************************/
 
-static int AppendLoadName (Item item)
+static int AppendLoadName (Distributed item)
 {
-    if (dialog -> active == (Distributed) item)
+    if (dialog -> active == item)
 	list_index = num_loads;
 
-    dialog -> loads [num_loads ++] = XtNewString(((Distributed) item) -> name.c_str());
+    dialog -> loads [num_loads ++] = XtNewString(item -> name.c_str());
     return 0;
 }
 
@@ -556,12 +557,13 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the active load from the tree if selected. */
 
     if (w != NULL) {
-	info = (XawListReturnStruct *) call_data;
-	if (info -> list_index == XAW_LIST_NONE)
-	    return;
-
-	dummy.name = info -> string;
-	loadd -> active = (Distributed) TreeSearch (loadd -> tree, &dummy);
+        info = (XawListReturnStruct *) call_data;
+        if (info -> list_index == XAW_LIST_NONE)
+            return;
+        
+        dummy.name = info -> string;
+        Problem::DistributedSet::iterator it = loadd->tree->find(&dummy);
+        loadd->active = it != loadd->tree->end() ? *it : NULL;
     }
 
     active = loadd -> active;
@@ -657,7 +659,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the load. */
 
     dummy.name = GetTextString (loadd -> name);
-    found = (Distributed) TreeSearch (loadd -> tree, &dummy);
+    Problem::DistributedSet::iterator it = loadd->tree->find(&dummy);
+    found = it != loadd->tree->end() ? *it : NULL;
     duplicate = found && (found != loadd -> active || loadd -> new_copy);
 
 
@@ -692,9 +695,9 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         loadd -> active = CreateDistributed(dummy.name.c_str(), count);
 	else if (strcmp (loadd -> active -> name.c_str(), dummy.name.c_str())) {
            old.name = loadd -> active -> name;
-           TreeDelete (loadd -> tree, &old);
+           loadd->tree->erase(&old);
            loadd->active->name = dummy.name;
-           TreeInsert (loadd -> tree, loadd -> active);
+           loadd->tree->insert(loadd->active);
 	}
 
 	active = loadd -> active;
@@ -710,7 +713,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         active -> value.resize(count);
         
 	if (loadd -> new_copy)
-	    TreeInsert (loadd -> tree, loadd -> active);
+        loadd->tree->insert(loadd->active);
 
 	if (loadd -> callback != NULL) {
 	    w = loadd -> shell;
@@ -769,7 +772,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	TreeDelete (loadd -> tree, loadd -> active);
+    loadd->tree->erase(loadd->active);
 	DestroyDistributed (loadd -> active);
 	loadd -> active = NULL;
     }
@@ -1130,7 +1133,7 @@ void LoadDialogDisplay (LoadDialog loadd, Distributed load)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadDialogUpdate (LoadDialog loadd, Tree tree)
+void LoadDialogUpdate (LoadDialog loadd, Problem::DistributedSet *tree)
 {
     Cardinal nbytes;
 
@@ -1141,7 +1144,7 @@ void LoadDialogUpdate (LoadDialog loadd, Tree tree)
 	tree = loadd -> tree;
 
     if (loadd -> active == NULL || tree != loadd -> tree)
-	loadd -> active = (Distributed) TreeMinimum (tree);
+        loadd -> active = tree->empty() ? NULL : *(tree->begin());
 
 
     /* Construct the array of load names. */
@@ -1152,11 +1155,10 @@ void LoadDialogUpdate (LoadDialog loadd, Tree tree)
     loadd -> tree = tree;
     loadd -> new_copy = False;
 
-    nbytes = (TreeSize (loadd -> tree) + 1) * sizeof (String);
+    nbytes = (loadd->tree->size() + 1) * sizeof (String);
     loadd -> loads = (String *) XtRealloc ((char *) loadd -> loads, nbytes);
 
-    TreeSetIterator (loadd -> tree, AppendLoadName);
-    TreeIterate (loadd -> tree);
+    std::for_each(loadd->tree->begin(), loadd->tree->end(), AppendLoadName);
     loadd -> loads [num_loads] = NULL;
 
 

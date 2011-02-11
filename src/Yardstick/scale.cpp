@@ -57,10 +57,8 @@ static int ScaleMaterial (Material m)
    return 0;
 }
 
-static int ScaleDistributed (Item item)
+static int ScaleDistributed (Distributed d)
 {
-   Distributed	d = (Distributed) item;
-
    if (d -> value.size() > 2) 
        error ("cannot convert distributed load %s (more than 2 values).", d -> name.c_str()); 
    else {
@@ -185,8 +183,7 @@ void ScaleFeltFile (double l, double f)
 
    std::for_each(problem.material_set.begin(), problem.material_set.end(), ScaleMaterial);
 
-   TreeSetIterator (problem.distributed_tree, ScaleDistributed);
-   TreeIterate (problem.distributed_tree);
+   std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), ScaleDistributed);
 
    TreeSetIterator (problem.force_tree, ScaleForce);
    TreeIterate (problem.force_tree);

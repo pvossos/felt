@@ -29,20 +29,6 @@
 # include "problem.h"
 # include "definition.h"
 
-
-/************************************************************************
- * Function:	DefinitionCompare					*
- *									*
- * Description:	Compares two definition structures represented as	*
- *		items.							*
- ************************************************************************/
-
-static int 
-DefinitionCompare(Item item1, Item item2)
-{
-    return strcmp (((Definition) item1) -> name, ((Definition) item2) -> name);
-}
-
 int
 AddDefinition(Definition definition)
 {

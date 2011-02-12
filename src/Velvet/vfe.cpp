@@ -36,7 +36,6 @@
 # include "vfe.h"
 # include "error.h"
 # include "problem.h"
-# include "objects.h"
 # include "allocate.h"
 # include "globals.h"
 # include "procedures.h"
@@ -352,25 +351,37 @@ void DrawProblem (double z)
  * Description:	Destroy the current problem invocation.			*
  ************************************************************************/
 
-void DestroyProblem (MaterialDestructor material_op)
+void DestroyProblem (bool delmaterials)
 {
-    std::for_each(problem.node_set.begin(), problem.node_set.end(), DestroyNode);
+    for (Problem::NodeSet::iterator it = problem.node_set.begin();
+         it != problem.node_set.end(); ++it)
+        delete *it;
     problem.node_set.clear();
 
-    std::for_each(problem.element_set.begin(), problem.element_set.end(), DestroyElement);
+    for (Problem::ElementSet::iterator it = problem.element_set.begin();
+         it != problem.element_set.end(); ++it)
+        delete *it;
     problem.element_set.clear();
 
-    std::for_each(problem.force_set.begin(), problem.force_set.end(), DestroyForce);
+    for (Problem::ForceSet::iterator it = problem.force_set.begin();
+         it != problem.force_set.end(); ++it)
+        delete *it;
     problem.force_set.clear();
 
-    if (material_op)
-        std::for_each(problem.material_set.begin(), problem.material_set.end(), material_op);
+    if (delmaterials)
+        for (Problem::MaterialSet::iterator it = problem.material_set.begin();
+             it != problem.material_set.end(); ++it)
+            delete *it;
     problem.material_set.clear();
 
-    std::for_each(problem.constraint_set.begin(), problem.constraint_set.end(), DestroyConstraint);
+    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
+         it != problem.constraint_set.end(); ++it)
+        delete *it;
     problem.constraint_set.clear();
 
-    std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), DestroyDistributed);
+    for (Problem::DistributedSet::iterator it = problem.distributed_set.begin();
+         it != problem.distributed_set.end(); ++it)
+        delete *it;
     problem.distributed_set.clear();
 }
 

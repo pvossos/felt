@@ -33,7 +33,6 @@
 # include "globals.h"
 # include "vfe.h"
 # include "text_entry.h"
-# include "objects.h"
 # include "error.h"
 # include "Node.h"
 
@@ -93,7 +92,7 @@ void DoAddNode (float x, float y, float z)
    node = problem.node_set.empty() ? NULL : *(problem.node_set.rbegin());
    max = node != NULL ? node -> number : 0;
 
-   node = CreateNode (max + 1);
+   node = new node_t(max + 1);
    node -> constraint = ConstraintDialogActive (constraint_d);
    node -> x = x;
    node -> y = y;
@@ -222,7 +221,7 @@ DeleteNodeGroup(Figure *figures, unsigned nfigures)
 	DW_RemoveFigure (drawing, drawn -> figure);
 	DW_RemoveFigure (drawing, drawn -> label);
     problem.node_set.erase(node);
-	DestroyNode (node);
+	delete node;
     }
 
 
@@ -284,7 +283,7 @@ DoDeleteNode(Node node)
     problem.node_set.erase(node);
     NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
 
-    DestroyNode (node);
+    delete node;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -336,7 +335,7 @@ void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -415,7 +414,7 @@ void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
@@ -642,7 +641,7 @@ void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
@@ -765,7 +764,7 @@ void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data)
 void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {

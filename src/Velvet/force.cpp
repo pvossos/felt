@@ -486,7 +486,7 @@ static void LoadForceValues (ForceDialog forced)
 static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Force		 active;
-    struct force	 dummy;
+    force_t	 dummy;
     ForceDialog		 forced;
     XawListReturnStruct	*info;
 
@@ -530,8 +530,8 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    struct force     old;
-    struct force     dummy;
+    force_t     old;
+    force_t     dummy;
     String	     text;
     Force	     found;
     Force	     active;
@@ -580,7 +580,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new force or new name as needed. */
 
 	if (forced -> new_copy)
-	    forced -> active = CreateForce (dummy.name.c_str());
+	    forced -> active = new force_t(dummy.name.c_str());
 	else if (strcmp (forced -> active -> name.c_str(), dummy.name.c_str())) {
             old.name = forced -> active -> name;
             forced->tree->erase(&old);
@@ -681,7 +681,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     forced->tree->erase(forced->active);
-	DestroyForce (forced -> active);
+	delete forced -> active;
 	forced -> active = NULL;
     }
 

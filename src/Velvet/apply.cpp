@@ -146,7 +146,7 @@ void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
     Item        found;
 
 
@@ -283,7 +283,7 @@ void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
     Item        found;
 
 
@@ -433,7 +433,7 @@ void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -568,7 +568,7 @@ void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))

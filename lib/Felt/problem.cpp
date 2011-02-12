@@ -51,8 +51,8 @@ ProblemSource psource;
 Analysis   analysis;
 Appearance appearance;
 
-static struct material default_material = {NULL, "default_material"};
-static struct constraint default_constraint = {NULL, "default_constraint"};
+static material_t default_material("default_material");
+static constraint_t default_constraint("default_constraint");
 
 static char *cpp;
 static char  cpp_command [2048];
@@ -85,8 +85,8 @@ defnlookup(char *name)
 static int 
 resolve_node(Node node)
 {
-    struct force      f;
-    struct constraint c;
+    force_t      f;
+    constraint_t c;
     unsigned	      number;
     char *buf;
 
@@ -141,8 +141,8 @@ resolve_node(Node node)
 static int
 resolve_element(Element element)
 {
-    struct distributed d;
-    struct material    m;
+    distributed_t d;
+    material_t    m;
     unsigned	       i;
     unsigned	       number;
     char *buf;
@@ -201,10 +201,10 @@ static int case_count;
 static int
 resolve_loadcase(LoadCase loadcase)
 {
-    struct force       f;
-    struct node	       n;
-    struct distributed l;
-    struct element     e;
+    force_t       f;
+    node_t      n;
+    distributed_t l;
+    element_t     e;
     unsigned	       i;
 
 
@@ -267,7 +267,7 @@ static void
 resolve_names(void)
 {
     unsigned      i;
-    struct node   n;
+    node_t  n;
 
 
     if (!problem.nodes.empty()) {

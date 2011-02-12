@@ -31,7 +31,6 @@
 # include <stdlib.h>
 # include "fe.h"
 # include "problem.h"
-# include "objects.h"
 # include "patchwork.h"
 
 int
@@ -48,9 +47,7 @@ InitializeProblem(void)
 Node
 AddNode(double x, double y, double z, Constraint constraint, Force force)
 {
-   Node		node;
-
-   node = CreateNode (problem.nodes.size()+1);
+   Node node = new node_t(problem.nodes.size()+1);
 
    node -> x = x;
    node -> y = y;
@@ -75,9 +72,8 @@ AddElement(Definition defn, Node *nodes, Material material,
            Distributed *distributed, unsigned numdistributed)
 {
    unsigned	i;
-   Element	element;
 
-   element = CreateElement (problem.elements.size()+1, defn);
+   Element element = new element_t(problem.elements.size()+1, defn);
    for (i = 1 ; i <= defn -> numnodes ; i++)
       element -> node [i] = nodes [i-1]; 
 

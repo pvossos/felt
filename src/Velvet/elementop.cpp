@@ -35,7 +35,6 @@
 # include "globals.h"
 # include "vfe.h"
 # include "text_entry.h"
-# include "objects.h"
 # include "error.h"
 
 
@@ -85,7 +84,7 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	DW_RemoveFigure (drawing, drawn -> label);
     
     problem.element_set.erase(element);
-	DestroyElement (element);
+	delete element;
     }
 
 
@@ -140,7 +139,7 @@ DoDeleteElt(Element element)
     problem.element_set.erase(element);
     ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
 
-    DestroyElement (element);
+    delete element;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -192,7 +191,7 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
+    element_t dummy;
     Item           found;
 
 
@@ -274,7 +273,7 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
@@ -355,7 +354,7 @@ void DoAddElement (Node node)
     element = !problem.element_set.empty() ? *(problem.element_set.rbegin()) : NULL;
     max = element != NULL ? element -> number : 0;
 
-    element = CreateElement (max + 1, ElementListDefinition (element_l));
+    element = new element_t(max + 1, ElementListDefinition (element_l));
     element -> material = MaterialDialogActive (material_d);
     for (i = 1; i <= num_nodes; i ++)
 	element -> node [i] = nodes [i];
@@ -374,7 +373,7 @@ void DoAddElement (Node node)
 void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
+    node_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;

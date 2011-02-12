@@ -689,7 +689,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     String	   value;
     Boolean	   state;
     unsigned	   i;
-    struct node	   n;
+    node_t  n;
 
     analysisd = (AnalysisDialog) client_data;
 
@@ -785,7 +785,7 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
     Arg		    args [1];
     AnalysisDialog  analysisd;
     Node	    current [6];
-    struct node	    n;
+    node_t n;
     unsigned	    count;
     String	    value;
     char	    buffer [10];

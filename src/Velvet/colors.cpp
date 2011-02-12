@@ -38,7 +38,6 @@
 # include "problem.h"
 # include "Colors.h"
 # include "util.h"
-# include "objects.h"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -341,10 +340,10 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
     ColorsDialog	colorsd;
     XawListReturnStruct	*info;
     std::string color = "";
-    struct material	m;
-    struct constraint	c;
-    struct force	f;
-    struct distributed	l;
+    material_t	m;
+    constraint_t	c;
+    force_t	f;
+    distributed_t	l;
     int			item;
   
     colorsd = (ColorsDialog) client_data;

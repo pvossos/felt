@@ -40,7 +40,6 @@
 # include "TabGroup.h"
 # include "util.h"
 # include "fe.h"
-# include "objects.h"
 # include "allocate.h"
 
 # ifndef X_NOT_STDC_ENV
@@ -546,7 +545,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     unsigned		 i;
     char		 buffer [32];
     Distributed		 active;
-    struct distributed 	 dummy;
+    distributed_t 	 dummy;
     LoadDialog		 loadd;
     XawListReturnStruct	*info;
 
@@ -639,8 +638,8 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String		value;
-    struct distributed  dummy;
-    struct distributed  old;
+    distributed_t  dummy;
+    distributed_t  old;
     Distributed	 	found;
     Distributed	 	active;
     Boolean	 	duplicate;
@@ -692,7 +691,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new load or new name as needed. */
 
 	if (loadd -> new_copy)
-        loadd -> active = CreateDistributed(dummy.name.c_str(), count);
+        loadd -> active = new distributed_t(dummy.name.c_str(), count);
 	else if (strcmp (loadd -> active -> name.c_str(), dummy.name.c_str())) {
            old.name = loadd -> active -> name;
            loadd->tree->erase(&old);
@@ -773,7 +772,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     loadd->tree->erase(loadd->active);
-	DestroyDistributed (loadd -> active);
+	delete loadd -> active;
 	loadd -> active = NULL;
     }
 

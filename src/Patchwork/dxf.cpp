@@ -29,7 +29,6 @@
 # include <stdio.h>
 # include <string.h>
 # include "problem.h"
-# include "objects.h"
 # include "meshgen.hpp"
 # include "patchwork.h"
 # include "error.h"
@@ -61,8 +60,8 @@ int ReadDXFFile (char *name)
 
    InitializeProblem ( );
 
-   constraint = CreateConstraint ("default");
-   material = CreateMaterial ("default");
+   constraint = new constraint_t("default");
+   material = new material_t("default");
 
    truss = LookupDefinition ("truss");
    cst   = LookupDefinition ("CSTPlaneStress");

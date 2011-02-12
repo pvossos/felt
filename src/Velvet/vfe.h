@@ -49,7 +49,7 @@ void DrawProblem (double z);
 
 typedef int  (*MaterialDestructor) (Material);
 
-void DestroyProblem (MaterialDestructor material_op);
+void DestroyProblem (bool delmaterials);
 
 void SetNodeNumbering (int value);
 

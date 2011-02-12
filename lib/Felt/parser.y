@@ -68,13 +68,13 @@ static LoadCase		  loadcase;		/* current loadcase	   */
 /* Dummy strucutures.  If an object is defined twice, the second definition
    is illegal and the current object is set to a dummy object. */
 
-static struct node	  dummy_node;		/* dummy node		   */
-static struct element	  dummy_element;	/* dummy element	   */
-static struct material	  dummy_material;	/* dummy material	   */
-static struct distributed dummy_load;		/* dummy distributed load  */
-static struct force	  dummy_force;		/* dummy force		   */
-static struct constraint  dummy_constraint;	/* dummy constraint	   */
-static struct loadcase    dummy_loadcase;	/* dummy loadcase	   */
+static node_t	  dummy_node;		/* dummy node		   */
+static element_t  dummy_element;	/* dummy element	   */
+static material_t dummy_material;	/* dummy material	   */
+static distributed_t dummy_load;		/* dummy distributed load  */
+static force_t	  dummy_force;		/* dummy force		   */
+static constraint_t  dummy_constraint;	/* dummy constraint	   */
+static loadcase_t    dummy_loadcase;	/* dummy loadcase	   */
 
 
 /* Temporary arrays. */
@@ -294,11 +294,11 @@ node_number
                   break;
              }
              
-		node = CreateNode ($1);
+		node = new node_t($1);
 
 		if (!problem.node_set.insert(node).second) {
 		    error ("node number %u is repeated", $1);
-		    DestroyNode (node);
+		    delete node;
 		    node = &dummy_node;
 		    break;
 		}
@@ -399,17 +399,17 @@ element_number
 		    break;
 		}
 
-		element = CreateElement ($1, definition);
+		element = new element_t($1, definition);
 
         if (!problem.element_set.insert(element).second) {
              error ("element number %u is repeated", $1);
-             DestroyElement (element);
+             delete element;
              element = &dummy_element;
              break;
         } 
 
         if (!element->material)
-             element -> material = new struct material;
+             element -> material = new material_t;
 		element -> material->name = last_material ? last_material : ""; 
 	    }
 	;
@@ -455,7 +455,7 @@ element_parameter
 	    {
              last_material = $2;
              if (!element->material)
-                  element->material = new struct material;
+                  element->material = new material_t;
              element -> material -> name = last_material;
 	    }
 
@@ -551,11 +551,11 @@ material_definition
 material_name
 	: NAME
 	    {
-             material = CreateMaterial ($1);
+             material = new material_t($1);
              
              if (problem.material_set.count(material) > 0) {
                   error ("material %s is previously defined", $1);
-                  DestroyMaterial (material);
+                  delete material;
                   material = &dummy_material;
              } else 
                   problem.material_set.insert(material);
@@ -684,11 +684,11 @@ load_definition
 load_name
 	: NAME
 	    {
-             load = CreateDistributed ($1, 0);
+             load = new distributed_t($1, 0);
              
              if (!problem.distributed_set.insert(load).second) {
                   error ("load %s is previously defined", $1);
-                  DestroyDistributed (load);
+                  delete load;
                   load = &dummy_load;
              }
 	    }
@@ -794,11 +794,11 @@ force_definition
 force_name
 	: NAME
 	    {
-             force = CreateForce ($1);
+             force = new force_t($1);
              
              if (!problem.force_set.insert(force).second) {
                   error ("force %s is previously defined", $1);
-                  DestroyForce (force);
+                  delete force;
                   force = &dummy_force;
              }
 	    }
@@ -902,11 +902,11 @@ constraint_definition
 constraint_name
 	: NAME
 	    {
-             constraint = CreateConstraint ($1);
+             constraint = new constraint_t($1);
              
              if (!problem.constraint_set.insert(constraint).second) {
                   error ("constraint %s is previously defined", $1);
-                  DestroyConstraint (constraint);
+                  delete constraint;
                   constraint = &dummy_constraint;
              }
 	    }
@@ -1099,11 +1099,11 @@ loadcase_definition
 loadcase_name
 	: NAME
         {
-             loadcase = CreateLoadCase ($1);
+             loadcase = new loadcase_t($1);
              
              if (!problem.loadcase_set.insert(loadcase).second) {
                   error ("loadcase %s is previously defined", $1);
-                  DestroyLoadCase (loadcase);
+                  delete loadcase;
                   loadcase = &dummy_loadcase;
              }
         }

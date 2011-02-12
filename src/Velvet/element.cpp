@@ -40,7 +40,6 @@
 # include "Element.h"
 # include "TabGroup.h"
 # include "util.h"
-# include "objects.h"
 # include "post.h"
 # include "problem.h"
 # include "error.h"
@@ -852,10 +851,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     unsigned	       numnodes;
     unsigned	       shapenodes;
     Material	       material;
-    struct element     original;
-    struct distributed l_dummy;
-    struct material    m_dummy;
-    struct node	       n_dummy;
+    element_t     original;
+    distributed_t l_dummy;
+    material_t    m_dummy;
+    node_t	   n_dummy;
     Element	       active;
     ElementDialog      eltd;
     ElementDialogInfo  info;
@@ -938,7 +937,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new element as needed. */
 
     if (eltd -> new_copy) {
-        eltd -> active = CreateElement (eltd -> new_copy, eltd -> definition);
+        eltd -> active = new element_t(eltd -> new_copy, eltd -> definition);
         problem.element_set.insert(eltd->active);
     }
 
@@ -1034,7 +1033,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
     
 
     eltd->elements->erase(active);
-	DestroyElement (active);
+	delete active;
 	eltd -> active = element;
     }
 

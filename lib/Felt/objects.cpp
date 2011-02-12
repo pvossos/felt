@@ -31,229 +31,175 @@
 # include "objects.h"
 # include "allocate.h"
 
-Node
-CreateNode(unsigned int number)
+node_t::node_t(unsigned number)
 {
-    Node node = new struct node;
-    node -> number     = number;
-    node -> m          = 0.0;
-    node -> force      = NULL;
-    node -> eq_force.clear();
-    node -> constraint = NULL;
-    node -> aux        = NULL;
-    node -> stress.clear();
-    node -> numelts    = 0;
+    this -> number     = number;
+    this -> m          = 0.0;
+    this -> force      = NULL;
+    this -> eq_force.clear();
+    this -> constraint = NULL;
+    this -> aux        = NULL;
+    this -> stress.clear();
+    this -> numelts    = 0;
 
     for (unsigned i = 1; i <= 6; i ++)
-        node -> dx [i] = 0;
-
-    return node;
+        this -> dx [i] = 0;
 }
 
-void
-DestroyNode(Node node)
+node_t::~node_t()
 {
-    if (node) {
-        Deallocate (node -> aux);
-        node->eq_force.clear();
-        node->stress.clear();
-        delete node;
-    }
+    Deallocate (this -> aux);
+    this->eq_force.clear();
+    this->stress.clear();
 }
 
-Element
-CreateElement(unsigned int number, Definition defn)
+element_t::element_t(unsigned number, Definition defn)
 {
-    Element element = new struct element;
-
-    element->node.clear();
+    this->node.clear();
     if (defn)
-        element->node.resize(defn->numnodes, NULL);
+        this->node.resize(defn->numnodes, NULL);
     
-    element -> K  	  = NullMatrix;
-    element -> M	  = NullMatrix;
-    element -> f	  = NullMatrix;
-    element -> aux 	  = NULL;
-    element -> number 	  = number;
-    element -> definition = defn;
+    this -> K  	  = NullMatrix;
+    this -> M	  = NullMatrix;
+    this -> f	  = NullMatrix;
+    this -> aux 	  = NULL;
+    this -> number 	  = number;
+    this -> definition = defn;
 
-    element -> material = NULL;
-    element -> numdistributed = 0;
+    this -> material = NULL;
+    this -> numdistributed = 0;
 
     for (unsigned i = 0; i <= 3; i ++)
-        element -> distributed [i] = NULL;
+        this -> distributed [i] = NULL;
 
-    element -> stress = NULL;
-    element -> ninteg = 0;
-
-    return element;
+    this -> stress = NULL;
+    this -> ninteg = 0;
 }
 
-void
-DestroyElement(Element element)
+element_t::~element_t()
 {
-    if (element) {
-        for (unsigned i = 1; i <= element -> ninteg; i ++) {
-            element->stress[i]->values.clear();
-            delete element->stress[i];
-        }
-        element->stress.clear();
-        Deallocate (element -> aux);
-        delete element;
+    for (unsigned i = 1; i <= this -> ninteg; i ++) {
+        this->stress[i]->values.clear();
+        delete this->stress[i];
     }
+    this->stress.clear();
+    Deallocate (this -> aux);
 }
 
-Force
-CreateForce(const char *name)
+force_t::force_t(const char *name)
 {
-    Force force = new struct force;
-
-    force -> aux = NULL;
-    force -> color = "";
-    force -> name = name;
+    this -> aux = NULL;
+    this -> color = "";
+    if (name)
+        this -> name = name;
     for (unsigned i = 0; i < 7; i ++) {
-        force -> force [i].value = 0;
-        force -> force [i].expr  = NULL;
-        force -> force [i].text  = NULL;
-        force -> spectrum [i].value = 0;
-        force -> spectrum [i].expr  = NULL;
-        force -> spectrum [i].text  = NULL;
-    }
-
-    return force;
-}
-
-void
-DestroyForce(Force force)
-{
-    if (force) {
-        for (unsigned i = 1; i <= 6; i ++) {
-            FreeCode (force -> force [i].expr);
-            Deallocate (force -> force [i].text);
-        }
-        //Deallocate (force -> name);
-        //Deallocate (force -> color);
-        Deallocate (force -> aux);
-        delete force;
+        this -> force [i].value = 0;
+        this -> force [i].expr  = NULL;
+        this -> force [i].text  = NULL;
+        this -> spectrum [i].value = 0;
+        this -> spectrum [i].expr  = NULL;
+        this -> spectrum [i].text  = NULL;
     }
 }
 
-Material
-CreateMaterial(const char *name)
+force_t::~force_t()
 {
-    Material material = new struct material;
-
-    material -> aux   = NULL;
-    material -> color = "";
-    material -> name  = name;
-    material -> E     = 0;
-    material -> Ix    = 0;
-    material -> Iy    = 0;
-    material -> Iz    = 0;
-    material -> A     = 0;
-    material -> J     = 0;
-    material -> G     = 0;
-    material -> t     = 0;
-    material -> rho   = 0;
-    material -> nu    = 0;
-    material -> kappa = 0;
-    material -> Rk    = 0;
-    material -> Rm    = 0;
-    material -> Kx    = 0;
-    material -> Ky    = 0;
-    material -> Kz    = 0;
-    material -> c     = 0;
-
-    return material;
-}
-
-void
-DestroyMaterial(Material material)
-{
-    if (material) {
-        //Deallocate (material -> name);
-        //Deallocate (material -> color);
-        Deallocate (material -> aux);
-        delete material;
+    for (unsigned i = 1; i <= 6; i ++) {
+        FreeCode (this -> force [i].expr);
+        Deallocate (this -> force [i].text);
     }
+    //Deallocate (force -> name);
+    //Deallocate (force -> color);
+    Deallocate (this -> aux);
 }
 
-Constraint
-CreateConstraint(const char *name)
+material_t::material_t(const char *name)
 {
-    Constraint constraint = new struct constraint;
+    this -> aux   = NULL;
+    this -> color = "";
+    if (name)
+        this -> name  = name;
+    this -> E     = 0;
+    this -> Ix    = 0;
+    this -> Iy    = 0;
+    this -> Iz    = 0;
+    this -> A     = 0;
+    this -> J     = 0;
+    this -> G     = 0;
+    this -> t     = 0;
+    this -> rho   = 0;
+    this -> nu    = 0;
+    this -> kappa = 0;
+    this -> Rk    = 0;
+    this -> Rm    = 0;
+    this -> Kx    = 0;
+    this -> Ky    = 0;
+    this -> Kz    = 0;
+    this -> c     = 0;
+}
 
-    constraint -> aux = NULL;
-    constraint -> color = "";
-    constraint -> name = name;
+material_t::~material_t()
+{
+    //Deallocate (material -> name);
+    //Deallocate (material -> color);
+    Deallocate (this -> aux);
+}
+
+constraint_t::constraint_t(const char *name)
+{
+    this -> aux = NULL;
+    this -> color = "";
+    if (name)
+        this -> name = name;
     for (unsigned i = 0; i < 7; i ++) {
-        constraint -> constraint [i] = 0;
-        constraint -> dx [i].expr  = NULL;
-        constraint -> dx [i].text  = NULL;
-        constraint -> dx [i].value = 0;
-        constraint -> ix [i] = 0;
+        this -> constraint [i] = 0;
+        this -> dx [i].expr  = NULL;
+        this -> dx [i].text  = NULL;
+        this -> dx [i].value = 0;
+        this -> ix [i] = 0;
     }
 
     for (unsigned i = 0; i < 4; i ++) {
-        constraint -> vx [i] = 0;
-        constraint -> ax [i] = UnspecifiedValue;
+        this -> vx [i] = 0;
+        this -> ax [i] = UnspecifiedValue;
     }
-
-    return constraint;
 }
 
-void
-DestroyConstraint(Constraint constraint)
+constraint_t::~constraint_t()
 {
-    if (constraint) {
 	for (unsigned i = 1; i <= 6; i ++) {
-	    FreeCode (constraint -> dx [i].expr);
-	    Deallocate (constraint -> dx [i].text);
+	    FreeCode (this -> dx [i].expr);
+	    Deallocate (this -> dx [i].text);
 	}
-    Deallocate (constraint -> aux);
-    delete constraint;
-    }
+    Deallocate (this -> aux);
 }
 
-Distributed
-CreateDistributed(const char *name, unsigned int nvalues)
+distributed_t::distributed_t(const char *name, unsigned int nvalues)
 {
-    Distributed distributed = new struct distributed;
+    this -> aux = NULL;
+    this -> color = "";
+    this -> value = NULL;
 
-    distributed -> aux = NULL;
-    distributed -> color = "";
-    distributed -> value = NULL;
-
-    distributed -> name = name;
-    distributed -> value.resize(nvalues);
-
-    return distributed;
+    if (name)
+        this -> name = name;
+    this -> value.resize(nvalues);
 }
 
-void
-DestroyDistributed(Distributed distributed)
+distributed_t::~distributed_t()
 {
-    if (distributed) {
-        distributed->value.clear();
-	Deallocate (distributed -> aux);
-    delete distributed;
-    }
+    this->value.clear();
+    Deallocate (this -> aux);
 }
 
-LoadCase
-CreateLoadCase(const char *name)
+loadcase_t::loadcase_t(const char *name)
 {
-    LoadCase loadcase = new struct loadcase;
-    loadcase -> name = name;
-    return loadcase;
+    if (name)
+        this -> name = name;
 }
 
-void
-DestroyLoadCase(LoadCase loadcase)
+loadcase_t::~loadcase_t()
 {
-    if (loadcase) {
-        delete loadcase;
-    }
+    // NO-OP
 }
 
 void

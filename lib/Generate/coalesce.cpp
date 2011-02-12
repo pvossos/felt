@@ -20,7 +20,6 @@
 # include <math.h>
 # include "error.h"
 # include "fe.h"
-# include "objects.h"
 # include "mesh.h"
 # include "cvector1.hpp"
 # include "problem.h"
@@ -83,7 +82,7 @@ MergeNodes(cvector1<Node> &node, cvector1<Element> &element,
    for (size_t i = 1 ; i <= numnodes ; i++) {
       if (merges [i]) {
           Reconnect (node [merges[i]], node[i], element);
-          DestroyNode (node [i]);
+          delete node [i];
       }
       else {
          count++;

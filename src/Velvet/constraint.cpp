@@ -494,7 +494,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [32];
     Constraint		 active;
-    struct constraint	 dummy;
+    constraint_t	 dummy;
     ConstraintDialog	 constraintd;
     XawListReturnStruct	*info;
     unsigned		 i;
@@ -603,8 +603,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     char		*ptr;
     String		 value;
     double		 accel;
-    struct constraint	 old;
-    struct constraint    dummy;
+    constraint_t	 old;
+    constraint_t    dummy;
     Constraint	 	 found;
     Constraint	 	 active;
     Boolean	 	 duplicate;
@@ -641,7 +641,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new constraint or new name as needed. */
        
 	if (constraintd -> new_copy)
-	    constraintd -> active = CreateConstraint (dummy.name.c_str());
+	    constraintd -> active = new constraint_t (dummy.name.c_str());
 	else if (strcmp (constraintd -> active -> name.c_str(), dummy.name.c_str())) {
             old.name = constraintd -> active -> name;
             constraintd->tree->erase(&old);
@@ -757,7 +757,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     constraintd->tree->erase(constraintd->active);
-	DestroyConstraint (constraintd -> active);
+	delete constraintd -> active;
 	constraintd -> active = NULL;
     }
 

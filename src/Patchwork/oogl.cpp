@@ -16,7 +16,6 @@
 # include <string.h>
 # include <math.h>
 # include "problem.h"
-# include "objects.h"
 # include "mesh.h"
 # include "patchwork.h"
 # include "definition.h"

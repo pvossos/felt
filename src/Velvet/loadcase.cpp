@@ -44,7 +44,6 @@
 # include "LoadCase.h"
 # include "TabGroup.h"
 # include "util.h"
-# include "objects.h"
 # include "post.h"
 # include "problem.h"
 # include "allocate.h"
@@ -720,7 +719,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     char		 buffer [10];
     unsigned		 i;
     LoadCase		 active;
-    struct loadcase	 dummy;
+    loadcase_t	 dummy;
     LoadCaseDialog	 loadcased;
     XawListReturnStruct	*info;
 
@@ -790,16 +789,16 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    struct loadcase     old;
-    struct loadcase     dummy;
+    loadcase_t     old;
+    loadcase_t     dummy;
     LoadCase	        found;
     LoadCase	        active;
     Boolean	        duplicate;
     LoadCaseDialog      loadcased;
-    struct node		n;
-    struct element	e;
-    struct force	f;
-    struct distributed  l;
+    node_t  n;
+    element_t	e;
+    force_t	f;
+    distributed_t  l;
     unsigned		i;
 
 
@@ -830,7 +829,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new loadcase or new name as needed. */
 
 	if (loadcased -> new_copy)
-	    loadcased -> active = CreateLoadCase(dummy.name.c_str());
+	    loadcased -> active = new loadcase_t(dummy.name.c_str());
 	else if (dummy.name != loadcased->active->name) {
             old.name = loadcased -> active -> name;
             loadcased->tree->erase(&old);
@@ -937,7 +936,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
     if (!loadcased -> new_copy) {
         loadcased->tree->erase(loadcased->active);
-        DestroyLoadCase (loadcased -> active);
+        delete loadcased -> active;
         loadcased -> active = NULL;
     }
 

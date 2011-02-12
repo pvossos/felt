@@ -39,7 +39,6 @@
 # include "TabGroup.h"
 # include "util.h"
 # include "fe.h"
-# include "objects.h"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -471,7 +470,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [32];
     Material		 active;
-    struct material	 dummy;
+    material_t	 dummy;
     MaterialDialog	 materiald;
     XawListReturnStruct	*info;
 
@@ -566,8 +565,8 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    struct material    old;
-    struct material    dummy;
+    material_t    old;
+    material_t    dummy;
     Material	       found;
     Material	       active;
     Boolean	       duplicate;
@@ -602,7 +601,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new material or new name as needed. */
 
 	if (materiald -> new_copy)
-	    materiald -> active = CreateMaterial (dummy.name.c_str());
+	    materiald -> active = new material_t(dummy.name.c_str());
 	else if (strcmp (materiald -> active -> name.c_str(), dummy.name.c_str())) {
         old.name = materiald -> active -> name;
         materiald->tree->erase(&old);
@@ -690,7 +689,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     materiald->tree->erase(materiald->active);
-	DestroyMaterial (materiald -> active);
+	delete materiald -> active;
 	materiald -> active = NULL;
     }
 

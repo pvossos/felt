@@ -40,7 +40,6 @@
 # include "Node.h"
 # include "TabGroup.h"
 # include "util.h"
-# include "objects.h"
 # include "post.h"
 
 # ifndef X_NOT_STDC_ENV
@@ -668,8 +667,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     double	      x;
     double	      y;
     Constraint	      constraint;
-    struct force      f_dummy;
-    struct constraint c_dummy;
+    force_t      f_dummy;
+    constraint_t c_dummy;
     Node	      active;
     NodeDialog	      noded;
     NodeDialogInfo    info;
@@ -694,7 +693,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new node as needed. */
 
     if (noded -> new_copy) {
-        noded -> active = CreateNode (noded -> new_copy);
+        noded -> active = new node_t(noded -> new_copy);
         noded->nodes->insert(noded->active);
     }
 
@@ -787,7 +786,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
     }
     
     noded->nodes->erase(noded->active);
-	DestroyNode (noded -> active);
+	delete noded -> active;
 	noded -> active = node;
     }
 

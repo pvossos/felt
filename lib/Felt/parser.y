@@ -306,8 +306,7 @@ node_number
 		node -> x = last_x;
 		node -> y = last_y;
 		node -> z = last_z;
-		node -> constraint = last_constraint ?
-			(Constraint) strdup (last_constraint) : NULL;
+        node -> constraint = last_constraint ? new constraint_t(last_constraint) : NULL;
 	    }
 	;
 
@@ -347,15 +346,16 @@ node_parameter
             }
 
 	| FORCE_EQ NAME
-	    {
-		Deallocate (node -> force);
-		node -> force = (Force) $2;
-	    }
+    {
+         delete node -> force;
+         node -> force = new force_t($2);
+    }
 
 	| CONSTRAINT_EQ NAME
-	    {
-		node -> constraint = (Constraint) (last_constraint = $2);
-	    }
+    {
+         last_constraint = $2;
+         node -> constraint = new constraint_t(last_constraint);
+    }
 
 	| error
 	;
@@ -431,24 +431,23 @@ element_parameter_list
 element_parameter
 	: NODES_EQ '[' element_node_list ']'
 	    {
-		unsigned i;
-		unsigned size;
-		unsigned number;
-
-
 		if (element == &dummy_element)
 		    break;
 
-		size = int_ptr - int_array;
+		unsigned size = int_ptr - int_array;
 
 		if (size != element -> definition -> numnodes) {
-		    number = element -> number;
-		    error ("incorrect number of nodes for element %u", number);
-		    break;
+             unsigned number = element -> number;
+             error ("incorrect number of nodes for element %u", number);
+             break;
 		}
 
-		for (i = 1; i <= size; i ++)
-		    element -> node [i] = (Node) int_array [i - 1];
+		for (unsigned i = 1; i <= size; i ++) {
+             int nn = int_array[i-1];
+             if (nn != 0)
+                  element -> node [i] = new node_t(nn);
+        }
+        
 	    }
 
 	| MATERIAL_EQ NAME
@@ -502,9 +501,8 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		Deallocate (element -> distributed [element -> numdistributed]);
-		element -> distributed [element -> numdistributed] =
-		  (Distributed) $3;
+		delete element -> distributed [element -> numdistributed];
+		element -> distributed [element -> numdistributed] = new distributed_t($3);
 	    }
 
 	| element_load_list NAME
@@ -515,17 +513,15 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		Deallocate (element -> distributed [element -> numdistributed]);
-		element -> distributed [element -> numdistributed] =
-		  (Distributed) $2;
+		delete element -> distributed [element -> numdistributed];
+		element -> distributed [element -> numdistributed] = new distributed_t($2);
 	    }
 
 	| NAME
 	    {
 		element -> numdistributed = 1;
-		Deallocate (element -> distributed [element -> numdistributed]);
-		element -> distributed [element -> numdistributed] =
-		  (Distributed) $1;
+		delete element -> distributed [element -> numdistributed];
+		element -> distributed [element -> numdistributed] = new distributed_t($1);
 	    }
 	;
 
@@ -1117,42 +1113,34 @@ loadcase_parameter_list
 loadcase_parameter
 	: NODE_FORCES_EQ loadcase_pair_list
 	    {
-		unsigned i;
-		unsigned size;
-
-
-		if (loadcase == &dummy_loadcase)
-		    break;
-
-		size = case_ptr - case_array;
-
-        loadcase->nodes.resize(size);
-        loadcase->forces.resize(size);
-        
-		for (i = 1; i <= size; i ++) {
-		    loadcase -> nodes [i] = (Node) case_array [i - 1].noe;
-                    loadcase -> forces [i]   = (Force) case_array [i - 1].fol;
-                }
+             if (loadcase == &dummy_loadcase)
+                  break;
+             
+             unsigned size = case_ptr - case_array;
+             
+             loadcase->nodes.resize(size);
+             loadcase->forces.resize(size);
+             
+             for (unsigned i = 1; i <= size; i ++) {
+                  loadcase -> nodes [i] = new node_t(case_array [i - 1].noe);
+                  loadcase -> forces [i] = new force_t(case_array [i - 1].fol);
+             }
 	    }
 
 	| ELEMENT_LOADS_EQ loadcase_pair_list
 	    {
-		unsigned i;
-		unsigned size;
-
-
-		if (loadcase == &dummy_loadcase)
-		    break;
-
-		size = case_ptr - case_array;
-
-        loadcase->elements.resize(size);
-        loadcase->loads.resize(size);
-        
-		for (i = 1; i <= size; i ++) {
-		    loadcase -> elements [i] = (Element) case_array [i - 1].noe;
-                    loadcase -> loads [i]   = (Distributed) case_array [i - 1].fol;
-                }
+             if (loadcase == &dummy_loadcase)
+                  break;
+             
+             unsigned size = case_ptr - case_array;
+             
+             loadcase->elements.resize(size);
+             loadcase->loads.resize(size);
+             
+             for (unsigned i = 1; i <= size; i ++) {
+                  loadcase -> elements [i] = new element_t(case_array [i - 1].noe);
+                  loadcase -> loads [i]   = new distributed_t(case_array [i - 1].fol);
+             }
 	    }
 
 	| error
@@ -1279,18 +1267,15 @@ analysis_parameter
 
         | INPUT_NODE_EQ node_number_expression
             {
-                analysis.input_node = (Node) $2;
+                 analysis.input_node = new node_t($2);
             }
 
 	| NODES_EQ '[' analysis_node_list ']'
 	    {
-		unsigned i;
-
-
-        analysis.nodes.resize(int_ptr - int_array);
-
-		for (i = 1; i <= analysis.nodes.size(); i ++)
-		    analysis.nodes [i] = (Node) int_array [i - 1];
+             analysis.nodes.resize(int_ptr - int_array);
+             
+             for (unsigned i = 1; i <= analysis.nodes.size(); i ++)
+                  analysis.nodes [i] = new node_t(int_array [i - 1]);
 	    }
 
 	| DOFS_EQ '[' analysis_dof_list ']'

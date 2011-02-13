@@ -85,47 +85,33 @@ defnlookup(char *name)
 static int 
 resolve_node(Node node)
 {
-    force_t      f;
-    constraint_t c;
-    unsigned	      number;
-    char *buf;
-
     /* Store the node in the array. */
 
-    number = node -> number;
+    unsigned number = node -> number;
     problem.nodes [number] = node;
-
 
     /* Resolve the constraint. */
 
-    buf = (char *) node->constraint;
-
-    if (buf) {
-        c.name = buf;
-        Problem::ConstraintSet::iterator it = problem.constraint_set.find(&c);
+    if (node->constraint) {
+        Constraint c = node->constraint;
+        Problem::ConstraintSet::iterator it = problem.constraint_set.find(c);
         node -> constraint = it != problem.constraint_set.end() ? *it : NULL;
-        
         if (!node -> constraint)
-            error ("node %u used undefined constraint %s", number, c.name.c_str());
-        
-        c.name = "";
-    } else
-	node -> constraint = &default_constraint;
-
+            error ("node %u used undefined constraint %s", number, c->name.c_str());
+        delete c;
+    } else {
+        node -> constraint = &default_constraint;
+    }
 
     /* Resolve the force. */
 
-    buf = (char *) node -> force;
-
-    if (buf) {
-        f.name = buf;
-        Problem::ForceSet::iterator it = problem.force_set.find(&f);
+    if (node->force) {
+        Force f = node->force;
+        Problem::ForceSet::iterator it = problem.force_set.find(f);
         node -> force = it != problem.force_set.end() ? *it : NULL;
-        
         if (!node -> force)
-            error ("node %u uses undefined force %s", number, f.name.c_str());
-        
-        f.name = "";
+            error ("node %u uses undefined force %s", number, f->name.c_str());
+        delete f;
     }
 
     return 0;
@@ -141,52 +127,47 @@ resolve_node(Node node)
 static int
 resolve_element(Element element)
 {
-    distributed_t d;
-    material_t    m;
     unsigned	       i;
-    unsigned	       number;
-    char *buf;
 
     /* Store the element in the array. */
 
-    number = element -> number;
+    const unsigned number = element -> number;
     problem.elements [number] = element;
-
-
 
     /* Resolve the material. */
 
-    m.name = element->material->name;
-    delete element->material;
-
-    if (!m.name.empty()) {
-        Problem::MaterialSet::iterator it = problem.material_set.find(&m);
+    if (element->material) {
+        Material m = element->material;
+        Problem::MaterialSet::iterator it = problem.material_set.find(m);
         if (it == problem.material_set.end())
-            error ("element %u uses undefined material %s", number, m.name.c_str());
+            error ("element %u uses undefined material %s", number, m->name.c_str());
         element->material = *it;
-    } else
+        delete m;
+    } else {
         element -> material = &default_material;
-
+    }
 
     /* Resolve the loads. */
 
     for (i = 1; i <= element -> numdistributed; i ++) {
-        d.name = (char *) element -> distributed [i];
-        Problem::DistributedSet::iterator it = problem.distributed_set.find(&d);
+        Distributed d = element->distributed[i];
+        Problem::DistributedSet::iterator it = problem.distributed_set.find(d);
         if (it == problem.distributed_set.end())
-            error ("element %u used undefined load %s", number, d.name.c_str());
-        element -> distributed [i] = *it;
-        d.name = "";
+            error ("element %u used undefined load %s", number, d->name.c_str());
+        element->distributed [i] = *it;
+        delete d;
     }
-
 
     /* Set the pointers to the nodes. */
 
     if (element -> definition)
-	for (i = 1; i <= element -> definition -> numnodes; i ++)
-	    if (element -> node [i])
-		element -> node [i] = problem.nodes [(int) element -> node [i]];
-
+        for (i = 1; i <= element -> definition -> numnodes; i ++)
+            if (element -> node [i]) {
+                Node n = element->node[i];
+                element -> node [i] = problem.nodes [n->number];
+                delete n;
+            }
+    
     return 0;
 }
 
@@ -201,49 +182,42 @@ static int case_count;
 static int
 resolve_loadcase(LoadCase loadcase)
 {
-    force_t       f;
-    node_t      n;
-    distributed_t l;
-    element_t     e;
     unsigned	       i;
-
 
     /* Store the loadcase in the array. */
 
     problem.loadcases [case_count] = loadcase;
 
     for (i = 1 ; i <= loadcase->forces.size(); i++) {
-       f.name = (char *) loadcase -> forces [i];
-       n.number = (unsigned) loadcase -> nodes [i];
-
-       Problem::NodeSet::iterator it = problem.node_set.find(&n);
+       Node n = loadcase->nodes[i];
+       Problem::NodeSet::iterator it = problem.node_set.find(n);
        loadcase -> nodes [i] = it != problem.node_set.end() ? *it : NULL;
        if (!loadcase -> nodes [i])
-           error ("load case %s used undefined node %d", loadcase->name.c_str(), n.number);
+           error ("load case %s used undefined node %d", loadcase->name.c_str(), n->number);
+       delete n;
 
-       Problem::ForceSet::iterator itf = problem.force_set.find(&f);
+       Force f = loadcase->forces[i];
+       Problem::ForceSet::iterator itf = problem.force_set.find(f);
        loadcase -> forces [i] = itf != problem.force_set.end() ? *itf : NULL;
        if (!loadcase -> forces [i])
-           error ("load case %s used undefined force %s", loadcase->name.c_str(), f.name.c_str());
-
-       f.name = "";
+           error ("load case %s used undefined force %s", loadcase->name.c_str(), f->name.c_str());
+       delete f;
     }
 
     for (i = 1 ; i <= loadcase->loads.size(); i++) {
-       l.name = (char *) loadcase -> loads [i];
-       e.number = (unsigned) loadcase -> elements [i];
-
-       Problem::ElementSet::iterator it = problem.element_set.find(&e);
+       Element e = loadcase->elements[i];
+       Problem::ElementSet::iterator it = problem.element_set.find(e);
        loadcase -> elements [i] = it != problem.element_set.end() ? *it : NULL;
        if (!loadcase -> elements [i])
-           error ("load case %s used undefined element %d", loadcase->name.c_str(), e.number);
+           error ("load case %s used undefined element %d", loadcase->name.c_str(), e->number);
+       delete e;
 
-       Problem::DistributedSet::iterator itl = problem.distributed_set.find(&l);
+       Distributed l = loadcase->loads[i];
+       Problem::DistributedSet::iterator itl = problem.distributed_set.find(l);
        loadcase -> loads [i] = itl != problem.distributed_set.end() ? *itl : NULL;
        if (!loadcase -> loads [i])
-           error ("load case %s used undefined load %s", loadcase->name.c_str(), l.name.c_str());
-
-       l.name = "";
+           error ("load case %s used undefined load %s", loadcase->name.c_str(), l->name.c_str());
+       delete l;
     }
 
     case_count ++;
@@ -267,8 +241,6 @@ static void
 resolve_names(void)
 {
     unsigned      i;
-    node_t  n;
-
 
     if (!problem.nodes.empty()) {
 
@@ -304,20 +276,22 @@ resolve_names(void)
                 
     if (!analysis.nodes.empty()) {
         for (i = 1 ; i <= analysis.nodes.size() ; i++) {
-            n.number = (unsigned) analysis.nodes [i];
-            it = problem.node_set.find(&n);
+            Node n = analysis.nodes [i];
+            it = problem.node_set.find(n);
             analysis.nodes [i] = it != problem.node_set.end() ? *it : NULL;
             if (analysis.nodes [i] == NULL)
-                error ("analysis node %d not defined", n.number);
+                error ("analysis node %d not defined", n->number);
+            delete n;
         }
     }
 
     if (analysis.input_node) {
-        n.number = (unsigned) analysis.input_node;
-        it = problem.node_set.find(&n);
+        Node n = analysis.input_node;
+        it = problem.node_set.find(n);
         analysis.input_node = it != problem.node_set.end() ? *it : NULL;
         if (analysis.input_node == NULL)
-            error ("analysis input node %d not defined", n.number);
+            error ("analysis input node %d not defined", n->number);
+        delete n;
     }
 }
 

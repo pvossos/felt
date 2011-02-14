@@ -27,7 +27,6 @@
 # include <stdio.h>
 # include <ctype.h>
 # include <string.h>
-# include "allocate.h"
 # include "meshgen.hpp"
 # include "generator.h"
 # include "error.h"
@@ -106,11 +105,6 @@ int main (int argc, char **argv)
    Definition	definition;
    unsigned	start_node;
    unsigned	start_element;
-   Line		*line;
-   Grid		*grid;
-   Grid		*quadgrid;
-   Grid		*brickgrid;
-   TriMesh	*trimesh;
    unsigned	i,j;
    int		 debug = 0;
    unsigned	 code;
@@ -156,11 +150,11 @@ int main (int argc, char **argv)
 	 * initialize some arrays and counters
 	 */
 
-   line = generator.lines;
-   grid = generator.grids;
-   quadgrid = generator.quadgrids;
-   brickgrid = generator.brickgrids;
-   trimesh = generator.trimeshes;
+   std::vector<Line> line = generator.lines;
+   std::vector<Grid> grid = generator.grids;
+   std::vector<Grid> quadgrid = generator.quadgrids;
+   std::vector<Grid> brickgrid = generator.brickgrids;
+   std::vector<TriMesh> trimesh = generator.trimeshes;
 
    start_node = generator.start_node - 1;
    start_element = generator.start_element - 1;
@@ -172,7 +166,7 @@ int main (int argc, char **argv)
 	 * generate along lines
 	 */
 
-   for (i = 0 ; i < generator.num_lines ; i++) {
+   for (i = 0 ; i < generator.lines.size(); i++) {
       cvector1<Node> node;
       cvector1<Element> element;
 
@@ -188,7 +182,7 @@ int main (int argc, char **argv)
 	 * generate grids of line elements
 	 */
 
-   for (i = 0 ; i < generator.num_grids ; i++) {
+   for (i = 0 ; i < generator.grids.size(); i++) {
       cvector1<Node> node;
       cvector1<Element> element;
 
@@ -204,7 +198,7 @@ int main (int argc, char **argv)
 	 * generate grids of quadrilateral elements
 	 */
 
-   for (i = 0 ; i < generator.num_quadgrids ; i++) {
+   for (i = 0 ; i < generator.quadgrids.size() ; i++) {
       cvector1<Node> node;
       cvector1<Element> element;
       
@@ -220,7 +214,7 @@ int main (int argc, char **argv)
 	 * generate grids of brick elements
 	 */
 
-   for (i = 0 ; i < generator.num_brickgrids ; i++) {
+   for (i = 0 ; i < generator.brickgrids.size() ; i++) {
       cvector1<Node> node;
       cvector1<Element> element;
 
@@ -236,7 +230,7 @@ int main (int argc, char **argv)
 	 * generate meshes of triangular meshes
 	 */
 
-   for (i = 0 ; i < generator.num_trimeshes ; i++) {
+   for (i = 0 ; i < generator.trimeshes.size() ; i++) {
       cvector1<Node> node;
       cvector1<Element> element;
       code = GenerateTriMesh (trimesh[i], element, node, start_node, start_element);

@@ -96,14 +96,11 @@ int ReadCorduroyFile (const char *input_name)
     generator.constraint    = NULL;
     geninput.num_errors    = 0;
     geninput.line	    = 1;
-    generator.lines	    = NULL;
-    generator.grids	    = NULL;
-    generator.quadgrids	    = NULL;
-    generator.trimeshes	    = NULL;
-    generator.num_lines	    = 0;
-    generator.num_grids	    = 0;
-    generator.num_quadgrids = 0;
-    generator.num_trimeshes = 0;
+    generator.lines.clear();
+    generator.grids.clear();
+    generator.brickgrids.clear();
+    generator.quadgrids.clear();
+    generator.trimeshes.clear();
 
     if (input_name) 
 	geninput.filename = strdup (streq(input_name, "-") ? "stdin" : input_name);

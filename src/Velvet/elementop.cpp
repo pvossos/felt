@@ -36,7 +36,7 @@
 # include "vfe.h"
 # include "text_entry.h"
 # include "error.h"
-
+# include "setaux.hpp"
 
 extern ElementDialog element_d;
 extern MaterialDialog material_d;
@@ -125,14 +125,9 @@ DoDeleteElt(Element element)
     sprintf (message, "Element %d deleted.  Select element:", element -> number);
 
     if (element == ElementDialogActive (element_d)) {
-        Problem::ElementSet::iterator it;
-        it = problem.element_set.lower_bound(element);
-        newelement = it != problem.element_set.begin() ? *(--it) : NULL;
-        if (!newelement) {
-            it = problem.element_set.upper_bound(element);
-            newelement = it != problem.element_set.end() ? *it : NULL;
-        }
-        
+        newelement = SetPredecessor(problem.element_set, element);
+        if (!newelement)
+            newelement = SetSuccessor(problem.element_set, element);
         ElementDialogDisplay (element_d, newelement);
     }
 
@@ -192,8 +187,6 @@ void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
     element_t dummy;
-    Item           found;
-
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -201,15 +194,14 @@ void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
-    found = it != problem.element_set.end() ? *it : NULL;
+    Element found = SetSearch(problem.element_set, dummy.number);
 
     if (found == NULL) {
 	error ("Element %d does not exist.", dummy.number);
 	return;
     }
 
-    DoDeleteElt ((Element) found);
+    DoDeleteElt (found);
 }
 
 
@@ -278,13 +270,13 @@ void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
     
-    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
-    if (it == problem.element_set.end()) {
+    Element found = SetSearch(problem.element_set, dummy.number);
+    if (!found) {
         error ("Element %d does not exist.", dummy.number);
         return;
     }
-
-    ElementDialogDisplay (element_d, *it);
+    
+    ElementDialogDisplay (element_d, found);
     ElementDialogPopup (element_d);
 }
 
@@ -334,8 +326,6 @@ void DoAddElement (Node node)
     static char      message [80];
     unsigned         i;
     unsigned         max;
-    Element          element;
-
 
     nodes [current_node] = node;
 
@@ -351,7 +341,7 @@ void DoAddElement (Node node)
 	return;
     }
 
-    element = !problem.element_set.empty() ? *(problem.element_set.rbegin()) : NULL;
+    Element element = SetMaximum(problem.element_set);
     max = element != NULL ? element -> number : 0;
 
     element = new element_t(max + 1, ElementListDefinition (element_l));
@@ -383,13 +373,13 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);    
-    if (it == problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);    
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
 
-    DoAddElement (*it);
+    DoAddElement (found);
 }
 
 

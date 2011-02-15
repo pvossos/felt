@@ -38,6 +38,7 @@
 # include "problem.h"
 # include "Colors.h"
 # include "util.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -340,10 +341,6 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
     ColorsDialog	colorsd;
     XawListReturnStruct	*info;
     std::string color = "";
-    material_t	m;
-    constraint_t	c;
-    force_t	f;
-    distributed_t	l;
     int			item;
   
     colorsd = (ColorsDialog) client_data;
@@ -358,24 +355,19 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
        return;
 
     if (active_list == colorsd -> mlist) {
-       m.name = info -> string;
-       current_material = *problem.material_set.find(&m);
+       current_material = SetSearch(problem.material_set, info->string);
        color = current_material -> color;
     }
     else if (active_list == colorsd -> clist) {
-       c.name = info -> string;
-       Problem::ConstraintSet::iterator it = problem.constraint_set.find(&c);
-       current_constraint = it != problem.constraint_set.end() ? *it : NULL;
+       current_constraint = SetSearch(problem.constraint_set, info->string);
        color = current_constraint -> color;
     }
     else if (active_list == colorsd -> flist) {
-       f.name = info -> string;
-       current_force = *(problem.force_set.find(&f));
+       current_force = SetSearch(problem.force_set, info->string);
        color = current_force -> color;
     }
     else if (active_list == colorsd -> llist) {
-       l.name = info -> string;
-       current_load = *(problem.distributed_set.find(&l));
+       current_load = SetSearch(problem.distributed_set, info->string);
        color = current_load -> color;
     }
 

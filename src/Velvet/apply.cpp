@@ -39,6 +39,7 @@
 # include "error.h"
 # include "vfe.h"
 # include "procedures.h"
+# include "setaux.hpp"
 
 extern LoadDialog	load_d;
 extern ConstraintDialog	constraint_d;
@@ -147,8 +148,6 @@ void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     node_t dummy;
-    Item        found;
-
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -156,13 +155,13 @@ void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
-    if (it == problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
 
-    DoApplyForce (*it);
+    DoApplyForce (found);
 }
 
 
@@ -284,7 +283,6 @@ void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
     node_t dummy;
-    Item        found;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -293,13 +291,13 @@ void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
     
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
-    if (it == problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
     
-    DoApplyConstraint (*it);
+    DoApplyConstraint (found);
 }
 
 
@@ -441,13 +439,13 @@ void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
-    if (it == problem.element_set.end()) {
+    Element found = SetSearch(problem.element_set, dummy.number);
+    if (!found) {
         error ("Element %d does not exist.", dummy.number);
         return;
     }
 
-    DoApplyLoad (*it);
+    DoApplyLoad (found);
 }
 
 
@@ -576,13 +574,13 @@ void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::ElementSet::iterator it = problem.element_set.find(&dummy);
-    if (it == problem.element_set.end()) {
+    Element found = SetSearch(problem.element_set, dummy.number);
+    if (!found) {
         error ("Element %d does not exist.", dummy.number);
         return;
     }
 
-    DoApplyMaterial (*it);
+    DoApplyMaterial (found);
 }
 
 

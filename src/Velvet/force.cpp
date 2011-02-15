@@ -42,6 +42,7 @@
 # include "fe.h"
 # include "objects.h"
 # include "procedures.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -1075,7 +1076,7 @@ void ForceDialogUpdate (ForceDialog forced, Problem::ForceSet *tree)
 	tree = forced -> tree;
 
     if (forced -> active == NULL || tree != forced -> tree)
-        forced -> active = tree->empty() ? NULL : *(tree->begin());
+        forced -> active = SetMinimum(*tree);
 
 
     /* Construct the array of force names. */

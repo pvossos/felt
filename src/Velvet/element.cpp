@@ -44,6 +44,7 @@
 # include "problem.h"
 # include "error.h"
 # include "definition.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -744,20 +745,15 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
 
 static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Element	  element;
-    ElementDialog eltd;
-
-
-    eltd = (ElementDialog) client_data;
+    ElementDialog eltd = (ElementDialog) client_data;
 
     if (eltd -> active == NULL)
 	return;
 
-    Problem::ElementSet::iterator it = problem.element_set.upper_bound(eltd->active);
-    element = it != problem.element_set.end() ? *it : NULL;
-
+    Element element = SetSuccessor(problem.element_set, eltd->active);
+    
     if (element != NULL)
-	ElementDialogDisplay (eltd, element);
+        ElementDialogDisplay (eltd, element);
 }
 
 
@@ -769,17 +765,12 @@ static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Down (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Element	  element;
-    ElementDialog eltd;
-
-
-    eltd = (ElementDialog) client_data;
+    ElementDialog eltd = (ElementDialog) client_data;
 
     if (eltd -> active == NULL)
 	return;
 
-    Problem::ElementSet::iterator it = problem.element_set.lower_bound(eltd->active);
-    element = it != problem.element_set.begin() ? *(--it) : NULL;
+    Element element = SetPredecessor(problem.element_set, eltd->active);
 
     if (element != NULL)
 	ElementDialogDisplay (eltd, element);
@@ -876,8 +867,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the material. */
 
     m_dummy.name = GetTextString (eltd -> m_name);
-    Problem::MaterialSet::iterator it = eltd->materials->find(&m_dummy);
-    material = it != eltd->materials->end() ? *it : NULL;
+    material = SetSearch(*eltd->materials, m_dummy.name);
     if (material == NULL) {
 	XBell (XtDisplay (eltd -> shell), 0);
 	SetTextString (eltd -> m_name, "");
@@ -913,8 +903,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	    nodes [i] = NULL;
 
 	} else {
-        Problem::NodeSet::iterator it = eltd->nodes->find(&n_dummy);
-        node = it != eltd->nodes->end() ? *it : NULL;
+        node = SetSearch(*eltd->nodes, n_dummy.number);
 	    if (node == NULL) {
 		if (i < eltd -> offset) {
 		    eltd -> offset = i;
@@ -1024,12 +1013,9 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
 	active = eltd -> active;
 
-    Problem::ElementSet::iterator it = eltd->elements->lower_bound(active);
-    element = it != eltd->elements->begin() ? *(--it) : NULL;
-    if (!element) {
-        it = eltd->elements->upper_bound(active);
-        element = it != eltd->elements->end() ? *it : NULL;
-    }
+    element = SetPredecessor(*eltd->elements, active);
+    if (!element)
+        element = SetSuccessor(*eltd->elements, active);
     
 
     eltd->elements->erase(active);
@@ -1052,13 +1038,9 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Element	  element;
-    ElementDialog eltd;
+    ElementDialog eltd = (ElementDialog) client_data;
 
-
-    eltd = (ElementDialog) client_data;
-
-    element = eltd->elements->empty() ? NULL : *(eltd->elements->rbegin());
+    Element element = SetMaximum(*(eltd->elements));
     eltd -> new_copy = element != NULL ? element -> number + 1 : 1;
 
     SetNumber (eltd, eltd -> new_copy);
@@ -1363,7 +1345,7 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     CreateTabGroup (eltd -> shell, group, XtNumber(group), highlight, True);
     XtRealizeWidget (eltd -> shell);
     SetFocus (eltd -> up);
-    SetType (eltd, (Definition) *(problem.definition_set.begin()));
+    SetType (eltd, SetMinimum(problem.definition_set));
 
     button_args [0].value = (XtArgVal) "Load 1:";
     XtSetValues (eltd -> l_button [0], button_args, 1);
@@ -1473,10 +1455,10 @@ void ElementDialogUpdate (ElementDialog eltd,
     /* Determine a new active element if necessary. */
 
     if (!elements && eltd -> active == NULL)
-        eltd -> active = *(eltd->elements->begin());
+        eltd -> active = SetMinimum(*eltd->elements);
 
     if (elements && (eltd -> active == NULL || eltd -> elements != elements))
-        eltd -> active = *(elements->begin());
+        eltd -> active = SetMinimum(*elements);
 
     if (elements != NULL) {
 	eltd -> elements = elements;

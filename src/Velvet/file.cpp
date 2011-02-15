@@ -54,7 +54,7 @@
 # include "procedures.h"
 # include "Drawing.h"
 # include "vfe.h"
-
+# include "setaux.hpp"
 
 extern FileDialog 	filed;
 extern FileDialog	dumpd;
@@ -193,8 +193,6 @@ int WriteVFeltFile (Boolean dump_all)
 int VelvetReadFeltFile (char *file)
 {
     int      status;
-    Element  elt;
-
 
     BufferErrors (True);
     status = ReadFeltFile (file);
@@ -229,9 +227,9 @@ int VelvetReadFeltFile (char *file)
     AnalysisDialogUpdate (analysis_d, True);
     SolutionDialogUpdate (solution_d);
 
-    Problem::ElementSet::iterator it = problem.element_set.begin();
-    if (it != problem.element_set.end()) 
-        ElementListSet (element_l, (*it) -> definition);
+    Element elt = SetMinimum(problem.element_set);
+    if (elt)
+        ElementListSet (element_l, elt -> definition);
     else 
         ElementListSet (element_l, NULL);
 
@@ -336,9 +334,8 @@ Problem     saved;
 
 static int UpdateMaterial (Material nu)
 {
-    Problem::MaterialSet::iterator it = saved.material_set.find(nu);
-    if (it != saved.material_set.end()) {
-        Material old = *it;
+    Material old = SetSearch(saved.material_set, nu->name);
+    if (old) {
         old -> E = nu -> E;
         old -> A = nu -> A;
         old -> Ix = nu -> Ix;

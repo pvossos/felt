@@ -43,7 +43,7 @@
 # include "fe.h"
 # include "objects.h"
 # include "problem.h"
-
+# include "setaux.hpp"
 
 struct constraint_dialog {
     Widget         shell;	/* topLevelShell  <specified>	 */
@@ -510,9 +510,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
         if (info -> list_index == XAW_LIST_NONE)
             return;
         
-        dummy.name = info -> string;
-        Problem::ConstraintSet::iterator it = constraintd->tree->find(&dummy);
-        constraintd -> active = it != constraintd->tree->end() ? *it : NULL;
+        constraintd->active = SetSearch(*(constraintd->tree), info->string);
     }
 
     active = constraintd -> active;
@@ -605,7 +603,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     double		 accel;
     constraint_t	 old;
     constraint_t    dummy;
-    Constraint	 	 found;
     Constraint	 	 active;
     Boolean	 	 duplicate;
     ConstraintDialog	 constraintd;
@@ -619,8 +616,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the constraint. */
 
     dummy.name = GetTextString (constraintd -> name);
-    Problem::ConstraintSet::iterator it = constraintd->tree->find(&dummy);
-    found = it != constraintd->tree->end() ? *it : NULL;
+    Constraint found = SetSearch(*constraintd->tree, dummy.name);
     duplicate = found && (found != constraintd -> active || 
                                    constraintd -> new_copy);
 
@@ -1100,7 +1096,7 @@ void ConstraintDialogUpdate (ConstraintDialog constraintd, Problem::ConstraintSe
 	tree = constraintd -> tree;
 
     if (constraintd -> active == NULL || tree != constraintd -> tree)
-        constraintd -> active = tree->empty() ? NULL : *(tree->begin());
+        constraintd->active = SetMinimum(*tree);
 
 
     /* Construct the array of constraint names. */

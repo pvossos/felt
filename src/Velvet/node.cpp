@@ -41,6 +41,7 @@
 # include "TabGroup.h"
 # include "util.h"
 # include "post.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -611,19 +612,15 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
 
 static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Node       node;
-    NodeDialog noded;
-
-
-    noded = (NodeDialog) client_data;
+    NodeDialog noded = (NodeDialog) client_data;
 
     if (noded -> active == NULL)
 	return;
 
-    Problem::NodeSet::iterator it = noded->nodes->upper_bound(noded->active);
+    Node node = SetSuccessor(*noded->nodes, noded->active);
 
-    if (it != noded->nodes->end())
-        NodeDialogDisplay (noded, *it);
+    if (node)
+        NodeDialogDisplay (noded, node);
 }
 
 
@@ -635,19 +632,15 @@ static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Down (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Node       node;
-    NodeDialog noded;
-
-
-    noded = (NodeDialog) client_data;
+    NodeDialog noded = (NodeDialog) client_data;
 
     if (noded -> active == NULL)
 	return;
 
-    Problem::NodeSet::iterator it = noded->nodes->lower_bound(noded->active);
-
-    if (it != noded->nodes->begin())
-        NodeDialogDisplay (noded, *(--it));
+    Node node = SetPredecessor(*noded->nodes, noded->active);
+    
+    if (node)
+        NodeDialogDisplay (noded, node);
 }
 
 
@@ -668,7 +661,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     double	      y;
     Constraint	      constraint;
     force_t      f_dummy;
-    constraint_t c_dummy;
     Node	      active;
     NodeDialog	      noded;
     NodeDialogInfo    info;
@@ -679,14 +671,13 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Retrieve the constraint. */
 
-    c_dummy.name = GetTextString (noded -> c_name);
-    Problem::ConstraintSet::iterator it = noded->constraints->find(&c_dummy);
-    constraint = it != noded->constraints->end() ? *it : NULL;
-    if (constraint == NULL) {
-	XBell (XtDisplay (noded -> shell), 0);
-	SetTextString (noded -> c_name, "");
-	SetFocus (noded -> c_name);
-	return;
+    const char *name = GetTextString (noded -> c_name);
+    constraint = SetSearch(*(noded->constraints), name);
+    if (!constraint) {
+        XBell (XtDisplay (noded -> shell), 0);
+        SetTextString (noded -> c_name, "");
+        SetFocus (noded -> c_name);
+        return;
     }
 
 
@@ -777,13 +768,9 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-    Problem::NodeSet::iterator it;
-    it = noded->nodes->lower_bound(noded->active);
-    node = it != noded->nodes->begin() ? *(--it) : NULL;
-    if (!node) {
-        it = noded->nodes->upper_bound(noded->active);
-        node = it != noded->nodes->end() ? *it : NULL;
-    }
+    node = SetPredecessor(*noded->nodes, noded->active);
+    if (!node)
+        node = SetSuccessor(*noded->nodes, noded->active);
     
     noded->nodes->erase(noded->active);
 	delete noded -> active;
@@ -810,7 +797,7 @@ static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 
     noded = (NodeDialog) client_data;
 
-    node = noded->nodes->empty() ? NULL : *(noded->nodes->rbegin());
+    node = SetMaximum(*(noded->nodes));
     noded -> new_copy = node != NULL ? node -> number + 1 : 1;
 
     SetNumber (noded, noded -> new_copy);
@@ -1167,10 +1154,10 @@ void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes,
     /* Determine a new active node if necessary. */
 
     if (nodes == NULL && noded -> active == NULL)
-        noded->active = noded->nodes->empty() ? NULL : *(noded->nodes->begin());
+        noded->active = SetMinimum(*(noded->nodes));
 
     if (nodes != NULL && (noded -> active == NULL || noded -> nodes != nodes))
-        noded->active = nodes->empty() ? NULL : *(nodes->begin());
+        noded->active = SetMinimum(*nodes);
 
     if (nodes != NULL) {
 	noded -> nodes = nodes;

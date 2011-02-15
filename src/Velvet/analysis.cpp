@@ -42,6 +42,7 @@
 # include "allocate.h"
 # include "procedures.h"
 # include "error.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -730,8 +731,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     XtGetValues (analysisd -> input_node, args, 1);
     if (strcmp(value, "") != 0) {
        n.number = atoi(value);
-       Problem::NodeSet::iterator it = problem.node_set.find(&n);
-       analysis.input_node = it != problem.node_set.end() ? *it : NULL;
+       analysis.input_node = SetSearch(problem.node_set, n.number);
 
        if (analysis.input_node == NULL) 
           error ("node %d not defined in current problem", n.number);
@@ -805,12 +805,12 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
        XtGetValues (analysisd -> node[i], args, 1);
        n.number = atoi (value);
        if (n.number != 0) {
-           it = problem.node_set.find(&n);
-           if (it == problem.node_set.end()) {
+           Node found = SetSearch(problem.node_set, n.number);
+           if (!found) {
                error ("node %d is not defined", n.number);
                return;
            }
-           current [count++] = *it;
+           current [count++] = found;
        }
     }
 

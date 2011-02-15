@@ -48,6 +48,7 @@
 # include "problem.h"
 # include "allocate.h"
 # include "error.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -795,10 +796,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     LoadCase	        active;
     Boolean	        duplicate;
     LoadCaseDialog      loadcased;
-    node_t  n;
-    element_t	e;
-    force_t	f;
-    distributed_t  l;
     unsigned		i;
 
 
@@ -852,19 +849,17 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
            active->forces.resize(loadcased->num_forces);
            
            for (i = 1 ; i <= active->forces.size(); i++) {
-              n.number = loadcased -> node_assignments [i-1];
-              Problem::NodeSet::iterator it = problem.node_set.find(&n);
-              active -> nodes [i] = it != problem.node_set.end() ? *it : NULL;
+              unsigned nnumber = loadcased -> node_assignments [i-1];
+              active -> nodes [i] = SetSearch(problem.node_set, nnumber);
               if (active -> nodes [i] == NULL) {
-                 error ("node %d is not defined", n.number);
+                 error ("node %d is not defined", nnumber);
                  return;
               }
 
-              f.name = loadcased -> force_assignments [i-1];
-              Problem::ForceSet::iterator itf = problem.force_set.find(&f);
-              active -> forces [i] = itf != problem.force_set.end() ? *itf : NULL;
+              std::string fname = loadcased -> force_assignments [i-1];
+              active -> forces [i] = SetSearch(problem.force_set, fname);
               if (active -> forces [i] == NULL) {
-                  error ("force %s is not defined", f.name.c_str());
+                  error ("force %s is not defined", fname.c_str());
                  return;
               }
            }
@@ -878,19 +873,17 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
             active->elements.resize(loadcased->num_loads);
 
             for (i = 1 ; i <= active->loads.size(); i++) {
-              e.number = loadcased -> element_assignments [i-1];
-              Problem::ElementSet::iterator it = problem.element_set.find(&e);
-              active -> elements [i] = it != problem.element_set.end() ? *it : NULL;
+              unsigned enumber = loadcased -> element_assignments [i-1];
+              active -> elements [i] = SetSearch(problem.element_set, enumber);
               if (active -> elements [i] == NULL) {
-                 error ("element %d is not defined", e.number);
+                 error ("element %d is not defined", enumber);
                  return;
               }
 
-              l.name = loadcased -> load_assignments [i-1];
-              Problem::DistributedSet::iterator itd = problem.distributed_set.find(&l);
-              active -> loads [i] = itd != problem.distributed_set.end() ? *itd : NULL;
+              std::string lname = loadcased -> load_assignments [i-1];
+              active -> loads [i] = SetSearch(problem.distributed_set, lname);
               if (active -> loads [i] == NULL) {
-                  error ("distributed load %s is not defined", l.name.c_str());
+                  error ("distributed load %s is not defined", lname.c_str());
                  return;
               }
            }
@@ -1400,7 +1393,7 @@ void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Problem::LoadCaseSet *tree,
 	tree = loadcased -> tree;
 
     if (loadcased -> active == NULL || tree != loadcased -> tree)
-        loadcased -> active = tree->empty() ? NULL : *(tree->begin());
+        loadcased -> active = SetMinimum(*tree);
 
 
     /* Construct the array of loadcase names. */

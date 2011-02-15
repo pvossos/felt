@@ -35,6 +35,7 @@
 # include "text_entry.h"
 # include "error.h"
 # include "Node.h"
+# include "setaux.hpp"
 
 extern ConstraintDialog	constraint_d;
 extern NodeDialog node_d;
@@ -86,10 +87,9 @@ void AddNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 void DoAddNode (float x, float y, float z)
 {
    char     message [40];
-   Node     node;
    unsigned max;
 
-   node = problem.node_set.empty() ? NULL : *(problem.node_set.rbegin());
+   Node node = SetMaximum(problem.node_set);
    max = node != NULL ? node -> number : 0;
 
    node = new node_t(max + 1);
@@ -269,14 +269,9 @@ DoDeleteNode(Node node)
     sprintf (message, "Node %d deleted.  Select node:", node -> number);
 
     if (node == NodeDialogActive (node_d)) {
-        Problem::NodeSet::iterator it;
-        it = problem.node_set.lower_bound(node);
-        newnode = it != problem.node_set.begin() ? *(--it) : NULL;
-        if (!newnode) {
-            it = problem.node_set.upper_bound(node);
-            newnode = it != problem.node_set.end() ? *it : NULL;
-        }
-
+        newnode = SetPredecessor(problem.node_set, node);
+        if (!newnode)
+            newnode = SetSuccessor(problem.node_set, node);
         NodeDialogDisplay (node_d, newnode);
     }
     
@@ -344,13 +339,13 @@ void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
-    if (it == problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
     
-    DoDeleteNode (*it);
+    DoDeleteNode (found);
 }
 
 
@@ -420,13 +415,13 @@ void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
 
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
-    if (it == problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
     
-    NodeDialogDisplay (node_d, *it);
+    NodeDialogDisplay (node_d, found);
     NodeDialogPopup (node_d);
 }
 
@@ -647,13 +642,13 @@ void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
 
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
-    if (it != problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
 
-    DoMoveNode (*it, False);
+    DoMoveNode (found, False);
 }
 
 
@@ -773,13 +768,13 @@ void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    Problem::NodeSet::iterator it = problem.node_set.find(&dummy);
-    if (it == problem.node_set.end()) {
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
         error ("Node %d does not exist.", dummy.number);
         return;
     }
 
-    DoAssignMass (*it);
+    DoAssignMass (found);
 }
 
 void SetMassAP (Widget w, XEvent *event, String *params, Cardinal *num)

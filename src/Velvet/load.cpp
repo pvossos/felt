@@ -41,6 +41,7 @@
 # include "util.h"
 # include "fe.h"
 # include "allocate.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -545,7 +546,6 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     unsigned		 i;
     char		 buffer [32];
     Distributed		 active;
-    distributed_t 	 dummy;
     LoadDialog		 loadd;
     XawListReturnStruct	*info;
 
@@ -560,9 +560,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
         if (info -> list_index == XAW_LIST_NONE)
             return;
         
-        dummy.name = info -> string;
-        Problem::DistributedSet::iterator it = loadd->tree->find(&dummy);
-        loadd->active = it != loadd->tree->end() ? *it : NULL;
+        loadd->active = SetSearch(*(loadd->tree), info->string);
     }
 
     active = loadd -> active;
@@ -1143,7 +1141,7 @@ void LoadDialogUpdate (LoadDialog loadd, Problem::DistributedSet *tree)
 	tree = loadd -> tree;
 
     if (loadd -> active == NULL || tree != loadd -> tree)
-        loadd -> active = tree->empty() ? NULL : *(tree->begin());
+        loadd -> active = SetMinimum(*tree);
 
 
     /* Construct the array of load names. */

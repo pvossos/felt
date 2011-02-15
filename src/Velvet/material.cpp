@@ -39,6 +39,7 @@
 # include "TabGroup.h"
 # include "util.h"
 # include "fe.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -1094,7 +1095,7 @@ void MaterialDialogUpdate (MaterialDialog materiald, Problem::MaterialSet *tree)
 	tree = materiald -> tree;
 
     if (materiald -> active == NULL || tree != materiald -> tree)
-        materiald -> active = *(tree->begin());
+        materiald -> active = SetMinimum(*tree);
 
 
     /* Construct the array of material names. */

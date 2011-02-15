@@ -28,6 +28,7 @@
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
+# include "setaux.hpp"
 # include "error.h"
 # include "problem.h"
 # include "allocate.h"
@@ -94,9 +95,8 @@ resolve_node(Node node)
 
     if (node->constraint) {
         Constraint c = node->constraint;
-        Problem::ConstraintSet::iterator it = problem.constraint_set.find(c);
-        node -> constraint = it != problem.constraint_set.end() ? *it : NULL;
-        if (!node -> constraint)
+        node->constraint = SetSearch(problem.constraint_set, c->name);
+        if (!node->constraint)
             error ("node %u used undefined constraint %s", number, c->name.c_str());
         delete c;
     } else {
@@ -138,10 +138,9 @@ resolve_element(Element element)
 
     if (element->material) {
         Material m = element->material;
-        Problem::MaterialSet::iterator it = problem.material_set.find(m);
-        if (it == problem.material_set.end())
+        element->material = SetSearch(problem.material_set, m->name);
+        if (!element->material)
             error ("element %u uses undefined material %s", number, m->name.c_str());
-        element->material = *it;
         delete m;
     } else {
         element -> material = &default_material;
@@ -151,10 +150,9 @@ resolve_element(Element element)
 
     for (i = 1; i <= element -> numdistributed; i ++) {
         Distributed d = element->distributed[i];
-        Problem::DistributedSet::iterator it = problem.distributed_set.find(d);
-        if (it == problem.distributed_set.end())
+        element->distributed[i] = SetSearch(problem.distributed_set, d->name);
+        if (!element->distributed[i])
             error ("element %u used undefined load %s", number, d->name.c_str());
-        element->distributed [i] = *it;
         delete d;
     }
 
@@ -190,15 +188,13 @@ resolve_loadcase(LoadCase loadcase)
 
     for (i = 1 ; i <= loadcase->forces.size(); i++) {
        Node n = loadcase->nodes[i];
-       Problem::NodeSet::iterator it = problem.node_set.find(n);
-       loadcase -> nodes [i] = it != problem.node_set.end() ? *it : NULL;
+       loadcase -> nodes [i] = SetSearch(problem.node_set, n->number);
        if (!loadcase -> nodes [i])
            error ("load case %s used undefined node %d", loadcase->name.c_str(), n->number);
        delete n;
 
        Force f = loadcase->forces[i];
-       Problem::ForceSet::iterator itf = problem.force_set.find(f);
-       loadcase -> forces [i] = itf != problem.force_set.end() ? *itf : NULL;
+       loadcase -> forces [i] = SetSearch(problem.force_set, f->name);
        if (!loadcase -> forces [i])
            error ("load case %s used undefined force %s", loadcase->name.c_str(), f->name.c_str());
        delete f;
@@ -206,15 +202,13 @@ resolve_loadcase(LoadCase loadcase)
 
     for (i = 1 ; i <= loadcase->loads.size(); i++) {
        Element e = loadcase->elements[i];
-       Problem::ElementSet::iterator it = problem.element_set.find(e);
-       loadcase -> elements [i] = it != problem.element_set.end() ? *it : NULL;
+       loadcase -> elements [i] = SetSearch(problem.element_set, e->number);
        if (!loadcase -> elements [i])
            error ("load case %s used undefined element %d", loadcase->name.c_str(), e->number);
        delete e;
 
        Distributed l = loadcase->loads[i];
-       Problem::DistributedSet::iterator itl = problem.distributed_set.find(l);
-       loadcase -> loads [i] = itl != problem.distributed_set.end() ? *itl : NULL;
+       loadcase -> loads [i] = SetSearch(problem.distributed_set, l->name);
        if (!loadcase -> loads [i])
            error ("load case %s used undefined load %s", loadcase->name.c_str(), l->name.c_str());
        delete l;
@@ -277,9 +271,8 @@ resolve_names(void)
     if (!analysis.nodes.empty()) {
         for (i = 1 ; i <= analysis.nodes.size() ; i++) {
             Node n = analysis.nodes [i];
-            it = problem.node_set.find(n);
-            analysis.nodes [i] = it != problem.node_set.end() ? *it : NULL;
-            if (analysis.nodes [i] == NULL)
+            analysis.nodes [i] = SetSearch(problem.node_set, n->number);
+            if (!analysis.nodes [i])
                 error ("analysis node %d not defined", n->number);
             delete n;
         }
@@ -287,9 +280,8 @@ resolve_names(void)
 
     if (analysis.input_node) {
         Node n = analysis.input_node;
-        it = problem.node_set.find(n);
-        analysis.input_node = it != problem.node_set.end() ? *it : NULL;
-        if (analysis.input_node == NULL)
+        analysis.input_node = SetSearch(problem.node_set, n->number);
+        if (!analysis.input_node)
             error ("analysis input node %d not defined", n->number);
         delete n;
     }

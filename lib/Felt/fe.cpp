@@ -203,7 +203,7 @@ ConstructStiffness(int *status)
       dg [i] = ht [i] + dg [i-1];
    }
 
-   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
+   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, &dg);
 
    detail ("stiffness matrix size is %d", size);
 
@@ -366,7 +366,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
       }
    }
 
-   Kc -> diag = diag.release1();
+   Kc -> diag = diag;
 
 	/*
 	 * allocate, copy and assign a different diag pointer for the mass
@@ -374,13 +374,13 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 	 * mass matrices will be destroyed at different times
 	 */
 
-   Mc -> diag = cvector1u(new_dofs).release1();
+   Mc -> diag = cvector1u(new_dofs);
  
    for (i = 1 ; i <= new_dofs ; i++)
       Mc -> diag [i] = Kc -> diag [i];
 
    if (C != NullMatrix) {
-       Cc -> diag = cvector1u(new_dofs).release1();
+       Cc -> diag = cvector1u(new_dofs);
  
       for (i = 1 ; i <= new_dofs ; i++)
          Cc -> diag [i] = Kc -> diag [i];
@@ -1242,7 +1242,7 @@ RemoveConstrainedMatrixDOF(Matrix a)
          }
       }
 
-      b -> diag = diag.release1();
+      b -> diag = diag;
 
    }
    else if (IsColumnVector(a)) {

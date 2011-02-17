@@ -253,13 +253,11 @@ FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, Matrix *Mr, Matrix *Cr
    for (i = 1 ; i <= n ; i++)
       diag [i] = i;
 
-   unsigned *diagp = diag.c_ptr1();
-   
    M = CreateCompactMatrix (n, n, n, NULL);
-   M -> diag = diag.release1();
+   M -> diag = diag;
 
-   C = CreateCompactMatrix (n, n, n, diagp);
-   K = CreateCompactMatrix (n, n, n, diagp);
+   C = CreateCompactMatrix (n, n, n, &diag);
+   K = CreateCompactMatrix (n, n, n, &diag);
 
    if (ortho) {
       MultiplyUTmU (M, u, m);

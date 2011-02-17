@@ -396,7 +396,7 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
    n = Mrows(M);
    size = Msize(M);
  
-   Z = CreateCompactComplexMatrix (n, n, size, M -> diag);
+   Z = CreateCompactComplexMatrix (n, n, size, &M -> diag);
    Ht = CreateComplexColumnVector(n);
 
    nsteps = (analysis.stop - analysis.start + analysis.step/2.0) / 

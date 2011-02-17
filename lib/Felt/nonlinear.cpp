@@ -123,7 +123,7 @@ CreateNonlinearStiffness(int *status)
       dg [i] = ht [i] + dg [i-1];
    }
 
-   K = CreateCompactMatrix (nn*active, nn*active, size, dg.c_ptr1());
+   K = CreateCompactMatrix (nn*active, nn*active, size, &dg);
    ZeroMatrix (K);
 
    *status = err_count;

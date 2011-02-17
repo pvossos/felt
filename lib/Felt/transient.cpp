@@ -164,9 +164,9 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
       dg [i] = ht [i] + dg [i-1];
    }
 
-   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
-   M = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
-   C = CreateCompactMatrix (numnodes*active, numnodes*active, size, dg.c_ptr1());
+   K = CreateCompactMatrix (numnodes*active, numnodes*active, size, &dg);
+   M = CreateCompactMatrix (numnodes*active, numnodes*active, size, &dg);
+   C = CreateCompactMatrix (numnodes*active, numnodes*active, size, &dg);
 
    ZeroMatrix (K);
    ZeroMatrix (M);

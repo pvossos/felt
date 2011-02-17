@@ -23,10 +23,7 @@
 # include <stdio.h>		/* for FILE definition			*/
 # include "complex.h"
 # include "status.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "cvector1.hpp"
 
 /*----------------------------------------------------------------------*/
 
@@ -36,7 +33,7 @@ struct complex_matrix {
    unsigned	nrows;		/* number of rows 			 */
    unsigned	ncols;		/* number of columns			 */
    complex	**data;		/* matrix data				 */
-   unsigned	*diag;		/* diagonal addresses for compact column */
+   cvector1<unsigned> diag;		/* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
    unsigned	refcount;	/* count of children			 */
    ComplexMatrix parent;	/* parent of possible subsection	 */
@@ -85,7 +82,8 @@ void DestroyComplexMatrix (ComplexMatrix m);
   \param size actual size of storage
   \param diag diagonial index array
  */
-ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols, unsigned int size, unsigned int *diag);
+ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols,
+                                          unsigned int size, const cvector1<unsigned> *diag);
 
 /*!
   \param a matrix to copy data from
@@ -257,10 +255,6 @@ int CroutBackSolveComplexMatrix (const ComplexMatrix A, ComplexMatrix b);
 int IsSymmetricComplexMatrix (const ComplexMatrix a);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif	/* _CMATRIX_H */
 

@@ -24,6 +24,7 @@
  *		type definitions for the constraint dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <stdlib.h>
 # include <X11/Intrinsic.h>
@@ -42,7 +43,7 @@
 # include "fe.h"
 # include "objects.h"
 # include "problem.h"
-
+# include "setaux.hpp"
 
 struct constraint_dialog {
     Widget         shell;	/* topLevelShell  <specified>	 */
@@ -66,16 +67,16 @@ struct constraint_dialog {
     String        *constraints;
     Constraint     active;
     Boolean        new_copy;
-    Tree           tree;
+    Problem::ConstraintSet *tree;
 };
 
-static String labels [ ] = {
+static const char* labels [ ] = {
     "Name:", "X:", "Y:", "Z:", "Trans BC", "Rot BC", 
     "Init Trans", "Init Rot", "Init Vel", "Init Accel", 
     "X:", "Y:", "Z:", "X:", "Y:", "Z:"
 };
 
-static String names [ ] = {
+static const char* names [ ] = {
     "nameLabel", "x", "y", "z", "translation", "rotation", 
     "translation_ic", "rotation_ic", "velocity", "acceleration", 
     "x1", "y1", "z1", "x2", "y2", "z2"
@@ -448,12 +449,12 @@ static void Toggle (Widget w, XtPointer client_data, XtPointer call_data)
  *		index of the active constraint is also set.		*
  ************************************************************************/
 
-static int AppendConstraintName (Item item)
+static int AppendConstraintName (Constraint item)
 {
-    if (dialog -> active == (Constraint) item)
+    if (dialog -> active == item)
 	list_index = num_constraints;
 
-    dialog -> constraints [num_constraints ++] = ((Constraint) item) -> name;
+    dialog -> constraints [num_constraints ++] = XtNewString(item -> name.c_str());
     return 0;
 }
 
@@ -493,7 +494,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [32];
     Constraint		 active;
-    struct constraint	 dummy;
+    constraint_t	 dummy;
     ConstraintDialog	 constraintd;
     XawListReturnStruct	*info;
     unsigned		 i;
@@ -505,13 +506,11 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the active constraint from the tree if selected. */
 
     if (w != NULL) {
-	info = (XawListReturnStruct *) call_data;
-	if (info -> list_index == XAW_LIST_NONE)
-	    return;
-
-	dummy.name = info -> string;
-	constraintd -> active = (Constraint) TreeSearch (constraintd -> tree, 
-                                                         &dummy);
+        info = (XawListReturnStruct *) call_data;
+        if (info -> list_index == XAW_LIST_NONE)
+            return;
+        
+        constraintd->active = SetSearch(*(constraintd->tree), info->string);
     }
 
     active = constraintd -> active;
@@ -520,7 +519,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update the name. */
 
-    SetTextString (constraintd -> name, active -> name);
+    SetTextString (constraintd -> name, active -> name.c_str());
 
 
     /* Update the toggle buttons. */
@@ -602,9 +601,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     char		*ptr;
     String		 value;
     double		 accel;
-    struct constraint	 old;
-    struct constraint    dummy;
-    Constraint	 	 found;
+    constraint_t	 old;
+    constraint_t    dummy;
     Constraint	 	 active;
     Boolean	 	 duplicate;
     ConstraintDialog	 constraintd;
@@ -618,7 +616,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the constraint. */
 
     dummy.name = GetTextString (constraintd -> name);
-    found = (Constraint) TreeSearch (constraintd -> tree, &dummy);
+    Constraint found = SetSearch(*constraintd->tree, dummy.name);
     duplicate = found && (found != constraintd -> active || 
                                    constraintd -> new_copy);
 
@@ -629,7 +627,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (constraintd -> name), 0);
 	SetFocus (constraintd -> name);
 	if (!constraintd -> new_copy)
-	    SetTextString (constraintd -> name, constraintd -> active -> name);
+	    SetTextString (constraintd -> name, constraintd -> active -> name.c_str());
 	else
 	    SetTextString (constraintd -> name, "");
 
@@ -639,13 +637,12 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new constraint or new name as needed. */
        
 	if (constraintd -> new_copy)
-	    constraintd -> active = CreateConstraint (XtNewString (dummy.name));
-	else if (strcmp (constraintd -> active -> name, dummy.name)) {
+	    constraintd -> active = new constraint_t (dummy.name.c_str());
+	else if (strcmp (constraintd -> active -> name.c_str(), dummy.name.c_str())) {
             old.name = constraintd -> active -> name;
-            TreeDelete (constraintd -> tree, &old);
-	    XtFree (constraintd -> active -> name);
-	    constraintd -> active -> name = XtNewString (dummy.name);
-            TreeInsert (constraintd -> tree, constraintd -> active);
+            constraintd->tree->erase(&old);
+            constraintd -> active -> name = dummy.name;
+            constraintd->tree->insert(constraintd->active);
 	}
         
 	active = constraintd -> active;
@@ -696,7 +693,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         }
 
 	if (constraintd -> new_copy)
-	    TreeInsert (constraintd -> tree, constraintd -> active);
+        constraintd->tree->insert(constraintd->active);
 
 	if (constraintd -> callback != NULL) {
 	    w = constraintd -> shell;
@@ -755,8 +752,8 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	TreeDelete (constraintd -> tree, constraintd -> active);
-	DestroyConstraint (constraintd -> active);
+    constraintd->tree->erase(constraintd->active);
+	delete constraintd -> active;
 	constraintd -> active = NULL;
     }
 
@@ -1088,7 +1085,7 @@ void ConstraintDialogDisplay (ConstraintDialog constraintd, Constraint constrain
  *		to display the active values.				*
  ************************************************************************/
 
-void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree)
+void ConstraintDialogUpdate (ConstraintDialog constraintd, Problem::ConstraintSet *tree)
 {
     Cardinal nbytes;
 
@@ -1099,7 +1096,7 @@ void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree)
 	tree = constraintd -> tree;
 
     if (constraintd -> active == NULL || tree != constraintd -> tree)
-	constraintd -> active = (Constraint) TreeMinimum (tree);
+        constraintd->active = SetMinimum(*tree);
 
 
     /* Construct the array of constraint names. */
@@ -1110,12 +1107,11 @@ void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree)
     constraintd -> tree = tree;
     constraintd -> new_copy = False;
 
-    nbytes = (TreeSize (constraintd -> tree) + 1) * sizeof (String);
+    nbytes = (constraintd->tree->size() + 1) * sizeof (String);
     constraintd -> constraints = 
          (String *) XtRealloc ((char *) constraintd -> constraints, nbytes);
 
-    TreeSetIterator (constraintd -> tree, AppendConstraintName);
-    TreeIterate (constraintd -> tree);
+    std::for_each(constraintd->tree->begin(), constraintd->tree->end(), AppendConstraintName);
     constraintd -> constraints [num_constraints] = NULL;
 
 

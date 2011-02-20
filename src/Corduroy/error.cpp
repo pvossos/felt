@@ -46,14 +46,14 @@ void error (const char *format, ...)
 
     va_start (ap, format);
 
-    if (generator.line)
-	fprintf (stderr, "%s:%d: ", generator.filename, generator.line);
+    if (geninput.line)
+	fprintf (stderr, "%s:%d: ", geninput.filename, geninput.line);
 
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");
     va_end (ap);
 
-    generator.num_errors ++;
+    geninput.num_errors ++;
 }
 
 

@@ -25,6 +25,7 @@
  *		dialogs.						*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include "Constraint.h"
@@ -58,7 +59,7 @@ static Material	   deleted_material;
  * Description:	Checks if the user want to proceed with a deletion.	*
  ************************************************************************/
 
-static int CheckOk (String object, String name)
+static int CheckOk (String object, const char *name)
 {
     String selected;
     char   title [64];
@@ -82,19 +83,14 @@ static int CheckOk (String object, String name)
  * Description:	Tree iterator to check references to a constraint.	*
  ************************************************************************/
 
-static int CheckConstraintReferences (Item item)
+static bool CheckConstraintReferences (Node node)
 {
-    Node node;
-
-
-    node = (Node) item;
-
     if (node -> constraint == deleted_constraint) {
-	error ("Constraint %s is still in use.", deleted_constraint -> name);
-	return 1;
+        error ("Constraint %s is still in use.", deleted_constraint -> name.c_str());
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -116,19 +112,22 @@ void ConstraintDialogChanged (Widget w, XtPointer client_data, XtPointer call_da
     node_d = (NodeDialog) client_data;
 
     if (info -> deleted == True) {
-	deleted_constraint = info -> constraint;
-	TreeSetIterator (problem.node_tree, CheckConstraintReferences);
-	info -> proceed = TreeIterate (problem.node_tree) ? False : True;
+        deleted_constraint = info -> constraint;
+        Problem::NodeSet::iterator it 
+            = std::find_if(problem.node_set.begin(),
+                           problem.node_set.end(),
+                           CheckConstraintReferences);
+        info -> proceed = it == problem.node_set.end();
     }
 
     if (info -> proceed == True) {
 	changeflag = True;
-	NodeDialogUpdate (node_d, NULL, NULL, problem.constraint_tree);
+	NodeDialogUpdate (node_d, NULL, NULL, &problem.constraint_set);
 	node = NodeDialogActive (node_d);
 	if (node != NULL && info -> constraint == node -> constraint)
 	    NodeDialogDisplay (node_d, node);
 
-        ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, info -> deleted);
+        ColorsDialogUpdateConstraintList (colors_d, &problem.constraint_set, info -> deleted);
     }
 }
 
@@ -167,8 +166,8 @@ void ElementDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
     } else
 	for (i = 1; i <= numnodes; i ++)
 	    if (info -> original -> node [i] != info -> element -> node [i]) {
-		MoveElement (info -> element, info -> original -> node);
-		break;
+            MoveElement (info -> element, info -> original -> node.c_ptr1());
+            break;
 	    }
 
     changeflag = True;
@@ -181,23 +180,18 @@ void ElementDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
  * Description:	Tree iterator to check references to a force.		*
  ************************************************************************/
 
-static int CheckForceReferences (Item item)
+static bool CheckForceReferences (Node node)
 {
-    Node node;
-
-
-    node = (Node) item;
-
     if (node -> force == deleted_force) {
-	if (first_time) {
-	    if (!CheckOk ("Force", deleted_force -> name))
-		return 1;
-	    first_time = False;
-	}
-	node -> force = NULL;
+        if (first_time) {
+            if (!CheckOk ("Force", deleted_force -> name.c_str()))
+                return true;
+            first_time = False;
+        }
+        node -> force = NULL;
     }
-
-    return 0;
+    
+    return false;
 }
 
 
@@ -222,20 +216,23 @@ void ForceDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
     displayed = node != NULL && node -> force == info -> force;
 
     if (info -> deleted == True) {
-	first_time = True;
-	deleted_force = info -> force;
-
-	TreeSetIterator (problem.node_tree, CheckForceReferences);
-	if (TreeIterate (problem.node_tree)) {
-	    info -> proceed = False;
-	    return;
-	}
+        first_time = True;
+        deleted_force = info -> force;
+        
+        Problem::NodeSet::iterator it
+            = std::find_if(problem.node_set.begin(),
+                           problem.node_set.end(),
+                           CheckForceReferences);
+        if (it == problem.node_set.end()) {
+            info -> proceed = False;
+            return;
+        }
     }
-
+    
     changeflag = True;
-    NodeDialogUpdate (node_d, NULL, problem.force_tree, NULL);
+    NodeDialogUpdate (node_d, NULL, &problem.force_set, NULL);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.force_tree, info -> deleted);
+    ColorsDialogUpdateForcesList (colors_d, &problem.force_set, info -> deleted);
 
     if (displayed == True)
 	NodeDialogDisplay (node_d, node);
@@ -248,20 +245,16 @@ void ForceDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
  * Description:	Tree iterator to check references to a load.		*
  ************************************************************************/
 
-static int CheckLoadReferences (Item item)
+static bool CheckLoadReferences (Element element)
 {
     Cardinal i;
     Cardinal j;
-    Element  element;
-
-
-    element = (Element) item;
 
     for (i = 1; i <= element -> numdistributed; i ++)
 	if (element -> distributed [i] == deleted_load) {
 	    if (first_time) {
-		if (!CheckOk ("Load", deleted_load -> name))
-		    return 1;
+            if (!CheckOk ("Load", deleted_load -> name.c_str()))
+		    return true;
 		first_time = False;
 	    }
 	    for (j = i + 1; j <= element -> numdistributed; j ++)
@@ -269,7 +262,7 @@ static int CheckLoadReferences (Item item)
 	    element -> numdistributed --;
 	}
 
-    return 0;
+    return false;
 }
 
 
@@ -299,21 +292,20 @@ void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
 
 
     if (info -> deleted == True) {
-	first_time = True;
-	deleted_load = info -> load;
-
-	TreeSetIterator (problem.element_tree, CheckLoadReferences);
-	if (TreeIterate (problem.element_tree)) {
-	    info -> proceed = False;
-	    return;
-	}
-
+        first_time = True;
+        deleted_load = info -> load;
+        
+        Problem::ElementSet::iterator it 
+            = std::find_if(problem.element_set.begin(),
+                           problem.element_set.end(),
+                           CheckLoadReferences);
+        info->proceed = it == problem.element_set.end();
     }
 
     changeflag = True;
-    ElementDialogUpdate (element_d, NULL, NULL, problem.distributed_tree, NULL);
+    ElementDialogUpdate (element_d, NULL, NULL, &problem.distributed_set, NULL);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.distributed_tree, info -> deleted);
+    ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, info -> deleted);
 
     if (displayed == True)
 	ElementDialogDisplay (element_d, element);
@@ -326,19 +318,14 @@ void LoadDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
  * Description:	Tree iterator to check references to a material.	*
  ************************************************************************/
 
-static int CheckMaterialReferences (Item item)
+static bool CheckMaterialReferences (Element element)
 {
-    Element element;
-
-
-    element = (Element) item;
-
     if (element -> material == deleted_material) {
-	error ("Material %s is still in use.", deleted_material -> name);
-	return 1;
+        error ("Material %s is still in use.", deleted_material -> name.c_str());
+	return true;
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -360,19 +347,22 @@ void MaterialDialogChanged (Widget w, XtPointer client_data, XtPointer call_data
     element_d = (ElementDialog) client_data;
 
     if (info -> deleted == True) {
-	deleted_material = info -> material;
-	TreeSetIterator (problem.element_tree, CheckMaterialReferences);
-	info -> proceed = TreeIterate (problem.element_tree) ? False : True;
+        deleted_material = info -> material;
+        Problem::ElementSet::iterator it
+            = std::find_if(problem.element_set.begin(),
+                           problem.element_set.end(),
+                           CheckMaterialReferences);
+        info -> proceed = it == problem.element_set.end();
     }
 
     if (info -> proceed == True) {
 	changeflag = True;
-	ElementDialogUpdate(element_d, NULL, problem.material_tree, NULL, NULL);
+	ElementDialogUpdate(element_d, NULL, &problem.material_set, NULL, NULL);
 	element = ElementDialogActive (element_d);
 	if (element != NULL && info -> material == element -> material)
 	    ElementDialogDisplay (element_d, element);
 
-        ColorsDialogUpdateObjectList (colors_d, problem.material_tree, info -> deleted);
+        ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, info -> deleted);
     }
 }
 
@@ -414,6 +404,6 @@ void NodeDialogChanged (Widget w, XtPointer client_data, XtPointer call_data)
     } else if (info -> moved == True)
 	DoWalkNode (info -> node);
 
-    ElementDialogUpdate (element_d, NULL, NULL, NULL, problem.node_tree);
+    ElementDialogUpdate (element_d, NULL, NULL, NULL, &problem.node_set);
     changeflag = True;
 }

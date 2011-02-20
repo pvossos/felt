@@ -24,6 +24,7 @@
  *		the file menu.						*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
@@ -51,10 +52,9 @@
 # include "Colors.h"
 # include "globals.h"
 # include "procedures.h"
-# include "objects.h"
 # include "Drawing.h"
 # include "vfe.h"
-
+# include "setaux.hpp"
 
 extern FileDialog 	filed;
 extern FileDialog	dumpd;
@@ -70,6 +70,7 @@ extern ElementDialog	element_d;
 extern NodeDialog	node_d;
 extern ColorsDialog	colors_d;
 extern LoadCaseDialog   loadcase_d;
+extern FigureSet figure_set;
 
 static void CanvasToAppearance (void);
 
@@ -192,8 +193,6 @@ int WriteVFeltFile (Boolean dump_all)
 int VelvetReadFeltFile (char *file)
 {
     int      status;
-    Element  elt;
-
 
     BufferErrors (True);
     status = ReadFeltFile (file);
@@ -208,28 +207,28 @@ int VelvetReadFeltFile (char *file)
     DW_RemoveAll (drawing);
     DrawProblem (0.0);
 
-    ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
-    ForceDialogUpdate	   (force_d, problem.force_tree);
-    LoadDialogUpdate	   (load_d, problem.distributed_tree);
-    MaterialDialogUpdate   (material_d, problem.material_tree);
-    NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
-			    problem.constraint_tree);
-    ElementDialogUpdate	   (element_d, problem.element_tree,
-			    problem.material_tree, problem.distributed_tree,
-			    problem.node_tree);
-    LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
-                            problem.force_tree, problem.distributed_tree);
+    ConstraintDialogUpdate (constraint_d, &problem.constraint_set);
+    ForceDialogUpdate	   (force_d, &problem.force_set);
+    LoadDialogUpdate	   (load_d, &problem.distributed_set);
+    MaterialDialogUpdate   (material_d, &problem.material_set);
+    NodeDialogUpdate	   (node_d, &problem.node_set, &problem.force_set,
+                            &problem.constraint_set);
+    ElementDialogUpdate	   (element_d, &problem.element_set,
+                            &problem.material_set, &problem.distributed_set,
+                            &problem.node_set);
+    LoadCaseDialogUpdate   (loadcase_d, &problem.loadcase_set,
+                            &problem.force_set, &problem.distributed_set);
 
-    ColorsDialogUpdateObjectList (colors_d, problem.material_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.force_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.distributed_tree, False);
+    ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
+    ColorsDialogUpdateConstraintList (colors_d, &problem.constraint_set, False);
+    ColorsDialogUpdateForcesList (colors_d, &problem.force_set, False);
+    ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, False);
 
     AnalysisDialogUpdate (analysis_d, True);
     SolutionDialogUpdate (solution_d);
 
-    elt = (Element) TreeMinimum (problem.element_tree);
-    if (elt != NULL) 
+    Element elt = SetMinimum(problem.element_set);
+    if (elt)
         ElementListSet (element_l, elt -> definition);
     else 
         ElementListSet (element_l, NULL);
@@ -256,8 +255,8 @@ void StartNew (void)
     SolutionDialogUpdate (solution_d);
 
     DW_RemoveAll (drawing);
-    DestroyProblem ((ItemDestructor) DestroyMaterial);
-    TreeDestroy (figure_tree);
+    DestroyProblem(true);
+    figure_set.clear();
 
     ElementListSet (element_l, NULL);
 
@@ -265,24 +264,22 @@ void StartNew (void)
 
     AnalysisDialogUpdate (analysis_d, True);
 
-    figure_tree	= TreeCreate (figure_cmp);
+    ConstraintDialogUpdate (constraint_d, &problem.constraint_set);
+    ForceDialogUpdate	   (force_d, &problem.force_set);
+    LoadDialogUpdate	   (load_d, &problem.distributed_set);
+    MaterialDialogUpdate   (material_d, &problem.material_set);
+    NodeDialogUpdate	   (node_d, &problem.node_set, &problem.force_set,
+                            &problem.constraint_set);
+    ElementDialogUpdate	   (element_d, &problem.element_set,
+                            &problem.material_set, &problem.distributed_set,
+                            &problem.node_set);
+    LoadCaseDialogUpdate   (loadcase_d, &problem.loadcase_set,
+                            &problem.force_set, &problem.distributed_set);
 
-    ConstraintDialogUpdate (constraint_d, problem.constraint_tree);
-    ForceDialogUpdate	   (force_d, problem.force_tree);
-    LoadDialogUpdate	   (load_d, problem.distributed_tree);
-    MaterialDialogUpdate   (material_d, problem.material_tree);
-    NodeDialogUpdate	   (node_d, problem.node_tree, problem.force_tree,
-			    problem.constraint_tree);
-    ElementDialogUpdate	   (element_d, problem.element_tree,
-			    problem.material_tree, problem.distributed_tree,
-			    problem.node_tree);
-    LoadCaseDialogUpdate   (loadcase_d, problem.loadcase_tree,
-                            problem.force_tree, problem.distributed_tree);
-
-    ColorsDialogUpdateObjectList (colors_d, problem.material_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.constraint_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.force_tree, False);
-    ColorsDialogUpdateObjectList (colors_d, problem.distributed_tree, False);
+    ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
+    ColorsDialogUpdateConstraintList (colors_d, &problem.constraint_set, False);
+    ColorsDialogUpdateForcesList (colors_d, &problem.force_set, False);
+    ColorsDialogUpdateDistributedList (colors_d, &problem.distributed_set, False);
 }
 
 
@@ -335,30 +332,25 @@ void QuitVelvet (void)
 
 Problem     saved;
 
-static int UpdateMaterial (Item item)
+static int UpdateMaterial (Material nu)
 {
-    Item     found;
-    Material old;
-    Material nu;
-
-
-    found = TreeInsert (saved.material_tree, item);
-    if (found != item) {
-	nu = (Material) item;
-	old = (Material) found;
-	old -> E = nu -> E;
-	old -> A = nu -> A;
-	old -> Ix = nu -> Ix;
-	old -> Iy = nu -> Iy;
-	old -> Iz = nu -> Iz;
-	old -> J = nu -> J;
-	old -> G = nu -> G;
-	old -> nu = nu -> nu;
-	old -> t = nu -> t;
-	old -> rho = nu -> rho;
-	old -> kappa = nu -> kappa;
-	DestroyMaterial (nu);
-    }
+    Material old = SetSearch(saved.material_set, nu->name);
+    if (old) {
+        old -> E = nu -> E;
+        old -> A = nu -> A;
+        old -> Ix = nu -> Ix;
+        old -> Iy = nu -> Iy;
+        old -> Iz = nu -> Iz;
+        old -> J = nu -> J;
+        old -> G = nu -> G;
+        old -> nu = nu -> nu;
+        old -> t = nu -> t;
+        old -> rho = nu -> rho;
+        old -> kappa = nu -> kappa;
+        delete nu;
+    } else 
+        saved.material_set.insert(nu);
+    
     return 0;
 }
 
@@ -388,20 +380,18 @@ void OpenMaterialFile (void)
     BufferErrors (False);
 
     if (status)
-	DestroyProblem ((ItemDestructor) DestroyMaterial);
-    else {
-	(void) TreeSetIterator (problem.material_tree, UpdateMaterial);
-	(void) TreeIterate (problem.material_tree);
-    }
+        DestroyProblem (true);
+    else 
+        std::for_each(problem.material_set.begin(), problem.material_set.end(), UpdateMaterial);
 
-    DestroyProblem (NULL);
+    DestroyProblem (false);
 
     problem = saved;
 
-    MaterialDialogUpdate (material_d, problem.material_tree);
-    ColorsDialogUpdateObjectList (colors_d, problem.material_tree, False);
-    ElementDialogUpdate	(element_d, problem.element_tree,
-			 problem.material_tree, NULL, NULL);
+    MaterialDialogUpdate (material_d, &problem.material_set);
+    ColorsDialogUpdateMaterialList (colors_d, &problem.material_set, False);
+    ElementDialogUpdate	(element_d, &problem.element_set,
+                         &problem.material_set, NULL, NULL);
 
     changeflag = True;
 }
@@ -412,15 +402,12 @@ void OpenMaterialFile (void)
 
 static FILE *fp;
 
-static int WriteMaterial (Item item)
+static int WriteMaterial (Material material)
 {
-    Material material = (Material) item;
-
-
-    if (strpbrk (material -> name, "- \t\n=[]\",+*/()#"))
-	fprintf (fp, "\"%s\"  ", material -> name);
+    if (strpbrk (material -> name.c_str(), "- \t\n=[]\",+*/()#"))
+        fprintf (fp, "\"%s\"  ", material -> name.c_str());
     else
-	fprintf (fp, "%s  ", material -> name);
+        fprintf (fp, "%s  ", material -> name.c_str());
 
     fprintf (fp, "E=%g A=%g ", material -> E, material -> A);
     fprintf (fp, "Ix=%g Iy=%g ", material -> Ix, material -> Iy);
@@ -456,8 +443,7 @@ void WriteMaterialFile (void)
     }
 
     fprintf (fp, "material properties\n");
-    (void) TreeSetIterator (problem.material_tree, WriteMaterial);
-    (void) TreeIterate (problem.material_tree);
+    std::for_each(problem.material_set.begin(), problem.material_set.end(), WriteMaterial);
     fprintf (fp, "\nend\n");
     (void) fclose (fp);
 }
@@ -608,10 +594,7 @@ static void CanvasToAppearance (void)
     Dimension	     height;
     unsigned	     num_figures;
     Figure	    *figure_list;
-    FigInfo	    *info;
     FigureAttributes attributes;
-    char	    *last_color;
-    char	    *last_font;
 
 
     /* Retrieve information about the drawing widget. */
@@ -651,21 +634,19 @@ static void CanvasToAppearance (void)
     appearance.node_numbers    = canvas -> node_numbers;
     appearance.element_numbers = canvas -> element_numbers;
 
-    appearance.node_color    = strdup (canvas -> node_color);
-    appearance.element_color = strdup (canvas -> element_color);
-    appearance.label_font    = strdup (canvas -> label_font);
-    appearance.tool_color    = strdup (canvas -> tool_color);
-    appearance.tool_font     = strdup (canvas -> tool_font);
+    appearance.node_color    = canvas -> node_color;
+    appearance.element_color = canvas -> element_color;
+    appearance.label_font    = canvas -> label_font;
+    appearance.tool_color    = canvas -> tool_color;
+    appearance.tool_font     = canvas -> tool_font;
 
 
     /* Initialize the structure and retrieve the display list. */
 
-    appearance.num_figures = 0;
-    size = TreeSize (figure_tree) * sizeof (FigInfo);
-    appearance.figures = (FigInfo *) XtMalloc (size);
+    appearance.figures.clear();
+    std::string last_font = "";
+    std::string last_color = "";
 
-    last_font = NULL;
-    last_color = NULL;
     figure_list = DW_RetrieveAll (drawing, True, &num_figures);
 
 
@@ -676,14 +657,16 @@ static void CanvasToAppearance (void)
 	if (attributes.user_data)
 	    continue;
 
-	info = &appearance.figures [appearance.num_figures ++];
-	info -> font = NULL;
-	info -> text = NULL;
-	info -> color = NULL;
+    FigInfo fi;
+    FigInfo *info = &fi;
+    
+	info -> font.clear();
+	info -> text.clear();
+	info -> color.clear();
 
-	if (!last_color || strcmp (last_color, attributes.color))
-	    info -> color = last_color = strdup (attributes.color);
-
+	if (last_color.empty() || last_color != attributes.color)
+	    info -> color = last_color = attributes.color;
+    
 	switch (attributes.type) {
 	case RectangleFigure:
 	    info -> type   = RECTANGLE;
@@ -697,11 +680,10 @@ static void CanvasToAppearance (void)
 	case PolygonFigure:
 	    info -> type = POLYLINE;
 	    size = attributes.npoints * sizeof (FigInfoPair);
-	    info -> num_points = attributes.npoints;
-	    info -> points = (FigInfoPair *) XtMalloc (size);
+	    info -> points.resize(attributes.npoints);
 	    for (j = 0; j < attributes.npoints; j ++) {
-		info -> points [j].x = attributes.points [j].x;
-		info -> points [j].y = attributes.points [j].y;
+            info -> points [j].x = attributes.points [j].x;
+            info -> points [j].y = attributes.points [j].y;
 	    }
 	    break;
 
@@ -710,8 +692,8 @@ static void CanvasToAppearance (void)
 	    info -> x      = attributes.x;
 	    info -> y      = attributes.y;
 	    info -> text   = strdup (attributes.text);
-	    if (!last_font || strcmp (last_font, attributes.font))
-		info -> font = last_font = strdup (attributes.font);
+	    if (last_font.empty() || last_font != attributes.font)
+            info -> font = last_font = attributes.font;
 	    break;
 
 	case ArcFigure:
@@ -727,6 +709,9 @@ static void CanvasToAppearance (void)
 	default:
 	    break;
 	}
+
+    appearance.figures.push_back(fi);
+    
     }
 
     XtFree ((char *) figure_list);

@@ -47,9 +47,9 @@ Cache DW_CacheCreate (void);
 
 void DW_CacheDestroy (Cache cache);
 
-CacheData DW_CacheLookup (Cache cache, String name);
+CacheData DW_CacheLookup (Cache cache, const char *name);
 
-CacheData DW_CacheInsert (Cache cache, String name, XtArgVal value);
+CacheData DW_CacheInsert (Cache cache, const char *name, XtArgVal value);
 
 void DW_CacheAddRef (CacheData data);
 

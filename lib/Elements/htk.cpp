@@ -623,7 +623,7 @@ EquivNodalForces(Element e, Matrix N, unsigned int shape, unsigned int ninteg)
       count ++;
    }  
 
-   if (e -> distributed[1] -> nvalues != shape) {
+   if (e -> distributed[1] -> value.size() != shape) {
       error ("htk element %d has a load without %d values.", e -> number, shape);
       count ++;
    }

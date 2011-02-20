@@ -24,6 +24,7 @@
  *		type definitions for the force dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -41,6 +42,7 @@
 # include "fe.h"
 # include "objects.h"
 # include "procedures.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -74,7 +76,7 @@ struct force_dialog {
     String	  *forces;
     Force	   active;
     Boolean        new_copy;
-    Tree           tree;
+    Problem::ForceSet *tree;
     unsigned	   domain;
 };
 
@@ -341,12 +343,12 @@ current force. 'New' empties all fields. 'Copy' empties the name field only.";
  *		index of the active force is also set.			*
  ************************************************************************/
 
-static int AppendForceName (Item item)
+static int AppendForceName (Force item)
 {
-    if (dialog -> active == (Force) item)
+    if (dialog -> active == item)
 	list_index = num_forces;
 
-    dialog -> forces [num_forces ++] = ((Force) item) -> name;
+    dialog -> forces [num_forces ++] = XtNewString(item -> name.c_str());
     return 0;
 }
 
@@ -485,7 +487,7 @@ static void LoadForceValues (ForceDialog forced)
 static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Force		 active;
-    struct force	 dummy;
+    force_t	 dummy;
     ForceDialog		 forced;
     XawListReturnStruct	*info;
 
@@ -496,12 +498,13 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the active force from the tree if selected. */
 
     if (w != NULL) {
-	info = (XawListReturnStruct *) call_data;
-	if (info -> list_index == XAW_LIST_NONE)
-	    return;
-
-	dummy.name = info -> string;
-	forced -> active = (Force) TreeSearch (forced -> tree, &dummy);
+        info = (XawListReturnStruct *) call_data;
+        if (info -> list_index == XAW_LIST_NONE)
+            return;
+        
+        dummy.name = info -> string;
+        Problem::ForceSet::iterator it = forced->tree->find(&dummy);
+        forced -> active = it != forced->tree->end() ? *it : NULL;
     }
 
     active = forced -> active;
@@ -510,7 +513,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update all of the text entries. */
 
-    SetTextString (forced -> name, active -> name);
+    SetTextString (forced -> name, active -> name.c_str());
     LoadForceValues (forced);
 }
 
@@ -528,8 +531,8 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    struct force     old;
-    struct force     dummy;
+    force_t     old;
+    force_t     dummy;
     String	     text;
     Force	     found;
     Force	     active;
@@ -547,7 +550,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the force. */
 
     dummy.name = GetTextString (forced -> name);
-    found = (Force) TreeSearch (forced -> tree, &dummy);
+    Problem::ForceSet::iterator it = forced->tree->find(&dummy);
+    found = it != forced->tree->end() ? *it : NULL;
     duplicate = found && (found != forced -> active || forced -> new_copy);
 
     /* Figure out which values to assign: forces or spectra */
@@ -567,7 +571,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (forced -> name), 0);
 	SetFocus (forced -> name);
 	if (!forced -> new_copy)
-	    SetTextString (forced -> name, forced -> active -> name);
+	    SetTextString (forced -> name, forced -> active -> name.c_str());
 	else
 	    SetTextString (forced -> name, "");
 
@@ -577,14 +581,13 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new force or new name as needed. */
 
 	if (forced -> new_copy)
-	    forced -> active = CreateForce (XtNewString (dummy.name));
-	else if (strcmp (forced -> active -> name, dummy.name)) {
+	    forced -> active = new force_t(dummy.name.c_str());
+	else if (strcmp (forced -> active -> name.c_str(), dummy.name.c_str())) {
             old.name = forced -> active -> name;
-            TreeDelete (forced -> tree, &old);
-            XtFree (forced -> active -> name);
-            forced -> active -> name = XtNewString (dummy.name);
-            TreeInsert (forced -> tree, forced -> active);
-	}
+            forced->tree->erase(&old);
+            forced->active->name = dummy.name;
+            forced->tree->insert(forced->active);
+    }
 
 	active = forced -> active;
 
@@ -619,7 +622,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
            Assign (active, Mz, NULL, NULL);
 
 	if (forced -> new_copy)
-	    TreeInsert (forced -> tree, forced -> active);
+        forced->tree->insert(forced->active);
 
 	ForceDialogUpdate (forced, forced -> tree);
 
@@ -678,8 +681,8 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	TreeDelete (forced -> tree, forced -> active);
-	DestroyForce (forced -> active);
+    forced->tree->erase(forced->active);
+	delete forced -> active;
 	forced -> active = NULL;
     }
 
@@ -1062,7 +1065,7 @@ void ForceDialogDisplay (ForceDialog forced, Force force)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void ForceDialogUpdate (ForceDialog forced, Tree tree)
+void ForceDialogUpdate (ForceDialog forced, Problem::ForceSet *tree)
 {
     Cardinal nbytes;
 
@@ -1073,7 +1076,7 @@ void ForceDialogUpdate (ForceDialog forced, Tree tree)
 	tree = forced -> tree;
 
     if (forced -> active == NULL || tree != forced -> tree)
-	forced -> active = (Force) TreeMinimum (tree);
+        forced -> active = SetMinimum(*tree);
 
 
     /* Construct the array of force names. */
@@ -1084,11 +1087,10 @@ void ForceDialogUpdate (ForceDialog forced, Tree tree)
     forced -> tree = tree;
     forced -> new_copy = False;
 
-    nbytes = (TreeSize (forced -> tree) + 1) * sizeof (String);
+    nbytes = (forced->tree->size() + 1) * sizeof (String);
     forced -> forces = (String *) XtRealloc ((char *) forced -> forces, nbytes);
 
-    TreeSetIterator (forced -> tree, AppendForceName);
-    TreeIterate (forced -> tree);
+    std::for_each(forced->tree->begin(), forced->tree->end(), AppendForceName);
     forced -> forces [num_forces] = NULL;
 
 

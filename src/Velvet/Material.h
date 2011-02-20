@@ -26,12 +26,9 @@
 
 # ifndef _Material_h
 # define _Material_h
-# include "fe.h"
-# include "Tree.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "problem.h"
+# include "fe.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -48,16 +45,12 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
 
 void MaterialDialogPopup (MaterialDialog materiald);
 
-void MaterialDialogUpdate (MaterialDialog materiald, Tree tree);
+void MaterialDialogUpdate (MaterialDialog materiald, Problem::MaterialSet *tree);
 
 Material MaterialDialogActive (MaterialDialog materiald);
 
 void MaterialDialogDisplay (MaterialDialog materiald, Material material);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Material_h */

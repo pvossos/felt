@@ -24,6 +24,7 @@
  *		definitions for the element dialog box.			*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -39,11 +40,11 @@
 # include "Element.h"
 # include "TabGroup.h"
 # include "util.h"
-# include "objects.h"
 # include "post.h"
 # include "problem.h"
 # include "error.h"
 # include "definition.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -84,10 +85,10 @@ struct element_dialog {
     Definition	   definition;
     Element	   active;
     unsigned	   node_values [32];
-    Tree	   elements;
-    Tree           materials;
-    Tree           loads;
-    Tree           nodes;
+    Problem::ElementSet	 *elements;
+    Problem::MaterialSet *materials;
+    Problem::DistributedSet *loads;
+    Problem::NodeSet *nodes;
 };
 
 static String labels [ ] = {
@@ -398,9 +399,9 @@ static Widget		menu_button;
  *		the specified load.					*
  ************************************************************************/
 
-static int SetLoadEntry (Item item)
+static int SetLoadEntry (Distributed item)
 {
-    SetLabelString (children [child_number], ((Distributed) item) -> name);
+    SetLabelString (children [child_number], item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -437,7 +438,7 @@ static void UpdateLoadMenu (Widget w, XtPointer client_data, XtPointer call_data
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_loads = TreeSize (eltd -> loads) + 1;
+    num_loads = eltd->loads->size() + 1;
 
     for (i = num_children; i < num_loads; i ++) {
 	sprintf (buffer, "load%d", i);
@@ -458,8 +459,7 @@ static void UpdateLoadMenu (Widget w, XtPointer client_data, XtPointer call_data
     max_width = preferred.width;
 
     child_number = 1;
-    TreeSetIterator (eltd -> loads, SetLoadEntry);
-    TreeIterate (eltd -> loads);
+    std::for_each(eltd->loads->begin(), eltd->loads->end(), SetLoadEntry);
     eltd -> new_loads = False;
 
     XtSetArg (args [0], XtNwidth, max_width);
@@ -506,9 +506,9 @@ static void UpdateLoadName (Widget w, XtPointer client_data, XtPointer call_data
  *		the specified material.					*
  ************************************************************************/
 
-static int SetMaterialEntry (Item item)
+static int SetMaterialEntry (Material item)
 {
-    SetLabelString (children [child_number], ((Material) item) -> name);
+    SetLabelString (children [child_number], ((Material) item) -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -545,7 +545,7 @@ static void UpdateMaterialMenu (Widget w, XtPointer client_data, XtPointer call_
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_materials = TreeSize (eltd -> materials);
+    num_materials = eltd->materials->size();
 
     if (num_materials <= 0) {
 	num_materials ++;
@@ -571,8 +571,7 @@ static void UpdateMaterialMenu (Widget w, XtPointer client_data, XtPointer call_
     XtGetValues (w, args, 2);
 
     child_number = 0;
-    TreeSetIterator (eltd -> materials, SetMaterialEntry);
-    TreeIterate (eltd -> materials);
+    std::for_each(eltd->materials->begin(), eltd->materials->end(), SetMaterialEntry);
 
     XtSetArg (args [0], XtNwidth, max_width);
     XtSetValues (w, args, 1);
@@ -746,19 +745,15 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
 
 static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Element	  element;
-    ElementDialog eltd;
-
-
-    eltd = (ElementDialog) client_data;
+    ElementDialog eltd = (ElementDialog) client_data;
 
     if (eltd -> active == NULL)
 	return;
 
-    element = (Element) TreeSuccessor (eltd -> elements, eltd -> active);
-
+    Element element = SetSuccessor(problem.element_set, eltd->active);
+    
     if (element != NULL)
-	ElementDialogDisplay (eltd, element);
+        ElementDialogDisplay (eltd, element);
 }
 
 
@@ -770,16 +765,12 @@ static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Down (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Element	  element;
-    ElementDialog eltd;
-
-
-    eltd = (ElementDialog) client_data;
+    ElementDialog eltd = (ElementDialog) client_data;
 
     if (eltd -> active == NULL)
 	return;
 
-    element = (Element) TreePredecessor (eltd -> elements, eltd -> active);
+    Element element = SetPredecessor(problem.element_set, eltd->active);
 
     if (element != NULL)
 	ElementDialogDisplay (eltd, element);
@@ -851,11 +842,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     unsigned	       numnodes;
     unsigned	       shapenodes;
     Material	       material;
-    Distributed	       load;
-    struct element     original;
-    struct distributed l_dummy;
-    struct material    m_dummy;
-    struct node	       n_dummy;
+    element_t     original;
+    distributed_t l_dummy;
+    material_t    m_dummy;
+    node_t	   n_dummy;
     Element	       active;
     ElementDialog      eltd;
     ElementDialogInfo  info;
@@ -870,17 +860,14 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Copy the original element if necessary. */
 
     if (eltd -> active != NULL) {
-	original = *eltd -> active;
-	original.node = original_nodes;
-	for (i = 1; i <= eltd -> definition -> numnodes; i ++)
-	    original_nodes [i] = eltd -> active -> node [i];
+        original = *eltd -> active;
+        original.node = eltd -> active -> node;
     }
-
-
+    
     /* Retrieve the material. */
 
     m_dummy.name = GetTextString (eltd -> m_name);
-    material = (Material) TreeSearch (eltd -> materials, &m_dummy);
+    material = SetSearch(*eltd->materials, m_dummy.name);
     if (material == NULL) {
 	XBell (XtDisplay (eltd -> shell), 0);
 	SetTextString (eltd -> m_name, "");
@@ -916,7 +903,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	    nodes [i] = NULL;
 
 	} else {
-	    node = (Node) TreeSearch (eltd -> nodes, &n_dummy);
+        node = SetSearch(*eltd->nodes, n_dummy.number);
 	    if (node == NULL) {
 		if (i < eltd -> offset) {
 		    eltd -> offset = i;
@@ -939,8 +926,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new element as needed. */
 
     if (eltd -> new_copy) {
-	eltd -> active = CreateElement (eltd -> new_copy, eltd -> definition);
-	TreeInsert (eltd -> elements, eltd -> active);
+        eltd -> active = new element_t(eltd -> new_copy, eltd -> definition);
+        problem.element_set.insert(eltd->active);
     }
 
     active = eltd -> active;
@@ -951,10 +938,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
     active -> numdistributed = 0;
     for (i = 0; i < 3; i ++) {
-	l_dummy.name = GetTextString (eltd -> l_name [i]);
-	load = (Distributed) TreeSearch (eltd -> loads, &l_dummy);
-	if (load != NULL)
-	    active -> distributed [++ active -> numdistributed] = load;
+        l_dummy.name = GetTextString (eltd -> l_name [i]);
+        Problem::DistributedSet::iterator it = eltd->loads->find(&l_dummy);
+        if (it != eltd->loads->end())
+            active -> distributed [++ active -> numdistributed] = *it;
     }
 
     for (i = active -> numdistributed + 1; i <= 3; i ++)
@@ -1026,11 +1013,13 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
 	active = eltd -> active;
 
-	if (!(element = (Element) TreePredecessor (eltd -> elements, active)))
-	    element = (Element) TreeSuccessor (eltd -> elements, active);
+    element = SetPredecessor(*eltd->elements, active);
+    if (!element)
+        element = SetSuccessor(*eltd->elements, active);
+    
 
-	TreeDelete (eltd -> elements, active);
-	DestroyElement (active);
+    eltd->elements->erase(active);
+	delete active;
 	eltd -> active = element;
     }
 
@@ -1049,13 +1038,9 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Element	  element;
-    ElementDialog eltd;
+    ElementDialog eltd = (ElementDialog) client_data;
 
-
-    eltd = (ElementDialog) client_data;
-
-    element = (Element) TreeMaximum (eltd -> elements);
+    Element element = SetMaximum(*(eltd->elements));
     eltd -> new_copy = element != NULL ? element -> number + 1 : 1;
 
     SetNumber (eltd, eltd -> new_copy);
@@ -1360,7 +1345,7 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     CreateTabGroup (eltd -> shell, group, XtNumber(group), highlight, True);
     XtRealizeWidget (eltd -> shell);
     SetFocus (eltd -> up);
-    SetType (eltd, (Definition) TreeMinimum (problem.definition_tree));
+    SetType (eltd, SetMinimum(problem.definition_set));
 
     button_args [0].value = (XtArgVal) "Load 1:";
     XtSetValues (eltd -> l_button [0], button_args, 1);
@@ -1447,7 +1432,9 @@ void ElementDialogPopup (ElementDialog eltd)
  *		trees.							*
  ************************************************************************/
 
-void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tree loads, Tree nodes)
+void ElementDialogUpdate (ElementDialog eltd,
+                          Problem::ElementSet *elements, Problem::MaterialSet *materials,
+                          Problem::DistributedSet *loads, Problem::NodeSet *nodes)
 {
     /* Remember to update the menus if necessary. */
 
@@ -1467,11 +1454,11 @@ void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tre
 
     /* Determine a new active element if necessary. */
 
-    if (elements == NULL && eltd -> active == NULL)
-	eltd -> active = (Element) TreeMinimum (eltd -> elements);
+    if (!elements && eltd -> active == NULL)
+        eltd -> active = SetMinimum(*eltd->elements);
 
     if (elements && (eltd -> active == NULL || eltd -> elements != elements))
-	eltd -> active = (Element) TreeMinimum (elements);
+        eltd -> active = SetMinimum(*elements);
 
     if (elements != NULL) {
 	eltd -> elements = elements;
@@ -1529,13 +1516,13 @@ void ElementDialogDisplay (ElementDialog eltd, Element element)
     SetType   (eltd, active -> definition);
 
     if (active -> material != NULL)
-	SetTextString (eltd -> m_name, active -> material -> name);
+        SetTextString (eltd -> m_name, active -> material -> name.c_str());
     else
-	SetTextString (eltd -> m_name, "");
+        SetTextString (eltd -> m_name, "");
 
     for (i = 1; i <= 3; i ++)
 	if (active -> numdistributed >= i && (load = active -> distributed [i]))
-	    SetTextString (eltd -> l_name [i - 1], load -> name);
+	    SetTextString (eltd -> l_name [i - 1], load -> name.c_str());
 	else
 	    SetTextString (eltd -> l_name [i - 1], "");
 
@@ -1549,7 +1536,7 @@ void ElementDialogDisplay (ElementDialog eltd, Element element)
 	    eltd -> node_values [i - 1] = 0;
 
 
-    if (element -> ninteg == 0 || element -> stress == NULL)
+    if (element -> ninteg == 0 || element -> stress.empty())
 	SetLabelString (eltd -> stresses, "No stresses available");
     else {
 	count = 0;

@@ -29,7 +29,7 @@
 # include <string.h>
 # include <stdlib.h>
 # include "error.h"
-# include "generator.h"
+# include "geninput.h"
 # include "parser.h"
 
 static char *filename;
@@ -144,13 +144,13 @@ hole{eq}			{return HOLE_EQ;}
 
 #[^\n]*$			{update_line ( );}
 [ \t]+				{}
-\n				{generator.line ++;}
+\n				{geninput.line ++;}
 "/*"				{BEGIN comment;}
 
 <comment>[^*\n]*		{}
-<comment>[^*\n]*\n		{generator.line ++;}
+<comment>[^*\n]*\n		{geninput.line ++;}
 <comment>"*"+[^*/\n]*		{}
-<comment>"*"+[^*/\n]*\n		{generator.line ++;}
+<comment>"*"+[^*/\n]*\n		{geninput.line ++;}
 <comment>"*"+"/"		{BEGIN INITIAL;}
 
 .				{return *yytext;}
@@ -193,7 +193,7 @@ void init_cord_lexer (FILE *fp)
     } else
 	yyrestart (fp);
 
-    filename = generator.filename;
+    filename = geninput.filename;
 }
 
 
@@ -216,19 +216,19 @@ static void update_line (void)
     line = strtol (yytext + 1, &ptr1, 10) - 1;
 
     if (ptr1) {
-	generator.line = line;
+	geninput.line = line;
 
 	while (*ptr1 && *ptr1 ++ != '"');
 
 	if (*ptr1)
-	    generator.filename = filename;
+	    geninput.filename = filename;
 
 	while (*ptr1 && *ptr1 != '"')
 	    *ptr2 ++ = *ptr1 ++;
 
 	*ptr2 = 0;
 	if (ptr2 != include_filename)
-	    generator.filename = include_filename;
+	    geninput.filename = include_filename;
     }
 }
 

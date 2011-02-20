@@ -30,7 +30,6 @@
 # include <string.h>
 # include <stdlib.h>
 # include "problem.h"
-# include "objects.h"
 # include "meshgen.hpp"
 # include "patchwork.h"
 # include "definition.h"
@@ -62,8 +61,8 @@ int ReadGraphFile (char *filename)
 
    InitializeProblem ( );
 
-   constraint = CreateConstraint ("default");
-   material = CreateMaterial ("default");
+   constraint = new constraint_t ("default");
+   material = new material_t("default");
 
    truss = LookupDefinition ("truss");
    cst   = LookupDefinition ("CSTPlaneStress");
@@ -120,7 +119,7 @@ int WriteGraphFile (char *filename)
       }
    }
 
-   for (i = 1 ; i <= problem.num_elements ; i++) {
+   for (i = 1 ; i <= problem.elements.size() ; i++) {
 
       e = problem.elements [i];
 

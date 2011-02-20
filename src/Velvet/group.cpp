@@ -37,7 +37,6 @@
 # include "fe.h"
 # include "text_entry.h"
 # include "Drawing.h"
-# include "Tree.h"
 # include "globals.h"
 # include "procedures.h"
 
@@ -150,8 +149,8 @@ void SelectGroup (XtPointer call_data, void (*op) (Figure *, unsigned))
     XtOverrideTranslations (entry,
 	XtParseTranslationTable ("<Key>Return: SelectGroupAP()"));
 
-    if (DW_SetForeground (drawing, canvas -> tool_color) == False)
-	(void) DW_SetForeground (drawing, "black");
+    if (DW_SetForeground (drawing, canvas -> tool_color.c_str()) == False)
+        (void) DW_SetForeground (drawing, "black");
 
     if (call_data != NULL)
 	SelectGroupCB (drawing, NULL, call_data);

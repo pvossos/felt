@@ -27,6 +27,9 @@
 
 # ifndef _FE_H
 # define _FE_H
+
+# include <string>
+# include "cvector1.hpp"
 # include "code.h"
 # include "matrix.h"
 # include "inptypes.h"
@@ -65,7 +68,7 @@ typedef struct stress {
     double  x;				/* x coordinate		  */
     double  y;				/* y coordinate		  */
     double  z;				/* z coordinate		  */
-    double *values;			/* computed stress values */
+    cvector1<double> values;			/* computed stress values */
 } *Stress;
 
 
@@ -77,14 +80,14 @@ typedef struct {
     char  *text;		/* text of expression */
 } VarExpr;
 
-struct element;
+struct element_t;
 
 /* An element definition */
 
 typedef struct definition {
     const char    *name;		/* element name			      */
-    int    (*setup) (struct element*, char, int);	/* initialization function	      */
-    int    (*stress) (struct element*);	/* stress resultant function	      */
+    int    (*setup) (element_t*, char, int);	/* initialization function	      */
+    int    (*stress) (element_t*);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
     unsigned numnodes;		/* number of nodes in element         */
     unsigned shapenodes;	/* number of nodes which define shape */
@@ -94,50 +97,94 @@ typedef struct definition {
     unsigned retainK;		/* retain element K after assemblage  */
 } *Definition;
 
+struct LtDefinition
+{
+     bool operator()(const Definition a, const Definition b) const
+          {
+               return strcmp(a->name,b->name) < 0;
+          }
+};
 
 /* A distributed load */
 
-typedef struct distributed {
+struct distributed_t {
+    distributed_t(const char* name = NULL, unsigned nvalues = 0);
+    ~distributed_t();
     char     *aux;			/* auxillary data pointer   	  */
-    char     *name;			/* name of distributed load 	  */
-    char     *color;			/* name of color to use in velvet */
+    std::string name;			/* name of distributed load 	  */
+    std::string color;			/* name of color to use in velvet */
     Direction direction;		/* direction of load        	  */
-    unsigned  nvalues;			/* number of values         	  */
-    Pair     *value;			/* nodes and magnitudes     	  */
-} *Distributed;
+    cvector1<Pair> value;			/* nodes and magnitudes     	  */
+};
+
+typedef distributed_t* Distributed;
+
+struct LtDistributed
+{
+     bool operator()(const Distributed a, const Distributed b) const
+          {
+               return a->name < b->name;
+          }
+};
 
 
 /* A force */
 
-typedef struct force {
+struct force_t {
+    force_t(const char* name = NULL);
+    ~force_t();
     char   *aux;			/* auxillary data pointer 	  */
-    char   *name;			/* name of force          	  */
-    char   *color;			/* name of color to use in velvet */
+    std::string name;			/* name of force          	  */
+    std::string color;			/* name of color to use in velvet */
     VarExpr force [7];			/* force vector			  */
     VarExpr spectrum [7];		/* input spectra		  */
-} *Force;
+};
+
+typedef force_t* Force;
+
+struct LtForce
+{
+     bool operator()(const Force a, const Force b) const
+          {
+               return a->name < b->name;
+          }
+};
 
 
 /* A constraint (boundary and initial conditions) */
 
-typedef struct constraint {
+struct constraint_t {
+    constraint_t(const char* name = NULL);
+    ~constraint_t();
     char   *aux;			/* auxillary data pointer 	  */
-    char   *name;		/* name of constraint     	  */
-    char   *color;			/* name of color to use in velvet */
+    std::string name;		/* name of constraint     	  */
+    std::string color;			/* name of color to use in velvet */
     char    constraint [7];		/* constraint vector     	  */
     double  ix [7];			/* initial displacement vector    */
     double  vx [4];			/* initial velocity vector	  */
     double  ax [4];			/* initial acceleration vector    */
     VarExpr dx [7];			/* boundary displacement vector	  */
-} *Constraint;
+};
+
+typedef constraint_t* Constraint;
+
+struct LtConstraint
+{
+     bool operator()(const Constraint a, const Constraint b) const
+          {
+               return a->name < b->name;
+          }
+};
 
 
 /* A material */
 
-typedef struct material {
+struct material_t {
+    material_t(const char *name = NULL);
+    ~material_t();
     char  *aux;				/* auxillary data pointer           */
-    char  *name;		/* name of material                 */
-    char  *color;			/* name of color to use in velvet   */
+    std::string name;		/* name of material                 */
+    std::string color;			/* name of color to use in velvet   */
     double E;				/* Young's modulus                  */
     double Ix;				/* moment of inertia about x-x axis */
     double Iy;				/* moment of inertia about y-y axis */
@@ -155,33 +202,56 @@ typedef struct material {
     double Ky;				/* conductivity in y direction      */
     double Kz;				/* conductivity in z direction      */
     double c;				/* heat capacity		    */
-} *Material;
+};
+
+typedef material_t* Material;
+
+struct LtMaterial
+{
+     bool operator()(const Material a, const Material b) const
+          {
+               return a->name < b->name;
+          }
+};
 
 
 /* A node */
 
-typedef struct node {
+struct node_t {
+    node_t(unsigned number = 0);
+    ~node_t();
     char      *aux;			/* auxillary data pointer         */
     unsigned   number;			/* node number                    */
     Constraint constraint;		/* constrained degrees of freedom */
     Force      force;			/* force acting on node           */
     double     m;			/* lumped mass			  */
-    double    *eq_force;		/* equivalent force               */
+    cvector1<double> eq_force;		/* equivalent force               */
     double     dx [7];			/* displacement                   */
     double     x;			/* x coordinate                   */
     double     y;			/* y coordinate                   */
     double     z;			/* z coordinate                   */
-    double    *stress;                  /* nodally averaged stress vector */
+    cvector1<double> stress;                  /* nodally averaged stress vector */
     int        numelts;			/* num of elts that use this node */
-} *Node;
+};
 
+typedef node_t* Node;
+
+struct LtNode
+{
+     bool operator()(const Node a, const Node b) const
+          {
+               return a->number < b->number;
+          }
+};
 
 /* An element */
 
-typedef struct element {
+struct element_t {
+    element_t(unsigned number = 0, Definition defn = NULL);
+    ~element_t();
     char       *aux;			/* auxillary data pointer 	*/
     unsigned    number;			/* element number         	*/
-    Node       *node;			/* array of nodes         	*/
+    cvector1<Node> node;			/* array of nodes         	*/
     Matrix      K;			/* stiffness matrix       	*/
     Matrix	M;			/* mass matrix			*/
     Matrix	f;			/* element residual force	*/
@@ -189,9 +259,19 @@ typedef struct element {
     Definition  definition;		/* definition of element        */
     Distributed distributed [4];	/* distributed loads      	*/
     unsigned    numdistributed;		/* number of loads        	*/
-    Stress     *stress;			/* element stresses             */
+    cvector1<Stress> stress;			/* element stresses             */
     unsigned    ninteg;			/* number of integration points */
-} *Element;
+};
+
+typedef element_t* Element;
+
+struct LtElement
+{
+     bool operator()(const Element a, const Element b) const
+          {
+               return a->number < b->number;
+          }
+};
 
 
 /* A nodal DOF */
@@ -204,15 +284,25 @@ struct NodeDOF {
 
 /* A Load Case */
 
-typedef struct loadcase {
-    char	*name;
-    unsigned	 numforces;
-    unsigned	 numloads;
-    Node	*nodes;
-    Element	*elements;
-    Force	*forces;
-    Distributed *loads;
-} *LoadCase;
+struct loadcase_t {
+     loadcase_t(const char *name = NULL);
+     ~loadcase_t();
+     std::string name;
+     cvector1<Node> nodes;
+     cvector1<Element> elements;
+     cvector1<Force> forces;
+     cvector1<Distributed> loads;
+};
+
+typedef loadcase_t* LoadCase;
+
+struct LtLoadCase
+{
+     bool operator()(const LoadCase a, const LoadCase b) const
+          {
+               return a->name < b->name;
+          }
+};
 
 
 /* The different analyses definitions */
@@ -232,8 +322,7 @@ typedef struct analysis {
     unsigned	iterations;		/* iteration count control      */
     unsigned	load_steps;		/* number of incremental steps  */
     char	mass_mode;		/* 'c'onsistent or 'l'umped	*/
-    Node       *nodes;			/* list of nodes of interest    */
-    unsigned	numnodes;		/* number of nodes of interest  */
+    cvector1<Node> nodes;			/* list of nodes of interest    */
     char	dofs [7];		/* dofs of interest		*/
     unsigned	numdofs;		/* number of dofs of interest	*/
     unsigned	input_dof;		/* input DOF # for range loads  */

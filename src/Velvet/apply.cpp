@@ -39,6 +39,7 @@
 # include "error.h"
 # include "vfe.h"
 # include "procedures.h"
+# include "setaux.hpp"
 
 extern LoadDialog	load_d;
 extern ConstraintDialog	constraint_d;
@@ -146,9 +147,7 @@ void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
-
+    node_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -156,13 +155,13 @@ void ApplyForceAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoApplyForce ((Node) found);
+    DoApplyForce (found);
 }
 
 
@@ -283,8 +282,7 @@ void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -292,14 +290,14 @@ void ApplyConstraintAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	    SelectGroup (NULL, ApplyConstraintGroup);
 	return;
     }
-
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
-
-    DoApplyConstraint ((Node) found);
+    
+    DoApplyConstraint (found);
 }
 
 
@@ -433,9 +431,7 @@ void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
-    Item           found;
-
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -443,13 +439,13 @@ void ApplyLoadAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Element %d does not exist.", dummy.number);
-	return;
+    Element found = SetSearch(problem.element_set, dummy.number);
+    if (!found) {
+        error ("Element %d does not exist.", dummy.number);
+        return;
     }
 
-    DoApplyLoad ((Element) found);
+    DoApplyLoad (found);
 }
 
 
@@ -570,9 +566,7 @@ void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
 void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
-    Item           found;
-
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -580,13 +574,13 @@ void ApplyMaterialAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Element %d does not exist.", dummy.number);
-	return;
+    Element found = SetSearch(problem.element_set, dummy.number);
+    if (!found) {
+        error ("Element %d does not exist.", dummy.number);
+        return;
     }
 
-    DoApplyMaterial ((Element) found);
+    DoApplyMaterial (found);
 }
 
 

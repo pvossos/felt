@@ -55,7 +55,6 @@ static char		 *last_material;	/* name of last material   */
 
 /* Current objects (inherited attributes). */
 
-static Item		  found;		/* current object	   */
 static Node		  node;			/* current node		   */
 static Element		  element;		/* current element	   */
 static Material		  material;		/* current material	   */
@@ -69,13 +68,13 @@ static LoadCase		  loadcase;		/* current loadcase	   */
 /* Dummy strucutures.  If an object is defined twice, the second definition
    is illegal and the current object is set to a dummy object. */
 
-static struct node	  dummy_node;		/* dummy node		   */
-static struct element	  dummy_element;	/* dummy element	   */
-static struct material	  dummy_material;	/* dummy material	   */
-static struct distributed dummy_load;		/* dummy distributed load  */
-static struct force	  dummy_force;		/* dummy force		   */
-static struct constraint  dummy_constraint;	/* dummy constraint	   */
-static struct loadcase    dummy_loadcase;	/* dummy loadcase	   */
+static node_t	  dummy_node;		/* dummy node		   */
+static element_t  dummy_element;	/* dummy element	   */
+static material_t dummy_material;	/* dummy material	   */
+static distributed_t dummy_load;		/* dummy distributed load  */
+static force_t	  dummy_force;		/* dummy force		   */
+static constraint_t  dummy_constraint;	/* dummy constraint	   */
+static loadcase_t    dummy_loadcase;	/* dummy loadcase	   */
 
 
 /* Temporary arrays. */
@@ -108,7 +107,6 @@ static unsigned		  table_size = 0;	/* size of table	   */
 
 static float		  figure_x;		/* current x-coordinate	   */
 static float		  figure_y;		/* current y-coordinate	   */
-static unsigned		  figure_size;		/* size of figure list	   */
 static unsigned		  fig_point_size;	/* size of point list	   */
 static FigInfo		 *figure;		/* current figure	   */
 %}
@@ -228,12 +226,12 @@ problem_parameter
 
 	| NODES_EQ INTEGER
 	    {
-		problem.num_nodes = $2;
+             problem.nodes.resize($2);
 	    }
 
 	| ELEMENTS_EQ INTEGER
 	    {
-		problem.num_elements = $2;
+             problem.elements.resize($2);
 	    }
 
 	| ANALYSIS_EQ ANALYSIS_TYPE
@@ -289,18 +287,17 @@ node_definition
 node_number
 	: node_number_expression
 	    {
-		if ($1 < 1 || $1 > problem.num_nodes) {
-		    error ("node number %u is illegal", $1);
-		    node = &dummy_node;
-		    break;
-		}
+             if ($1 < 1 || $1 > problem.nodes.size()) {
+                  error ("node number %u is illegal", $1);
+                  node = &dummy_node;
+                  break;
+             }
+             
+		node = new node_t($1);
 
-		node = CreateNode ($1);
-		found = TreeInsert (problem.node_tree, node);
-
-		if (found != (Item) node) {
+		if (!problem.node_set.insert(node).second) {
 		    error ("node number %u is repeated", $1);
-		    DestroyNode (node);
+		    delete node;
 		    node = &dummy_node;
 		    break;
 		}
@@ -308,8 +305,7 @@ node_number
 		node -> x = last_x;
 		node -> y = last_y;
 		node -> z = last_z;
-		node -> constraint = last_constraint ?
-			(Constraint) strdup (last_constraint) : NULL;
+        node -> constraint = last_constraint ? new constraint_t(last_constraint) : NULL;
 	    }
 	;
 
@@ -349,15 +345,16 @@ node_parameter
             }
 
 	| FORCE_EQ NAME
-	    {
-		Deallocate (node -> force);
-		node -> force = (Force) $2;
-	    }
+    {
+         delete node -> force;
+         node -> force = new force_t($2);
+    }
 
 	| CONSTRAINT_EQ NAME
-	    {
-		node -> constraint = (Constraint) (last_constraint = $2);
-	    }
+    {
+         last_constraint = $2;
+         node -> constraint = new constraint_t(last_constraint);
+    }
 
 	| error
 	;
@@ -395,24 +392,24 @@ element_definition
 element_number
 	: element_number_expression
 	    {
-		if ($1 < 1 || $1 > problem.num_elements) {
+		if ($1 < 1 || $1 > problem.elements.size()) {
 		    error ("element number %u is illegal", $1);
 		    element = &dummy_element;
 		    break;
 		}
 
-		element = CreateElement ($1, definition);
-		found = TreeInsert (problem.element_tree, element);
+		element = new element_t($1, definition);
 
-		if (found != (Item) element) {
-		    error ("element number %u is repeated", $1);
-		    DestroyElement (element);
-		    element = &dummy_element;
-		    break;
-		}
+        if (!problem.element_set.insert(element).second) {
+             error ("element number %u is repeated", $1);
+             delete element;
+             element = &dummy_element;
+             break;
+        } 
 
-		element -> material = last_material ?
-			(Material) strdup (last_material) : NULL;
+        if (!element->material)
+             element -> material = new material_t;
+		element -> material->name = last_material ? last_material : ""; 
 	    }
 	;
 
@@ -433,29 +430,31 @@ element_parameter_list
 element_parameter
 	: NODES_EQ '[' element_node_list ']'
 	    {
-		unsigned i;
-		unsigned size;
-		unsigned number;
-
-
 		if (element == &dummy_element)
 		    break;
 
-		size = int_ptr - int_array;
+		unsigned size = int_ptr - int_array;
 
 		if (size != element -> definition -> numnodes) {
-		    number = element -> number;
-		    error ("incorrect number of nodes for element %u", number);
-		    break;
+             unsigned number = element -> number;
+             error ("incorrect number of nodes for element %u", number);
+             break;
 		}
 
-		for (i = 1; i <= size; i ++)
-		    element -> node [i] = (Node) int_array [i - 1];
+		for (unsigned i = 1; i <= size; i ++) {
+             int nn = int_array[i-1];
+             if (nn != 0)
+                  element -> node [i] = new node_t(nn);
+        }
+        
 	    }
 
 	| MATERIAL_EQ NAME
 	    {
-		element -> material = (Material) (last_material = $2);
+             last_material = $2;
+             if (!element->material)
+                  element->material = new material_t;
+             element -> material -> name = last_material;
 	    }
 
 	| LOAD_EQ element_load_list
@@ -486,8 +485,8 @@ element_node_list
 element_node
 	: node_number_expression
 	    {
-		if ($1 > problem.num_nodes)
-		    error ("node number %u is illegal", $1);
+             if ($1 > problem.nodes.size())
+                  error ("node number %u is illegal", $1);
 	    }
 	;
 
@@ -501,9 +500,8 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		Deallocate (element -> distributed [element -> numdistributed]);
-		element -> distributed [element -> numdistributed] =
-		  (Distributed) $3;
+		delete element -> distributed [element -> numdistributed];
+		element -> distributed [element -> numdistributed] = new distributed_t($3);
 	    }
 
 	| element_load_list NAME
@@ -514,17 +512,15 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		Deallocate (element -> distributed [element -> numdistributed]);
-		element -> distributed [element -> numdistributed] =
-		  (Distributed) $2;
+		delete element -> distributed [element -> numdistributed];
+		element -> distributed [element -> numdistributed] = new distributed_t($2);
 	    }
 
 	| NAME
 	    {
 		element -> numdistributed = 1;
-		Deallocate (element -> distributed [element -> numdistributed]);
-		element -> distributed [element -> numdistributed] =
-		  (Distributed) $1;
+		delete element -> distributed [element -> numdistributed];
+		element -> distributed [element -> numdistributed] = new distributed_t($1);
 	    }
 	;
 
@@ -550,14 +546,14 @@ material_definition
 material_name
 	: NAME
 	    {
-		material = CreateMaterial ($1);
-		found = TreeInsert (problem.material_tree, material);
-
-		if (found != (Item) material) {
-		    error ("material %s is previously defined", $1);
-		    DestroyMaterial (material);
-		    material = &dummy_material;
-		}
+             material = new material_t($1);
+             
+             if (problem.material_set.count(material) > 0) {
+                  error ("material %s is previously defined", $1);
+                  delete material;
+                  material = &dummy_material;
+             } else 
+                  problem.material_set.insert(material);
 	    }
 	;
 
@@ -570,8 +566,7 @@ material_parameter_list
 material_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (material -> color);
-                material -> color = $2;
+             material -> color = $2;
 	    }
 
 	| E_EQ constant_expression
@@ -684,14 +679,13 @@ load_definition
 load_name
 	: NAME
 	    {
-		load = CreateDistributed ($1, 0);
-		found = TreeInsert (problem.distributed_tree, load);
-
-		if (found != (Item) load) {
-		    error ("load %s is previously defined", $1);
-		    DestroyDistributed (load);
-		    load = &dummy_load;
-		}
+             load = new distributed_t($1, 0);
+             
+             if (!problem.distributed_set.insert(load).second) {
+                  error ("load %s is previously defined", $1);
+                  delete load;
+                  load = &dummy_load;
+             }
 	    }
 	;
 
@@ -705,8 +699,7 @@ load_parameter_list
 load_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (load -> color);
-                load -> color = $2;
+             load -> color = $2;
 	    }
 
 	| DIRECTION_EQ DIRECTION
@@ -725,11 +718,7 @@ load_parameter
 
 		size = pair_ptr - pair_array;
 
-		if (!(load -> value = Allocate (Pair, size)))
-		    Fatal ("unable to allocate memory for pairs");
-
-		UnitOffset (load -> value);
-		load -> nvalues = size;
+        load -> value.resize(size);
 
 		for (i = 1; i <= size; i ++)
 		    load -> value [i] = pair_array [i - 1];
@@ -761,8 +750,8 @@ value_pair_list
 value_pair
 	: '(' node_number_expression ',' constant_expression ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
 
 		$$.node = $2;
 		$$.magnitude = $4;
@@ -770,9 +759,9 @@ value_pair
 
 	| '(' node_number_expression constant_expression ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
-
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
+             
 		$$.node = $2;
 		$$.magnitude = $3;
 	    }
@@ -800,14 +789,13 @@ force_definition
 force_name
 	: NAME
 	    {
-		force = CreateForce ($1);
-		found = TreeInsert (problem.force_tree, force);
-
-		if (found != (Item) force) {
-		    error ("force %s is previously defined", $1);
-		    DestroyForce (force);
-		    force = &dummy_force;
-		}
+             force = new force_t($1);
+             
+             if (!problem.force_set.insert(force).second) {
+                  error ("force %s is previously defined", $1);
+                  delete force;
+                  force = &dummy_force;
+             }
 	    }
 	;
 
@@ -821,8 +809,7 @@ force_parameter_list
 force_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (force -> color);
-                force -> color = $2;
+             force -> color = $2;
 	    }
 
 	| FX_EQ enable_copy variable_expression
@@ -910,14 +897,13 @@ constraint_definition
 constraint_name
 	: NAME
 	    {
-		constraint = CreateConstraint ($1);
-		found = TreeInsert (problem.constraint_tree, constraint);
-
-		if (found != (Item) constraint) {
-		    error ("constraint %s is previously defined", $1);
-		    DestroyConstraint (constraint);
-		    constraint = &dummy_constraint;
-		}
+             constraint = new constraint_t($1);
+             
+             if (!problem.constraint_set.insert(constraint).second) {
+                  error ("constraint %s is previously defined", $1);
+                  delete constraint;
+                  constraint = &dummy_constraint;
+             }
 	    }
 	;
 
@@ -931,8 +917,7 @@ constraint_parameter_list
 constraint_parameter
 	: COLOR_EQ NAME
 	    {
-		Deallocate (constraint -> color);
-                constraint -> color = $2;
+             constraint -> color = $2;
 	    }
 
 	| TX_EQ enable_copy translation
@@ -1108,17 +1093,16 @@ loadcase_definition
 
 loadcase_name
 	: NAME
-	    {
-		loadcase = CreateLoadCase ($1);
-		found = TreeInsert (problem.loadcase_tree, loadcase);
-
-		if (found != (Item) loadcase) {
-		    error ("loadcase %s is previously defined", $1);
-		    DestroyLoadCase (loadcase);
-		    loadcase = &dummy_loadcase;
-		}
-	    }
-	;
+        {
+             loadcase = new loadcase_t($1);
+             
+             if (!problem.loadcase_set.insert(loadcase).second) {
+                  error ("loadcase %s is previously defined", $1);
+                  delete loadcase;
+                  loadcase = &dummy_loadcase;
+             }
+        }
+    ;
 
 loadcase_parameter_list
 	: loadcase_parameter_list loadcase_parameter
@@ -1128,52 +1112,34 @@ loadcase_parameter_list
 loadcase_parameter
 	: NODE_FORCES_EQ loadcase_pair_list
 	    {
-		unsigned i;
-		unsigned size;
-
-
-		if (loadcase == &dummy_loadcase)
-		    break;
-
-		size = case_ptr - case_array;
-
-		if (!(loadcase -> nodes = Allocate (Node, size)) ||
-                    !(loadcase -> forces = Allocate (Force, size)))
-		    Fatal ("unable to allocate memory for node case pairs");
-
-		UnitOffset (loadcase -> nodes);
-		UnitOffset (loadcase -> forces);
-		loadcase -> numforces = size;
-
-		for (i = 1; i <= size; i ++) {
-		    loadcase -> nodes [i] = (Node) case_array [i - 1].noe;
-                    loadcase -> forces [i]   = (Force) case_array [i - 1].fol;
-                }
+             if (loadcase == &dummy_loadcase)
+                  break;
+             
+             unsigned size = case_ptr - case_array;
+             
+             loadcase->nodes.resize(size);
+             loadcase->forces.resize(size);
+             
+             for (unsigned i = 1; i <= size; i ++) {
+                  loadcase -> nodes [i] = new node_t(case_array [i - 1].noe);
+                  loadcase -> forces [i] = new force_t(case_array [i - 1].fol);
+             }
 	    }
 
 	| ELEMENT_LOADS_EQ loadcase_pair_list
 	    {
-		unsigned i;
-		unsigned size;
-
-
-		if (loadcase == &dummy_loadcase)
-		    break;
-
-		size = case_ptr - case_array;
-
-		if (!(loadcase -> elements = Allocate (Element, size)) ||
-                    !(loadcase -> loads = Allocate (Distributed, size)))
-		    Fatal ("unable to allocate memory for element case pairs");
-
-		UnitOffset (loadcase -> elements);
-		UnitOffset (loadcase -> loads);
-		loadcase -> numloads = size;
-
-		for (i = 1; i <= size; i ++) {
-		    loadcase -> elements [i] = (Element) case_array [i - 1].noe;
-                    loadcase -> loads [i]   = (Distributed) case_array [i - 1].fol;
-                }
+             if (loadcase == &dummy_loadcase)
+                  break;
+             
+             unsigned size = case_ptr - case_array;
+             
+             loadcase->elements.resize(size);
+             loadcase->loads.resize(size);
+             
+             for (unsigned i = 1; i <= size; i ++) {
+                  loadcase -> elements [i] = new element_t(case_array [i - 1].noe);
+                  loadcase -> loads [i]   = new distributed_t(case_array [i - 1].fol);
+             }
 	    }
 
 	| error
@@ -1202,8 +1168,8 @@ loadcase_pair_list
 loadcase_pair
 	: '(' node_number_expression ',' NAME ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
 
 		$$.noe = $2;
 		$$.fol = $4;
@@ -1211,8 +1177,8 @@ loadcase_pair
 
 	| '(' node_number_expression NAME ')'
 	    {
-		if ($2 < 1 || $2 > problem.num_nodes)
-		    error ("node number %u is illegal", $2);
+             if ($2 < 1 || $2 > problem.nodes.size())
+                  error ("node number %u is illegal", $2);
 
 		$$.noe = $2;
 		$$.fol = $3;
@@ -1300,22 +1266,15 @@ analysis_parameter
 
         | INPUT_NODE_EQ node_number_expression
             {
-                analysis.input_node = (Node) $2;
+                 analysis.input_node = new node_t($2);
             }
 
 	| NODES_EQ '[' analysis_node_list ']'
 	    {
-		unsigned i;
-
-
-		analysis.numnodes = int_ptr - int_array;
-
-		if (!(analysis.nodes = Allocate (Node, analysis.numnodes)))
-		    Fatal ("unable to allocate memory for analysis nodes");
-
-		UnitOffset (analysis.nodes);
-		for (i = 1; i <= analysis.numnodes; i ++)
-		    analysis.nodes [i] = (Node) int_array [i - 1];
+             analysis.nodes.resize(int_ptr - int_array);
+             
+             for (unsigned i = 1; i <= analysis.nodes.size(); i ++)
+                  analysis.nodes [i] = new node_t(int_array [i - 1]);
 	    }
 
 	| DOFS_EQ '[' analysis_dof_list ']'
@@ -1499,32 +1458,27 @@ canvas_parameter
 
 	| NODE_COLOR_EQ NAME
 	    {
-		Deallocate (appearance.node_color);
-		appearance.node_color = $2;
+             appearance.node_color = $2;
 	    }
 
 	| ELT_COLOR_EQ NAME
 	    {
-		Deallocate (appearance.element_color);
-		appearance.element_color = $2;
+             appearance.element_color = $2;
 	    }
 
 	| LABEL_FONT_EQ NAME
 	    {
-		Deallocate (appearance.label_font);
-		appearance.label_font = $2;
+             appearance.label_font = $2;
 	    }
 
 	| TOOL_COLOR_EQ NAME
 	    {
-		Deallocate (appearance.tool_color);
-		appearance.tool_color = $2;
+             appearance.tool_color = $2;
 	    }
 
 	| TOOL_FONT_EQ NAME
 	    {
-		Deallocate (appearance.tool_font);
-		appearance.tool_font = $2;
+             appearance.tool_font = $2;
 	    }
 	;
 
@@ -1539,7 +1493,7 @@ figure_section
 figure_header
 	: FIGURES
 	    {
-		figure_size = 0;
+             /* figure_size = 0; */
 	    }
 	;
 
@@ -1558,25 +1512,19 @@ figure_definition
 figure_type
 	: FIGURE_TYPE
 	    {
-		if (appearance.num_figures == figure_size) {
-		    figure_size = figure_size ? figure_size <<= 1 : 4;
-		    if (!Reallocate (appearance.figures, FigInfo, figure_size))
-			Fatal ("unable to allocate figure list");
-		}
-
-		figure = &appearance.figures [appearance.num_figures ++];
-		figure -> type = $1;
-		figure -> x = 0;
-		figure -> y = 0;
-		figure -> width = 0;
-		figure -> height = 0;
-		figure -> start = 0;
-		figure -> length = 0;
-		figure -> num_points = 0;
-		figure -> points = NULL;
-		figure -> font = NULL;
-		figure -> text = NULL;
-		figure -> color = NULL;
+             FigInfo figure;
+             figure.type = $1;
+             figure.x = 0;
+             figure.y = 0;
+             figure.width = 0;
+             figure.height = 0;
+             figure.start = 0;
+             figure.length = 0;
+             figure.points.clear();
+             figure.font.clear();
+             figure.text.clear();
+             figure.color.clear();
+             appearance.figures.push_back(figure);
 	    }
 	;
 
@@ -1620,20 +1568,17 @@ figure_parameter
 
 	| TEXT_EQ NAME
 	    {
-		Deallocate (figure -> text);
-		figure -> text = $2;
+             figure -> text = $2;
 	    }
 
 	| COLOR_EQ NAME
 	    {
-		Deallocate (figure -> color);
-		figure -> color = $2;
+             figure -> color = $2;
 	    }
 
 	| FONT_EQ NAME
 	    {
-		Deallocate (figure -> font);
-		figure -> font = $2;
+             figure -> font = $2;
 	    }
 
 	| POINTS_EQ '[' figure_pair_list ']'
@@ -1643,38 +1588,23 @@ figure_parameter
 figure_pair_list
 	: figure_pair_list ',' figure_pair
 	    {
-		if (fig_point_size == figure -> num_points) {
-		    fig_point_size <<= 1;
-		    Reallocate (figure -> points, FigInfoPair, fig_point_size);
-		    if (figure -> points == NULL)
-			Fatal ("unable to allocate figure points");
-		}
-
-		figure -> points [figure -> num_points].x = figure_x;
-		figure -> points [figure -> num_points ++].y = figure_y;
+             FigInfoPair fip;
+             fip.x = figure_x;
+             fip.y = figure_y;
+             figure->points.push_back(fip);
 	    }
 
 	| figure_pair_list figure_pair
 	    {
-		if (fig_point_size == figure -> num_points) {
-		    fig_point_size <<= 1;
-		    Reallocate (figure -> points, FigInfoPair, fig_point_size);
-		    if (figure -> points == NULL)
-			Fatal ("unable to allocate figure points");
-		}
-
-		figure -> points [figure -> num_points].x = figure_x;
-		figure -> points [figure -> num_points ++].y = figure_y;
+             FigInfoPair fip;
+             fip.x = figure_x;
+             fip.y = figure_y;
+             figure->points.push_back(fip);
 	    }
 
 	| /* empty */
 	    {
-		figure -> points = Allocate (FigInfoPair, 2);
-		if (figure -> points == NULL)
-		    Fatal ("unable to allocate figure points");
-
-		fig_point_size = 2;
-		figure -> num_points = 0;
+             /* NO-OP */
 	    }
 	;
 

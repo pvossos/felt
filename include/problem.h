@@ -26,8 +26,11 @@
 
 # ifndef _PROBLEM_H
 # define _PROBLEM_H
+
+# include <vector>
+# include <set>
+# include "cvector1.hpp"
 # include "fe.h"
-# include "Tree.h"
 # include "appearance.h"
 # include "inptypes.h"
 
@@ -35,27 +38,32 @@
 
 # define MaxNodesPerElement 32
 
-
 typedef struct {
+    typedef std::set<Definition, LtDefinition> DefinitionSet;
+    typedef std::set<Material, LtMaterial> MaterialSet;
+    typedef std::set<Element, LtElement> ElementSet;
+    typedef std::set<Node, LtNode> NodeSet;
+    typedef std::set<Distributed, LtDistributed> DistributedSet;
+    typedef std::set<Force, LtForce> ForceSet;
+    typedef std::set<LoadCase, LtLoadCase> LoadCaseSet;
+    typedef std::set<Constraint, LtConstraint> ConstraintSet;
+     
     AnalysisType mode;			/* analysis mode	   */
     char	*title;			/* problem title	   */
-    Node	*nodes;			/* array of nodes	   */
-    Element	*elements;		/* array of elements	   */
-    LoadCase	*loadcases;
-    Tree	 definition_tree;	/* element defn tree	   */
-    Tree	 node_tree;		/* node tree		   */
-    Tree	 element_tree;		/* element tree		   */
-    Tree	 material_tree;		/* material tree	   */
-    Tree	 distributed_tree;	/* distributed load tree   */
-    Tree	 force_tree;		/* force tree		   */
-    Tree	 constraint_tree;	/* constraint tree	   */
-    Tree	 loadcase_tree;		/* load case tree	   */
+    cvector1<Node> nodes;			/* array of nodes	   */
+    cvector1<Element> elements;		/* array of elements	   */
+    cvector1<LoadCase> loadcases;
+    DefinitionSet definition_set;
+    NodeSet node_set;
+    ElementSet element_set;
+    MaterialSet material_set;
+    DistributedSet distributed_set;
+    ForceSet force_set;
+    ConstraintSet constraint_set;
+    LoadCaseSet	 loadcase_set;		/* load case tree	   */
     unsigned	 dofs_pos [7];		/* global DOF position map */
     unsigned	 dofs_num [7];		/* global DOF number map   */
     unsigned	 num_dofs;		/* number of global DOF    */
-    unsigned	 num_nodes;		/* number of nodes	   */
-    unsigned	 num_elements;		/* number of elements	   */
-    unsigned	 num_loadcases;		/* number of load cases	   */
     unsigned	 num_errors;		/* number of errors	   */
 } Problem;
 

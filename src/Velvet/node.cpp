@@ -24,6 +24,7 @@
  *		type definitions for the node dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -39,8 +40,8 @@
 # include "Node.h"
 # include "TabGroup.h"
 # include "util.h"
-# include "objects.h"
 # include "post.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -81,9 +82,9 @@ struct node_dialog {
     Boolean	   new_forces;
     Boolean	   new_constraints;
     Node           active;
-    Tree           nodes;
-    Tree           forces;
-    Tree           constraints;
+    Problem::NodeSet *nodes;
+    Problem::ForceSet *forces;
+    Problem::ConstraintSet *constraints;
 };
 
 static String labels [ ] = {
@@ -370,9 +371,9 @@ static XtWidgetGeometry	preferred;
  *		the specified force.					*
  ************************************************************************/
 
-static int SetForceEntry (Item item)
+static int SetForceEntry (Force item)
 {
-    SetLabelString (children [child_number], ((Force) item) -> name);
+    SetLabelString (children [child_number],item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -409,7 +410,7 @@ static void UpdateForceMenu (Widget w, XtPointer client_data, XtPointer call_dat
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_forces = TreeSize (noded -> forces) + 1;
+    num_forces = noded->forces->size() + 1;
 
     for (i = num_children; i < num_forces; i ++) {
 	sprintf (buffer, "force%d", i);
@@ -430,8 +431,7 @@ static void UpdateForceMenu (Widget w, XtPointer client_data, XtPointer call_dat
     max_width = preferred.width;
 
     child_number = 1;
-    TreeSetIterator (noded -> forces, SetForceEntry);
-    TreeIterate (noded -> forces);
+    std::for_each(noded->forces->begin(), noded->forces->end(), SetForceEntry);
     noded -> new_forces = False;
 
     XtSetArg (args [0], XtNwidth, max_width);
@@ -469,9 +469,9 @@ static void UpdateForceName (Widget w, XtPointer client_data, XtPointer call_dat
  *		the specified constraint.				*
  ************************************************************************/
 
-static int SetConstraintEntry (Item item)
+static int SetConstraintEntry (Constraint item)
 {
-    SetLabelString (children [child_number], ((Constraint) item) -> name);
+    SetLabelString (children [child_number], item -> name.c_str());
 
     XtQueryGeometry (children [child_number ++], NULL, &preferred);
     if (preferred.width > max_width)
@@ -508,7 +508,7 @@ static void UpdateConstraintMenu (Widget w, XtPointer client_data, XtPointer cal
     XtSetArg (args [1], XtNnumChildren, &num_children);
     XtGetValues (w, args, 2);
 
-    num_constraints = TreeSize (noded -> constraints);
+    num_constraints = noded->constraints->size();
 
     if (num_constraints <= 0) {
 	num_constraints ++;
@@ -534,8 +534,7 @@ static void UpdateConstraintMenu (Widget w, XtPointer client_data, XtPointer cal
     XtGetValues (w, args, 2);
 
     child_number = 0;
-    TreeSetIterator (noded -> constraints, SetConstraintEntry);
-    TreeIterate (noded -> constraints);
+    std::for_each(noded->constraints->begin(), noded->constraints->end(), SetConstraintEntry);
     noded -> new_constraints = False;
 
     XtSetArg (args [0], XtNwidth, max_width);
@@ -613,19 +612,15 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
 
 static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Node       node;
-    NodeDialog noded;
-
-
-    noded = (NodeDialog) client_data;
+    NodeDialog noded = (NodeDialog) client_data;
 
     if (noded -> active == NULL)
 	return;
 
-    node = (Node) TreeSuccessor (noded -> nodes, noded -> active);
+    Node node = SetSuccessor(*noded->nodes, noded->active);
 
-    if (node != NULL)
-	NodeDialogDisplay (noded, node);
+    if (node)
+        NodeDialogDisplay (noded, node);
 }
 
 
@@ -637,19 +632,15 @@ static void Up (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Down (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Node       node;
-    NodeDialog noded;
-
-
-    noded = (NodeDialog) client_data;
+    NodeDialog noded = (NodeDialog) client_data;
 
     if (noded -> active == NULL)
 	return;
 
-    node = (Node) TreePredecessor (noded -> nodes, noded -> active);
-
-    if (node != NULL)
-	NodeDialogDisplay (noded, node);
+    Node node = SetPredecessor(*noded->nodes, noded->active);
+    
+    if (node)
+        NodeDialogDisplay (noded, node);
 }
 
 
@@ -669,8 +660,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     double	      x;
     double	      y;
     Constraint	      constraint;
-    struct force      f_dummy;
-    struct constraint c_dummy;
+    force_t      f_dummy;
     Node	      active;
     NodeDialog	      noded;
     NodeDialogInfo    info;
@@ -681,21 +671,21 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Retrieve the constraint. */
 
-    c_dummy.name = GetTextString (noded -> c_name);
-    constraint = (Constraint) TreeSearch (noded -> constraints, &c_dummy);
-    if (constraint == NULL) {
-	XBell (XtDisplay (noded -> shell), 0);
-	SetTextString (noded -> c_name, "");
-	SetFocus (noded -> c_name);
-	return;
+    const char *name = GetTextString (noded -> c_name);
+    constraint = SetSearch(*(noded->constraints), name);
+    if (!constraint) {
+        XBell (XtDisplay (noded -> shell), 0);
+        SetTextString (noded -> c_name, "");
+        SetFocus (noded -> c_name);
+        return;
     }
 
 
     /* Create a new node as needed. */
 
     if (noded -> new_copy) {
-	noded -> active = CreateNode (noded -> new_copy);
-	TreeInsert (noded -> nodes, noded -> active);
+        noded -> active = new node_t(noded -> new_copy);
+        noded->nodes->insert(noded->active);
     }
 
     active = noded -> active;
@@ -707,10 +697,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 
 
     /* Retrieve the force. */
-
-    f_dummy.name = GetTextString (noded -> f_name);
-    active -> force = (Force) TreeSearch (noded -> forces, &f_dummy);
-
+    {
+        f_dummy.name = GetTextString (noded -> f_name);
+        Problem::ForceSet::iterator it = noded->forces->find(&f_dummy);
+        active -> force = it != noded->forces->end() ? *it : NULL;
+    }
 
     /* Retrieve the values from the text entries. */
 
@@ -777,11 +768,12 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	if (!(node = (Node) TreePredecessor (noded -> nodes, noded -> active)))
-	    node = (Node) TreeSuccessor (noded -> nodes, noded -> active);
-
-	TreeDelete (noded -> nodes, noded -> active);
-	DestroyNode (noded -> active);
+    node = SetPredecessor(*noded->nodes, noded->active);
+    if (!node)
+        node = SetSuccessor(*noded->nodes, noded->active);
+    
+    noded->nodes->erase(noded->active);
+	delete noded -> active;
 	noded -> active = node;
     }
 
@@ -805,7 +797,7 @@ static void Copy (Widget w, XtPointer client_data, XtPointer call_data)
 
     noded = (NodeDialog) client_data;
 
-    node = (Node) TreeMaximum (noded -> nodes);
+    node = SetMaximum(*(noded->nodes));
     noded -> new_copy = node != NULL ? node -> number + 1 : 1;
 
     SetNumber (noded, noded -> new_copy);
@@ -1143,28 +1135,29 @@ void NodeDialogPopup (NodeDialog noded)
  *		trees.							*
  ************************************************************************/
 
-void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constraints)
+void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes,
+                       Problem::ForceSet *forces, Problem::ConstraintSet *constraints)
 {
     /* Remember to update the menus if necessary. */
 
     if (forces != NULL) {
-	noded -> forces = forces;
-	noded -> new_forces = True;
+        noded -> forces = forces;
+        noded -> new_forces = True;
     }
 
     if (constraints != NULL) {
-	noded -> constraints = constraints;
-	noded -> new_constraints = True;
+        noded -> constraints = constraints;
+        noded -> new_constraints = True;
     }
 
 
     /* Determine a new active node if necessary. */
 
     if (nodes == NULL && noded -> active == NULL)
-	noded -> active = (Node) TreeMinimum (noded -> nodes);
+        noded->active = SetMinimum(*(noded->nodes));
 
     if (nodes != NULL && (noded -> active == NULL || noded -> nodes != nodes))
-	noded -> active = (Node) TreeMinimum (nodes);
+        noded->active = SetMinimum(*nodes);
 
     if (nodes != NULL) {
 	noded -> nodes = nodes;
@@ -1246,12 +1239,12 @@ void NodeDialogDisplay (NodeDialog noded, Node node)
     SetTextString (noded -> rot_z, buffer);
 
     if (active -> force != NULL)
-	SetTextString (noded -> f_name, active -> force -> name);
+        SetTextString (noded -> f_name, active -> force -> name.c_str());
     else
-	SetTextString (noded -> f_name, "");
+        SetTextString (noded -> f_name, "");
 
     if (active -> constraint != NULL)
-	SetTextString (noded -> c_name, active -> constraint -> name);
+        SetTextString (noded -> c_name, active -> constraint -> name.c_str());
     else
-	SetTextString (noded -> c_name, "");
+        SetTextString (noded -> c_name, "");
 }

@@ -42,6 +42,7 @@
 # include "allocate.h"
 # include "procedures.h"
 # include "error.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -97,7 +98,7 @@ struct analysis_dialog {
 };
 
 
-static String labels [ ] = {
+static const char* labels [ ] = {
     "title:", 
     "static", "static-thermal", "spectral",
     "transient", "transient-thermal", "modal", 
@@ -109,7 +110,7 @@ static String labels [ ] = {
     "output nodes:"
 };
 
-static String label_names [ ] = {
+static const char* label_names [ ] = {
     "title_name", 
     "static_name", "static_thermal_name", "spectral_name",
     "transient_name", "transient_thermal_name", "modal_name",
@@ -122,7 +123,7 @@ static String label_names [ ] = {
     "nodes_name"
 };
 
-static String parameter_labels [ ] = {
+static const char* parameter_labels [ ] = {
     "start:", "stop:", "step:", 
     "b:", "g:", "a:", 
     "Rk:", "Rm:", "relaxation:",
@@ -131,7 +132,7 @@ static String parameter_labels [ ] = {
     "input node:"
 };
 
-static String parameter_names [ ] = {
+static const char* parameter_names [ ] = {
     "start_name", "stop_name", "step_name", 
     "beta_name", "gamma_name", "alpha_name",
     "Rk_name", "Rm_name", "relaxation_name",
@@ -140,7 +141,7 @@ static String parameter_names [ ] = {
     "input_node_name"
 };
 
-static String parameter_help [ ] = {
+static const char* parameter_help [ ] = {
     "starting frequency (=0.0 for time domain) or starting load range value",
     "total time duration, final frequency, or final load range value",
     "time or frequency increment in numerical integration or load range increment",
@@ -689,7 +690,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     String	   value;
     Boolean	   state;
     unsigned	   i;
-    struct node	   n;
+    node_t  n;
 
     analysisd = (AnalysisDialog) client_data;
 
@@ -730,7 +731,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     XtGetValues (analysisd -> input_node, args, 1);
     if (strcmp(value, "") != 0) {
        n.number = atoi(value);
-       analysis.input_node = (Node) TreeSearch (problem.node_tree, &n);
+       analysis.input_node = SetSearch(problem.node_set, n.number);
 
        if (analysis.input_node == NULL) 
           error ("node %d not defined in current problem", n.number);
@@ -784,8 +785,7 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
     Arg		    args [1];
     AnalysisDialog  analysisd;
     Node	    current [6];
-    Node	    node;
-    struct node	    n;
+    node_t n;
     unsigned	    count;
     String	    value;
     char	    buffer [10];
@@ -800,17 +800,17 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
     XtSetArg (args [0], XtNstring,  &value);
 
     count = 0;
+    Problem::NodeSet::iterator it;
     for (i = 0 ; i < 6 ; i++) {
        XtGetValues (analysisd -> node[i], args, 1);
        n.number = atoi (value);
        if (n.number != 0) {
-          node = (Node) TreeSearch (problem.node_tree, &n);
-          if (node == NULL) {
-             error ("node %d is not defined", n.number);
-             return;
-          }
- 
-          current [count++] = node;
+           Node found = SetSearch(problem.node_set, n.number);
+           if (!found) {
+               error ("node %d is not defined", n.number);
+               return;
+           }
+           current [count++] = found;
        }
     }
 
@@ -818,14 +818,11 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
 	 * if there are new ones, make some room for them
 	 */
 
-    if (base + count > analysis.numnodes) {
-       analysis.numnodes = base + count;
-       ZeroOffset (analysis.nodes);
-       analysis.nodes = Reallocate (analysis.nodes, Node, analysis.numnodes);
-       UnitOffset (analysis.nodes);
+    if (base + count > analysis.nodes.size()) {
+        analysis.nodes.resize(base+count);
     }
-    else if (base + count < analysis.numnodes && base + count > 0)
-       analysis.numnodes = base + count;
+    else if (base + count < analysis.nodes.size() && base + count > 0)
+        analysis.nodes.resize(base+count);
 
 	/*	
  	 * update the nodes array 
@@ -848,7 +845,7 @@ static void ShiftNodes (Widget w, XtPointer client_data, XtPointer call_data)
 	 */
 
     for (i = 0 ; i < 6 ; i++) {
-       if (base + i < analysis.numnodes)
+        if (base + i < analysis.nodes.size())
           sprintf (buffer,"%d", analysis.nodes[base+i+1] -> number);
        else
 	  buffer [0] = 0;

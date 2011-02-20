@@ -29,47 +29,23 @@
 # include "problem.h"
 # include "definition.h"
 
-
-/************************************************************************
- * Function:	DefinitionCompare					*
- *									*
- * Description:	Compares two definition structures represented as	*
- *		items.							*
- ************************************************************************/
-
-static int 
-DefinitionCompare(Item item1, Item item2)
-{
-    return strcmp (((Definition) item1) -> name, ((Definition) item2) -> name);
-}
-
 int
 AddDefinition(Definition definition)
 {
-    if (!problem.definition_tree)
-	problem.definition_tree = TreeCreate (DefinitionCompare);
-    
-    return TreeInsert (problem.definition_tree,definition) != (Item) definition;
+    return !problem.definition_set.insert(definition).second;
 }
 
 int 
 RemoveDefinition(Definition definition)
 {
-    if (!problem.definition_tree)
-	problem.definition_tree = TreeCreate (DefinitionCompare);
-
-    return TreeDelete (problem.definition_tree,definition) != (Item) definition;
+    return problem.definition_set.erase(definition) != 1;
 }
 
 Definition
 LookupDefinition(char *name)
 {
     struct definition definition;
-
-
-    if (!problem.definition_tree)
-	problem.definition_tree = TreeCreate (DefinitionCompare);
-
     definition.name = name;
-    return (Definition) TreeSearch (problem.definition_tree, &definition);
+    std::set<Definition, LtDefinition>::iterator it = problem.definition_set.find(&definition);
+    return it != problem.definition_set.end() ? *it : NULL;
 }

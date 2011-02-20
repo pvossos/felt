@@ -154,8 +154,6 @@ ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
 Matrix
 ModalNodalDisplacements(Matrix x)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	*dofs;
    unsigned	numdofs;
    unsigned	i, m, n;
@@ -167,8 +165,8 @@ ModalNodalDisplacements(Matrix x)
    unsigned	rot_dofs [4];
    Matrix	d;
 
-   node     = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
    dofs     = problem.dofs_pos;
    numdofs  = problem.num_dofs;
 
@@ -255,13 +253,11 @@ FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, Matrix *Mr, Matrix *Cr
    for (i = 1 ; i <= n ; i++)
       diag [i] = i;
 
-   unsigned *diagp = diag.c_ptr1();
-   
    M = CreateCompactMatrix (n, n, n, NULL);
-   M -> diag = diag.release1();
+   M -> diag = diag;
 
-   C = CreateCompactMatrix (n, n, n, diagp);
-   K = CreateCompactMatrix (n, n, n, diagp);
+   C = CreateCompactMatrix (n, n, n, &diag);
+   K = CreateCompactMatrix (n, n, n, &diag);
 
    if (ortho) {
       MultiplyUTmU (M, u, m);

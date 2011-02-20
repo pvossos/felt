@@ -525,10 +525,10 @@ static void DrawCurveLegend (int i, Boolean print_dof_names, Widget graph_dw)
    if (print_dof_names)
       sprintf (buffer, "%s (%d)",
                symbols[(int) analysis.dofs[(i-1) % analysis.numdofs + 1]],
-               analysis.nodes [(i-1) % analysis.numnodes + 1] -> number);
+               analysis.nodes [(i-1) % analysis.nodes.size() + 1] -> number);
    else
       sprintf (buffer, "node %d", 
-               analysis.nodes [(i-1) % analysis.numnodes + 1] -> number);
+               analysis.nodes [(i-1) % analysis.nodes.size() + 1] -> number);
 
    XTextExtents (legend_font,buffer,strlen (buffer),&dr,&far,&fdr,&cstruct);
    width = cstruct.width;
@@ -565,7 +565,7 @@ static void DrawTransferLegend (int i, int l, int curve, Widget graph_dw)
    sprintf (buffer, "%s(%d),%s(%d)",
             symbols[idof], inode, 
             symbols[(int) analysis.dofs[(l-1) % analysis.numdofs + 1]],
-            analysis.nodes [(l-1) % analysis.numnodes + 1] -> number);
+            analysis.nodes [(l-1) % analysis.nodes.size() + 1] -> number);
 
    XTextExtents (legend_font,buffer,strlen (buffer),&dr,&far,&fdr,&cstruct);
    width = cstruct.width;
@@ -675,7 +675,7 @@ void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char 
    if (tdShell == NULL) 
       tdShell = CreateGraphShell (&td_dw, "tdShell", "td_dw");
 
-   td_gr.numcurves = analysis.numnodes * analysis.numdofs;
+   td_gr.numcurves = analysis.nodes.size() * analysis.numdofs;
 
    InitializeGraphShell  (tdShell, td_dw, &td_gr);
 
@@ -683,7 +683,7 @@ void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char 
 
    min = max = MatrixData (dtable) [1][1];
    for (i = 1 ; i <= MatrixRows (dtable) ; i++) {
-      for (j = 1 ; j <= analysis.numnodes ; j++) {
+      for (j = 1 ; j <= analysis.nodes.size() ; j++) {
          for (k = 1 ; k <= analysis.numdofs ; k++) {
 
             data = MatrixData (dtable) [i][(j-1)*analysis.numdofs + k];
@@ -768,7 +768,7 @@ void VelvetPlotSpectra (Matrix P, const char *xlabel, const char *ylabel, const 
    if (fpShell == NULL) 
       fpShell = CreateGraphShell (&fp_dw, "fpShell", "fp_dw");
 
-   fp_gr.numcurves = analysis.numnodes * analysis.numdofs;
+   fp_gr.numcurves = analysis.nodes.size() * analysis.numdofs;
 
    InitializeGraphShell (fpShell, fp_dw, &fp_gr);
 
@@ -776,7 +776,7 @@ void VelvetPlotSpectra (Matrix P, const char *xlabel, const char *ylabel, const 
 
    min = max = MatrixData (P) [1][1];
    for (i = 1 ; i <= MatrixRows (P) ; i++) {
-      for (j = 1 ; j <= analysis.numnodes ; j++) {
+      for (j = 1 ; j <= analysis.nodes.size() ; j++) {
          for (k = 1 ; k <= analysis.numdofs ; k++) {
 
             data = MatrixData (P) [i][(j-1)*analysis.numdofs + k];
@@ -843,7 +843,7 @@ void VelvetPlotTransferFunctions (const Matrix *H, const NodeDOF *forced, unsign
    if (fpShell == NULL) 
       fpShell = CreateGraphShell (&fp_dw, "fpShell", "fp_dw");
 
-   nn = analysis.numdofs * analysis.numnodes;
+   nn = analysis.numdofs * analysis.nodes.size();
    fp_gr.numcurves = nn * numforced;
 
    InitializeGraphShell (fpShell, fp_dw, &fp_gr);
@@ -853,7 +853,7 @@ void VelvetPlotTransferFunctions (const Matrix *H, const NodeDOF *forced, unsign
    min = max = MatrixData (H [1]) [1][1];
    for (i = 1 ; i <= MatrixRows (H [1]) ; i++) {
       for (l = 1 ; l <= numforced ; l++) {
-         for (j = 1 ; j <= analysis.numnodes ; j++) {
+         for (j = 1 ; j <= analysis.nodes.size() ; j++) {
             for (k = 1 ; k <= analysis.numdofs ; k++) {
 
                data = MatrixData (H [l]) [i][(j-1)*analysis.numdofs + k];
@@ -1050,7 +1050,7 @@ void VelvetPlotForce (Force force, char *quantity)
 
    DW_SetForeground (force_dw, "black");
 
-   PlaceTitles (force -> name, "time", (offset == 1 ? "F" : "M"), force_dw, 1);
+   PlaceTitles (force -> name.c_str(), "time", (offset == 1 ? "F" : "M"), force_dw, 1);
 
    DestroyMatrix (ftable);
 
@@ -1072,7 +1072,7 @@ void VelvetPlotLoadRange (Matrix dtable)
    if (tdShell == NULL) 
       tdShell = CreateGraphShell (&td_dw, "tdShell", "td_dw");
 
-   td_gr.numcurves = analysis.numnodes * analysis.numdofs;
+   td_gr.numcurves = analysis.nodes.size() * analysis.numdofs;
 
    InitializeGraphShell  (tdShell, td_dw, &td_gr);
 
@@ -1080,7 +1080,7 @@ void VelvetPlotLoadRange (Matrix dtable)
 
    min = max = MatrixData (dtable) [1][1];
    for (i = 1 ; i <= MatrixRows (dtable) ; i++) {
-      for (j = 1 ; j <= analysis.numnodes ; j++) {
+      for (j = 1 ; j <= analysis.nodes.size() ; j++) {
          for (k = 1 ; k <= analysis.numdofs ; k++) {
 
             data = MatrixData (dtable) [i][(j-1)*analysis.numdofs + k];

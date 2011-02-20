@@ -318,7 +318,7 @@ int main (int argc, char **argv)
     if (debug) 
 	fDumpFeltFile (fp_out);
 
-    if (problem.num_nodes == 0 || problem.num_elements == 0) 
+    if (problem.nodes.empty() || problem.elements.empty()) 
         Fatal ("nothing to do");
 
 	/*
@@ -463,17 +463,17 @@ int main (int argc, char **argv)
           if (contour_out) {
              for (i = 0 ; i < num_contour ; i++) {
                 if (strcmp(contour_result, "stress") == 0)
-                   PlotStressField (contour_out [i], problem.elements, 
-				    problem.num_elements, contour_component [i],
-				    contour_hequal, contour_overlay,
+                    PlotStressField (contour_out [i], problem.elements.c_ptr1(), 
+                                    problem.elements.size(), contour_component [i],
+                                    contour_hequal, contour_overlay,
                                     contour_width, contour_height);
                 else if (strcmp(contour_result, "displacement") == 0)
-                   PlotDisplacementField (contour_out [i], problem.nodes, 
-					  problem.num_nodes, problem.elements, 
-				          problem.num_elements,
-                                          contour_component [i], 
-					  contour_hequal, contour_overlay,
-                                          contour_width, contour_height);
+                    PlotDisplacementField (contour_out [i], problem.nodes.c_ptr1(), 
+                                           problem.nodes.size(), problem.elements.c_ptr1(), 
+                                           problem.elements.size(),
+                                           contour_component [i], 
+                                           contour_hequal, contour_overlay,
+                                           contour_width, contour_height);
              }
           }
 
@@ -504,11 +504,11 @@ int main (int argc, char **argv)
 
           if (contour_out) {
              if (strcmp(contour_result, "displacement") == 0)
-                PlotDisplacementField (contour_out [0], problem.nodes, 
-				       problem.num_nodes, problem.elements, 
-				       problem.num_elements, 1,
-                                       contour_hequal, contour_overlay,
-                                       contour_width, contour_height);
+                 PlotDisplacementField (contour_out [0], problem.nodes.c_ptr1(), 
+                                        problem.nodes.size(), problem.elements.c_ptr1(), 
+                                        problem.elements.size(), 1,
+                                        contour_hequal, contour_overlay,
+                                        contour_width, contour_height);
           }
 
           break;
@@ -610,12 +610,12 @@ int main (int argc, char **argv)
           if (contour_out) {
              if (strcmp(contour_result, "displacement") == 0)
                 for (i = 0 ; i < num_contour ; i++)
-                   PlotDisplacementField (contour_out [i], problem.nodes, 
-				          problem.num_nodes, problem.elements, 
-				          problem.num_elements, 
-				  	  contour_component [i],
-                                          contour_hequal, contour_overlay,
-                                          contour_width, contour_height);
+                    PlotDisplacementField (contour_out [i], problem.nodes.c_ptr1(), 
+                                           problem.nodes.size(), problem.elements.c_ptr1(), 
+                                           problem.elements.size(), 
+                                           contour_component [i],
+                                           contour_hequal, contour_overlay,
+                                           contour_width, contour_height);
           }
 
           break;

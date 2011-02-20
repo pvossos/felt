@@ -24,12 +24,13 @@
  *		definitions for the creation of a problem instance.	*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <unistd.h>
+# include "setaux.hpp"
 # include "error.h"
 # include "problem.h"
-# include "allocate.h"
 # include "definition.h"
 # include "config.h"
 
@@ -47,8 +48,8 @@ ProblemSource psource;
 Analysis   analysis;
 Appearance appearance;
 
-static struct material default_material = {NULL, "default_material"};
-static struct constraint default_constraint = {NULL, "default_constraint"};
+static material_t default_material("default_material");
+static constraint_t default_constraint("default_constraint");
 
 static char *cpp;
 static char  cpp_command [2048];
@@ -72,98 +73,6 @@ defnlookup(char *name)
     return definition;
 }
 
-
-/************************************************************************
- * Function:	node_cmp						*
- *									*
- * Description:	Compares two nodes by number.				*
- ************************************************************************/
-
-static int
-node_cmp(Item n1, Item n2)
-{
-    return ((Node) n1) -> number - ((Node) n2) -> number;
-}
-
-
-/************************************************************************
- * Function:	element_cmp						*
- *									*
- * Description:	Compares two elements by number.			*
- ************************************************************************/
-
-static int
-element_cmp(Item e1, Item e2)
-{
-    return ((Element) e1) -> number - ((Element) e2) -> number;
-}
-
-
-/************************************************************************
- * Function:	material_cmp						*
- *									*
- * Description:	Compares two materials by name.				*
- ************************************************************************/
-
-static int 
-material_cmp(Item m1, Item m2)
-{
-    return strcmp (((Material) m1) -> name, ((Material) m2) -> name);
-}
-
-
-/************************************************************************
- * Function:	distributed_cmp						*
- *									*
- * Description:	Compares two distributed loads by name.			*
- ************************************************************************/
-
-static int 
-distributed_cmp(Item d1, Item d2)
-{
-    return strcmp (((Distributed) d1) -> name, ((Distributed) d2) -> name);
-}
-
-
-/************************************************************************
- * Function:	force_cmp						*
- *									*
- * Description:	Compares two forces by name.				*
- ************************************************************************/
-
-static int 
-force_cmp(Item f1, Item f2)
-{
-    return strcmp (((Force) f1) -> name, ((Force) f2) -> name);
-}
-
-
-/************************************************************************
- * Function:	constraint_cmp						*
- *									*
- * Description:	Compares two constraints by name.			*
- ************************************************************************/
-
-static int
-constraint_cmp(Item c1, Item c2)
-{
-    return strcmp (((Constraint) c1) -> name, ((Constraint) c2) -> name);
-}
-
-
-/************************************************************************
- * Function:	loadcase_cmp						*
- *									*
- * Description:	Compares two load cases by name.			*
- ************************************************************************/
-
-static int 
-loadcase_cmp(Item lc1, Item lc2)
-{
-    return strcmp (((LoadCase) lc1) -> name, ((LoadCase) lc2) -> name);
-}
-
-
 /************************************************************************
  * Function:	resolve_node						*
  *									*
@@ -171,51 +80,34 @@ loadcase_cmp(Item lc1, Item lc2)
  ************************************************************************/
 
 static int 
-resolve_node(Item item)
+resolve_node(Node node)
 {
-    struct force      f;
-    struct constraint c;
-    unsigned	      number;
-    Tree	      tree;
-    Node	      node;
-
-
-
     /* Store the node in the array. */
 
-    node = (Node) item;
-    number = node -> number;
+    unsigned number = node -> number;
     problem.nodes [number] = node;
-
 
     /* Resolve the constraint. */
 
-    tree = problem.constraint_tree;
-    c.name = (char *) node -> constraint;
-
-    if (c.name) {
-	node -> constraint = (Constraint) TreeSearch (tree, &c);
-
-	if (!node -> constraint)
-	    error ("node %u used undefined constraint %s", number, c.name);
-
-	Deallocate (c.name);
-    } else
-	node -> constraint = &default_constraint;
-
+    if (node->constraint) {
+        Constraint c = node->constraint;
+        node->constraint = SetSearch(problem.constraint_set, c->name);
+        if (!node->constraint)
+            error ("node %u used undefined constraint %s", number, c->name.c_str());
+        delete c;
+    } else {
+        node -> constraint = &default_constraint;
+    }
 
     /* Resolve the force. */
 
-    tree = problem.force_tree;
-    f.name = (char *) node -> force;
-
-    if (f.name) {
-	node -> force = (Force) TreeSearch (tree, &f);
-
-	if (!node -> force)
-	    error ("node %u uses undefined force %s", number, f.name);
-
-	Deallocate (f.name);
+    if (node->force) {
+        Force f = node->force;
+        Problem::ForceSet::iterator it = problem.force_set.find(f);
+        node -> force = it != problem.force_set.end() ? *it : NULL;
+        if (!node -> force)
+            error ("node %u uses undefined force %s", number, f->name.c_str());
+        delete f;
     }
 
     return 0;
@@ -229,62 +121,47 @@ resolve_node(Item item)
  ************************************************************************/
 
 static int
-resolve_element(Item item)
+resolve_element(Element element)
 {
-    struct distributed d;
-    struct material    m;
     unsigned	       i;
-    unsigned	       number;
-    Tree	       tree;
-    Element	       element;
-
 
     /* Store the element in the array. */
 
-    element = (Element) item;
-    number = element -> number;
+    const unsigned number = element -> number;
     problem.elements [number] = element;
-
-
 
     /* Resolve the material. */
 
-    tree = problem.material_tree;
-    m.name = (char *) element -> material;
-
-    if (m.name) {
-	element -> material = (Material) TreeSearch (tree, &m);
-
-	if (!element -> material)
-	    error ("element %u uses undefined material %s", number, m.name);
-
-	Deallocate (m.name);
-    } else
-	element -> material = &default_material;
-
+    if (element->material) {
+        Material m = element->material;
+        element->material = SetSearch(problem.material_set, m->name);
+        if (!element->material)
+            error ("element %u uses undefined material %s", number, m->name.c_str());
+        delete m;
+    } else {
+        element -> material = &default_material;
+    }
 
     /* Resolve the loads. */
 
-    tree = problem.distributed_tree;
-
     for (i = 1; i <= element -> numdistributed; i ++) {
-	d.name = (char *) element -> distributed [i];
-	element -> distributed [i] = (Distributed) TreeSearch (tree, &d);
-
-	if (!element -> distributed)
-	    error ("element %u used undefined load %s", number, d.name);
-
-	Deallocate (d.name);
+        Distributed d = element->distributed[i];
+        element->distributed[i] = SetSearch(problem.distributed_set, d->name);
+        if (!element->distributed[i])
+            error ("element %u used undefined load %s", number, d->name.c_str());
+        delete d;
     }
-
 
     /* Set the pointers to the nodes. */
 
     if (element -> definition)
-	for (i = 1; i <= element -> definition -> numnodes; i ++)
-	    if (element -> node [i])
-		element -> node [i] = problem.nodes [(int) element -> node [i]];
-
+        for (i = 1; i <= element -> definition -> numnodes; i ++)
+            if (element -> node [i]) {
+                Node n = element->node[i];
+                element -> node [i] = problem.nodes [n->number];
+                delete n;
+            }
+    
     return 0;
 }
 
@@ -297,49 +174,40 @@ static int case_count;
  ************************************************************************/
 
 static int
-resolve_loadcase(Item item)
+resolve_loadcase(LoadCase loadcase)
 {
-    struct force       f;
-    struct node	       n;
-    struct distributed l;
-    struct element     e;
-    LoadCase	       loadcase;
     unsigned	       i;
-
 
     /* Store the loadcase in the array. */
 
-    loadcase = (LoadCase) item;
     problem.loadcases [case_count] = loadcase;
 
-    for (i = 1 ; i <= loadcase -> numforces ; i++) {
-       f.name = (char *) loadcase -> forces [i];
-       n.number = (unsigned) loadcase -> nodes [i];
-
-       loadcase -> nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
+    for (i = 1 ; i <= loadcase->forces.size(); i++) {
+       Node n = loadcase->nodes[i];
+       loadcase -> nodes [i] = SetSearch(problem.node_set, n->number);
        if (!loadcase -> nodes [i])
-           error ("load case %s used undefined node %d", loadcase -> name, n.number);
+           error ("load case %s used undefined node %d", loadcase->name.c_str(), n->number);
+       delete n;
 
-       loadcase -> forces [i] = (Force) TreeSearch (problem.force_tree, &f);
+       Force f = loadcase->forces[i];
+       loadcase -> forces [i] = SetSearch(problem.force_set, f->name);
        if (!loadcase -> forces [i])
-           error ("load case %s used undefined force %s", loadcase -> name, f.name);
-
-       Deallocate (f.name);
+           error ("load case %s used undefined force %s", loadcase->name.c_str(), f->name.c_str());
+       delete f;
     }
 
-    for (i = 1 ; i <= loadcase -> numloads ; i++) {
-       l.name = (char *) loadcase -> loads [i];
-       e.number = (unsigned) loadcase -> elements [i];
-
-       loadcase -> elements [i] = (Element) TreeSearch (problem.element_tree, &e);
+    for (i = 1 ; i <= loadcase->loads.size(); i++) {
+       Element e = loadcase->elements[i];
+       loadcase -> elements [i] = SetSearch(problem.element_set, e->number);
        if (!loadcase -> elements [i])
-           error ("load case %s used undefined element %d", loadcase -> name, e.number);
+           error ("load case %s used undefined element %d", loadcase->name.c_str(), e->number);
+       delete e;
 
-       loadcase -> loads [i] = (Distributed) TreeSearch (problem.distributed_tree, &f);
+       Distributed l = loadcase->loads[i];
+       loadcase -> loads [i] = SetSearch(problem.distributed_set, l->name);
        if (!loadcase -> loads [i])
-           error ("load case %s used undefined load %s", loadcase -> name, l.name);
-
-       Deallocate (l.name);
+           error ("load case %s used undefined load %s", loadcase->name.c_str(), l->name.c_str());
+       delete l;
     }
 
     case_count ++;
@@ -363,75 +231,55 @@ static void
 resolve_names(void)
 {
     unsigned      i;
-    struct node   n;
 
+    if (!problem.nodes.empty()) {
 
-    if (problem.num_nodes) {
-	if (!(problem.nodes = Allocate (Node, problem.num_nodes)))
-	    Fatal ("unable to allocate memory");
-
-	UnitOffset (problem.nodes);
-
-	for (i = 1; i <= problem.num_nodes; i ++)
-	    problem.nodes [i] = NULL;
-
-	TreeSetIterator (problem.node_tree, resolve_node);
-	TreeIterate (problem.node_tree);
-
-	for (i = 1; i <= problem.num_nodes; i ++)
-	    if (!problem.nodes [i])
-		error ("node %u is not defined", i);
+        std::for_each(problem.node_set.begin(), problem.node_set.end(), resolve_node);
+        
+        for (i = 1; i <= problem.nodes.size(); i ++)
+            if (!problem.nodes [i])
+                error ("node %u is not defined", i);
     }
 
-    if (problem.num_elements) {
-	if (!(problem.elements = Allocate (Element, problem.num_elements)))
-	    Fatal ("unable to allocate memory");
+    if (!problem.elements.empty()) {
 
-	UnitOffset (problem.elements);
+        std::for_each(problem.element_set.begin(), problem.element_set.end(), resolve_element);
 
-	for (i = 1; i <= problem.num_elements; i ++)
-	    problem.elements [i] = NULL;
-
-	TreeSetIterator (problem.element_tree, resolve_element);
-	TreeIterate (problem.element_tree);
-
-	for (i = 1; i <= problem.num_elements; i ++)
-	    if (!problem.elements [i])
-		error ("element %u is not defined", i);
+        for (i = 1; i <= problem.elements.size(); i ++)
+            if (!problem.elements [i])
+                error ("element %u is not defined", i);
     }
 
-    if ((problem.num_loadcases = TreeSize(problem.loadcase_tree))) {
-        if (!(problem.loadcases = Allocate (LoadCase, problem.num_loadcases)))
-            Fatal ("unable to allocate memory");
-
-        UnitOffset (problem.loadcases);
-
-        for (i = 1 ; i <= problem.num_loadcases ; i ++)
-            problem.loadcases [i] = NULL;
+    problem.loadcases.resize(problem.loadcase_set.size(), NULL);
+    
+    if (!problem.loadcases.empty()) {
 
         case_count = 1;
-        TreeSetIterator (problem.loadcase_tree, resolve_loadcase);
-        TreeIterate (problem.loadcase_tree);
+        std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), resolve_loadcase);
     }
 
 	/*
 	 * resolve any node references given in the analysis parameters
 	 */
 
-    if (analysis.numnodes) {
-        for (i = 1 ; i <= analysis.numnodes ; i++) {
-            n.number = (unsigned) analysis.nodes [i];
-            analysis.nodes [i] = (Node) TreeSearch (problem.node_tree, &n);
-            if (analysis.nodes [i] == NULL)
-                error ("analysis node %d not defined", n.number);
+    Problem::NodeSet::iterator it;
+                
+    if (!analysis.nodes.empty()) {
+        for (i = 1 ; i <= analysis.nodes.size() ; i++) {
+            Node n = analysis.nodes [i];
+            analysis.nodes [i] = SetSearch(problem.node_set, n->number);
+            if (!analysis.nodes [i])
+                error ("analysis node %d not defined", n->number);
+            delete n;
         }
     }
 
     if (analysis.input_node) {
-        n.number = (unsigned) analysis.input_node;
-        analysis.input_node = (Node) TreeSearch (problem.node_tree, &n);
-        if (analysis.input_node == NULL)
-            error ("analysis input node %d not defined", n.number);
+        Node n = analysis.input_node;
+        analysis.input_node = SetSearch(problem.node_set, n->number);
+        if (!analysis.input_node)
+            error ("analysis input node %d not defined", n->number);
+        delete n;
     }
 }
 
@@ -483,20 +331,11 @@ ReadFeltFile(const char *filename)
     problem.mode	     = Static;
     problem.title	     = strdup ("");
     problem.num_dofs	     = 0;
-    problem.num_nodes	     = 0;
-    problem.num_elements     = 0;
-    problem.num_loadcases    = 0;
+    problem.loadcases.clear();
     problem.num_errors	     = 0;
     psource.line	     = 1;
-    problem.nodes	     = NULL;
-    problem.elements	     = NULL;
-    problem.node_tree	     = TreeCreate (node_cmp);
-    problem.element_tree     = TreeCreate (element_cmp);
-    problem.material_tree    = TreeCreate (material_cmp);
-    problem.distributed_tree = TreeCreate (distributed_cmp);
-    problem.force_tree	     = TreeCreate (force_cmp);
-    problem.constraint_tree  = TreeCreate (constraint_cmp);
-    problem.loadcase_tree    = TreeCreate (loadcase_cmp);
+    problem.nodes.clear();
+    problem.elements.clear();
 
     if (filename)
 	psource.filename = strdup (streq (filename, "-") ? "stdin" : filename);
@@ -519,8 +358,7 @@ ReadFeltFile(const char *filename)
     analysis.tolerance = 0.0;
     analysis.relaxation = 0.0;
     analysis.mass_mode = 0;
-    analysis.nodes     = NULL;
-    analysis.numnodes  = 0;
+    analysis.nodes.clear();
     analysis.numdofs   = 0;
     analysis.input_node = NULL;
     analysis.input_dof = 0;
@@ -565,7 +403,7 @@ ReadFeltFile(const char *filename)
 AnalysisType
 SetAnalysisMode(void)
 {
-    if (problem.mode == Static && problem.num_loadcases > 0)
+    if (problem.mode == Static && problem.loadcases.size() > 0)
         return StaticLoadCases;
     else if (problem.mode == Static && 
              (analysis.input_node || analysis.input_dof))
@@ -664,24 +502,11 @@ InitAppearance(void)
     appearance.scale	       = UnspecifiedValue;
     appearance.width	       = UnspecifiedValue;
     appearance.height	       = UnspecifiedValue;
-    appearance.num_figures     = 0;
 
-    for (i = 0; i < appearance.num_figures; i ++) {
-	Deallocate (appearance.figures [i].color);
-	Deallocate (appearance.figures [i].text);
-	Deallocate (appearance.figures [i].font);
-	Deallocate (appearance.figures [i].points);
-    }
-
-    Deallocate (appearance.figures);
-    Deallocate (appearance.label_font);
-    Deallocate (appearance.node_color);
-    Deallocate (appearance.element_color);
-
-    appearance.figures	     = NULL;
-    appearance.label_font    = NULL;
-    appearance.node_color    = NULL;
-    appearance.element_color = NULL;
-    appearance.tool_color    = NULL;
-    appearance.tool_font     = NULL;
+    appearance.figures.clear();
+    appearance.label_font.clear();
+    appearance.node_color.clear();
+    appearance.element_color.clear();
+    appearance.tool_color.clear();
+    appearance.tool_font.clear();
 }

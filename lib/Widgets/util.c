@@ -566,7 +566,7 @@ void AddAutoRepeatAction (XtAppContext app_context)
  *		formatted text when activated by a key or button press.	*
  ************************************************************************/
 
-Widget CreateHelpButton (Widget parent, String name)
+Widget CreateHelpButton (Widget parent, const char *name)
 {
     Arg    args [3];
     Widget button;
@@ -611,7 +611,7 @@ Widget CreateHelpButton (Widget parent, String name)
  * Description:	Updates the text widget within the help shell.		*
  ************************************************************************/
 
-void UpdateHelpMessage (Widget button, String message, Dimension width)
+void UpdateHelpMessage (Widget button, const char* message, Dimension width)
 {
     Widget   text;
     Cardinal i;

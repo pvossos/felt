@@ -20,7 +20,6 @@
 # include <math.h>
 # include "error.h"
 # include "fe.h"
-# include "objects.h"
 # include "mesh.h"
 # include "cvector1.hpp"
 # include "problem.h"
@@ -83,7 +82,7 @@ MergeNodes(cvector1<Node> &node, cvector1<Element> &element,
    for (size_t i = 1 ; i <= numnodes ; i++) {
       if (merges [i]) {
           Reconnect (node [merges[i]], node[i], element);
-          DestroyNode (node [i]);
+          delete node [i];
       }
       else {
          count++;
@@ -171,13 +170,10 @@ bool
 CoalesceProblemNodes()
 {
     bool ret = false;
-    cvector1<Node> pn(problem.nodes, problem.num_nodes);
-    cvector1<Element> pe(problem.elements, problem.num_elements);
-    cvector1<Node> rn = CoalesceNodes(pn, pe);
-    bool samep = rn.c_ptr1() == pn.c_ptr1();
-    problem.num_nodes = rn.size();
-    problem.nodes = rn.release1();
-    pe.release1();
+    const Node *prev = problem.nodes.c_ptr1();
+    cvector1<Node> rn = CoalesceNodes(problem.nodes, problem.elements);
+    bool samep = rn.c_ptr1() == prev;
+    problem.nodes = rn;
     return samep;
 }
 

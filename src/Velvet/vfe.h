@@ -27,11 +27,9 @@
 
 # ifndef _VFE_H
 # define _VFE_H
-# include "Item.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "fe.h"
+# include "Item.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -49,7 +47,9 @@ typedef struct drawn {
 
 void DrawProblem (double z);
 
-void DestroyProblem (ItemDestructor material_op);
+typedef int  (*MaterialDestructor) (Material);
+
+void DestroyProblem (bool delmaterials);
 
 void SetNodeNumbering (int value);
 
@@ -58,9 +58,5 @@ void SetElementNumbering (int value);
 void RecolorCanvas (void);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _VFE_H */

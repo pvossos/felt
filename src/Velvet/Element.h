@@ -26,12 +26,9 @@
 
 # ifndef _Element_h
 # define _Element_h
-# include "fe.h"
-# include "Tree.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "problem.h"
+# include "fe.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -49,16 +46,14 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
 
 void ElementDialogPopup (ElementDialog eltd);
 
-void ElementDialogUpdate (ElementDialog eltd, Tree elements, Tree materials, Tree loads, Tree nodes);
+void ElementDialogUpdate (ElementDialog eltd,
+                          Problem::ElementSet *elements, Problem::MaterialSet *materials,
+                          Problem::DistributedSet *loads, Problem::NodeSet *nodes);
 
 Element ElementDialogActive (ElementDialog eltd);
 
 void ElementDialogDisplay (ElementDialog eltd, Element element);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Element_h */

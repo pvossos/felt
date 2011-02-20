@@ -17,33 +17,12 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	literal.h						*
- *									*
- * Description:	This file contains the function declarations for the	*
- *		virtual machine instructions involving literals.	*
- ************************************************************************/
+#ifndef APPEARANCEINP_H
+#define APPEARANCEINP_H
 
-# ifndef _LITERAL_H
-# define _LITERAL_H
+# define RECTANGLE 0
+# define POLYLINE  1
+# define TEXT      2
+# define ARC       3
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
-/*----------------------------------------------------------------------*/
-
-int arg_op   (void);
-int dbl_op   (void);
-int glbl_op  (void);
-int local_op (void);
-int null_op  (void);
-int str_op   (void);
-
-/*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
-
-# endif /* _LITERAL_H */
+#endif

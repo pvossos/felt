@@ -24,6 +24,7 @@
  *		type definitions for the load dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -39,8 +40,8 @@
 # include "TabGroup.h"
 # include "util.h"
 # include "fe.h"
-# include "objects.h"
 # include "allocate.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -79,15 +80,15 @@ struct load_dialog {
     String        *loads;
     Distributed    active;
     Boolean        new_copy;
-    Tree           tree;
+    Problem::DistributedSet *tree;
 };
 
-static String labels [ ] = {
+static const char* labels [ ] = {
     "Name:", "LocalX", "LocalY", "LocalZ", "GlobalX", "GlobalY", 
     "GlobalZ", "perpend", "parallel", "radial", "axial", "Node", "Magnitude"
 };
 
-static String names [ ] = {
+static const char* names [ ] = {
      "nameLabel","localX_label","localY_label","localZ_label","globalX_label",
      "globalY_label", "globalZ_label", "perpendicular_label",
      "parallel_label", "radial_label", "axial_label", "node_label", "magnitude_label"
@@ -400,12 +401,12 @@ empties all fields.  'Copy' empties the name field only.";
  *		index of the active load is also set.			*
  ************************************************************************/
 
-static int AppendLoadName (Item item)
+static int AppendLoadName (Distributed item)
 {
-    if (dialog -> active == (Distributed) item)
+    if (dialog -> active == item)
 	list_index = num_loads;
 
-    dialog -> loads [num_loads ++] = ((Distributed) item) -> name;
+    dialog -> loads [num_loads ++] = XtNewString(item -> name.c_str());
     return 0;
 }
 
@@ -545,7 +546,6 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     unsigned		 i;
     char		 buffer [32];
     Distributed		 active;
-    struct distributed 	 dummy;
     LoadDialog		 loadd;
     XawListReturnStruct	*info;
 
@@ -556,12 +556,11 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the active load from the tree if selected. */
 
     if (w != NULL) {
-	info = (XawListReturnStruct *) call_data;
-	if (info -> list_index == XAW_LIST_NONE)
-	    return;
-
-	dummy.name = info -> string;
-	loadd -> active = (Distributed) TreeSearch (loadd -> tree, &dummy);
+        info = (XawListReturnStruct *) call_data;
+        if (info -> list_index == XAW_LIST_NONE)
+            return;
+        
+        loadd->active = SetSearch(*(loadd->tree), info->string);
     }
 
     active = loadd -> active;
@@ -570,10 +569,10 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
     /* Update all of the text entries. */
 
-    SetTextString (loadd -> name, active -> name);
+    SetTextString (loadd -> name, active -> name.c_str());
 
     for (i = 1 ; i <= 4 ; i++) {
-       if (i <= active -> nvalues) {
+       if (i <= active -> value.size()) {
           sprintf (buffer, "%g", active -> value [i].magnitude);
           SetTextString (loadd -> magnitude[i-1], buffer);
 
@@ -637,8 +636,8 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     String		value;
-    struct distributed  dummy;
-    struct distributed  old;
+    distributed_t  dummy;
+    distributed_t  old;
     Distributed	 	found;
     Distributed	 	active;
     Boolean	 	duplicate;
@@ -657,7 +656,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the load. */
 
     dummy.name = GetTextString (loadd -> name);
-    found = (Distributed) TreeSearch (loadd -> tree, &dummy);
+    Problem::DistributedSet::iterator it = loadd->tree->find(&dummy);
+    found = it != loadd->tree->end() ? *it : NULL;
     duplicate = found && (found != loadd -> active || loadd -> new_copy);
 
 
@@ -667,7 +667,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	XBell (XtDisplay (loadd -> name), 0);
 	SetFocus (loadd -> name);
 	if (!loadd -> new_copy)
-	    SetTextString (loadd -> name, loadd -> active -> name);
+	    SetTextString (loadd -> name, loadd -> active -> name.c_str());
 	else
 	    SetTextString (loadd -> name, "");
 
@@ -682,24 +682,19 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
            }
         }
         
-        if (!loadd -> new_copy && count > loadd -> active -> nvalues) {
-	   loadd -> active -> nvalues = count;
-           ZeroOffset (loadd -> active -> value);
-	   XtFree ((char *) loadd -> active -> value);
-	   loadd -> active -> value = (Pair *) XtMalloc (sizeof (Pair) * count);
-           UnitOffset (loadd -> active -> value);
+        if (!loadd -> new_copy && count > loadd -> active -> value.size()) {
+            loadd->active->value.resize(count);
         }
 
 	/* Create a new load or new name as needed. */
 
 	if (loadd -> new_copy)
-	   loadd -> active=CreateDistributed (XtNewString (dummy.name), count);
-	else if (strcmp (loadd -> active -> name, dummy.name)) {
+        loadd -> active = new distributed_t(dummy.name.c_str(), count);
+	else if (strcmp (loadd -> active -> name.c_str(), dummy.name.c_str())) {
            old.name = loadd -> active -> name;
-           TreeDelete (loadd -> tree, &old);
-           XtFree (loadd -> active -> name);
-	   loadd -> active -> name = XtNewString (dummy.name);
-           TreeInsert (loadd -> tree, loadd -> active);
+           loadd->tree->erase(&old);
+           loadd->active->name = dummy.name;
+           loadd->tree->insert(loadd->active);
 	}
 
 	active = loadd -> active;
@@ -712,10 +707,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
         }
 
         active -> direction = GetRadioState (loadd);
-	active -> nvalues = count;
+        active -> value.resize(count);
         
 	if (loadd -> new_copy)
-	    TreeInsert (loadd -> tree, loadd -> active);
+        loadd->tree->insert(loadd->active);
 
 	if (loadd -> callback != NULL) {
 	    w = loadd -> shell;
@@ -774,8 +769,8 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 		return;
 	}
 
-	TreeDelete (loadd -> tree, loadd -> active);
-	DestroyDistributed (loadd -> active);
+    loadd->tree->erase(loadd->active);
+	delete loadd -> active;
 	loadd -> active = NULL;
     }
 
@@ -1135,7 +1130,7 @@ void LoadDialogDisplay (LoadDialog loadd, Distributed load)
  *		operation is performed to display the active values.	*
  ************************************************************************/
 
-void LoadDialogUpdate (LoadDialog loadd, Tree tree)
+void LoadDialogUpdate (LoadDialog loadd, Problem::DistributedSet *tree)
 {
     Cardinal nbytes;
 
@@ -1146,7 +1141,7 @@ void LoadDialogUpdate (LoadDialog loadd, Tree tree)
 	tree = loadd -> tree;
 
     if (loadd -> active == NULL || tree != loadd -> tree)
-	loadd -> active = (Distributed) TreeMinimum (tree);
+        loadd -> active = SetMinimum(*tree);
 
 
     /* Construct the array of load names. */
@@ -1157,11 +1152,10 @@ void LoadDialogUpdate (LoadDialog loadd, Tree tree)
     loadd -> tree = tree;
     loadd -> new_copy = False;
 
-    nbytes = (TreeSize (loadd -> tree) + 1) * sizeof (String);
+    nbytes = (loadd->tree->size() + 1) * sizeof (String);
     loadd -> loads = (String *) XtRealloc ((char *) loadd -> loads, nbytes);
 
-    TreeSetIterator (loadd -> tree, AppendLoadName);
-    TreeIterate (loadd -> tree);
+    std::for_each(loadd->tree->begin(), loadd->tree->end(), AppendLoadName);
     loadd -> loads [num_loads] = NULL;
 
 

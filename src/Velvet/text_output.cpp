@@ -35,7 +35,6 @@
 # include "OutputDialog.h"
 # include "fe.h"
 # include "FileDialog.h"
-# include "Tree.h"
 # include "globals.h"
 # include "procedures.h"
 

@@ -35,9 +35,8 @@
 # include "globals.h"
 # include "vfe.h"
 # include "text_entry.h"
-# include "objects.h"
 # include "error.h"
-
+# include "setaux.hpp"
 
 extern ElementDialog element_d;
 extern MaterialDialog material_d;
@@ -83,15 +82,15 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	newinfo = True;
 	DW_RemoveFigure (drawing, drawn -> figure);
 	DW_RemoveFigure (drawing, drawn -> label);
-        
-	(void) TreeDelete (problem.element_tree, element);
-	DestroyElement (element);
+    
+    problem.element_set.erase(element);
+	delete element;
     }
 
 
     if (newinfo == True) {
 	ElementDialogDisplay (element_d, NULL);
-	ElementDialogUpdate (element_d, problem.element_tree, NULL, NULL, NULL);
+	ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
     }
 
     if (firsttime == False) {
@@ -126,16 +125,16 @@ DoDeleteElt(Element element)
     sprintf (message, "Element %d deleted.  Select element:", element -> number);
 
     if (element == ElementDialogActive (element_d)) {
-	newelement = (Element) TreePredecessor (problem.element_tree, element);
-	if (newelement == NULL)
-	    newelement = (Element) TreeSuccessor (problem.element_tree, element);
-	ElementDialogDisplay (element_d, newelement);
+        newelement = SetPredecessor(problem.element_set, element);
+        if (!newelement)
+            newelement = SetSuccessor(problem.element_set, element);
+        ElementDialogDisplay (element_d, newelement);
     }
 
-    (void) TreeDelete (problem.element_tree, element);
-    ElementDialogUpdate (element_d, problem.element_tree, NULL, NULL, NULL);
+    problem.element_set.erase(element);
+    ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
 
-    DestroyElement (element);
+    delete element;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -187,9 +186,7 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
-    Item           found;
-
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
 	if (!strcmp (status, "w"))
@@ -197,13 +194,14 @@ void DeleteEltAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
+    Element found = SetSearch(problem.element_set, dummy.number);
+
     if (found == NULL) {
 	error ("Element %d does not exist.", dummy.number);
 	return;
     }
 
-    DoDeleteElt ((Element) found);
+    DoDeleteElt (found);
 }
 
 
@@ -267,20 +265,18 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 void EditElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char          *status;
-    struct element dummy;
-    Item           found;
-
+    element_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
-
-    found = TreeSearch (problem.element_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Element %d does not exist.", dummy.number);
-	return;
+    
+    Element found = SetSearch(problem.element_set, dummy.number);
+    if (!found) {
+        error ("Element %d does not exist.", dummy.number);
+        return;
     }
-
-    ElementDialogDisplay (element_d, (Element) found);
+    
+    ElementDialogDisplay (element_d, found);
     ElementDialogPopup (element_d);
 }
 
@@ -330,8 +326,6 @@ void DoAddElement (Node node)
     static char      message [80];
     unsigned         i;
     unsigned         max;
-    Element          element;
-
 
     nodes [current_node] = node;
 
@@ -347,11 +341,10 @@ void DoAddElement (Node node)
 	return;
     }
 
-
-    element = (Element) TreeMaximum (problem.element_tree);
+    Element element = SetMaximum(problem.element_set);
     max = element != NULL ? element -> number : 0;
 
-    element = CreateElement (max + 1, ElementListDefinition (element_l));
+    element = new element_t(max + 1, ElementListDefinition (element_l));
     element -> material = MaterialDialogActive (material_d);
     for (i = 1; i <= num_nodes; i ++)
 	element -> node [i] = nodes [i];
@@ -362,7 +355,7 @@ void DoAddElement (Node node)
     sprintf (message, "Added element %d.  Select first node:", max + 1);
     ChangeStatusLine (message, True);
 
-    ElementDialogUpdate (element_d, problem.element_tree, NULL, NULL, NULL);
+    ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
     ElementDialogDisplay (element_d, element);
 }
 
@@ -370,9 +363,7 @@ void DoAddElement (Node node)
 void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
-
+    node_t dummy;
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
@@ -382,13 +373,13 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Node found = SetSearch(problem.node_set, dummy.number);    
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoAddElement ((Node) found);
+    DoAddElement (found);
 }
 
 
@@ -495,30 +486,28 @@ int DrawElement (Element element)
     Drawn            drawn;
     unsigned         num;
     unsigned         j;
-    Item	     found;
     float	     x;
     float	     y;
     Figure	     label;
     char	     buffer [10];
 
-    found = TreeInsert (problem.element_tree, element);
-    if (found != (Item) element)
-	return 1;
+    if (0 == problem.element_set.count(element))
+        return 1;
 
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
         (void) DW_SetFont (drawing, "fixed");
 
-    if (element -> numdistributed && element -> distributed[1] -> color) {
-        if (DW_SetForeground (drawing,element->distributed[1]->color) == False)
+    if (element -> numdistributed && !element -> distributed[1] -> color.empty()) {
+        if (DW_SetForeground (drawing,element->distributed[1]->color.c_str()) == False)
 	    (void) DW_SetForeground (drawing, "black");
     }
-    else if (element -> material -> color) {
-        if (DW_SetForeground (drawing, element -> material -> color) == False)
+    else if (!element -> material -> color.empty()) {
+        if (DW_SetForeground (drawing, element -> material -> color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
     else {
-	if (DW_SetForeground (drawing, canvas -> element_color) == False)
-	    (void) DW_SetForeground (drawing, "black");
+        if (DW_SetForeground (drawing, canvas -> element_color.c_str()) == False)
+            (void) DW_SetForeground (drawing, "black");
     }
 
     num = element -> definition -> shapenodes;
@@ -592,7 +581,7 @@ int DrawElement (Element element)
 }
 
 
-void MoveElement (Element element, Node *old_nodes)
+void MoveElement (Element element, const Node *old_nodes)
 {
     unsigned		i;
     unsigned		numnodes;

@@ -24,6 +24,7 @@
  *		visualization of the finite element structures.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <X11/Intrinsic.h>
@@ -35,16 +36,16 @@
 # include "vfe.h"
 # include "error.h"
 # include "problem.h"
-# include "objects.h"
 # include "allocate.h"
 # include "globals.h"
 # include "procedures.h"
 
 # define Valid(x)	(appearance.x != UnspecifiedValue)
-# define Present(x)	(appearance.x != NULL)
 
+# define Present(x)	(!appearance.x.empty())
 
 extern CanvasDialog	canvas_d;
+extern FigureSet figure_set;
 static FigureAttributes	attributes;
 
 
@@ -67,60 +68,60 @@ static void DrawDisplayList (void)
 
     figure = NULL;
 
-    if (DW_SetForeground (drawing, canvas -> tool_color) == False)
-	DW_SetForeground (drawing, "black");
+    if (DW_SetForeground (drawing, canvas -> tool_color.c_str()) == False)
+        DW_SetForeground (drawing, "black");
 
-    if (DW_SetFont (drawing, canvas -> tool_font) == False)
-	DW_SetFont (drawing, "fixed");
+    if (DW_SetFont (drawing, canvas -> tool_font.c_str()) == False)
+        DW_SetFont (drawing, "fixed");
 
-    for (i = 0; i < appearance.num_figures; i ++) {
+    for (i = 0; i < appearance.figures.size(); i ++) {
 	info = &appearance.figures [i];
 
-	if (info -> color)
-	    DW_SetForeground (drawing, info -> color);
+	if (!info -> color.empty())
+	    DW_SetForeground (drawing, info -> color.c_str());
 
 
 	switch (info -> type) {
 	case RECTANGLE:
 	    figure = DW_DrawRectangle (drawing, True, info -> x, info -> y,
 					info -> width, info -> height);
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 
 	case POLYLINE:
-	    if (info -> num_points == 2) {
+	    if (info -> points.size() == 2) {
 		figure = DW_DrawLine (drawing, info -> points [0].x,
 					info -> points [0].y,
 					info -> points [1].x,
 					info -> points [1].y);
 
-	    } else if (info -> num_points > 2) {
-		for (j = 0; j < info -> num_points; j ++) {
-		    points [j].x = info -> points [j].x;
-		    points [j].y = info -> points [j].y;
-		}
+	    } else if (info -> points.size() > 2) {
+            for (j = 0; j < info -> points.size(); j ++) {
+                points [j].x = info -> points [j].x;
+                points [j].y = info -> points [j].y;
+            }
 
 		figure = DW_DrawPolygon (drawing, True, points,
-					info -> num_points);
+                                 info -> points.size());
 	    }
 
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 
 	case TEXT:
-	    if (info -> font)
-	        DW_SetFont (drawing, info -> font);
+	    if (!info -> font.empty())
+	        DW_SetFont (drawing, info -> font.c_str());
 
 	    figure = DW_DrawText (drawing, True, info -> x, info -> y,
-					info -> text);
-	    TreeInsert (figure_tree, figure);
+                              info -> text.c_str());
+        figure_set.insert(figure);
 	    break;
 
 	case ARC:
 	    figure = DW_DrawArc (drawing, True, info -> x, info -> y,
 					info -> width, info -> height,
 					info -> start, info -> length);
-	    TreeInsert (figure_tree, figure);
+        figure_set.insert(figure);
 	    break;
 	}
     }
@@ -160,7 +161,7 @@ void DrawProblem (double z)
     ymin = 1;
     ymax = -1;
 
-    for (i = 1; i <= problem.num_nodes; i ++) {
+    for (i = 1; i <= problem.nodes.size(); i ++) {
 	n = problem.nodes [i];
 
 	if (n -> z == z)
@@ -179,8 +180,8 @@ void DrawProblem (double z)
 	    }
     }
 
-    if (xmin > xmax && problem.num_nodes)
-	error ("No nodes lie within the plane z = %g.", z);
+    if (xmin > xmax && !problem.nodes.empty())
+        error ("No nodes lie within the plane z = %g.", z);
 
 
     /* Expand the minimum and maximum a bit. */
@@ -298,19 +299,19 @@ void DrawProblem (double z)
 	canvas -> element_numbers = appearance.element_numbers;
 
     if (Present (node_color))
-	canvas -> node_color = strdup (appearance.node_color);
+        canvas -> node_color = appearance.node_color;
 
     if (Present (element_color))
-	canvas -> element_color = strdup (appearance.element_color);
+        canvas -> element_color = appearance.element_color;
 
     if (Present (label_font))
-	canvas -> label_font = strdup (appearance.label_font);
+        canvas -> label_font = appearance.label_font;
 
     if (Present (tool_color))
-	canvas -> tool_color = strdup (appearance.tool_color);
+        canvas -> tool_color = appearance.tool_color;
 
     if (Present (tool_font))
-	canvas -> tool_font = strdup (appearance.tool_font);
+        canvas -> tool_font = appearance.tool_font;
 
     CanvasDialogSet (canvas_d);
 
@@ -324,13 +325,13 @@ void DrawProblem (double z)
 
     /* Draw the problem. */
 
-    for (i = 1; i <= problem.num_elements; i ++)
+    for (i = 1; i <= problem.elements.size(); i ++)
 	if (problem.elements [i] != NULL)
          DrawElement (problem.elements [i]);
 
-    for (i = 1; i <= problem.num_nodes; i ++)
-	if (problem.nodes [i] != NULL)
-         DrawNode (problem.nodes [i]);
+    for (i = 1; i <= problem.nodes.size(); i ++)
+        if (problem.nodes [i] != NULL)
+            DrawNode (problem.nodes [i]);
 
     DrawDisplayList ( );
 
@@ -350,31 +351,38 @@ void DrawProblem (double z)
  * Description:	Destroy the current problem invocation.			*
  ************************************************************************/
 
-void DestroyProblem (ItemDestructor material_op)
+void DestroyProblem (bool delmaterials)
 {
-    (void) TreeSetDestructor (problem.node_tree, (ItemDestructor)
-		DestroyNode);
-    (void) TreeDestroy (problem.node_tree);
+    for (Problem::NodeSet::iterator it = problem.node_set.begin();
+         it != problem.node_set.end(); ++it)
+        delete *it;
+    problem.node_set.clear();
 
-    (void) TreeSetDestructor (problem.element_tree, (ItemDestructor)
-		DestroyElement);
-    (void) TreeDestroy (problem.element_tree);
+    for (Problem::ElementSet::iterator it = problem.element_set.begin();
+         it != problem.element_set.end(); ++it)
+        delete *it;
+    problem.element_set.clear();
 
-    (void) TreeSetDestructor (problem.force_tree, (ItemDestructor)
-		DestroyForce);
-    (void) TreeDestroy (problem.force_tree);
+    for (Problem::ForceSet::iterator it = problem.force_set.begin();
+         it != problem.force_set.end(); ++it)
+        delete *it;
+    problem.force_set.clear();
 
-    (void) TreeSetDestructor (problem.material_tree, (ItemDestructor)
-		material_op);
-    (void) TreeDestroy (problem.material_tree);
+    if (delmaterials)
+        for (Problem::MaterialSet::iterator it = problem.material_set.begin();
+             it != problem.material_set.end(); ++it)
+            delete *it;
+    problem.material_set.clear();
 
-    (void) TreeSetDestructor (problem.constraint_tree, (ItemDestructor)
-		DestroyConstraint);
-    (void) TreeDestroy (problem.constraint_tree);
+    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
+         it != problem.constraint_set.end(); ++it)
+        delete *it;
+    problem.constraint_set.clear();
 
-    (void) TreeSetDestructor (problem.distributed_tree, (ItemDestructor)
-		DestroyDistributed);
-    (void) TreeDestroy (problem.distributed_tree);
+    for (Problem::DistributedSet::iterator it = problem.distributed_set.begin();
+         it != problem.distributed_set.end(); ++it)
+        delete *it;
+    problem.distributed_set.clear();
 }
 
 
@@ -384,17 +392,15 @@ void DestroyProblem (ItemDestructor material_op)
  * Description:	Sets the node numbering for a specified node.		*
  ************************************************************************/
 
-static int setnodenum (Item item)
+static int setnodenum (Node node)
 {
     static char	     number [10];
     FigureAttributes attr;
-    Node	     node;
     Drawn	     drawn;
     float	     x;
     float	     y;
 
 
-    node = (Node) item;
     drawn = (Drawn) node -> aux;
 
     if (drawn -> figure == NULL)
@@ -422,16 +428,15 @@ static int setnodenum (Item item)
 
 void SetNodeNumbering (int value)
 {
-    if (DW_SetForeground (drawing, canvas -> node_color) == False)
-	(void) DW_SetForeground (drawing, "black");
+    if (DW_SetForeground (drawing, canvas -> node_color.c_str()) == False)
+        (void) DW_SetForeground (drawing, "black");
 
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
-	(void) DW_SetFont (drawing, "fixed");
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
+        (void) DW_SetFont (drawing, "fixed");
 
     attributes.visible = value;
     DW_SetAutoRedraw (drawing, False);
-    (void) TreeSetIterator (problem.node_tree, setnodenum);
-    (void) TreeIterate (problem.node_tree);
+    std::for_each(problem.node_set.begin(), problem.node_set.end(), setnodenum);
     DW_SetAutoRedraw (drawing, True);
 }
 
@@ -442,17 +447,15 @@ void SetNodeNumbering (int value)
  * Description:	Sets the element numbering for a specified element.	*
  ************************************************************************/
 
-static int setelementnum (Item item)
+static int setelementnum (Element element)
 {
     static char	     number [10];
     FigureAttributes attr;
-    Element	     element;
     Drawn	     drawn;
     float	     x;
     float	     y;
 
 
-    element = (Element) item;
     drawn = (Drawn) element -> aux;
 
     if (drawn -> figure == NULL)
@@ -479,64 +482,63 @@ static int setelementnum (Item item)
 
 void SetElementNumbering (int value)
 {
-    if (DW_SetForeground (drawing, canvas -> element_color) == False)
-	(void) DW_SetForeground (drawing, "black");
-
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
-	(void) DW_SetFont (drawing, "fixed");
+    if (DW_SetForeground (drawing, canvas -> element_color.c_str()) == False)
+        (void) DW_SetForeground (drawing, "black");
+    
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
+        (void) DW_SetFont (drawing, "fixed");
 
     attributes.visible = value;
     DW_SetAutoRedraw (drawing, False);
-    (void) TreeSetIterator (problem.element_tree, setelementnum);
-    (void) TreeIterate (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), setelementnum);
     DW_SetAutoRedraw (drawing, True);
 }
 
-static int RecolorNode (Item item)
+static int RecolorNode (Node n)
 {
-   Node			n;
    FigureAttributes	attrib;
    Drawn		drawn;
 
-   n = (Node) item;
    drawn = (Drawn) n -> aux;
 
-   if (n -> force && n -> force -> color) 
-      attrib.color = n -> force -> color; 
-   else if (n -> constraint -> color) 
-      attrib.color = n -> constraint -> color; 
+   if (n -> force && !n -> force -> color.c_str()) 
+       attrib.color = XtNewString(n -> force -> color.c_str()); 
+   else if (!n -> constraint -> color.empty()) 
+       attrib.color = XtNewString(n -> constraint -> color.c_str()); 
    else 
-      attrib.color = canvas -> node_color;
+       attrib.color = XtNewString(canvas->node_color.c_str());
 
    if (drawn -> figure)
       DW_SetAttributes (drawing, drawn -> figure, DW_FigureColor, &attrib);
    if (drawn -> label)
       DW_SetAttributes (drawing, drawn -> label, DW_FigureColor, &attrib);
 
+   XtFree(attrib.color);
+   
    return 0;
 }
 
-static int RecolorElement (Item item)
+static int RecolorElement (Element e)
 {
    FigureAttributes	attrib;
-   Element		e;
    Drawn		drawn;
 
-   e = (Element) item;
    drawn = (Drawn) e -> aux;
 
-   if (e -> numdistributed && e -> distributed[1] -> color) 
-      attrib.color = e -> distributed[1] -> color; 
-   else if (e -> material -> color) 
-      attrib.color = e -> material -> color; 
+   if (e -> numdistributed && !e -> distributed[1] -> color.empty()) 
+       attrib.color = XtNewString(e -> distributed[1] -> color.c_str()); 
+   else if (!e -> material -> color.empty()) 
+       attrib.color = XtNewString(e -> material -> color.c_str()); 
    else 
-      attrib.color = canvas -> element_color;
+       attrib.color = XtNewString(canvas -> element_color.c_str());
 
    if (drawn -> figure)
       DW_SetAttributes (drawing, drawn -> figure, DW_FigureColor, &attrib);
    if (drawn -> label)
       DW_SetAttributes (drawing, drawn -> label, DW_FigureColor, &attrib);
-
+   
+   XtFree(attrib.color);
+   
    return 0;
 } 
 
@@ -551,11 +553,9 @@ void RecolorCanvas (void)
 {
    DW_SetAutoRedraw (drawing, False);
 
-   TreeSetIterator (problem.node_tree, RecolorNode);
-   TreeIterate (problem.node_tree);
+   std::for_each(problem.node_set.begin(), problem.node_set.end(), RecolorNode);
 
-   TreeSetIterator (problem.element_tree, RecolorElement);
-   TreeIterate (problem.element_tree);
+   std::for_each(problem.element_set.begin(), problem.element_set.end(), RecolorElement);
 
    DW_SetAutoRedraw (drawing, True);
 

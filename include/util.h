@@ -59,9 +59,9 @@ String GetLabelString (Widget w);
 
 void AddAutoRepeatAction (XtAppContext app_context);
 
-Widget CreateHelpButton (Widget parent, String name);
+Widget CreateHelpButton (Widget parent, const char *name);
 
-void UpdateHelpMessage (Widget button, String message, Dimension width);
+void UpdateHelpMessage (Widget button, const char* message, Dimension width);
 
 /*----------------------------------------------------------------------*/
 

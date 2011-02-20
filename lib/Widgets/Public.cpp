@@ -41,7 +41,7 @@
    Description:	Sets the cached color of the widget or a figure.
  ************************************************************************/
 
-static Boolean SetColor (DrawingWidget dw, CacheData *old_data, String name, Pixel *pixel)
+static Boolean SetColor (DrawingWidget dw, CacheData *old_data, const char *name, Pixel *pixel)
 {
     Display  *display;
     CacheData data;
@@ -78,7 +78,7 @@ static Boolean SetColor (DrawingWidget dw, CacheData *old_data, String name, Pix
    Description:	Sets the cached font of the widget or a figure.
  ************************************************************************/
 
-static Boolean SetFont (DrawingWidget dw, CacheData *old_data, String name, XFontStruct **font)
+static Boolean SetFont (DrawingWidget dw, CacheData *old_data, const char *name, XFontStruct **font)
 {
     Display  *display;
     CacheData data;
@@ -337,7 +337,7 @@ Figure DW_FillArc (Widget gw, Boolean scaled, float x, float y, float width, flo
    Description: Adds a text figure to the display list.
  ************************************************************************/
 
-Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, String text)
+Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, const char *text)
 {
     Figure	  fig;
     DrawingWidget dw;
@@ -422,7 +422,7 @@ Figure DW_DrawBitmap (Widget gw, float x, float y, Pixmap pixmap)
    Description:	Sets the foreground pixel value for drawing.
  ************************************************************************/
 
-Boolean DW_SetForeground (Widget gw, String name)
+Boolean DW_SetForeground (Widget gw, const char *name)
 {
     DrawingWidget dw;
 
@@ -437,7 +437,7 @@ Boolean DW_SetForeground (Widget gw, String name)
    Description:	Sets the font for drawing.
  ************************************************************************/
 
-Boolean DW_SetFont (Widget gw, String name)
+Boolean DW_SetFont (Widget gw, const char *name)
 {
     DrawingWidget dw;
 

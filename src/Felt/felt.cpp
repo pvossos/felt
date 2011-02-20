@@ -205,8 +205,8 @@ int main (int argc, char *argv[])
     if (debug) 
 	WriteFeltFile ("-");
 
-    if (problem.num_nodes == 0 || problem.num_elements == 0) 
-       Fatal ("nothing to do");
+    if (problem.nodes.empty() || problem.elements.empty()) 
+        Fatal ("nothing to do");
 
     if (preview)
        DrawStructureASCII (stdout, 78, 22);
@@ -350,6 +350,10 @@ int main (int argc, char *argv[])
 
           WriteStructuralResults (stdout, title, R);
 
+          DestroyMatrix(K);
+          DestroyMatrix(Kcond);
+          DestroyVector(Fcond);
+          DestroyVector(F);
           break;
 
        case StaticLoadCases:
@@ -394,6 +398,8 @@ int main (int argc, char *argv[])
              else 
                 PlotLoadRangeTable (dtable, stdout);
 
+          DestroyMatrix(Kcond);
+          
           break; 
 
        case StaticSubstitutionLoadRange:
@@ -478,6 +484,8 @@ int main (int argc, char *argv[])
 
           WriteTemperatureResults (stdout, title);
 
+          DestroyMatrix(Kcond);
+          
           break;
 
        case Modal:
@@ -573,5 +581,29 @@ int main (int argc, char *argv[])
     if (summary)
        WriteMaterialStatistics (stdout);
 
+    // try cleanup
+    for (size_t i = 1; i <= problem.nodes.size(); i++)
+        delete problem.nodes[i];
+    problem.nodes.clear();
+
+    for (size_t i = 1; i <= problem.elements.size(); i++)
+        delete problem.elements[i];
+    problem.elements.clear();
+
+    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
+         it != problem.constraint_set.end(); ++it)
+        delete *it;
+    problem.constraint_set.clear();
+
+    for (Problem::ForceSet::iterator it = problem.force_set.begin();
+         it != problem.force_set.end(); ++it)
+        delete *it;
+    problem.force_set.clear();
+
+    for (Problem::MaterialSet::iterator it = problem.material_set.begin();
+         it != problem.material_set.end(); ++it)
+        delete *it;
+    problem.material_set.clear();
+    
     exit (0);
 }

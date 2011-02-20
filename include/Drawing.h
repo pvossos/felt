@@ -20,9 +20,8 @@
 # ifndef _Drawing_h
 # define _Drawing_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include <set>
+# include <stdint.h>
 
 /*----------------------------------------------------------------------*/
 
@@ -122,6 +121,18 @@ extern WidgetClass drawingWidgetClass;
 
 typedef struct figure *Figure;
 
+struct LtFigure
+{
+     bool operator()(const Figure a, const Figure b) const
+          {
+               uintptr_t ai = (uintptr_t) a;
+               uintptr_t bi = (uintptr_t) b;
+               return ai < bi;
+          };
+};
+
+typedef std::set<Figure, LtFigure> FigureSet;
+
 typedef struct {
     float x, y;
 } Point;
@@ -209,7 +220,7 @@ Figure DW_DrawArc (Widget gw, Boolean scaled, float x, float y, float width, flo
 
 Figure DW_FillArc (Widget gw, Boolean scaled, float x, float y, float width, float height, float start, float length);
 
-Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, String text);
+Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, const char *text);
 
 Figure DW_DrawPixmap (Widget gw, float x, float y, Pixmap pixmap);
 
@@ -233,9 +244,9 @@ Boolean DW_SetAttributes (Widget gw, Figure fig, long unsigned int valuemask, Fi
 
 void DW_ClipBox (Figure fig, XRectangle *rect);
 
-Boolean DW_SetForeground (Widget gw, String name);
+Boolean DW_SetForeground (Widget gw, const char *name);
 
-Boolean DW_SetFont (Widget gw, String name);
+Boolean DW_SetFont (Widget gw, const char *name);
 
 void DW_GetTextExtents (Widget gw, String string, float *w, float *h);
 
@@ -266,9 +277,5 @@ void DW_TranslateCoords (Widget gw, int x, int y, float *rx, float *ry);
 XtArgVal Float2Arg (float value);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Drawing_h */

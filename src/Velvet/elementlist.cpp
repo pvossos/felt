@@ -24,6 +24,7 @@
  *		type definitions for the element list box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -456,9 +457,9 @@ String ElementListName (ElementList elementl)
 
 static int	count;
 
-static int SetName (Item item)
+static int SetName (Definition item)
 {
-    element_names [count ++] = XtNewString (((Definition) item) -> name);
+    element_names [count ++] = XtNewString (item -> name);
     return 0;
 }
 
@@ -480,13 +481,11 @@ void ElementListSetupNames (ElementList elementl)
         XtFree ((char *) element_names);
     }
      
-    num_types = TreeSize (problem.definition_tree);
+    num_types = problem.definition_set.size();
     element_names = (String *) XtMalloc (sizeof(String) * num_types);
 
     count = 0;
-    TreeSetIterator (problem.definition_tree, SetName);
-    TreeIterate (problem.definition_tree);
-
+    std::for_each(problem.definition_set.begin(), problem.definition_set.end(), SetName);
     return;
 }
 

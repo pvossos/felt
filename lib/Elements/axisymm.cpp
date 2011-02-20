@@ -174,12 +174,12 @@ axisymmetricEltStress(Element element)
    element -> stress [1] -> values [5] = 0.0;
    element -> stress [1] -> values [6] = 0.0;
 
-   PrincipalStresses3D(element -> stress [1] -> values);
+   PrincipalStresses3D(element -> stress [1] -> values.c_ptr1());
 
    for (i = 1 ; i <= 3 ; i++) {
-      if (element -> node [i] -> stress == NULL) {
-         fprintf (stderr,"allocating stress array for node %d\n", element -> node [i] -> number);
-         AllocateNodalStress(element -> node [i]);
+       if (element -> node [i] -> stress.empty()) {
+           fprintf (stderr,"allocating stress array for node %d\n", element -> node [i] -> number);
+           AllocateNodalStress(element -> node [i]);
      }
 
       element -> node [i] -> numelts ++;
@@ -324,16 +324,16 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 
    for (i = 1 ; i <= element -> numdistributed ; i++) {
 
-      if (element -> distributed[i] -> nvalues != 2) {
+      if (element -> distributed[i] -> value.size() != 2) {
          error ("load %s does not have 2 nodal values (element %d)",
-                 element -> distributed[i] -> name, element -> number);
+                element -> distributed[i] -> name.c_str(), element -> number);
          count++;
       }
 
       if (element -> distributed[i] -> direction != Axial &&
          element -> distributed[i] -> direction != Radial) {
           error ("invalid direction specified for load %s (element %d)",
-                 element -> distributed[i] -> name, element -> number);
+                 element -> distributed[i] -> name.c_str(), element -> number);
           count++;
       }
 
@@ -342,13 +342,13 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 
       if (node_a < 1 || node_a > 3 || node_b < 1 || node_b > 3) {
          error ("incorrect node numbering for load %s (element %d)", 
-                element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(),element -> number);
          count++;
       }
 
       if (node_a == node_b) {
          error ("incorrect node numbering for load %s (element %d)", 
-                element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(),element -> number);
          count++;
       }
 

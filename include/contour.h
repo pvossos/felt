@@ -9,11 +9,11 @@ extern "C" {
 
 /*----------------------------------------------------------------------*/
 
-void PlotStressField (char *out, Element *element, unsigned numelts, int comp,
+void PlotStressField (char *out, const Element *element, unsigned numelts, int comp,
                       int equalize, int plot_elt, int width, int height);
 
-void PlotDisplacementField (char *out, Node *node, unsigned numnodes,
-                            Element *element, unsigned numelts, int comp, 
+void PlotDisplacementField (char *out, const Node *node, unsigned numnodes,
+                            const Element *element, unsigned numelts, int comp, 
                             int equalize, int plot_elt, int width, int height);
 
 /*----------------------------------------------------------------------*/

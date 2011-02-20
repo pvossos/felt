@@ -27,9 +27,7 @@
 # ifndef _Canvas_h
 # define _Canvas_h
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+#include <string>
 
 /*----------------------------------------------------------------------*/
 
@@ -47,11 +45,11 @@ typedef struct canvas {
     Boolean	grid;
     Boolean	node_numbers;
     Boolean	element_numbers;
-    String	element_color;
-    String	node_color;
-    String	tool_color;
-    String	tool_font;
-    String	label_font;
+    std::string element_color;
+    std::string	node_color;
+    std::string tool_color;
+    std::string tool_font;
+    std::string label_font;
 } *Canvas;
 
 extern Canvas	canvas;
@@ -63,9 +61,5 @@ void CanvasDialogPopup (CanvasDialog canvasd);
 void CanvasDialogSet (CanvasDialog canvasd);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Canvas_h */

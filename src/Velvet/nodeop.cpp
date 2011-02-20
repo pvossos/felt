@@ -17,6 +17,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+# include <algorithm>
 # include <stdio.h>
 # include <string.h>
 # include <stdlib.h>
@@ -32,9 +33,9 @@
 # include "globals.h"
 # include "vfe.h"
 # include "text_entry.h"
-# include "objects.h"
 # include "error.h"
 # include "Node.h"
+# include "setaux.hpp"
 
 extern ConstraintDialog	constraint_d;
 extern NodeDialog node_d;
@@ -86,13 +87,12 @@ void AddNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 void DoAddNode (float x, float y, float z)
 {
    char     message [40];
-   Node     node;
    unsigned max;
 
-   node = (Node) TreeMaximum (problem.node_tree);
+   Node node = SetMaximum(problem.node_set);
    max = node != NULL ? node -> number : 0;
 
-   node = CreateNode (max + 1);
+   node = new node_t(max + 1);
    node -> constraint = ConstraintDialogActive (constraint_d);
    node -> x = x;
    node -> y = y;
@@ -107,7 +107,7 @@ void DoAddNode (float x, float y, float z)
    /* The node dialog needs to know that the new node is in
       the tree before it can display it. */
 
-   NodeDialogUpdate (node_d, problem.node_tree, NULL, NULL);
+   NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
    NodeDialogDisplay (node_d, node);
 
    changeflag = True;
@@ -120,11 +120,10 @@ static Figure           ghost_figure;
 static FigureAttributes attr;
 
 
-static int MoveNode (Item item)
+static int MoveNode (Element element)
 {
     unsigned i;
     unsigned numnodes;
-    Element  element = (Element) item;
     Drawn    drawn;
 
 
@@ -172,8 +171,7 @@ void DoWalkNode (Node node)
     DW_SetAutoRedraw (drawing, False);
     DW_SetAttributes (drawing, drawn -> figure, DW_FigureLocation, &attr);
     DW_SetAttributes (drawing, drawn -> label, DW_FigureLocation, &attr);
-    (void) TreeSetIterator (problem.element_tree, MoveNode);
-    (void) TreeIterate (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), MoveNode);
     DW_SetAutoRedraw (drawing, True);
 
     NodeDialogDisplay (node_d, node);
@@ -222,14 +220,14 @@ DeleteNodeGroup(Figure *figures, unsigned nfigures)
 	newinfo = True;
 	DW_RemoveFigure (drawing, drawn -> figure);
 	DW_RemoveFigure (drawing, drawn -> label);
-	(void) TreeDelete (problem.node_tree, node);
-	DestroyNode (node);
+    problem.node_set.erase(node);
+	delete node;
     }
 
 
     if (newinfo) {
         NodeDialogDisplay (node_d, NULL);
-	NodeDialogUpdate (node_d, problem.node_tree, NULL, NULL);
+	NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
     }
 
 
@@ -271,17 +269,16 @@ DoDeleteNode(Node node)
     sprintf (message, "Node %d deleted.  Select node:", node -> number);
 
     if (node == NodeDialogActive (node_d)) {
-	newnode = (Node) TreePredecessor (problem.node_tree, node);
-	if (newnode == NULL)
-	    newnode = (Node) TreeSuccessor (problem.node_tree, node);
-
-	NodeDialogDisplay (node_d, newnode);
+        newnode = SetPredecessor(problem.node_set, node);
+        if (!newnode)
+            newnode = SetSuccessor(problem.node_set, node);
+        NodeDialogDisplay (node_d, newnode);
     }
+    
+    problem.node_set.erase(node);
+    NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
 
-    (void) TreeDelete (problem.node_tree, node);
-    NodeDialogUpdate (node_d, problem.node_tree, NULL, NULL);
-
-    DestroyNode (node);
+    delete node;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -333,8 +330,7 @@ void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -343,13 +339,13 @@ void DeleteNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
-
-    DoDeleteNode ((Node) found);
+    
+    DoDeleteNode (found);
 }
 
 
@@ -413,20 +409,19 @@ void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 void EditNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
-
-    NodeDialogDisplay (node_d, (Node) found);
+    
+    NodeDialogDisplay (node_d, found);
     NodeDialogPopup (node_d);
 }
 
@@ -453,24 +448,22 @@ int DrawNode (Node node)
     Item		found;
     Drawn               drawn;
 
+    if (0 == problem.node_set.count(node))
+        return 1;
 
-    found = TreeInsert (problem.node_tree, (Item) node);
-    if (found != (Item) node)
-	return 1;
-
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
         (void) DW_SetFont (drawing, "fixed");
 
-    if (node -> force && node -> force -> color) {
-        if (DW_SetForeground (drawing, node -> force -> color) == False)
+    if (node -> force && !node -> force -> color.empty()) {
+        if (DW_SetForeground (drawing, node -> force -> color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
-    else if (node -> constraint -> color) {
-        if (DW_SetForeground (drawing, node -> constraint -> color) == False)
+    else if (!node -> constraint -> color.empty()) {
+        if (DW_SetForeground (drawing, node -> constraint -> color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
     else {
-        if (DW_SetForeground (drawing, canvas -> node_color) == False)
+        if (DW_SetForeground (drawing, canvas -> node_color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
 
@@ -643,20 +636,19 @@ void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 void MoveNodeAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL)
 	return;
 
-    found = TreeSearch (problem.node_tree, &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoMoveNode ((Node) found, False);
+    DoMoveNode (found, False);
 }
 
 
@@ -767,8 +759,7 @@ void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data)
 void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 {
     char       *status;
-    struct node dummy;
-    Item        found;
+    node_t dummy;
 
 
     if ((status = GetTextNumber (&dummy.number)) != NULL) {
@@ -777,13 +768,13 @@ void AssignMassAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
     }
 
-    found = TreeSearch (problem.node_tree, (Item) &dummy);
-    if (found == NULL) {
-	error ("Node %d does not exist.", dummy.number);
-	return;
+    Node found = SetSearch(problem.node_set, dummy.number);
+    if (!found) {
+        error ("Node %d does not exist.", dummy.number);
+        return;
     }
 
-    DoAssignMass ((Node) found);
+    DoAssignMass (found);
 }
 
 void SetMassAP (Widget w, XEvent *event, String *params, Cardinal *num)

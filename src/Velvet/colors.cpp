@@ -24,6 +24,7 @@
  *		type definitions for the colors dialog box.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -37,7 +38,7 @@
 # include "problem.h"
 # include "Colors.h"
 # include "util.h"
-# include "objects.h"
+# include "setaux.hpp"
 
 # ifndef X_NOT_STDC_ENV
 # include <stdlib.h>
@@ -53,7 +54,7 @@
 # define BOOLEAN Boolean
 # endif
 
-extern "C" void RecolorCanvas (void);
+extern  void RecolorCanvas (void);
 
 struct colors_dialog {
     Widget         shell;	/* topLevelShell  <specified>	 */
@@ -316,7 +317,7 @@ static void Action (Widget w, XEvent *event, String *params, Cardinal *num_param
  *		color name						*
  ************************************************************************/
 
-static int FindColorIndex (ColorsDialog colorsd, String color)
+static int FindColorIndex (ColorsDialog colorsd, const char *color)
 {
    unsigned	i;
 
@@ -339,14 +340,9 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
 {
     ColorsDialog	colorsd;
     XawListReturnStruct	*info;
-    String		color;
-    struct material	m;
-    struct constraint	c;
-    struct force	f;
-    struct distributed	l;
+    std::string color = "";
     int			item;
   
-    color = NULL;
     colorsd = (ColorsDialog) client_data;
 
     if (active_list != w && active_list != NULL)
@@ -359,28 +355,24 @@ static void ObjectChange (Widget w, XtPointer client_data, XtPointer call_data)
        return;
 
     if (active_list == colorsd -> mlist) {
-       m.name = info -> string;
-       current_material = (Material) TreeSearch (problem.material_tree, &m);
+       current_material = SetSearch(problem.material_set, info->string);
        color = current_material -> color;
     }
     else if (active_list == colorsd -> clist) {
-       c.name = info -> string;
-       current_constraint = (Constraint) TreeSearch (problem.constraint_tree, &c);
+       current_constraint = SetSearch(problem.constraint_set, info->string);
        color = current_constraint -> color;
     }
     else if (active_list == colorsd -> flist) {
-       f.name = info -> string;
-       current_force = (Force) TreeSearch (problem.force_tree, &f);
+       current_force = SetSearch(problem.force_set, info->string);
        color = current_force -> color;
     }
     else if (active_list == colorsd -> llist) {
-       l.name = info -> string;
-       current_load = (Distributed) TreeSearch (problem.distributed_tree, &l);
+       current_load = SetSearch(problem.distributed_set, info->string);
        color = current_load -> color;
     }
 
-    if (color != NULL) {
-       item = FindColorIndex (colorsd, color);
+    if (!color.empty()) {
+        item = FindColorIndex (colorsd, color.c_str());
        if (item != -1)
           XawListHighlight (colorsd -> colorlist, item);
        else
@@ -410,20 +402,16 @@ static void ColorChange (Widget w, XtPointer client_data, XtPointer call_data)
        return;
 
     if (active_list == colorsd -> mlist) {
-       XtFree (current_material -> color);
-       current_material -> color = XtNewString (info -> string);
+       current_material -> color = info -> string;
     }
     else if (active_list == colorsd -> llist) {
-       XtFree (current_load -> color);
-       current_load -> color = XtNewString (info -> string); 
+        current_load -> color = info -> string; 
     }
     else if (active_list == colorsd -> clist) {
-       XtFree (current_constraint -> color);
-       current_constraint -> color = XtNewString (info -> string);
+        current_constraint -> color = info -> string;
     }
     else if (active_list == colorsd -> flist) {
-       XtFree (current_force -> color);
-       current_force -> color = XtNewString (info -> string);
+        current_force -> color = info -> string;
     }
     else 
        XawListUnhighlight (colorsd -> colorlist);
@@ -481,31 +469,31 @@ static int	 object_count;
 static String	*object_names = NULL;
 static String	*object_colors = NULL;
 
-static int AddMaterial (Item item)
+static int AddMaterial (Material item)
 {
-   object_colors [object_count] = ((Material) item) -> color;
-   object_names [object_count ++] = ((Material) item) -> name;
+    object_colors [object_count] = XtNewString(((Material) item) -> color.c_str());
+    object_names [object_count ++] = XtNewString(((Material) item) -> name.c_str());
    return 0;
 }
 
-static int AddConstraint (Item item)
+static int AddConstraint (Constraint item)
 {
-   object_colors [object_count] = ((Constraint) item) -> color;
-   object_names [object_count ++] = ((Constraint) item) -> name;
+    object_colors [object_count] = XtNewString(item -> color.c_str());
+    object_names [object_count ++] = XtNewString(item -> name.c_str());
    return 0;
 }
 
-static int AddLoad (Item item)
+static int AddLoad (Distributed item)
 {
-   object_colors [object_count] = ((Distributed) item) -> color;
-   object_names [object_count ++] = ((Distributed) item) -> name;
+    object_colors [object_count] = XtNewString(item->color.c_str());
+    object_names [object_count ++] = XtNewString(item->name.c_str());
    return 0;
 }
 
-static int AddForce (Item item)
+static int AddForce (Force item)
 {
-   object_colors [object_count] = ((Force) item) -> color;
-   object_names [object_count ++] = ((Force) item) -> name;
+    object_colors [object_count] = XtNewString(item -> color.c_str());
+    object_names [object_count ++] = XtNewString(item -> name.c_str());
    return 0;
 }
 
@@ -515,14 +503,15 @@ static int AddForce (Item item)
  * Description:	Does the actual dirty work for a given list and tree	*
  ************************************************************************/
 
-static void UpdateList (Widget w, Tree tree, Boolean deleted)
+template<typename Set, typename Unary>
+void UpdateList (Widget w, Set tree, Boolean deleted, Unary fun)
 {
    unsigned	size;
    unsigned	number_of_items;
 
    object_count = 0;
   
-   number_of_items = TreeSize (tree);
+   number_of_items = tree->size();
    if (deleted)
       number_of_items --;
  
@@ -530,7 +519,7 @@ static void UpdateList (Widget w, Tree tree, Boolean deleted)
    object_names = (String *) XtRealloc ((char *) object_names, size);
    object_colors = (String *) XtRealloc ((char *) object_colors, size);
 
-   TreeIterate (tree);
+   std::for_each(tree->begin(), tree->end(), fun);
 
    object_names [number_of_items] = NULL;
 
@@ -540,49 +529,59 @@ static void UpdateList (Widget w, Tree tree, Boolean deleted)
 }
 
 /************************************************************************
- * Function:	ColorsDialogUpdateObjectList				*
+ * Function:	ColorsDialogUpdateConstraintList				*
  *									*
  * Description:	Sets the list of names for one of the given object	*
  *		lists; the list is determined from the tree that	*
  *	 	is passed in.						*
  ************************************************************************/
 
-void ColorsDialogUpdateObjectList (ColorsDialog colorsd, Tree tree, Boolean deleted)
+void ColorsDialogUpdateConstraintList (ColorsDialog colorsd, Problem::ConstraintSet *tree, Boolean deleted)
 {
-   unsigned	i;
+    object_names = colorsd -> constraints;
+    UpdateList (colorsd -> clist, tree, deleted, AddConstraint);
+    colorsd -> constraints = object_names;
+    
+    for (unsigned i = 0 ; i < object_count ; i++)
+        InsertColor (colorsd, object_colors [i]);
+    
+    return;
+}
 
-   if (tree == problem.material_tree) { 
-      TreeSetIterator (tree, AddMaterial);
-      object_names = colorsd -> materials;
-      UpdateList (colorsd -> mlist, tree, deleted);
-      colorsd -> materials = object_names;
-   } 
+void ColorsDialogUpdateMaterialList (ColorsDialog colorsd, Problem::MaterialSet *tree, Boolean deleted)
+{
+   object_names = colorsd -> materials;
+   UpdateList (colorsd -> mlist, tree, deleted, AddMaterial);
+   colorsd -> materials = object_names;
 
-   else if (tree == problem.constraint_tree) {
-      TreeSetIterator (tree, AddConstraint);
-      object_names = colorsd -> constraints;
-      UpdateList (colorsd -> clist, tree, deleted);
-      colorsd -> constraints = object_names;
-   }
- 
-   else if (tree == problem.distributed_tree) { 
-      TreeSetIterator (tree, AddLoad);
-      object_names = colorsd -> loads;
-      UpdateList (colorsd -> llist, tree, deleted);
-      colorsd -> loads = object_names;
-   }
- 
-   else if (tree == problem.force_tree) {
-      TreeSetIterator (tree, AddForce);
-      object_names = colorsd -> forces;
-      UpdateList (colorsd -> flist, tree, deleted);
-      colorsd -> forces = object_names;
-   } 
-
-   for (i = 0 ; i < object_count ; i++)
+   for (unsigned i = 0 ; i < object_count ; i++)
       InsertColor (colorsd, object_colors [i]);
   
    return;
+}
+
+void ColorsDialogUpdateDistributedList (ColorsDialog colorsd, Problem::DistributedSet *tree, Boolean deleted)
+{
+    object_names = colorsd -> loads;
+    UpdateList (colorsd -> llist, tree, deleted, AddLoad);
+    colorsd -> loads = object_names;
+
+   for (unsigned i = 0 ; i < object_count ; i++)
+      InsertColor (colorsd, object_colors [i]);
+  
+   return;
+}
+
+void ColorsDialogUpdateForcesList (ColorsDialog colorsd, Problem::ForceSet *tree, Boolean deleted)
+{
+    object_names = colorsd -> forces;
+    UpdateList (colorsd -> flist, tree, deleted, AddForce);
+    colorsd -> forces = object_names;
+    
+    for (unsigned i = 0 ; i < object_count ; i++)
+        InsertColor (colorsd, object_colors [i]);
+    
+    return;
 }
 
 /************************************************************************

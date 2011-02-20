@@ -69,8 +69,6 @@ extern char filename [ ];
 extern Node displayed_node;
 extern Element displayed_element;
 
-extern Tree      figure_tree;
-
 /*----------------------------------------------------------------------*/
 
 #ifdef __cplusplus

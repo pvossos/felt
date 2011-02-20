@@ -17,15 +17,8 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/************************************************************************
- * File:	pathsearch.h						*
- *									*
- * Description:	This file contains the function declarations for	*
- *		searching a path for a file.				*
- ************************************************************************/
-
-# ifndef _PATHSEARCH_H
-# define _PATHSEARCH_H
+#ifndef GENINPUT_H
+#define GENINPUT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -33,7 +26,13 @@ extern "C" {
 
 /*----------------------------------------------------------------------*/
 
-char *pathsearch (char *path, char *file, const char *suffix, int def_flag);
+typedef struct {
+     char     *filename;			/* file name			*/
+     unsigned  line;			/* current line number		*/
+     unsigned  num_errors;		/* number of errors		*/
+} GeneratorInput;
+
+extern GeneratorInput geninput;
 
 /*----------------------------------------------------------------------*/
 
@@ -41,4 +40,4 @@ char *pathsearch (char *path, char *file, const char *suffix, int def_flag);
 }
 #endif 
 
-# endif /* _PATHSEARCH_H */
+#endif

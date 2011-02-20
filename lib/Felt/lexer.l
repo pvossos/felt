@@ -31,7 +31,7 @@
 # include <unistd.h>
 # include "error.h"
 # include "inptypes.h"
-# include "appearance.h"
+# include "appearanceinp.h"
 # include "parser.h"
 
 static char *filename;

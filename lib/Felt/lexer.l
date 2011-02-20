@@ -32,7 +32,7 @@
 # include "error.h"
 # include "inptypes.h"
 # include "appearanceinp.h"
-# include "parser.h"
+# include "parser.hpp"
 
 static char *filename;
 static void  update_line (void);

@@ -143,7 +143,7 @@ void ToolsDrawLine (void)
    XtSetArg (arglist [count], XtNcursorName, "pencil"); count++;
    XtSetValues (drawing, arglist, count);
 
-   if (!(DW_SetForeground (drawing, canvas -> tool_color)))
+   if (!(DW_SetForeground (drawing, canvas -> tool_color.c_str())))
       DW_SetForeground (drawing, "black");
   
    ChangeStatusLine ("Select first point:", True);
@@ -229,7 +229,7 @@ void ToolsDrawRectangle (void)
    XtSetArg (arglist [count], XtNcursorName, "pencil"); count++;
    XtSetValues (drawing, arglist, count);
 
-   if (!(DW_SetForeground (drawing, canvas -> tool_color)))
+   if (!(DW_SetForeground (drawing, canvas -> tool_color.c_str())))
       DW_SetForeground (drawing, "black");
   
    ChangeStatusLine ("Select first corner:", True);
@@ -315,7 +315,7 @@ void ToolsDrawCircle (void)
    XtSetArg (arglist [count], XtNcursorName, "pencil"); count++;
    XtSetValues (drawing, arglist, count);
 
-   if (!(DW_SetForeground (drawing, canvas -> tool_color)))
+   if (!(DW_SetForeground (drawing, canvas -> tool_color.c_str())))
       DW_SetForeground (drawing, "black");
   
    ChangeStatusLine ("Select center:", True);
@@ -410,7 +410,7 @@ void ToolsDrawArc (void)
 
    ChangeStatusLine ("Select first endpoint:", True);
 
-   if (!(DW_SetForeground (drawing, canvas -> tool_color)))
+   if (!(DW_SetForeground (drawing, canvas -> tool_color.c_str())))
       DW_SetForeground (drawing, "black");
   
    XtRemoveAllCallbacks (drawing, XtNbuttonCallback);
@@ -539,7 +539,7 @@ void ToolsDrawPolygon (void)
    XtSetArg (arglist [count], XtNcursorName, "pencil"); count++;
    XtSetValues (drawing, arglist, count);
 
-   if (!(DW_SetForeground (drawing, canvas -> tool_color)))
+   if (!(DW_SetForeground (drawing, canvas -> tool_color.c_str())))
       DW_SetForeground (drawing, "black");
   
    ChangeStatusLine ("Select first point:", True);
@@ -650,10 +650,10 @@ void ToolsDrawText (void)
 
    op_count = 0;
 
-   if (!(DW_SetFont (drawing, canvas -> tool_font)))
+   if (!(DW_SetFont (drawing, canvas -> tool_font.c_str())))
       DW_SetFont (drawing, "fixed"); 
 
-   if (!(DW_SetForeground (drawing, canvas -> tool_color)))
+   if (!(DW_SetForeground (drawing, canvas -> tool_color.c_str())))
       DW_SetForeground (drawing, "black");
   
    XtOverrideTranslations(entry, 

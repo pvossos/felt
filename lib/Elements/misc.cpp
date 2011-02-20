@@ -30,7 +30,6 @@
 # include "fe.h"
 # include "misc.h"
 # include "error.h"
-# include "allocate.h"
 
 unsigned
 GaussPoints(unsigned int npoints, double **xpoints, double **weights)

@@ -571,13 +571,13 @@ WriteCanvasConfiguration(void)
     EndSection   (fp);
 
     StartSection (fp);
-    PrintString  (fp, "node-color",    appearance.node_color);
-    PrintString  (fp, "element-color", appearance.element_color);
-    PrintString  (fp, "label-font",    appearance.label_font);
+    PrintString  (fp, "node-color",    appearance.node_color.c_str());
+    PrintString  (fp, "element-color", appearance.element_color.c_str());
+    PrintString  (fp, "label-font",    appearance.label_font.c_str());
     PrintNewline (fp);
 
-    PrintString  (fp, "tool-color", appearance.tool_color);
-    PrintString  (fp, "tool-font",  appearance.tool_font);
+    PrintString  (fp, "tool-color", appearance.tool_color.c_str());
+    PrintString  (fp, "tool-font",  appearance.tool_font.c_str());
     PrintNewline (fp);
     EndSection   (fp);
 
@@ -609,15 +609,14 @@ WriteFigureList(void)
 {
     unsigned i;
     unsigned j;
-    char    *last_font;
+    std::string last_font = "";
     std::string last_color = "";
     FigInfo *figure;
 
 
-    last_font = NULL;
     fprintf (fp, "\nfigure list\n");
 
-    for (i = 0; i < appearance.num_figures; i ++) {
+    for (i = 0; i < appearance.figures.size(); i ++) {
 	figure = &appearance.figures [i];
 
 	switch (figure -> type) {
@@ -630,9 +629,9 @@ WriteFigureList(void)
 
 	case POLYLINE:
 	    fprintf (fp, "polyline");
-	    if (figure -> num_points) {
+	    if (!figure->points.empty()) {
 		fprintf (fp, " points=[");
-		for (j = 0; j < figure -> num_points; j ++) {
+		for (j = 0; j < figure->points.size(); j ++) {
 		    if (j) fprintf (fp, " ");
 		    fprintf (fp, "(%g,", figure -> points [j].x);
 		    fprintf (fp, "%g)", figure -> points [j].y);
@@ -644,13 +643,13 @@ WriteFigureList(void)
 	case TEXT:
 	    fprintf (fp, "text");
 	    fprintf (fp, " x=%g y=%g", figure -> x, figure -> y);
-	    if (figure -> text)
-		fprintf (fp, " text=%s", Quote (figure -> text));
-	    if (figure -> font)
-		if (!last_font || !strcmp (figure -> font, last_font)) {
-		    fprintf (fp, " font=%s", Quote (figure -> font));
-		    last_font = figure -> font;
-		}
+	    if (!figure -> text.empty())
+            fprintf (fp, " text=%s", Quote (figure -> text.c_str()));
+	    if (!figure -> font.empty())
+            if (last_font.empty() || last_font != figure->font) {
+                fprintf (fp, " font=%s", Quote (figure -> font.c_str()));
+                last_font = figure -> font;
+            }
 	    break;
 
 	case ARC:
@@ -663,9 +662,9 @@ WriteFigureList(void)
 	    break;
 	}
 
-	if (figure -> color)
-	    if (last_color.empty() || strcmp (figure -> color, last_color.c_str())) {
-            fprintf (fp, " color=%s", Quote (figure -> color));
+	if (!figure -> color.empty())
+	    if (last_color.empty() || figure->color != last_color) {
+            fprintf (fp, " color=%s", Quote (figure -> color.c_str()));
             last_color = figure -> color;
 	    }
 
@@ -814,8 +813,8 @@ WriteFile(char *flag)
 
     WriteCanvasConfiguration ( );
 
-    if (appearance.num_figures)
-	WriteFigureList ( );
+    if (!appearance.figures.empty())
+        WriteFigureList ( );
 
 
     /* Clean up, close the file, and return success. */

@@ -107,7 +107,6 @@ static unsigned		  table_size = 0;	/* size of table	   */
 
 static float		  figure_x;		/* current x-coordinate	   */
 static float		  figure_y;		/* current y-coordinate	   */
-static unsigned		  figure_size;		/* size of figure list	   */
 static unsigned		  fig_point_size;	/* size of point list	   */
 static FigInfo		 *figure;		/* current figure	   */
 %}
@@ -1459,32 +1458,27 @@ canvas_parameter
 
 	| NODE_COLOR_EQ NAME
 	    {
-		Deallocate (appearance.node_color);
-		appearance.node_color = $2;
+             appearance.node_color = $2;
 	    }
 
 	| ELT_COLOR_EQ NAME
 	    {
-		Deallocate (appearance.element_color);
-		appearance.element_color = $2;
+             appearance.element_color = $2;
 	    }
 
 	| LABEL_FONT_EQ NAME
 	    {
-		Deallocate (appearance.label_font);
-		appearance.label_font = $2;
+             appearance.label_font = $2;
 	    }
 
 	| TOOL_COLOR_EQ NAME
 	    {
-		Deallocate (appearance.tool_color);
-		appearance.tool_color = $2;
+             appearance.tool_color = $2;
 	    }
 
 	| TOOL_FONT_EQ NAME
 	    {
-		Deallocate (appearance.tool_font);
-		appearance.tool_font = $2;
+             appearance.tool_font = $2;
 	    }
 	;
 
@@ -1499,7 +1493,7 @@ figure_section
 figure_header
 	: FIGURES
 	    {
-		figure_size = 0;
+             /* figure_size = 0; */
 	    }
 	;
 
@@ -1518,25 +1512,19 @@ figure_definition
 figure_type
 	: FIGURE_TYPE
 	    {
-		if (appearance.num_figures == figure_size) {
-		    figure_size = figure_size ? figure_size <<= 1 : 4;
-		    if (!Reallocate (appearance.figures, FigInfo, figure_size))
-			Fatal ("unable to allocate figure list");
-		}
-
-		figure = &appearance.figures [appearance.num_figures ++];
-		figure -> type = $1;
-		figure -> x = 0;
-		figure -> y = 0;
-		figure -> width = 0;
-		figure -> height = 0;
-		figure -> start = 0;
-		figure -> length = 0;
-		figure -> num_points = 0;
-		figure -> points = NULL;
-		figure -> font = NULL;
-		figure -> text = NULL;
-		figure -> color = NULL;
+             FigInfo figure;
+             figure.type = $1;
+             figure.x = 0;
+             figure.y = 0;
+             figure.width = 0;
+             figure.height = 0;
+             figure.start = 0;
+             figure.length = 0;
+             figure.points.clear();
+             figure.font.clear();
+             figure.text.clear();
+             figure.color.clear();
+             appearance.figures.push_back(figure);
 	    }
 	;
 
@@ -1580,20 +1568,17 @@ figure_parameter
 
 	| TEXT_EQ NAME
 	    {
-		Deallocate (figure -> text);
-		figure -> text = $2;
+             figure -> text = $2;
 	    }
 
 	| COLOR_EQ NAME
 	    {
-		Deallocate (figure -> color);
-		figure -> color = $2;
+             figure -> color = $2;
 	    }
 
 	| FONT_EQ NAME
 	    {
-		Deallocate (figure -> font);
-		figure -> font = $2;
+             figure -> font = $2;
 	    }
 
 	| POINTS_EQ '[' figure_pair_list ']'
@@ -1603,38 +1588,23 @@ figure_parameter
 figure_pair_list
 	: figure_pair_list ',' figure_pair
 	    {
-		if (fig_point_size == figure -> num_points) {
-		    fig_point_size <<= 1;
-		    Reallocate (figure -> points, FigInfoPair, fig_point_size);
-		    if (figure -> points == NULL)
-			Fatal ("unable to allocate figure points");
-		}
-
-		figure -> points [figure -> num_points].x = figure_x;
-		figure -> points [figure -> num_points ++].y = figure_y;
+             FigInfoPair fip;
+             fip.x = figure_x;
+             fip.y = figure_y;
+             figure->points.push_back(fip);
 	    }
 
 	| figure_pair_list figure_pair
 	    {
-		if (fig_point_size == figure -> num_points) {
-		    fig_point_size <<= 1;
-		    Reallocate (figure -> points, FigInfoPair, fig_point_size);
-		    if (figure -> points == NULL)
-			Fatal ("unable to allocate figure points");
-		}
-
-		figure -> points [figure -> num_points].x = figure_x;
-		figure -> points [figure -> num_points ++].y = figure_y;
+             FigInfoPair fip;
+             fip.x = figure_x;
+             fip.y = figure_y;
+             figure->points.push_back(fip);
 	    }
 
 	| /* empty */
 	    {
-		figure -> points = Allocate (FigInfoPair, 2);
-		if (figure -> points == NULL)
-		    Fatal ("unable to allocate figure points");
-
-		fig_point_size = 2;
-		figure -> num_points = 0;
+             /* NO-OP */
 	    }
 	;
 

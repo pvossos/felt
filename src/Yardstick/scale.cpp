@@ -133,7 +133,7 @@ static void ScaleAppearance (void)
    
    ScaleConfig(scale);
 
-   for (i = 0 ; i < appearance.num_figures ; i++) {
+   for (i = 0 ; i < appearance.figures.size(); i++) {
       f = &(appearance.figures [i]);
 
       switch (f -> type) {
@@ -147,7 +147,7 @@ static void ScaleAppearance (void)
          break;
 
       case POLYLINE:
-         for (j = 0 ; j < f -> num_points ; j++) {
+          for (j = 0 ; j < f -> points.size() ; j++) {
             f -> points [j].x *= length;
             f -> points [j].y *= length;
          }

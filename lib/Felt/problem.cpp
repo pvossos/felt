@@ -31,7 +31,6 @@
 # include "setaux.hpp"
 # include "error.h"
 # include "problem.h"
-# include "allocate.h"
 # include "definition.h"
 
 # define streq(a,b)	!strcmp(a,b)
@@ -506,24 +505,11 @@ InitAppearance(void)
     appearance.scale	       = UnspecifiedValue;
     appearance.width	       = UnspecifiedValue;
     appearance.height	       = UnspecifiedValue;
-    appearance.num_figures     = 0;
 
-    for (i = 0; i < appearance.num_figures; i ++) {
-	Deallocate (appearance.figures [i].color);
-	Deallocate (appearance.figures [i].text);
-	Deallocate (appearance.figures [i].font);
-	Deallocate (appearance.figures [i].points);
-    }
-
-    Deallocate (appearance.figures);
-    Deallocate (appearance.label_font);
-    Deallocate (appearance.node_color);
-    Deallocate (appearance.element_color);
-
-    appearance.figures	     = NULL;
-    appearance.label_font    = NULL;
-    appearance.node_color    = NULL;
-    appearance.element_color = NULL;
-    appearance.tool_color    = NULL;
-    appearance.tool_font     = NULL;
+    appearance.figures.clear();
+    appearance.label_font.clear();
+    appearance.node_color.clear();
+    appearance.element_color.clear();
+    appearance.tool_color.clear();
+    appearance.tool_font.clear();
 }

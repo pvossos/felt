@@ -594,10 +594,7 @@ static void CanvasToAppearance (void)
     Dimension	     height;
     unsigned	     num_figures;
     Figure	    *figure_list;
-    FigInfo	    *info;
     FigureAttributes attributes;
-    char	    *last_color;
-    char	    *last_font;
 
 
     /* Retrieve information about the drawing widget. */
@@ -637,21 +634,19 @@ static void CanvasToAppearance (void)
     appearance.node_numbers    = canvas -> node_numbers;
     appearance.element_numbers = canvas -> element_numbers;
 
-    appearance.node_color    = strdup (canvas -> node_color);
-    appearance.element_color = strdup (canvas -> element_color);
-    appearance.label_font    = strdup (canvas -> label_font);
-    appearance.tool_color    = strdup (canvas -> tool_color);
-    appearance.tool_font     = strdup (canvas -> tool_font);
+    appearance.node_color    = canvas -> node_color;
+    appearance.element_color = canvas -> element_color;
+    appearance.label_font    = canvas -> label_font;
+    appearance.tool_color    = canvas -> tool_color;
+    appearance.tool_font     = canvas -> tool_font;
 
 
     /* Initialize the structure and retrieve the display list. */
 
-    appearance.num_figures = 0;
-    size = figure_set.size() * sizeof (FigInfo);
-    appearance.figures = (FigInfo *) XtMalloc (size);
+    appearance.figures.clear();
+    std::string last_font = "";
+    std::string last_color = "";
 
-    last_font = NULL;
-    last_color = NULL;
     figure_list = DW_RetrieveAll (drawing, True, &num_figures);
 
 
@@ -662,14 +657,16 @@ static void CanvasToAppearance (void)
 	if (attributes.user_data)
 	    continue;
 
-	info = &appearance.figures [appearance.num_figures ++];
-	info -> font = NULL;
-	info -> text = NULL;
-	info -> color = NULL;
+    FigInfo fi;
+    FigInfo *info = &fi;
+    
+	info -> font.clear();
+	info -> text.clear();
+	info -> color.clear();
 
-	if (!last_color || strcmp (last_color, attributes.color))
-	    info -> color = last_color = strdup (attributes.color);
-
+	if (last_color.empty() || last_color != attributes.color)
+	    info -> color = last_color = attributes.color;
+    
 	switch (attributes.type) {
 	case RectangleFigure:
 	    info -> type   = RECTANGLE;
@@ -683,11 +680,10 @@ static void CanvasToAppearance (void)
 	case PolygonFigure:
 	    info -> type = POLYLINE;
 	    size = attributes.npoints * sizeof (FigInfoPair);
-	    info -> num_points = attributes.npoints;
-	    info -> points = (FigInfoPair *) XtMalloc (size);
+	    info -> points.resize(attributes.npoints);
 	    for (j = 0; j < attributes.npoints; j ++) {
-		info -> points [j].x = attributes.points [j].x;
-		info -> points [j].y = attributes.points [j].y;
+            info -> points [j].x = attributes.points [j].x;
+            info -> points [j].y = attributes.points [j].y;
 	    }
 	    break;
 
@@ -696,8 +692,8 @@ static void CanvasToAppearance (void)
 	    info -> x      = attributes.x;
 	    info -> y      = attributes.y;
 	    info -> text   = strdup (attributes.text);
-	    if (!last_font || strcmp (last_font, attributes.font))
-		info -> font = last_font = strdup (attributes.font);
+	    if (last_font.empty() || last_font != attributes.font)
+            info -> font = last_font = attributes.font;
 	    break;
 
 	case ArcFigure:
@@ -713,6 +709,9 @@ static void CanvasToAppearance (void)
 	default:
 	    break;
 	}
+
+    appearance.figures.push_back(fi);
+    
     }
 
     XtFree ((char *) figure_list);

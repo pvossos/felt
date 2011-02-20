@@ -253,7 +253,7 @@ void SetupTriangleGeneration (void)
 
    XtAddCallback (drawing, XtNbuttonCallback, AddCurvePointCB, NULL);
 
-   if (DW_SetForeground (drawing, canvas -> tool_color) == False)
+   if (DW_SetForeground (drawing, canvas -> tool_color.c_str()) == False)
       (void) DW_SetForeground (drawing, "black");
 
    mk_count = 0;

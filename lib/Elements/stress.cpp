@@ -30,7 +30,6 @@
 # include "fe.h"
 # include "misc.h"
 # include "error.h"
-# include "allocate.h"
 
 static int
 cubic(double a, double b, double c, double d, double *x)

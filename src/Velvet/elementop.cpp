@@ -494,7 +494,7 @@ int DrawElement (Element element)
     if (0 == problem.element_set.count(element))
         return 1;
 
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
         (void) DW_SetFont (drawing, "fixed");
 
     if (element -> numdistributed && !element -> distributed[1] -> color.empty()) {
@@ -506,8 +506,8 @@ int DrawElement (Element element)
             (void) DW_SetForeground (drawing, "black");
     }
     else {
-	if (DW_SetForeground (drawing, canvas -> element_color) == False)
-	    (void) DW_SetForeground (drawing, "black");
+        if (DW_SetForeground (drawing, canvas -> element_color.c_str()) == False)
+            (void) DW_SetForeground (drawing, "black");
     }
 
     num = element -> definition -> shapenodes;

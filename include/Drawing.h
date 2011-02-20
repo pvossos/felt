@@ -220,7 +220,7 @@ Figure DW_DrawArc (Widget gw, Boolean scaled, float x, float y, float width, flo
 
 Figure DW_FillArc (Widget gw, Boolean scaled, float x, float y, float width, float height, float start, float length);
 
-Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, String text);
+Figure DW_DrawText (Widget gw, Boolean scaled, float x, float y, const char *text);
 
 Figure DW_DrawPixmap (Widget gw, float x, float y, Pixmap pixmap);
 
@@ -246,7 +246,7 @@ void DW_ClipBox (Figure fig, XRectangle *rect);
 
 Boolean DW_SetForeground (Widget gw, const char *name);
 
-Boolean DW_SetFont (Widget gw, String name);
+Boolean DW_SetFont (Widget gw, const char *name);
 
 void DW_GetTextExtents (Widget gw, String string, float *w, float *h);
 

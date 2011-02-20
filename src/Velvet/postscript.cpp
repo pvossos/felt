@@ -78,7 +78,7 @@ static void SetupFont (String fname, XFontStruct *fstruct)
  
  /* make sure the font we use for labels is small! */
 
-   if (strcmp (fname, canvas -> label_font) == 0) {
+   if (strcmp (fname, canvas -> label_font.c_str()) == 0) {
       size = 6;
       number = 4;
    }

@@ -432,11 +432,11 @@ void CanvasDialogSet (CanvasDialog canvasd)
     sprintf (buffer,"%g",canvas -> grid_size);
     SetTextString (canvasd -> grid_size, buffer);
 
-    SetTextString (canvasd -> element_color, canvas -> element_color);
-    SetTextString (canvasd -> node_color, canvas -> node_color);
-    SetTextString (canvasd -> tool_color, canvas -> tool_color);
-    SetTextString (canvasd -> tool_font, canvas -> tool_font);
-    SetTextString (canvasd -> label_font, canvas -> label_font);
+    SetTextString (canvasd -> element_color, canvas -> element_color.c_str());
+    SetTextString (canvasd -> node_color, canvas -> node_color.c_str());
+    SetTextString (canvasd -> tool_color, canvas -> tool_color.c_str());
+    SetTextString (canvasd -> tool_font, canvas -> tool_font.c_str());
+    SetTextString (canvasd -> label_font, canvas -> label_font.c_str());
 /*
     if (GetTextString (canvasd -> element_color) != canvas -> element_color) {
 	SetTextString (canvasd -> element_color, canvas -> element_color);

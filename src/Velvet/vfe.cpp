@@ -41,8 +41,8 @@
 # include "procedures.h"
 
 # define Valid(x)	(appearance.x != UnspecifiedValue)
-# define Present(x)	(appearance.x != NULL)
 
+# define Present(x)	(!appearance.x.empty())
 
 extern CanvasDialog	canvas_d;
 extern FigureSet figure_set;
@@ -68,17 +68,17 @@ static void DrawDisplayList (void)
 
     figure = NULL;
 
-    if (DW_SetForeground (drawing, canvas -> tool_color) == False)
-	DW_SetForeground (drawing, "black");
+    if (DW_SetForeground (drawing, canvas -> tool_color.c_str()) == False)
+        DW_SetForeground (drawing, "black");
 
-    if (DW_SetFont (drawing, canvas -> tool_font) == False)
-	DW_SetFont (drawing, "fixed");
+    if (DW_SetFont (drawing, canvas -> tool_font.c_str()) == False)
+        DW_SetFont (drawing, "fixed");
 
-    for (i = 0; i < appearance.num_figures; i ++) {
+    for (i = 0; i < appearance.figures.size(); i ++) {
 	info = &appearance.figures [i];
 
-	if (info -> color)
-	    DW_SetForeground (drawing, info -> color);
+	if (!info -> color.empty())
+	    DW_SetForeground (drawing, info -> color.c_str());
 
 
 	switch (info -> type) {
@@ -89,31 +89,31 @@ static void DrawDisplayList (void)
 	    break;
 
 	case POLYLINE:
-	    if (info -> num_points == 2) {
+	    if (info -> points.size() == 2) {
 		figure = DW_DrawLine (drawing, info -> points [0].x,
 					info -> points [0].y,
 					info -> points [1].x,
 					info -> points [1].y);
 
-	    } else if (info -> num_points > 2) {
-		for (j = 0; j < info -> num_points; j ++) {
-		    points [j].x = info -> points [j].x;
-		    points [j].y = info -> points [j].y;
-		}
+	    } else if (info -> points.size() > 2) {
+            for (j = 0; j < info -> points.size(); j ++) {
+                points [j].x = info -> points [j].x;
+                points [j].y = info -> points [j].y;
+            }
 
 		figure = DW_DrawPolygon (drawing, True, points,
-					info -> num_points);
+                                 info -> points.size());
 	    }
 
         figure_set.insert(figure);
 	    break;
 
 	case TEXT:
-	    if (info -> font)
-	        DW_SetFont (drawing, info -> font);
+	    if (!info -> font.empty())
+	        DW_SetFont (drawing, info -> font.c_str());
 
 	    figure = DW_DrawText (drawing, True, info -> x, info -> y,
-					info -> text);
+                              info -> text.c_str());
         figure_set.insert(figure);
 	    break;
 
@@ -299,19 +299,19 @@ void DrawProblem (double z)
 	canvas -> element_numbers = appearance.element_numbers;
 
     if (Present (node_color))
-	canvas -> node_color = strdup (appearance.node_color);
+        canvas -> node_color = appearance.node_color;
 
     if (Present (element_color))
-	canvas -> element_color = strdup (appearance.element_color);
+        canvas -> element_color = appearance.element_color;
 
     if (Present (label_font))
-	canvas -> label_font = strdup (appearance.label_font);
+        canvas -> label_font = appearance.label_font;
 
     if (Present (tool_color))
-	canvas -> tool_color = strdup (appearance.tool_color);
+        canvas -> tool_color = appearance.tool_color;
 
     if (Present (tool_font))
-	canvas -> tool_font = strdup (appearance.tool_font);
+        canvas -> tool_font = appearance.tool_font;
 
     CanvasDialogSet (canvas_d);
 
@@ -428,11 +428,11 @@ static int setnodenum (Node node)
 
 void SetNodeNumbering (int value)
 {
-    if (DW_SetForeground (drawing, canvas -> node_color) == False)
-	(void) DW_SetForeground (drawing, "black");
+    if (DW_SetForeground (drawing, canvas -> node_color.c_str()) == False)
+        (void) DW_SetForeground (drawing, "black");
 
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
-	(void) DW_SetFont (drawing, "fixed");
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
+        (void) DW_SetFont (drawing, "fixed");
 
     attributes.visible = value;
     DW_SetAutoRedraw (drawing, False);
@@ -482,11 +482,11 @@ static int setelementnum (Element element)
 
 void SetElementNumbering (int value)
 {
-    if (DW_SetForeground (drawing, canvas -> element_color) == False)
-	(void) DW_SetForeground (drawing, "black");
-
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
-	(void) DW_SetFont (drawing, "fixed");
+    if (DW_SetForeground (drawing, canvas -> element_color.c_str()) == False)
+        (void) DW_SetForeground (drawing, "black");
+    
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
+        (void) DW_SetFont (drawing, "fixed");
 
     attributes.visible = value;
     DW_SetAutoRedraw (drawing, False);
@@ -506,7 +506,7 @@ static int RecolorNode (Node n)
    else if (!n -> constraint -> color.empty()) 
        attrib.color = XtNewString(n -> constraint -> color.c_str()); 
    else 
-       attrib.color = XtNewString(canvas->node_color);
+       attrib.color = XtNewString(canvas->node_color.c_str());
 
    if (drawn -> figure)
       DW_SetAttributes (drawing, drawn -> figure, DW_FigureColor, &attrib);
@@ -530,7 +530,7 @@ static int RecolorElement (Element e)
    else if (!e -> material -> color.empty()) 
        attrib.color = XtNewString(e -> material -> color.c_str()); 
    else 
-       attrib.color = XtNewString(canvas -> element_color);
+       attrib.color = XtNewString(canvas -> element_color.c_str());
 
    if (drawn -> figure)
       DW_SetAttributes (drawing, drawn -> figure, DW_FigureColor, &attrib);

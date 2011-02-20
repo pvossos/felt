@@ -196,8 +196,8 @@ InitializeDrawingShell(Widget shell, Widget dw,
 
    DW_RemoveAll (dw);
 
-   if (DW_SetFont (dw, canvas -> tool_font) == False)
-      DW_SetFont (dw, "fixed");
+   if (DW_SetFont (dw, canvas -> tool_font.c_str()) == False)
+       DW_SetFont (dw, "fixed");
 
    DW_GetTextExtents (dw, buffer, &label_width, &label_height);
 

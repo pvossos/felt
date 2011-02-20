@@ -451,7 +451,7 @@ int DrawNode (Node node)
     if (0 == problem.node_set.count(node))
         return 1;
 
-    if (DW_SetFont (drawing, canvas -> label_font) == False)
+    if (DW_SetFont (drawing, canvas -> label_font.c_str()) == False)
         (void) DW_SetFont (drawing, "fixed");
 
     if (node -> force && !node -> force -> color.empty()) {
@@ -463,7 +463,7 @@ int DrawNode (Node node)
             (void) DW_SetForeground (drawing, "black");
     }
     else {
-        if (DW_SetForeground (drawing, canvas -> node_color) == False)
+        if (DW_SetForeground (drawing, canvas -> node_color.c_str()) == False)
             (void) DW_SetForeground (drawing, "black");
     }
 

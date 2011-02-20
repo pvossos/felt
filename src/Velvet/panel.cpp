@@ -197,7 +197,7 @@ void ZoomStart (void)
    XtOverrideTranslations (entry, 
         XtParseTranslationTable ("<Key>Return: ZoomAP()"));
 
-   if (DW_SetForeground (drawing, canvas -> tool_color) == False)
+   if (DW_SetForeground (drawing, canvas -> tool_color.c_str()) == False)
 	(void) DW_SetForeground (drawing, "black");
 }
 

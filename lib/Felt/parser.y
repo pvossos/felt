@@ -73,8 +73,8 @@ static material_t dummy_material;	/* dummy material	   */
 static const Element dummy_element(new element_t);	/* dummy element	   */
 static distributed_t dummy_load;		/* dummy distributed load  */
 static force_t	  dummy_force;		/* dummy force		   */
-static loadcase_t    dummy_loadcase;	/* dummy loadcase	   */
 static const Constraint dummy_constraint(new constraint_t);	/* dummy constraint	   */
+static const LoadCase dummy_loadcase(new loadcase_t);	/* dummy loadcase	   */
 
 
 /* Temporary arrays. */
@@ -1095,12 +1095,11 @@ loadcase_definition
 loadcase_name
 	: NAME
         {
-             loadcase = new loadcase_t($1);
+             loadcase.reset(new loadcase_t($1));
              
              if (!problem.loadcase_set.insert(loadcase).second) {
                   error ("loadcase %s is previously defined", $1);
-                  delete loadcase;
-                  loadcase = &dummy_loadcase;
+                  loadcase = dummy_loadcase;
              }
         }
     ;
@@ -1113,7 +1112,7 @@ loadcase_parameter_list
 loadcase_parameter
 	: NODE_FORCES_EQ loadcase_pair_list
 	    {
-             if (loadcase == &dummy_loadcase)
+             if (loadcase == dummy_loadcase)
                   break;
              
              unsigned size = case_ptr - case_array;
@@ -1129,9 +1128,9 @@ loadcase_parameter
 
 	| ELEMENT_LOADS_EQ loadcase_pair_list
 	    {
-             if (loadcase == &dummy_loadcase)
+             if (loadcase == dummy_loadcase)
                   break;
-             
+
              unsigned size = case_ptr - case_array;
              
              loadcase->elements.resize(size);

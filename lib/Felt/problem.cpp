@@ -164,8 +164,6 @@ resolve_element(Element element)
     return 0;
 }
 
-static int case_count;
-
 /************************************************************************
  * Function:	resolve_loadcase					*	
  *									*
@@ -175,13 +173,7 @@ static int case_count;
 static int
 resolve_loadcase(LoadCase loadcase)
 {
-    unsigned	       i;
-
-    /* Store the loadcase in the array. */
-
-    problem.loadcases [case_count] = loadcase;
-
-    for (i = 1 ; i <= loadcase->forces.size(); i++) {
+    for (unsigned i = 1 ; i <= loadcase->forces.size(); i++) {
        Node n = loadcase->nodes[i];
        loadcase -> nodes [i] = SetSearch(problem.node_set, n->number);
        if (!loadcase -> nodes [i])
@@ -195,7 +187,7 @@ resolve_loadcase(LoadCase loadcase)
        delete f;
     }
 
-    for (i = 1 ; i <= loadcase->loads.size(); i++) {
+    for (unsigned i = 1 ; i <= loadcase->loads.size(); i++) {
        Element e = loadcase->elements[i];
        loadcase -> elements [i] = SetSearch(problem.element_set, e->number);
        if (!loadcase -> elements [i])
@@ -208,8 +200,7 @@ resolve_loadcase(LoadCase loadcase)
        delete l;
     }
 
-    case_count ++;
-
+    problem.loadcases.push_back(loadcase);
     return 0;
 }
 
@@ -248,13 +239,7 @@ resolve_names(void)
                 error ("element %u is not defined", i);
     }
 
-    problem.loadcases.resize(problem.loadcase_set.size(), NULL);
-    
-    if (!problem.loadcases.empty()) {
-
-        case_count = 1;
-        std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), resolve_loadcase);
-    }
+    std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), resolve_loadcase);
 
 	/*
 	 * resolve any node references given in the analysis parameters

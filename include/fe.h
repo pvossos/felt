@@ -294,7 +294,7 @@ struct loadcase_t {
      cvector1<Distributed> loads;
 };
 
-typedef loadcase_t* LoadCase;
+typedef boost::shared_ptr<loadcase_t> LoadCase;
 
 struct LtLoadCase
 {

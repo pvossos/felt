@@ -73,8 +73,8 @@ static material_t dummy_material;	/* dummy material	   */
 static const Element dummy_element(new element_t);	/* dummy element	   */
 static distributed_t dummy_load;		/* dummy distributed load  */
 static force_t	  dummy_force;		/* dummy force		   */
-static constraint_t  dummy_constraint;	/* dummy constraint	   */
 static loadcase_t    dummy_loadcase;	/* dummy loadcase	   */
+static const Constraint dummy_constraint(new constraint_t);	/* dummy constraint	   */
 
 
 /* Temporary arrays. */
@@ -305,7 +305,10 @@ node_number
 		node -> x = last_x;
 		node -> y = last_y;
 		node -> z = last_z;
-        node -> constraint = last_constraint ? new constraint_t(last_constraint) : NULL;
+        if (last_constraint)
+             node->constraint.reset(new constraint_t(last_constraint));
+        else
+             node->constraint.reset();
 	    }
 	;
 
@@ -353,7 +356,7 @@ node_parameter
 	| CONSTRAINT_EQ NAME
     {
          last_constraint = $2;
-         node -> constraint = new constraint_t(last_constraint);
+         node -> constraint.reset(new constraint_t(last_constraint));
     }
 
 	| error
@@ -896,12 +899,11 @@ constraint_definition
 constraint_name
 	: NAME
 	    {
-             constraint = new constraint_t($1);
+             constraint.reset(new constraint_t($1));
              
              if (!problem.constraint_set.insert(constraint).second) {
                   error ("constraint %s is previously defined", $1);
-                  delete constraint;
-                  constraint = &dummy_constraint;
+                  constraint = dummy_constraint;
              }
 	    }
 	;

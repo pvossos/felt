@@ -589,9 +589,6 @@ int main (int argc, char *argv[])
     problem.elements.clear();
     problem.element_set.clear();
 
-    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
-         it != problem.constraint_set.end(); ++it)
-        delete *it;
     problem.constraint_set.clear();
 
     for (Problem::ForceSet::iterator it = problem.force_set.begin();

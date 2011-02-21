@@ -168,7 +168,7 @@ struct constraint_t {
     VarExpr dx [7];			/* boundary displacement vector	  */
 };
 
-typedef constraint_t* Constraint;
+typedef boost::shared_ptr<constraint_t> Constraint;
 
 struct LtConstraint
 {

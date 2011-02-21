@@ -371,9 +371,6 @@ void DestroyProblem (bool delmaterials)
             delete *it;
     problem.material_set.clear();
 
-    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
-         it != problem.constraint_set.end(); ++it)
-        delete *it;
     problem.constraint_set.clear();
 
     for (Problem::DistributedSet::iterator it = problem.distributed_set.begin();

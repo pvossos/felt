@@ -37,7 +37,7 @@ node_t::node_t(unsigned number)
     this -> m          = 0.0;
     this -> force      = NULL;
     this -> eq_force.clear();
-    this -> constraint = NULL;
+    this -> constraint.reset();
     this -> aux        = NULL;
     this -> stress.clear();
     this -> numelts    = 0;

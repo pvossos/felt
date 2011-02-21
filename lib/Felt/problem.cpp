@@ -94,9 +94,8 @@ resolve_node(Node node)
         node->constraint = SetSearch(problem.constraint_set, c->name);
         if (!node->constraint)
             error ("node %u used undefined constraint %s", number, c->name.c_str());
-        delete c;
     } else {
-        node -> constraint = &default_constraint;
+        node -> constraint.reset(new constraint_t(default_constraint));
     }
 
     /* Resolve the force. */

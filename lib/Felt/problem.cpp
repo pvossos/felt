@@ -201,7 +201,6 @@ resolve_loadcase(LoadCase loadcase)
        loadcase -> elements [i] = SetSearch(problem.element_set, e->number);
        if (!loadcase -> elements [i])
            error ("load case %s used undefined element %d", loadcase->name.c_str(), e->number);
-       delete e;
 
        Distributed l = loadcase->loads[i];
        loadcase -> loads [i] = SetSearch(problem.distributed_set, l->name);

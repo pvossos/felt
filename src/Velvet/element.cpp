@@ -25,6 +25,7 @@
  ************************************************************************/
 
 # include <algorithm>
+# include <boost/make_shared.hpp>
 # include <stdio.h>
 # include <X11/Intrinsic.h>
 # include <X11/StringDefs.h>
@@ -926,7 +927,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new element as needed. */
 
     if (eltd -> new_copy) {
-        eltd -> active = new element_t(eltd -> new_copy, eltd -> definition);
+        eltd -> active.reset(new element_t(eltd -> new_copy, eltd -> definition));
         problem.element_set.insert(eltd->active);
     }
 
@@ -958,7 +959,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	info.element  = active;
 	info.deleted  = False;
 	info.proceed  = True;
-	info.original = &original;
+	info.original = boost::make_shared<element_t>(original);
 	eltd -> callback (eltd -> shell, eltd -> closure, &info);
     }
 
@@ -1019,7 +1020,6 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
     
 
     eltd->elements->erase(active);
-	delete active;
 	eltd -> active = element;
     }
 
@@ -1141,10 +1141,10 @@ ElementDialog ElementDialogCreate (Widget parent, String name, String title, XtC
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    eltd = XtNew (struct element_dialog);
+    eltd = new struct element_dialog;
     eltd -> callback = callback;
     eltd -> closure = closure;
-    eltd -> active = NULL;
+    eltd -> active.reset();
     eltd -> new_loads = True;
     eltd -> new_materials = True;
 

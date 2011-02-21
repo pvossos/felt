@@ -61,6 +61,6 @@ Boolean	 edit_mode  = False;
 char filename [2048] = {""};
 
 Node displayed_node = NULL;
-Element displayed_element = NULL;
+Element displayed_element;
 
 Boolean sensitive_menus = True;

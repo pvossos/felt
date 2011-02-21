@@ -69,8 +69,8 @@ static LoadCase		  loadcase;		/* current loadcase	   */
    is illegal and the current object is set to a dummy object. */
 
 static node_t	  dummy_node;		/* dummy node		   */
-static element_t  dummy_element;	/* dummy element	   */
 static material_t dummy_material;	/* dummy material	   */
+static const Element dummy_element(new element_t);	/* dummy element	   */
 static distributed_t dummy_load;		/* dummy distributed load  */
 static force_t	  dummy_force;		/* dummy force		   */
 static constraint_t  dummy_constraint;	/* dummy constraint	   */
@@ -394,16 +394,15 @@ element_number
 	    {
 		if ($1 < 1 || $1 > problem.elements.size()) {
 		    error ("element number %u is illegal", $1);
-		    element = &dummy_element;
+		    element = dummy_element;
 		    break;
 		}
 
-		element = new element_t($1, definition);
+		element.reset(new element_t($1, definition));
 
         if (!problem.element_set.insert(element).second) {
              error ("element number %u is repeated", $1);
-             delete element;
-             element = &dummy_element;
+             element = dummy_element;
              break;
         } 
 
@@ -430,8 +429,8 @@ element_parameter_list
 element_parameter
 	: NODES_EQ '[' element_node_list ']'
 	    {
-		if (element == &dummy_element)
-		    break;
+             if (element == dummy_element)
+                  break;
 
 		unsigned size = int_ptr - int_array;
 
@@ -1137,7 +1136,7 @@ loadcase_parameter
              loadcase->loads.resize(size);
              
              for (unsigned i = 1; i <= size; i ++) {
-                  loadcase -> elements [i] = new element_t(case_array [i - 1].noe);
+                  loadcase -> elements [i].reset(new element_t(case_array [i - 1].noe));
                   loadcase -> loads [i]   = new distributed_t(case_array [i - 1].fol);
              }
 	    }

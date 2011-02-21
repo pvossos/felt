@@ -586,9 +586,8 @@ int main (int argc, char *argv[])
         delete problem.nodes[i];
     problem.nodes.clear();
 
-    for (size_t i = 1; i <= problem.elements.size(); i++)
-        delete problem.elements[i];
     problem.elements.clear();
+    problem.element_set.clear();
 
     for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
          it != problem.constraint_set.end(); ++it)

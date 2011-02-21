@@ -83,13 +83,12 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	DW_RemoveFigure (drawing, drawn -> label);
     
     problem.element_set.erase(element);
-	delete element;
     }
 
 
     if (newinfo == True) {
-	ElementDialogDisplay (element_d, NULL);
-	ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
+        ElementDialogDisplay (element_d, Element());
+        ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
     }
 
     if (firsttime == False) {
@@ -133,7 +132,6 @@ DoDeleteElt(Element element)
     problem.element_set.erase(element);
     ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
 
-    delete element;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -341,7 +339,7 @@ void DoAddElement (Node node)
     Element element = SetMaximum(problem.element_set);
     max = element != NULL ? element -> number : 0;
 
-    element = new element_t(max + 1, ElementListDefinition (element_l));
+    element.reset(new element_t(max + 1, ElementListDefinition (element_l)));
     element -> material = MaterialDialogActive (material_d);
     for (i = 1; i <= num_nodes; i ++)
 	element -> node [i] = nodes [i];

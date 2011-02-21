@@ -755,7 +755,7 @@ WriteFile(char *flag)
     /* Write the elements section marking referenced objects. */
 
     if (!problem.elements.empty()) {
-	prev_element = NULL;
+        prev_element.reset();
 
 	for (i = 1; i <= problem.elements.size(); i ++) {
 	    element = problem.elements [i];

@@ -73,7 +73,7 @@ AddElement(Definition defn, Node *nodes, Material material,
 {
    unsigned	i;
 
-   Element element = new element_t(problem.elements.size()+1, defn);
+   Element element(new element_t(problem.elements.size()+1, defn));
    for (i = 1 ; i <= defn -> numnodes ; i++)
       element -> node [i] = nodes [i-1]; 
 

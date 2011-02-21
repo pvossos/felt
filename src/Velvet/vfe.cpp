@@ -358,9 +358,6 @@ void DestroyProblem (bool delmaterials)
         delete *it;
     problem.node_set.clear();
 
-    for (Problem::ElementSet::iterator it = problem.element_set.begin();
-         it != problem.element_set.end(); ++it)
-        delete *it;
     problem.element_set.clear();
 
     for (Problem::ForceSet::iterator it = problem.force_set.begin();

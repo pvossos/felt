@@ -59,7 +59,7 @@ GenerateLine (Line line, cvector1<Element> &element, cvector1<Node> &node,
    
    element.resize(ne);
    for (i = 1 ; i <= ne ; i++)
-       element [i] = new element_t(0, line -> definition);
+       element [i].reset(new element_t(0, line -> definition));
 
 	/*
 	 * figure out the spacing function

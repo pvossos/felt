@@ -28,6 +28,7 @@
 # ifndef _FE_H
 # define _FE_H
 
+# include <boost/shared_ptr.hpp>
 # include <string>
 # include "cvector1.hpp"
 # include "code.h"
@@ -81,13 +82,14 @@ typedef struct {
 } VarExpr;
 
 struct element_t;
+typedef boost::shared_ptr<element_t> Element;
 
 /* An element definition */
 
 typedef struct definition {
     const char    *name;		/* element name			      */
-    int    (*setup) (element_t*, char, int);	/* initialization function	      */
-    int    (*stress) (element_t*);	/* stress resultant function	      */
+    int    (*setup) (Element, char, int);	/* initialization function	      */
+    int    (*stress) (Element);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
     unsigned numnodes;		/* number of nodes in element         */
     unsigned shapenodes;	/* number of nodes which define shape */
@@ -262,8 +264,6 @@ struct element_t {
     cvector1<Stress> stress;			/* element stresses             */
     unsigned    ninteg;			/* number of integration points */
 };
-
-typedef element_t* Element;
 
 struct LtElement
 {

@@ -63,7 +63,7 @@ GenerateQuadGrid(Grid grid, cvector1<Element> &element, cvector1<Node> &node,
 
    element.resize(ne);
    for (i = 1 ; i <= ne ; i++)
-       element [i] = new element_t(0, grid -> definition);
+       element [i].reset(new element_t(0, grid -> definition));
 
 	/*
 	 * a couple of simple computations

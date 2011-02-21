@@ -206,7 +206,7 @@ struct material_t {
     double c;				/* heat capacity		    */
 };
 
-typedef material_t* Material;
+typedef boost::shared_ptr<material_t> Material;
 
 struct LtMaterial
 {

@@ -136,9 +136,8 @@ resolve_element(Element element)
         element->material = SetSearch(problem.material_set, m->name);
         if (!element->material)
             error ("element %u uses undefined material %s", number, m->name.c_str());
-        delete m;
     } else {
-        element -> material = &default_material;
+        element -> material.reset(new material_t(default_material));
     }
 
     /* Resolve the loads. */

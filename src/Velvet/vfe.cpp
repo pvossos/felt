@@ -351,7 +351,7 @@ void DrawProblem (double z)
  * Description:	Destroy the current problem invocation.			*
  ************************************************************************/
 
-void DestroyProblem (bool delmaterials)
+void DestroyProblem (/*bool delmaterials*/)
 {
     for (Problem::NodeSet::iterator it = problem.node_set.begin();
          it != problem.node_set.end(); ++it)
@@ -365,10 +365,6 @@ void DestroyProblem (bool delmaterials)
         delete *it;
     problem.force_set.clear();
 
-    if (delmaterials)
-        for (Problem::MaterialSet::iterator it = problem.material_set.begin();
-             it != problem.material_set.end(); ++it)
-            delete *it;
     problem.material_set.clear();
 
     problem.constraint_set.clear();

@@ -420,7 +420,7 @@ FormBbMatrix(Element element, Matrix dNdx, Matrix dNdy, unsigned int numnodes, u
 static Matrix
 FormDsMatrix(Element element)
 {
-   static Material	prev_material = NULL;
+   static Material	prev_material;
    static Matrix	D = NullMatrix;
 
    if (D == NullMatrix) {
@@ -447,7 +447,7 @@ FormDsMatrix(Element element)
 static Matrix
 FormDbMatrix(Element element)
 {
-   static Material	prev_material = NULL;
+   static Material	prev_material;
    static Matrix	D = NullMatrix;
    double		c1, c2;
    double		t;

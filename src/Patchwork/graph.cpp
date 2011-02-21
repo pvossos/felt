@@ -61,8 +61,8 @@ int ReadGraphFile (char *filename)
 
    InitializeProblem ( );
 
-   material = new material_t("default");
    constraint.reset(new constraint_t ("default"));
+   material.reset(new material_t("default"));
 
    truss = LookupDefinition ("truss");
    cst   = LookupDefinition ("CSTPlaneStress");

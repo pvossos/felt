@@ -66,7 +66,7 @@ element_t::element_t(unsigned number, Definition defn)
     this -> number 	  = number;
     this -> definition = defn;
 
-    this -> material = NULL;
+    this -> material.reset();
     this -> numdistributed = 0;
 
     for (unsigned i = 0; i <= 3; i ++)

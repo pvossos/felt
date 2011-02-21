@@ -471,7 +471,6 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     char		 buffer [32];
     Material		 active;
-    material_t	 dummy;
     MaterialDialog	 materiald;
     XawListReturnStruct	*info;
 
@@ -486,8 +485,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 	if (info -> list_index == XAW_LIST_NONE)
 	    return;
 
-	dummy.name = info -> string;
-	materiald -> active = *materiald->tree->find(&dummy);
+	materiald->active = SetSearch(*materiald->tree, info->string);
     }
 
     active = materiald -> active;
@@ -566,9 +564,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 
 static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    material_t    old;
     material_t    dummy;
-    Material	       found;
     Material	       active;
     Boolean	       duplicate;
     MaterialDialog     materiald;
@@ -581,9 +577,8 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the material. */
 
     dummy.name = GetTextString (materiald -> name);
-    Problem::MaterialSet::iterator it = materiald->tree->find(&dummy);
-    found = it != materiald->tree->end() ? *it : NULL;
-    duplicate=found && (found != materiald -> active || materiald -> new_copy);
+    Material found = SetSearch(*materiald->tree, dummy.name);
+    duplicate = found && (found != materiald -> active || materiald -> new_copy);
 
 
     /* Check for a duplicate name. */
@@ -602,10 +597,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new material or new name as needed. */
 
 	if (materiald -> new_copy)
-	    materiald -> active = new material_t(dummy.name.c_str());
+	    materiald -> active.reset(new material_t(dummy.name.c_str()));
 	else if (strcmp (materiald -> active -> name.c_str(), dummy.name.c_str())) {
-        old.name = materiald -> active -> name;
-        materiald->tree->erase(&old);
+        Material old(new material_t(materiald -> active -> name.c_str()));
+        materiald->tree->erase(old);
         materiald->active->name = dummy.name;
         materiald->tree->insert(materiald->active);
 	}
@@ -690,8 +685,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     materiald->tree->erase(materiald->active);
-	delete materiald -> active;
-	materiald -> active = NULL;
+	materiald -> active.reset();
     }
 
     MaterialDialogUpdate (materiald, materiald -> tree);
@@ -796,7 +790,7 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    materiald = XtNew (struct material_dialog);
+    materiald = new struct material_dialog;
 
     materiald -> callback = callback;
 
@@ -804,7 +798,7 @@ MaterialDialog MaterialDialogCreate (Widget parent, String name, String title, X
 
     materiald -> materials   = NULL;
 
-    materiald -> active   = NULL;
+    materiald -> active.reset();
 
     materiald -> shell    = XtCreatePopupShell (name,
 			 topLevelShellWidgetClass, parent,

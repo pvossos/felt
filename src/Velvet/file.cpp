@@ -255,7 +255,7 @@ void StartNew (void)
     SolutionDialogUpdate (solution_d);
 
     DW_RemoveAll (drawing);
-    DestroyProblem(true);
+    DestroyProblem(/*true*/);
     figure_set.clear();
 
     ElementListSet (element_l, NULL);
@@ -347,7 +347,6 @@ static int UpdateMaterial (Material nu)
         old -> t = nu -> t;
         old -> rho = nu -> rho;
         old -> kappa = nu -> kappa;
-        delete nu;
     } else 
         saved.material_set.insert(nu);
     
@@ -380,11 +379,11 @@ void OpenMaterialFile (void)
     BufferErrors (False);
 
     if (status)
-        DestroyProblem (true);
+        DestroyProblem (/*true*/);
     else 
         std::for_each(problem.material_set.begin(), problem.material_set.end(), UpdateMaterial);
 
-    DestroyProblem (false);
+    DestroyProblem (/*false*/);
 
     problem = saved;
 

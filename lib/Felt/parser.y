@@ -69,8 +69,8 @@ static LoadCase		  loadcase;		/* current loadcase	   */
    is illegal and the current object is set to a dummy object. */
 
 static node_t	  dummy_node;		/* dummy node		   */
-static material_t dummy_material;	/* dummy material	   */
 static const Element dummy_element(new element_t);	/* dummy element	   */
+static const Material dummy_material(new material_t);	/* dummy material	   */
 static distributed_t dummy_load;		/* dummy distributed load  */
 static force_t	  dummy_force;		/* dummy force		   */
 static const Constraint dummy_constraint(new constraint_t);	/* dummy constraint	   */
@@ -410,7 +410,7 @@ element_number
         } 
 
         if (!element->material)
-             element -> material = new material_t;
+             element -> material.reset(new material_t);
 		element -> material->name = last_material ? last_material : ""; 
 	    }
 	;
@@ -455,7 +455,7 @@ element_parameter
 	    {
              last_material = $2;
              if (!element->material)
-                  element->material = new material_t;
+                  element->material.reset(new material_t);
              element -> material -> name = last_material;
 	    }
 
@@ -548,12 +548,11 @@ material_definition
 material_name
 	: NAME
 	    {
-             material = new material_t($1);
+             material.reset(new material_t($1));
              
              if (problem.material_set.count(material) > 0) {
                   error ("material %s is previously defined", $1);
-                  delete material;
-                  material = &dummy_material;
+                  material = dummy_material;
              } else 
                   problem.material_set.insert(material);
 	    }

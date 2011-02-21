@@ -596,9 +596,6 @@ int main (int argc, char *argv[])
         delete *it;
     problem.force_set.clear();
 
-    for (Problem::MaterialSet::iterator it = problem.material_set.begin();
-         it != problem.material_set.end(); ++it)
-        delete *it;
     problem.material_set.clear();
     
     exit (0);

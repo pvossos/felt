@@ -188,7 +188,7 @@ static bool CheckForceReferences (Node node)
                 return true;
             first_time = False;
         }
-        node -> force = NULL;
+        node -> force.reset();
     }
     
     return false;

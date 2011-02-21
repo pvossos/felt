@@ -72,7 +72,7 @@ static node_t	  dummy_node;		/* dummy node		   */
 static const Element dummy_element(new element_t);	/* dummy element	   */
 static const Material dummy_material(new material_t);	/* dummy material	   */
 static distributed_t dummy_load;		/* dummy distributed load  */
-static force_t	  dummy_force;		/* dummy force		   */
+static const Force dummy_force(new force_t);		/* dummy force		   */
 static const Constraint dummy_constraint(new constraint_t);	/* dummy constraint	   */
 static const LoadCase dummy_loadcase(new loadcase_t);	/* dummy loadcase	   */
 
@@ -349,8 +349,7 @@ node_parameter
 
 	| FORCE_EQ NAME
     {
-         delete node -> force;
-         node -> force = new force_t($2);
+         node -> force.reset(new force_t($2));
     }
 
 	| CONSTRAINT_EQ NAME
@@ -790,12 +789,11 @@ force_definition
 force_name
 	: NAME
 	    {
-             force = new force_t($1);
+             force.reset(new force_t($1));
              
              if (!problem.force_set.insert(force).second) {
                   error ("force %s is previously defined", $1);
-                  delete force;
-                  force = &dummy_force;
+                  force = dummy_force;
              }
 	    }
 	;
@@ -1121,7 +1119,7 @@ loadcase_parameter
              
              for (unsigned i = 1; i <= size; i ++) {
                   loadcase -> nodes [i] = new node_t(case_array [i - 1].noe);
-                  loadcase -> forces [i] = new force_t(case_array [i - 1].fol);
+                  loadcase -> forces [i].reset(new force_t(case_array [i - 1].fol));
              }
 	    }
 

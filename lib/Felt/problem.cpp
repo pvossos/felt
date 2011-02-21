@@ -102,11 +102,9 @@ resolve_node(Node node)
 
     if (node->force) {
         Force f = node->force;
-        Problem::ForceSet::iterator it = problem.force_set.find(f);
-        node -> force = it != problem.force_set.end() ? *it : NULL;
+        node -> force = SetSearch(problem.force_set, f->name);
         if (!node -> force)
             error ("node %u uses undefined force %s", number, f->name.c_str());
-        delete f;
     }
 
     return 0;
@@ -183,7 +181,6 @@ resolve_loadcase(LoadCase loadcase)
        loadcase -> forces [i] = SetSearch(problem.force_set, f->name);
        if (!loadcase -> forces [i])
            error ("load case %s used undefined force %s", loadcase->name.c_str(), f->name.c_str());
-       delete f;
     }
 
     for (unsigned i = 1 ; i <= loadcase->loads.size(); i++) {

@@ -360,9 +360,6 @@ void DestroyProblem (/*bool delmaterials*/)
 
     problem.element_set.clear();
 
-    for (Problem::ForceSet::iterator it = problem.force_set.begin();
-         it != problem.force_set.end(); ++it)
-        delete *it;
     problem.force_set.clear();
 
     problem.material_set.clear();

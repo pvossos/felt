@@ -142,7 +142,7 @@ struct force_t {
     VarExpr spectrum [7];		/* input spectra		  */
 };
 
-typedef force_t* Force;
+typedef boost::shared_ptr<force_t> Force;
 
 struct LtForce
 {

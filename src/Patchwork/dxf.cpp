@@ -92,8 +92,8 @@ int ReadDXFFile (char *name)
          if (ReadDXFLine (&line, NULL, input))
             return 1;
 
-         nodes [0] = AddNode (line.xa, line.ya, line.za, constraint, NULL);
-         nodes [1] = AddNode (line.xb, line.yb, line.zb, constraint, NULL);
+         nodes [0] = AddNode (line.xa, line.ya, line.za, constraint, Force());
+         nodes [1] = AddNode (line.xb, line.yb, line.zb, constraint, Force());
 
          AddElement (truss, nodes, material, NULL, 0);
       }
@@ -107,8 +107,7 @@ int ReadDXFFile (char *name)
          }
 
          for (i = 0 ; i < poly.n ; i++) 
-            nodes [i] = AddNode (poly.x [i], poly.y [i], poly.z [i], 
-                                 constraint, NULL);
+             nodes [i] = AddNode (poly.x [i], poly.y [i], poly.z [i], constraint, Force());
 
          if (poly.n == 2)
             AddElement (truss, nodes, material, NULL, 0);

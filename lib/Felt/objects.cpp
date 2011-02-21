@@ -35,7 +35,7 @@ node_t::node_t(unsigned number)
 {
     this -> number     = number;
     this -> m          = 0.0;
-    this -> force      = NULL;
+    this -> force.reset();
     this -> eq_force.clear();
     this -> constraint.reset();
     this -> aux        = NULL;

@@ -76,7 +76,7 @@ int ReadGraphFile (char *filename)
          y = strtod (ptr1+1, &ptr2);
          ptr2 = strchr (ptr1+1, ' ');
          z = atof (ptr2+1);
-         node [i] = AddNode (x, y, z, constraint, NULL);
+         node [i] = AddNode (x, y, z, constraint, Force());
          i++;
       }
       else { 

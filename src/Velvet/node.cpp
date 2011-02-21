@@ -699,8 +699,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the force. */
     {
         f_dummy.name = GetTextString (noded -> f_name);
-        Problem::ForceSet::iterator it = noded->forces->find(&f_dummy);
-        active -> force = it != noded->forces->end() ? *it : NULL;
+        active->force = SetSearch(*noded->forces, f_dummy.name);
     }
 
     /* Retrieve the values from the text entries. */

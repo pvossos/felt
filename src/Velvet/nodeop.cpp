@@ -185,7 +185,6 @@ DeleteNodeGroup(Figure *figures, unsigned nfigures)
     unsigned         i;
     Figure           fig;
     Drawn            drawn;
-    Node             node;
     unsigned         numleft;
     Boolean	     firsttime;
     Boolean	     newinfo;
@@ -199,10 +198,10 @@ DeleteNodeGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	node = (Node) attr.user_data;
+	Node node = boost::any_cast<Node>(attr.user_data);
 	drawn = (Drawn) node -> aux;
 	if (drawn -> type != DrawnNode)
 	    continue;
@@ -290,8 +289,6 @@ void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
     FigureAttributes attributes;
     Figure           figure;
     Drawn            drawn;
-    Node             node;
-
 
     report = (DrawingReport *) call_data;
 
@@ -315,10 +312,10 @@ void DeleteNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -373,8 +370,6 @@ void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
     FigureAttributes attributes;
     Figure           figure;
     Drawn            drawn;
-    Node             node;
-
 
     report = (DrawingReport *) call_data;
 
@@ -393,10 +388,10 @@ void EditNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -493,7 +488,7 @@ int DrawNode (Node node)
     drawn -> label = label;
 
 
-    attr.user_data = (char *) node;
+    attr.user_data = node;
 
     if (fig != NULL)
 	DW_SetAttributes (drawing, fig, DW_FigureUserData, &attr);
@@ -599,7 +594,6 @@ void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure	     figure;
-    Node	     node;
     Drawn	     drawn;
 
 
@@ -620,10 +614,10 @@ void MoveNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -672,17 +666,16 @@ AssignMassGroup(Figure *figures, unsigned nfigures)
     unsigned         i;
     Figure           fig;
     Drawn            drawn;
-    Node             node;
 
 
     for (i = 0; i < nfigures; i ++) {
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	node = (Node) attr.user_data;
+	Node node = boost::any_cast<Node>(attr.user_data);
 	drawn = (Drawn) node -> aux;
 	if (drawn -> type != DrawnNode)
 	    continue;
@@ -719,8 +712,6 @@ void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data)
     FigureAttributes attributes;
     Figure           figure;
     Drawn            drawn;
-    Node             node;
-
 
     report = (DrawingReport *) call_data;
 
@@ -744,10 +735,10 @@ void AssignMassCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;

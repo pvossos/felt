@@ -21,6 +21,7 @@
 # define _Drawing_h
 
 # include <set>
+# include <boost/any.hpp>
 # include <stdint.h>
 
 /*----------------------------------------------------------------------*/
@@ -172,7 +173,7 @@ typedef struct {
     Figure      *figures;	/* groups (read only)			    */
     unsigned	 nfigures;	/* groups (read only)			    */
     Pixmap	 pixmap;	/* pixmaps, bitmaps			    */
-    char        *user_data;	/* all figures				    */
+    boost::any        user_data;	/* all figures				    */
 } FigureAttributes;
 
 # define DW_FigureGroup		(1 << 0)

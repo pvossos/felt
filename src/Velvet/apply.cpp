@@ -69,10 +69,10 @@ ApplyForceGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	node = (Node) attr.user_data;
+	Node node = boost::any_cast<Node>(attr.user_data);
 	drawn = (Drawn) node -> aux;
 	if (drawn -> type != DrawnNode)
 	    continue;
@@ -108,7 +108,6 @@ void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure           figure;
-    Node             node;
     Drawn            drawn;
 
 
@@ -132,10 +131,10 @@ void ApplyForceCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -192,7 +191,6 @@ ApplyConstraintGroup(Figure *figures, unsigned nfigures)
     unsigned		i;
     Figure		fig;
     FigureAttributes	attr;
-    Node		node;
     Drawn		drawn;
     Node		displayed;
 
@@ -203,10 +201,10 @@ ApplyConstraintGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	node = (Node) attr.user_data;
+	Node node = boost::any_cast<Node>(attr.user_data);
 	drawn = (Drawn) node -> aux;
 	if (drawn -> type != DrawnNode)
 	    continue;
@@ -244,7 +242,6 @@ void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
     FigureAttributes attributes;
     Figure           figure;
     Drawn	     drawn;
-    Node             node;
 
 
     report = (DrawingReport *) call_data;
@@ -267,10 +264,10 @@ void ApplyConstraintCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -329,7 +326,6 @@ ApplyLoadGroup(Figure *figures, unsigned nfigures)
     unsigned		i;
     Figure		fig;
     FigureAttributes	attr;
-    Element		element;
     Drawn		drawn;
     Element		displayed;
 
@@ -340,10 +336,10 @@ ApplyLoadGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	element = (Element) attr.user_data;
+	Element element = boost::any_cast<Element>(attr.user_data);
 	drawn = (Drawn) element -> aux;
 	if (drawn -> type != DrawnElement)
 	    continue;
@@ -393,7 +389,6 @@ void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
     FigureAttributes attributes;
     Figure           figure;
     Drawn            drawn;
-    Element          element;
 
 
     report = (DrawingReport *) call_data;
@@ -416,10 +411,10 @@ void ApplyLoadCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    element = (Element) attributes.user_data;
+    Element element = boost::any_cast<Element>(attributes.user_data);
     drawn = (Drawn) element -> aux;
     if (drawn -> type != DrawnElement)
 	return;
@@ -476,7 +471,6 @@ ApplyMaterialGroup(Figure *figures, unsigned nfigures)
     unsigned		i;
     Figure		fig;
     FigureAttributes	attr;
-    Element		element;
     Drawn		drawn;
     Element		displayed;
 
@@ -487,10 +481,10 @@ ApplyMaterialGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	element = (Element) attr.user_data;
+	Element element = boost::any_cast<Element>(attr.user_data);
 	drawn = (Drawn) element -> aux;
 	if (drawn -> type != DrawnElement)
 	    continue;
@@ -528,8 +522,6 @@ void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
     FigureAttributes attributes;
     Figure           figure;
     Drawn            drawn;
-    Element          element;
-
 
     report = (DrawingReport *) call_data;
 
@@ -551,10 +543,10 @@ void ApplyMaterialCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    element = (Element) attributes.user_data;
+    Element element = boost::any_cast<Element>(attributes.user_data);
     drawn = (Drawn) element -> aux;
     if (drawn -> type != DrawnElement)
 	return;

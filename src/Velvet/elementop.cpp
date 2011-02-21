@@ -49,7 +49,6 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
     unsigned         j;
     Figure           fig;
     Drawn            drawn;
-    Element          element;
     Boolean          firsttime;
     Boolean	     newinfo;
     FigureAttributes attr;
@@ -62,10 +61,10 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	element = (Element) attr.user_data;
+	Element element = boost::any_cast<Element>(attr.user_data);
 	drawn = (Drawn) element -> aux;
 	if (drawn -> type != DrawnElement)
 	    continue;
@@ -145,7 +144,6 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure           figure;
-    Element          element;
     Drawn            drawn;
 
 
@@ -171,10 +169,10 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    element = (Element) attributes.user_data;
+    Element element = boost::any_cast<Element>(attributes.user_data);
     drawn = (Drawn) element -> aux;
     if (drawn -> type != DrawnElement)
 	return;
@@ -228,7 +226,6 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure           figure;
-    Element          element;
     Drawn            drawn;
 
 
@@ -249,10 +246,10 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    element = (Element) attributes.user_data;
+    Element element = boost::any_cast<Element>(attributes.user_data);
     drawn = (Drawn) element -> aux;
     if (drawn -> type != DrawnElement)
 	return;
@@ -385,7 +382,6 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 
 void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Node             node;
     Drawn            drawn;
     Figure           figure;
     DrawingReport   *report;
@@ -407,10 +403,10 @@ void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -553,7 +549,7 @@ int DrawElement (Element element)
     drawn -> label = label;
     element -> aux = (char *) drawn;
 
-    attr.user_data = (char *) element;
+    attr.user_data = element;
 
     if (fig != NULL)
 	DW_SetAttributes (drawing, fig, DW_FigureUserData, &attr);

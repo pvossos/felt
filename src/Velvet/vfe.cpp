@@ -411,7 +411,7 @@ static int setnodenum (Node node)
 	y = node -> y;
 	sprintf (number, " %d", node -> number);
 	drawn -> label = DW_DrawText (drawing, True, x, y, number);
-	attr.user_data = (char *) node;
+	attr.user_data = node;
 	DW_SetAttributes (drawing, drawn -> label, DW_FigureUserData, &attr);
     }
 
@@ -465,7 +465,7 @@ static int setelementnum (Element element)
 	ComputeCenter (element, &x, &y);
 	sprintf (number, "%d", element -> number);
 	drawn -> label = DW_DrawText (drawing, True, x, y, number);
-	attr.user_data = (char *) element;
+	attr.user_data = element;
 	DW_SetAttributes (drawing, drawn -> label, DW_FigureUserData, &attr);
     }
 

@@ -654,7 +654,7 @@ static void CanvasToAppearance (void)
 
     for (i = num_figures - 1; i >= 0; i --) {
 	DW_GetAttributes (drawing, figure_list [i], &attributes);
-	if (attributes.user_data)
+	if (!attributes.user_data.empty())
 	    continue;
 
     FigInfo fi;

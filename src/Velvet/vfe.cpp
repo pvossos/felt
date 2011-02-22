@@ -353,9 +353,6 @@ void DrawProblem (double z)
 
 void DestroyProblem (/*bool delmaterials*/)
 {
-    for (Problem::NodeSet::iterator it = problem.node_set.begin();
-         it != problem.node_set.end(); ++it)
-        delete *it;
     problem.node_set.clear();
 
     problem.element_set.clear();

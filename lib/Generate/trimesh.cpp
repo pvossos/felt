@@ -183,7 +183,7 @@ GenerateTriMesh(TriMesh trimesh, cvector1<Element> &element, cvector1<Node> &nod
 
    node.resize(nn);
    for (i = 1 ; i <= nn ; i++)
-       node[i] = new node_t;
+       node[i].reset(new node_t);
 
    element.resize(ne);
    for (i = 1 ; i <= ne ; i++)

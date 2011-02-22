@@ -364,8 +364,8 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
 
     if (dummy.number == 0) {
-	DoAddElement (NULL);
-	return;
+        DoAddElement(Node());
+        return;
     }
 
     Node found = SetSearch(problem.node_set, dummy.number);    

@@ -154,7 +154,6 @@ resolve_element(Element element)
             if (element -> node [i]) {
                 Node n = element->node[i];
                 element -> node [i] = problem.nodes [n->number];
-                delete n;
             }
     
     return 0;
@@ -174,7 +173,6 @@ resolve_loadcase(LoadCase loadcase)
        loadcase -> nodes [i] = SetSearch(problem.node_set, n->number);
        if (!loadcase -> nodes [i])
            error ("load case %s used undefined node %d", loadcase->name.c_str(), n->number);
-       delete n;
 
        Force f = loadcase->forces[i];
        loadcase -> forces [i] = SetSearch(problem.force_set, f->name);
@@ -247,7 +245,6 @@ resolve_names(void)
             analysis.nodes [i] = SetSearch(problem.node_set, n->number);
             if (!analysis.nodes [i])
                 error ("analysis node %d not defined", n->number);
-            delete n;
         }
     }
 
@@ -256,7 +253,6 @@ resolve_names(void)
         analysis.input_node = SetSearch(problem.node_set, n->number);
         if (!analysis.input_node)
             error ("analysis input node %d not defined", n->number);
-        delete n;
     }
 }
 
@@ -337,7 +333,7 @@ ReadFeltFile(const char *filename)
     analysis.mass_mode = 0;
     analysis.nodes.clear();
     analysis.numdofs   = 0;
-    analysis.input_node = NULL;
+    analysis.input_node.reset();
     analysis.input_dof = 0;
 
     for (i = 1 ; i <= 3 ; i++)

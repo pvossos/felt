@@ -582,9 +582,8 @@ int main (int argc, char *argv[])
        WriteMaterialStatistics (stdout);
 
     // try cleanup
-    for (size_t i = 1; i <= problem.nodes.size(); i++)
-        delete problem.nodes[i];
     problem.nodes.clear();
+    problem.node_set.clear();
 
     problem.elements.clear();
     problem.element_set.clear();

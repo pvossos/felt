@@ -68,7 +68,7 @@ static LoadCase		  loadcase;		/* current loadcase	   */
 /* Dummy strucutures.  If an object is defined twice, the second definition
    is illegal and the current object is set to a dummy object. */
 
-static node_t	  dummy_node;		/* dummy node		   */
+static const Node dummy_node(new node_t);		/* dummy node		   */
 static const Element dummy_element(new element_t);	/* dummy element	   */
 static const Material dummy_material(new material_t);	/* dummy material	   */
 static const Distributed dummy_load(new distributed_t);		/* dummy distributed load  */
@@ -289,16 +289,15 @@ node_number
 	    {
              if ($1 < 1 || $1 > problem.nodes.size()) {
                   error ("node number %u is illegal", $1);
-                  node = &dummy_node;
+                  node = dummy_node;
                   break;
              }
              
-		node = new node_t($1);
+             node.reset(new node_t($1));
 
 		if (!problem.node_set.insert(node).second) {
 		    error ("node number %u is repeated", $1);
-		    delete node;
-		    node = &dummy_node;
+		    node = dummy_node;
 		    break;
 		}
 
@@ -445,7 +444,7 @@ element_parameter
 		for (unsigned i = 1; i <= size; i ++) {
              int nn = int_array[i-1];
              if (nn != 0)
-                  element -> node [i] = new node_t(nn);
+                  element -> node [i].reset(new node_t(nn));
         }
         
 	    }
@@ -1114,7 +1113,7 @@ loadcase_parameter
              loadcase->forces.resize(size);
              
              for (unsigned i = 1; i <= size; i ++) {
-                  loadcase -> nodes [i] = new node_t(case_array [i - 1].noe);
+                  loadcase -> nodes [i].reset(new node_t(case_array [i - 1].noe));
                   loadcase -> forces [i].reset(new force_t(case_array [i - 1].fol));
              }
 	    }
@@ -1259,7 +1258,7 @@ analysis_parameter
 
         | INPUT_NODE_EQ node_number_expression
             {
-                 analysis.input_node = new node_t($2);
+                 analysis.input_node.reset(new node_t($2));
             }
 
 	| NODES_EQ '[' analysis_node_list ']'
@@ -1267,7 +1266,7 @@ analysis_parameter
              analysis.nodes.resize(int_ptr - int_array);
              
              for (unsigned i = 1; i <= analysis.nodes.size(); i ++)
-                  analysis.nodes [i] = new node_t(int_array [i - 1]);
+                  analysis.nodes [i].reset(new node_t(int_array [i - 1]));
 	    }
 
 	| DOFS_EQ '[' analysis_dof_list ']'

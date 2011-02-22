@@ -901,11 +901,11 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 		SetFocus (eltd -> node [i]);
 		return;
 	    }
-	    nodes [i] = NULL;
+	    nodes [i].reset();
 
 	} else {
         node = SetSearch(*eltd->nodes, n_dummy.number);
-	    if (node == NULL) {
+	    if (!node) {
 		if (i < eltd -> offset) {
 		    eltd -> offset = i;
 		    DisplayNodes (eltd);

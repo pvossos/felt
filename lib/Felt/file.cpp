@@ -735,7 +735,7 @@ WriteFile(char *flag)
     any_loads = 0;
 
     if (!problem.nodes.empty()) {
-	prev_node = NULL;
+    prev_node.reset();
 	fprintf (fp, "\nnodes\n");
 
 	for (i = 1; i <= problem.nodes.size(); i ++) {

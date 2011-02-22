@@ -92,7 +92,7 @@ void DoAddNode (float x, float y, float z)
    Node node = SetMaximum(problem.node_set);
    max = node != NULL ? node -> number : 0;
 
-   node = new node_t(max + 1);
+   node.reset(new node_t(max + 1));
    node -> constraint = ConstraintDialogActive (constraint_d);
    node -> x = x;
    node -> y = y;
@@ -220,13 +220,12 @@ DeleteNodeGroup(Figure *figures, unsigned nfigures)
 	DW_RemoveFigure (drawing, drawn -> figure);
 	DW_RemoveFigure (drawing, drawn -> label);
     problem.node_set.erase(node);
-	delete node;
     }
 
 
     if (newinfo) {
-        NodeDialogDisplay (node_d, NULL);
-	NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
+        NodeDialogDisplay (node_d, Node());
+        NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
     }
 
 
@@ -277,7 +276,6 @@ DoDeleteNode(Node node)
     problem.node_set.erase(node);
     NodeDialogUpdate (node_d, &problem.node_set, NULL, NULL);
 
-    delete node;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -514,11 +512,9 @@ void QuitMoveNode (Widget w, XEvent *event, String *params, Cardinal *num)
 void WalkNodeCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
     DrawingReport *report;
-    Node           node;
-
 
     report = (DrawingReport *) call_data;
-    node = (Node) client_data;
+    Node node = *((Node *) client_data);
 
     if (report -> event -> type == ButtonPress) {
 	if (report -> event -> xbutton.button == 3)
@@ -570,11 +566,11 @@ void DoMoveNode (Node node, Boolean motion)
     AssignQuitAbort (QuitMoveNodeCB, "QuitMoveNode", QuitMoveNodeCB,"QuitMoveNode");
 
     XtRemoveAllCallbacks (drawing, XtNbuttonCallback);
-    XtAddCallback (drawing, XtNbuttonCallback, WalkNodeCB, node);
+    XtAddCallback (drawing, XtNbuttonCallback, WalkNodeCB, &node /*ATTN*/);
 
     if (motion == True) {
 	XtRemoveAllCallbacks (drawing, XtNmotionCallback);
-	XtAddCallback (drawing, XtNmotionCallback, WalkNodeCB, node);
+	XtAddCallback (drawing, XtNmotionCallback, WalkNodeCB, &node /*ATTN*/);
 	DW_SetInteractive (drawing, True);
 	ghost_figure = DW_FillArc (drawing, False, node -> x, node -> y,
 					6.0, 6.0, 0.0, 360.0);

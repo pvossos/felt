@@ -47,7 +47,7 @@ InitializeProblem(void)
 Node
 AddNode(double x, double y, double z, Constraint constraint, Force force)
 {
-   Node node = new node_t(problem.nodes.size()+1);
+   Node node(new node_t(problem.nodes.size()+1));
 
    node -> x = x;
    node -> y = y;

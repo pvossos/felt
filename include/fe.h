@@ -236,7 +236,7 @@ struct node_t {
     int        numelts;			/* num of elts that use this node */
 };
 
-typedef node_t* Node;
+typedef boost::shared_ptr<node_t> Node;
 
 struct LtNode
 {

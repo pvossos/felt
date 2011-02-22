@@ -70,7 +70,7 @@ element_t::element_t(unsigned number, Definition defn)
     this -> numdistributed = 0;
 
     for (unsigned i = 0; i <= 3; i ++)
-        this -> distributed [i] = NULL;
+        this -> distributed [i].reset();
 
     this -> stress = NULL;
     this -> ninteg = 0;

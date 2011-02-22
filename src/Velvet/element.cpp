@@ -940,13 +940,13 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     active -> numdistributed = 0;
     for (i = 0; i < 3; i ++) {
         l_dummy.name = GetTextString (eltd -> l_name [i]);
-        Problem::DistributedSet::iterator it = eltd->loads->find(&l_dummy);
-        if (it != eltd->loads->end())
-            active -> distributed [++ active -> numdistributed] = *it;
+        Distributed load = SetSearch(*eltd->loads, l_dummy.name);
+        if (load)
+            active -> distributed [++ active -> numdistributed] = load;
     }
 
     for (i = active -> numdistributed + 1; i <= 3; i ++)
-	active -> distributed [i] = NULL;
+        active -> distributed [i].reset();
 
 
     /* Copy the nodes. */

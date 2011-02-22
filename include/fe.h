@@ -119,7 +119,7 @@ struct distributed_t {
     cvector1<Pair> value;			/* nodes and magnitudes     	  */
 };
 
-typedef distributed_t* Distributed;
+typedef boost::shared_ptr<distributed_t> Distributed;
 
 struct LtDistributed
 {

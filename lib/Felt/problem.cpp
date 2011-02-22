@@ -145,7 +145,6 @@ resolve_element(Element element)
         element->distributed[i] = SetSearch(problem.distributed_set, d->name);
         if (!element->distributed[i])
             error ("element %u used undefined load %s", number, d->name.c_str());
-        delete d;
     }
 
     /* Set the pointers to the nodes. */
@@ -193,7 +192,6 @@ resolve_loadcase(LoadCase loadcase)
        loadcase -> loads [i] = SetSearch(problem.distributed_set, l->name);
        if (!loadcase -> loads [i])
            error ("load case %s used undefined load %s", loadcase->name.c_str(), l->name.c_str());
-       delete l;
     }
 
     problem.loadcases.push_back(loadcase);

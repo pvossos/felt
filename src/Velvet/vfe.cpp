@@ -368,9 +368,6 @@ void DestroyProblem (/*bool delmaterials*/)
 
     problem.loadcase_set.clear();
     
-    for (Problem::DistributedSet::iterator it = problem.distributed_set.begin();
-         it != problem.distributed_set.end(); ++it)
-        delete *it;
     problem.distributed_set.clear();
 }
 

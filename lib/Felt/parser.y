@@ -71,7 +71,7 @@ static LoadCase		  loadcase;		/* current loadcase	   */
 static node_t	  dummy_node;		/* dummy node		   */
 static const Element dummy_element(new element_t);	/* dummy element	   */
 static const Material dummy_material(new material_t);	/* dummy material	   */
-static distributed_t dummy_load;		/* dummy distributed load  */
+static const Distributed dummy_load(new distributed_t);		/* dummy distributed load  */
 static const Force dummy_force(new force_t);		/* dummy force		   */
 static const Constraint dummy_constraint(new constraint_t);	/* dummy constraint	   */
 static const LoadCase dummy_loadcase(new loadcase_t);	/* dummy loadcase	   */
@@ -501,8 +501,7 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		delete element -> distributed [element -> numdistributed];
-		element -> distributed [element -> numdistributed] = new distributed_t($3);
+		element -> distributed [element -> numdistributed].reset(new distributed_t($3));
 	    }
 
 	| element_load_list NAME
@@ -513,15 +512,13 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		delete element -> distributed [element -> numdistributed];
-		element -> distributed [element -> numdistributed] = new distributed_t($2);
+		element -> distributed [element -> numdistributed].reset(new distributed_t($2));
 	    }
 
 	| NAME
 	    {
 		element -> numdistributed = 1;
-		delete element -> distributed [element -> numdistributed];
-		element -> distributed [element -> numdistributed] = new distributed_t($1);
+		element -> distributed [element -> numdistributed].reset(new distributed_t($1));
 	    }
 	;
 
@@ -679,12 +676,11 @@ load_definition
 load_name
 	: NAME
 	    {
-             load = new distributed_t($1, 0);
+             load.reset(new distributed_t($1, 0));
              
              if (!problem.distributed_set.insert(load).second) {
                   error ("load %s is previously defined", $1);
-                  delete load;
-                  load = &dummy_load;
+                  load = dummy_load;
              }
 	    }
 	;
@@ -713,7 +709,7 @@ load_parameter
 		unsigned size;
 
 
-		if (load == &dummy_load)
+		if (load == dummy_load)
 		    break;
 
 		size = pair_ptr - pair_array;
@@ -1135,7 +1131,7 @@ loadcase_parameter
              
              for (unsigned i = 1; i <= size; i ++) {
                   loadcase -> elements [i].reset(new element_t(case_array [i - 1].noe));
-                  loadcase -> loads [i]   = new distributed_t(case_array [i - 1].fol);
+                  loadcase -> loads [i].reset(new distributed_t(case_array [i - 1].fol));
              }
 	    }
 

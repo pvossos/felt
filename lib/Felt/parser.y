@@ -48,8 +48,8 @@ extern "C" int  yylex  (void);
 static double		  last_x;		/* last x coordinate	   */
 static double		  last_y;		/* last y coordinate	   */
 static double		  last_z;		/* last z coordinate	   */
-static char		 *last_constraint;	/* name of last constraint */
-static char		 *last_material;	/* name of last material   */
+static std::string last_constraint;	/* name of last constraint */
+static std::string last_material;	/* name of last material   */
 
 
 
@@ -197,8 +197,8 @@ initialize
 		last_x = 0;
 		last_y = 0;
 		last_z = 0;
-		last_material = NULL;
-		last_constraint = NULL;
+		last_material = "";
+		last_constraint = "";
 	    }
 	;
 
@@ -304,8 +304,8 @@ node_number
 		node -> x = last_x;
 		node -> y = last_y;
 		node -> z = last_z;
-        if (last_constraint)
-             node->constraint.reset(new constraint_t(last_constraint));
+        if (!last_constraint.empty())
+             node->constraint.reset(new constraint_t(last_constraint.c_str()));
         else
              node->constraint.reset();
 	    }
@@ -349,12 +349,14 @@ node_parameter
 	| FORCE_EQ NAME
     {
          node -> force.reset(new force_t($2));
+         free($2);
     }
 
 	| CONSTRAINT_EQ NAME
     {
          last_constraint = $2;
-         node -> constraint.reset(new constraint_t(last_constraint));
+         free($2);
+         node -> constraint.reset(new constraint_t(last_constraint.c_str()));
     }
 
 	| error
@@ -409,7 +411,7 @@ element_number
 
         if (!element->material)
              element -> material.reset(new material_t);
-		element -> material->name = last_material ? last_material : ""; 
+		element -> material->name = last_material;
 	    }
 	;
 
@@ -452,6 +454,7 @@ element_parameter
 	| MATERIAL_EQ NAME
 	    {
              last_material = $2;
+             free($2);
              if (!element->material)
                   element->material.reset(new material_t);
              element -> material -> name = last_material;
@@ -501,6 +504,7 @@ element_load_list
 
 		element -> numdistributed ++;
 		element -> distributed [element -> numdistributed].reset(new distributed_t($3));
+        free($3);
 	    }
 
 	| element_load_list NAME
@@ -512,12 +516,14 @@ element_load_list
 
 		element -> numdistributed ++;
 		element -> distributed [element -> numdistributed].reset(new distributed_t($2));
+        free($2);
 	    }
 
 	| NAME
 	    {
 		element -> numdistributed = 1;
 		element -> distributed [element -> numdistributed].reset(new distributed_t($1));
+        free($1);
 	    }
 	;
 
@@ -550,6 +556,7 @@ material_name
                   material = dummy_material;
              } else 
                   problem.material_set.insert(material);
+             free($1);
 	    }
 	;
 
@@ -563,6 +570,7 @@ material_parameter
 	: COLOR_EQ NAME
 	    {
              material -> color = $2;
+             free($2);
 	    }
 
 	| E_EQ constant_expression
@@ -681,6 +689,7 @@ load_name
                   error ("load %s is previously defined", $1);
                   load = dummy_load;
              }
+             free($1);
 	    }
 	;
 
@@ -695,6 +704,7 @@ load_parameter
 	: COLOR_EQ NAME
 	    {
              load -> color = $2;
+             free($2);
 	    }
 
 	| DIRECTION_EQ DIRECTION
@@ -790,6 +800,7 @@ force_name
                   error ("force %s is previously defined", $1);
                   force = dummy_force;
              }
+             free($1);
 	    }
 	;
 
@@ -804,6 +815,7 @@ force_parameter
 	: COLOR_EQ NAME
 	    {
              force -> color = $2;
+             free($2);
 	    }
 
 	| FX_EQ enable_copy variable_expression
@@ -897,6 +909,8 @@ constraint_name
                   error ("constraint %s is previously defined", $1);
                   constraint = dummy_constraint;
              }
+
+             free($1);
 	    }
 	;
 
@@ -911,6 +925,7 @@ constraint_parameter
 	: COLOR_EQ NAME
 	    {
              constraint -> color = $2;
+             free($2);
 	    }
 
 	| TX_EQ enable_copy translation
@@ -1093,6 +1108,8 @@ loadcase_name
                   error ("loadcase %s is previously defined", $1);
                   loadcase = dummy_loadcase;
              }
+             
+             free($1);
         }
     ;
 

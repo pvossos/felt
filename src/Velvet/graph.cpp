@@ -1052,7 +1052,7 @@ void VelvetPlotForce (Force force, char *quantity)
 
    PlaceTitles (force -> name.c_str(), "time", (offset == 1 ? "F" : "M"), force_dw, 1);
 
-   DestroyMatrix (ftable);
+   delete (ftable);
 
    return;
 }

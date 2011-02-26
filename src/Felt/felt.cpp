@@ -350,10 +350,10 @@ int main (int argc, char *argv[])
 
           WriteStructuralResults (stdout, title, R);
 
-          DestroyMatrix(K);
-          DestroyMatrix(Kcond);
-          DestroyVector(Fcond);
-          DestroyVector(F);
+          delete(K);
+          delete(Kcond);
+          delete(Fcond);
+          delete(F);
           break;
 
        case StaticLoadCases:
@@ -398,7 +398,7 @@ int main (int argc, char *argv[])
              else 
                 PlotLoadRangeTable (dtable, stdout);
 
-          DestroyMatrix(Kcond);
+          delete(Kcond);
           
           break; 
 
@@ -484,7 +484,7 @@ int main (int argc, char *argv[])
 
           WriteTemperatureResults (stdout, title);
 
-          DestroyMatrix(Kcond);
+          delete(Kcond);
           
           break;
 

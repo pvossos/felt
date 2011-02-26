@@ -29,6 +29,8 @@
 typedef struct matrix *Matrix;
 
 struct matrix {
+   matrix() { /* NO-OP */};
+   ~matrix();
    unsigned	nrows;		/* number of rows 			 */
    unsigned	ncols;		/* number of columns			 */
    double	**data;		/* matrix data				 */
@@ -36,6 +38,9 @@ struct matrix {
    unsigned	size;		/* actual size of compact storage	 */
    unsigned	refcount;	/* count of children			 */
    Matrix	parent;		/* parent of possible subsection	 */
+private:
+     matrix& operator=(const matrix &rhs);
+     matrix(const matrix &am);
 };
 
 # define Mrows(m)          ((m) -> nrows)
@@ -68,7 +73,6 @@ typedef Matrix Vector;
 
 # define CreateMatrix  CreateFullMatrix
 # define CreateVector  CreateColumnVector
-# define DestroyVector DestroyMatrix
 
 	/*
 	 * prototypes for DATA manipulation routines
@@ -105,11 +109,6 @@ Matrix CreateRowVector (unsigned int size);
   \param size vector length
 */
 Matrix CreateColumnVector (unsigned int size);
-
-/*!
-  \param m matrix to free
-*/
-void DestroyMatrix (Matrix m);
 
 /*!
   \param rows number of rows

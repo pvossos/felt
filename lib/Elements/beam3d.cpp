@@ -174,7 +174,7 @@ beam3dEltStress(Element element)
 
    MultiplyAtBA (ke, Tt, element -> K);
 
-   DestroyMatrix (element -> K);
+   delete (element -> K);
    element -> K = NullMatrix;
 
    MultiplyMatrices (dlocal, T, d);

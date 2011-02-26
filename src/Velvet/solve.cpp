@@ -598,42 +598,42 @@ int SolveProblem (void)
        WriteMaterialStatistics (output);
  
     if (dtable != NullMatrix) 
-       DestroyMatrix (dtable);
+       delete (dtable);
     if (ttable != NullMatrix)
-       DestroyMatrix (ttable);
+       delete (ttable);
 
     if (K != NullMatrix)
-       DestroyMatrix (K);
+       delete (K);
     if (M != NullMatrix) 
-       DestroyMatrix (M);
+       delete (M);
     if (C != NullMatrix) 
-       DestroyMatrix (C);
+       delete (C);
     if (F != NullVector) 
-       DestroyVector (F);
+       delete (F);
 
     if (Kcond != NullMatrix) 
-       DestroyMatrix (Kcond);
+       delete (Kcond);
     if (Mcond != NullMatrix) 
-       DestroyMatrix (Mcond);
+       delete (Mcond);
     if (Ccond != NullMatrix) 
-       DestroyMatrix (Ccond);
+       delete (Ccond);
 
     if (Km != NullMatrix) 
-       DestroyMatrix (Km);
+       delete (Km);
     if (Mm != NullMatrix) 
-       DestroyMatrix (Mm);
+       delete (Mm);
     if (Cm != NullMatrix) 
-       DestroyMatrix (Cm);
+       delete (Cm);
 
     if (x != NullMatrix)
-       DestroyMatrix (x);
+       delete (x);
     if (lambda != NullVector)
-       DestroyVector (lambda);
+       delete (lambda);
 
     if (d == NullVector && Fcond != NullVector)
-       DestroyVector (Fcond);
+       delete (Fcond);
     else if (d != NullVector) 
-       DestroyVector (d);
+       delete (d);
 
     fclose (output);
    
@@ -825,13 +825,13 @@ void SetupAnimate (void)
        analysis.dofs [i] = adofs [i];
 
     if (K != NullMatrix) 
-       DestroyVector (K);
+       delete (K);
     if (M != NullMatrix) 
-       DestroyVector (M);
+       delete (M);
     if (C != NullMatrix) 
-       DestroyVector (C);
+       delete (C);
     if (dtable != NullMatrix) 
-       DestroyMatrix (dtable);
+       delete (dtable);
 
     BufferErrors (False);
 

@@ -226,7 +226,7 @@ int GeneralMatrixEigenModes (const Matrix a, Matrix lambda, double tol, unsigned
 	 * the eigenvectors now
 	 */
 
-   DestroyMatrix (work);
+   delete (work);
 
    return 0;
 }
@@ -401,7 +401,7 @@ int SymmetricMatrixEigenModes (const Matrix a, const Matrix lambda, Matrix x, un
    if (status)
       return status;
 
-   DestroyMatrix (sub_diag);
+   delete (sub_diag);
 
    return 0;
 }
@@ -503,7 +503,7 @@ SymmetricMatrixGeneralEigenModes(Matrix a, Matrix b, Matrix lambda,
    if (status)
       return status;
 
-   DestroyMatrix (sub_diag);
+   delete (sub_diag);
 
    return 0;
 }

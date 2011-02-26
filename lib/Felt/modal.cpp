@@ -65,7 +65,7 @@ MultiplyQtKQ(Matrix x, Matrix Q, Matrix K)
       }                  
    }
 
-   DestroyMatrix (temp);
+   delete (temp);
 }
 
 int
@@ -140,10 +140,10 @@ ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
    if (status)
       return status;
 
-   DestroyMatrix (Q);
-   DestroyMatrix (p);
-   DestroyMatrix (x_tran);
-   DestroyMatrix (A);
+   delete (Q);
+   delete (p);
+   delete (x_tran);
+   delete (A);
 
    *x_r = x_orig;
    *lambda_r = lambda;
@@ -235,7 +235,7 @@ MultiplyUTmU(Matrix M, Matrix u, Matrix m)
       M -> data [j][1] = result;
    }
 
-   DestroyMatrix (temp);
+   delete (temp);
 }
 
 int

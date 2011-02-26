@@ -249,7 +249,7 @@ ConstructStiffness(int *status)
       }
 
       if (!element[i] -> definition -> retainK) {
-         DestroyMatrix (element[i] -> K);
+         delete (element[i] -> K);
          element[i] -> K = NullMatrix;
       }
 

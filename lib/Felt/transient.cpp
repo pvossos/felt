@@ -219,11 +219,11 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
       }
 
       if (!element[i] -> definition -> retainK) {
-         DestroyMatrix (element[i] -> K);
+         delete element[i] -> K;
          element[i] -> K = NullMatrix;
       }
 
-      DestroyMatrix (element[i] -> M);
+      delete element[i] -> M;
       element[i] -> M = NullMatrix;
 
    } /* end second loop over elements */
@@ -528,14 +528,14 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 * clean up ... 
 	 */
 
-   DestroyVector (F);
-   DestroyVector (a);
-   DestroyVector (d);
-   DestroyVector (v);
-   DestroyMatrix (Kp);
-   DestroyMatrix (Kp_fact);
+   delete F;
+   delete a;
+   delete d;
+   delete v;
+   delete Kp;
+   delete Kp_fact;
    if (Mt)
-      DestroyMatrix (Mt);
+      delete (Mt);
 
    return dtable;
 }
@@ -693,11 +693,11 @@ IntegrateParabolicDE(Vector K, Vector M)
 	 * clean up ... 
 	 */
 
-   DestroyVector (F);
-   DestroyVector (F1);
-   DestroyVector (d);
-   DestroyMatrix (Kp);
-   DestroyMatrix (Kp_fact);
+   delete (F);
+   delete (F1);
+   delete (d);
+   delete (Kp);
+   delete (Kp_fact);
 
    return dtable;
 }

@@ -134,30 +134,26 @@ Matrix CreateColumnVector (unsigned int size)
    return CreateFullMatrix (size, 1);
 }
 
-void DestroyMatrix (Matrix m)
+matrix::~matrix()
 {
-   if (m -> parent != NULL) {
-      m -> parent -> refcount --;
+    if (this -> parent != NULL) {
+        this -> parent -> refcount --;
  
-      if (m -> parent -> refcount == 0)
-         DestroyMatrix (m -> parent);
-      
-      m -> data ++;
-      free (m -> data);
-      delete m;
+        if (this -> parent -> refcount == 0)
+            delete this -> parent;
+        
+        this -> data ++;
+        free (this -> data);
+        return;
+        
+    } else if (-- this -> refcount) 
+        return;
 
-      return;
-   } 
-   else if (-- m -> refcount)
-      return;
-
-   m -> data [1] ++;
-   free (m -> data [1]);
-
-   m -> data ++;
-   free (m -> data);
-
-   delete m;
+    this -> data [1] ++;
+    free (this -> data [1]);
+    
+    this -> data ++;
+    free (this -> data);
 }
 
 Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int size, const cvector1<unsigned> *diag)

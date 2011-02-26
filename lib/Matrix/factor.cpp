@@ -231,7 +231,7 @@ int InvertMatrix (Matrix b, const Matrix a, const Matrix p)
          sdata(b,j,i) = mdata(work,j,1);
    }
    
-   DestroyMatrix (work);
+   delete (work);
    return 0;
 }
 

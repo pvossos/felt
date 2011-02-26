@@ -371,12 +371,12 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
       for (j = 1 ; j <= Mrows(P) ; j++)
          sdata(Pm, j, i) = mdata(P, j, i);         
 
-      DestroyMatrix(P);
+      delete(P);
    }
 
    *Pr = Pm;
 
-   DestroyMatrix (x);
+   delete (x);
 
    return 0; 
 }
@@ -534,7 +534,7 @@ ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
             sdata(So, j, k) += (mdata(H[i],j,k)*mdata(H[i],j,k)) * mdata(Si,j,1);
    }
 
-   DestroyMatrix (Si);
+   delete (Si);
 
    return So;
 }

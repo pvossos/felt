@@ -20,13 +20,15 @@
 # ifndef _MATRIX_H
 # define _MATRIX_H
 
+# include <boost/shared_ptr.hpp>
 # include <stdio.h>		/* for FILE definition			*/
 # include "status.h"
 # include "cvector1.hpp"
 
 /*----------------------------------------------------------------------*/
 
-typedef struct matrix *Matrix;
+struct matrix;
+typedef boost::shared_ptr<matrix> Matrix;
 
 struct matrix {
    matrix() { /* NO-OP */};
@@ -36,7 +38,6 @@ struct matrix {
    double	**data;		/* matrix data				 */
    cvector1<unsigned> diag; /* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
-   unsigned	refcount;	/* count of children			 */
    Matrix	parent;		/* parent of possible subsection	 */
 private:
      matrix& operator=(const matrix &rhs);

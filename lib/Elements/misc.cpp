@@ -56,13 +56,13 @@ GaussPoints(unsigned int npoints, double **xpoints, double **weights)
 Matrix 
 PlaneStrainD(Element element)
 {
-   static Matrix	D = NullMatrix;
+   static Matrix	D;
    static double	prev_nu = -99;
    static double	prev_E = -99;
    double 		poisson,
 			factor;
 
-   if (D == NullMatrix) 
+   if (!D) 
       D = CreateMatrix (3,3);
 
    if (element -> material -> E != prev_E ||
@@ -80,7 +80,7 @@ PlaneStrainD(Element element)
 
       if (1 - 2*poisson <= TINY) {
          error ("singularity in constitutive matrix for element %d",element -> number);
-         return NULL;
+         return Matrix();
       }
 
       factor = element -> material -> E / ((1 + poisson)*(1 - 2*poisson));
@@ -96,13 +96,13 @@ PlaneStrainD(Element element)
 Matrix
 PlaneStressD(Element element)
 {
-   static Matrix	D = NullMatrix;
+   static Matrix	D;
    static double	prev_nu = -99;
    static double	prev_E = -99;
    double 		poisson,
 			factor;
 
-   if (D == NullMatrix) 
+   if (!D) 
       D = CreateMatrix (3,3);
 
    if (element -> material -> nu != prev_nu || 
@@ -120,7 +120,7 @@ PlaneStressD(Element element)
 
       if (1 - poisson*poisson <= TINY) {
          error ("singularity in constitutive matrix for element %d",element -> number);
-         return NullMatrix;
+         return Matrix();
       }
 
       factor = element -> material -> E / (1 - poisson*poisson);
@@ -136,13 +136,13 @@ PlaneStressD(Element element)
 Matrix
 AxisymmetricD(Element element)
 {
-   static Matrix	D = NullMatrix;
+   static Matrix	D;
    static double	prev_nu = -99;
    static double	prev_E = -99;
    double 		poisson,
 			factor;
 
-   if (D == NullMatrix) 
+   if (!D) 
       D = CreateMatrix (4,4);
 
    if (element -> material -> nu != prev_nu || 
@@ -168,7 +168,7 @@ AxisymmetricD(Element element)
 
       if (1 - 2*poisson <= TINY) {
          error ("singularity in constitutive matrix for element %d",element -> number);
-         return NullMatrix;
+         return Matrix();
       }
 
       factor = element -> material -> E / (1 - 2*poisson) / (1 + poisson);
@@ -184,13 +184,13 @@ AxisymmetricD(Element element)
 Matrix
 IsotropicD(Element element)
 {
-   static Matrix	D = NullMatrix;
+   static Matrix	D;
    static double	prev_nu = -99;
    static double	prev_E = -99;
    double 		poisson,
 			factor;
 
-   if (D == NullMatrix) 
+   if (!D) 
       D = CreateMatrix (6, 6);
 
    if (element -> material -> nu != prev_nu ||
@@ -218,7 +218,7 @@ IsotropicD(Element element)
 
       if (1.0 - 2.0*poisson <= TINY) {
          error ("singularity in constitutive matrix for element %d",element -> number);
-         return NullMatrix;
+         return Matrix();
       }
 
       factor = element -> material -> E / (1.0 + poisson) / (1.0 - 2*poisson);

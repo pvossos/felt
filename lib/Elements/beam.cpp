@@ -71,14 +71,14 @@ beamEltSetup(Element element, char mass_mode, int tangent)
    }
 
    ke = BeamLocalK (element);
-   if (ke == NullMatrix)
+   if (!ke)
       return 1;
 
    T = BeamTransformMatrix (element);
-   if (T == NullMatrix)
+   if (!T)
       return 1;
 
-   if (element -> K == NullMatrix) 
+   if (!element -> K) 
       element -> K = CreateMatrix (6,6);
   
    MultiplyAtBA (element -> K, T, ke);
@@ -95,7 +95,7 @@ beamEltSetup(Element element, char mass_mode, int tangent)
 
    if (element -> numdistributed > 0) {
       equiv = BeamEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
       element -> node[1] -> eq_force[1] += VectorData (equiv) [1];
@@ -116,12 +116,12 @@ beamEltSetup(Element element, char mass_mode, int tangent)
        else if (mass_mode == 'l')
           me = BeamLumpedMassMatrix (element); 
        else
-	  me = NullMatrix;
+           me = Matrix();
 
-       if (me == NullMatrix)
+       if (!me)
           return 1;
 
-       if (element -> M == NullMatrix)
+       if (!element -> M)
           element -> M = CreateMatrix (6,6);
        
        MultiplyAtBA (element -> M, T, me);
@@ -137,14 +137,14 @@ beamEltStress(Element element)
    int			count;
    static Vector	f,
 			dlocal,
-			d = NullMatrix;
+			d;
    Matrix		T;
-   static Matrix	ke = NullMatrix;
+   static Matrix	ke;
    static Matrix	Tt;
    Vector		equiv;
    static Vector	eq_local;
 
-   if (d == NullMatrix) {
+   if (!d) {
       ke = CreateMatrix (6,6);
       d = CreateVector (6);
       f = CreateVector (6);
@@ -161,7 +161,7 @@ beamEltStress(Element element)
    VectorData (d) [6] = element -> node[2] -> dx[6]; 
 
    T = BeamTransformMatrix (element);
-   if (T == NullMatrix)
+   if (!T)
       return 1;
 
 	/*
@@ -174,15 +174,14 @@ beamEltStress(Element element)
    TransposeMatrix (Tt, T);
    MultiplyAtBA (ke, Tt, element -> K);
 
-   delete (element -> K);
-   element -> K = NullMatrix;
+   element -> K.reset();
 
    MultiplyMatrices (dlocal, T, d);
    MultiplyMatrices (f, ke, dlocal);
 
    if (element -> numdistributed > 0) {
       equiv = BeamEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
       MultiplyMatrices (eq_local, T, equiv);
@@ -219,9 +218,9 @@ BeamLocalK(Element element)
 			L2;
    double		EI,
 			AEonL;
-   static Matrix	ke = NullMatrix;
+   static Matrix	ke;
 
-   if (ke == NullMatrix) 
+   if (!ke) 
       ke = CreateMatrix (6,6);
 
    ZeroMatrix (ke);
@@ -232,7 +231,7 @@ BeamLocalK(Element element)
       error ("length of element %d is zero to machine precision",
               element -> number);
 
-      return NullMatrix;
+      return Matrix();
    } 
 
    L2 = L*L;
@@ -263,12 +262,12 @@ BeamLocalK(Element element)
 static Matrix
 BeamLumpedMassMatrix(Element element)
 {
-   static Matrix	me = NullMatrix;
+   static Matrix	me;
    double		L;
    double		factor;
    double		I_factor;
 
-   if (me == NullMatrix) {
+   if (!me) {
       me = CreateMatrix (6,6);
       ZeroMatrix (me);
    }
@@ -290,11 +289,11 @@ BeamLumpedMassMatrix(Element element)
 static Matrix
 BeamConsistentMassMatrix(Element element)
 {
-   static Matrix	me = NullMatrix;
+   static Matrix	me;
    double		L;
    double		f1,f2;
 
-   if (me == NullMatrix) {
+   if (!me) {
       me = CreateMatrix (6,6);
       
       ZeroMatrix (me);
@@ -328,9 +327,9 @@ BeamTransformMatrix(Element element)
 {
    double		cx,cy,
 			L;
-   static Matrix	T = NullMatrix;
+   static Matrix	T;
 
-   if (T == NullMatrix) {
+   if (!T) {
       T = CreateMatrix (6,6);
       ZeroMatrix (T);
    }
@@ -340,7 +339,7 @@ BeamTransformMatrix(Element element)
    if (L <= TINY) {
       error ("length of element %d is zero to machine precision",
               element -> number);
-      return NullMatrix;
+      return Matrix();
    } 
 
    cx = (element -> node[2] -> x - element -> node[1] -> x)/L;
@@ -369,11 +368,11 @@ BeamEquivNodalForces(Element element, int *err_count)
    unsigned		i,j;
    Matrix		T;
    static Matrix	Tt;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
    static Vector	result;
    double		theta;
  
-   if (equiv == NullMatrix) {
+   if (!equiv) {
       equiv = CreateVector (6);
       result = CreateVector (6);
       Tt = CreateMatrix (6,6);
@@ -437,7 +436,7 @@ BeamEquivNodalForces(Element element, int *err_count)
 
    if (count) {
       *err_count = count;
-      return NullMatrix;
+      return Matrix();
    }
 
    if (element -> node[2] -> y - element -> node[1] -> y == 0 &&

@@ -94,10 +94,10 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
    static Vector	weights;
    static Matrix	tempK;
    static Matrix	N, dNdxi, dNde,
-                        dNdx, dNdy = NullMatrix;
+                        dNdx, dNdy;
    static Matrix	Bt, temp;
 
-   if (dNdy == NullMatrix) {
+   if (!dNdy) {
   
       N     = CreateMatrix (9,9);
       dNdxi = CreateMatrix (9,9);
@@ -151,9 +151,9 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
    else if (type == PLANESTRAIN)
       D = PlaneStrainD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    for (int i = 1 ; i <= ninteg ; i++) {
@@ -163,7 +163,7 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
       }
    } 
 
-   if (element -> K == NullMatrix) {
+   if (!element -> K) {
       if (numnodes == 3) {
          element -> K = CreateMatrix (8,8);
          MatrixRows (element -> K) = 6;
@@ -186,7 +186,7 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
 
    for (int i = 1 ; i <= ninteg ; i++) {
       B = Iso2dLocalB (element, numnodes, dNdx, dNdy, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       MatrixRows (Bt) = MatrixRows (temp) = MatrixCols (B);
@@ -232,9 +232,9 @@ static Matrix
 Iso2dLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point)
 {
    unsigned		i;
-   static Matrix	B = NullMatrix;
+   static Matrix	B;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (3,18);
 
    for (i = 1 ; i <= numnodes ; i++) {
@@ -256,9 +256,9 @@ GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Ma
 {
    static Vector	jac,
 			dxdxi, dxde,
-			dydxi, dyde = NullMatrix;
+			dydxi, dyde;
 
-   if (dyde == NullMatrix) {
+   if (!dyde) {
 
       dxdxi = CreateVector (9);
       dxde  = CreateVector (9);

@@ -704,7 +704,7 @@ void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char 
    XtSetArg (args [0], XtNdepth, &depth);
    XtGetValues (toplevel, args, 1);
 
-   if (ttable == NullMatrix) {
+   if (!ttable) {
       min_t = 0.0;
       max_t = analysis.stop;
    }
@@ -732,7 +732,7 @@ void VelvetPlotTD (Matrix dtable, Matrix ttable, const char *xlabel, const char 
       t_prev = min_t;
       for (j = 2 ; j <= MatrixRows (dtable) ; j++) {
 
-         if (ttable == NullMatrix)
+         if (!ttable)
             t = (j - 1)*analysis.step;
          else
             t = mdata(ttable,j,1);
@@ -766,7 +766,7 @@ void VelvetPlotSpectra (Matrix P, const char *xlabel, const char *ylabel, const 
    double	min, max;
 
    if (fpShell == NULL) 
-      fpShell = CreateGraphShell (&fp_dw, "fpShell", "fp_dw");
+       fpShell = CreateGraphShell (&fp_dw, "fpShell", "fp_dw");
 
    fp_gr.numcurves = analysis.nodes.size() * analysis.numdofs;
 
@@ -1051,8 +1051,6 @@ void VelvetPlotForce (Force force, char *quantity)
    DW_SetForeground (force_dw, "black");
 
    PlaceTitles (force -> name.c_str(), "time", (offset == 1 ? "F" : "M"), force_dw, 1);
-
-   delete (ftable);
 
    return;
 }

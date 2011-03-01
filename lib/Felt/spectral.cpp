@@ -354,7 +354,7 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
    unsigned	i,j;
    
    x = CreateVector(Mrows(dtable));
-   Pm = NullMatrix; /* gcc -Wall */
+   Pm.reset(); /* gcc -Wall */
 
    for (i = 1 ; i <= Mcols(dtable) ; i++) {
       for (j = 1 ; j <= Mrows(dtable) ; j++)
@@ -370,13 +370,9 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
 
       for (j = 1 ; j <= Mrows(P) ; j++)
          sdata(Pm, j, i) = mdata(P, j, i);         
-
-      delete(P);
    }
 
    *Pr = Pm;
-
-   delete (x);
 
    return 0; 
 }
@@ -434,9 +430,6 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
 
       w += analysis.step;
    }
-
-   delete (Z);
-   delete (Ht);
 
    return H; 
 }
@@ -533,8 +526,6 @@ ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
          for (j = 1 ; j <= Mrows(H[i]) ; j++) 
             sdata(So, j, k) += (mdata(H[i],j,k)*mdata(H[i],j,k)) * mdata(Si,j,1);
    }
-
-   delete (Si);
 
    return So;
 }

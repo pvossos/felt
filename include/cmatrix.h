@@ -20,6 +20,7 @@
 # ifndef _CMATRIX_H
 # define _CMATRIX_H
 
+# include <boost/shared_ptr.hpp>
 # include <stdio.h>		/* for FILE definition			*/
 # include "complex.h"
 # include "status.h"
@@ -27,7 +28,8 @@
 
 /*----------------------------------------------------------------------*/
 
-typedef struct complex_matrix *ComplexMatrix;
+struct complex_matrix;
+typedef boost::shared_ptr<complex_matrix> ComplexMatrix;
 
 struct complex_matrix {
    complex_matrix() { /* NO-OP */ };
@@ -37,7 +39,6 @@ struct complex_matrix {
    complex	**data;		/* matrix data				 */
    cvector1<unsigned> diag;		/* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
-   unsigned	refcount;	/* count of children			 */
    ComplexMatrix parent;	/* parent of possible subsection	 */
 private:
      complex_matrix& operator=(const complex_matrix &rhs);

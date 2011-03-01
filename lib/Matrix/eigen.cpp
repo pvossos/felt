@@ -226,8 +226,6 @@ int GeneralMatrixEigenModes (const Matrix a, Matrix lambda, double tol, unsigned
 	 * the eigenvectors now
 	 */
 
-   delete (work);
-
    return 0;
 }
 
@@ -400,8 +398,6 @@ int SymmetricMatrixEigenModes (const Matrix a, const Matrix lambda, Matrix x, un
    status = TridiagSymmMatrixEigenModes (diag, sub_diag, diag, x, maxit);
    if (status)
       return status;
-
-   delete (sub_diag);
 
    return 0;
 }

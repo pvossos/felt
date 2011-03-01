@@ -59,9 +59,9 @@ element_t::element_t(unsigned number, Definition defn)
     if (defn)
         this->node.resize(defn->numnodes);
     
-    this -> K  	  = NullMatrix;
-    this -> M	  = NullMatrix;
-    this -> f	  = NullMatrix;
+    this -> K.reset();
+    this -> M.reset();
+    this -> f.reset();
     this -> aux 	  = NULL;
     this -> number 	  = number;
     this -> definition = defn;

@@ -45,11 +45,11 @@
 static void
 ConstructTFD(double t, double h, Vector dp)
 {
-  static Vector  temp = NullMatrix;
+  static Vector  temp;
   static int     size;
   int            i;
     
-  if (temp == NullMatrix) {
+  if (!temp) {
       size= problem.nodes.size() * problem.num_dofs; 
      temp= CreateVector(size); 
   }
@@ -151,11 +151,11 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
          * factorization on it.  This is the matrix that we will
          * use as the RHS of our implicit update equation
          */
-  ZeroConstrainedDOF(M0, NULL, &M0_fact, NULL);
+  ZeroConstrainedDOF(M0, Matrix(), &M0_fact, NULL);
   if(CroutFactorMatrix(M0_fact))
     {
     error("singular M0 matrix in hyperbolic integration - cannot proceed");
-    return(NullMatrix);
+    return Matrix();
     }
 
 
@@ -234,7 +234,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
     if(CroutBackSolveMatrix(M0_fact, e1)) /* e1 := M0^(-1)*e1 */ 
       {
       error("singular M0 matrix in hyperbolic integration - cannot proceed");
-      return(NullMatrix);
+      return Matrix();
       }
 
     /* phalf= p(t0+0.5*h); */
@@ -314,7 +314,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
     if(CroutBackSolveMatrix(M0_fact, e2)) /* e2 := M0^(-1)*e2 */
       {
       error("singular M0 matrix in hyperbolic integration- cannot proceed");
-      return(NullMatrix);
+      return Matrix();
       }
 
 
@@ -402,7 +402,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
     if(CroutBackSolveMatrix(M0_fact, e3)) /* e3 := M0^(-1)*e3 */
       {
       error("singular M0 matrix in hyperbolic integration- cannot proceed");
-      return(NullMatrix);
+      return Matrix();
       }
 
 
@@ -443,21 +443,6 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
       VectorData(*ttable)[step]= t; /* CHANGE: pn */ 
 
     } /* eo for steps */
-
-
-        /*
-         * clean up ...
-         */
-  delete(a_dummy); delete(b0);
-  delete(p0);      delete(p0d);   delete(phalf);
-  delete(p1);      delete(r0);    delete(rhalf);
-  delete(r1);      delete(d1);    delete(e1);
-  delete(d2);      delete(e2);    delete(d3);
-  delete(e3);      delete(y0);    delete(v0);
-  delete(vhalf);   delete(v1);    delete(k0d1);
-  delete(bhalf);   delete(err); 
-
-  delete(M0_fact); delete(M0); 
 
   return(dtable);
 } /* eo IntegrateHyperbolicDE2() */

@@ -320,7 +320,7 @@ Matrix MatlabToMatrix (FILE *fp)
 
    status = ReadMAT (fp, &a, NULL);
    if (status == 0)
-      return NullMatrix;
+       return Matrix();
 
    return a;
 }

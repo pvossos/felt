@@ -53,20 +53,17 @@ double mdata (const Matrix A, unsigned int row, unsigned int col)
 
 Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec)
 {
-   Matrix	b;
    unsigned	i;
    Matrix	root;
 
    if (er > a -> nrows || ec > a -> ncols || sc < 1 || sr < 1)
-      return NULL;
+       return Matrix();
 
    if (IsCompact (a))
-      return NULL;
+       return Matrix();
 
-   b = (struct matrix *) malloc (sizeof (struct matrix));
-   if (b == NULL)
-	Fatal ("unable to allocate subsection matrix");
-
+   Matrix b(new struct matrix);
+   
    b -> nrows = er - sr + 1;
    b -> ncols = ec - sc + 1;
 
@@ -78,7 +75,6 @@ Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc,
    for (i = 1 ; i <= b -> nrows ; i++)
       b -> data [i] = &(a -> data [i + sr - 1][sc - 1]); 
 
-   b -> refcount = 0;
    b -> size = 0;
 
    root = a;
@@ -86,7 +82,6 @@ Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc,
       root = root -> parent;
 
    b -> parent = root;
-   root -> refcount ++;
 
    return b;
 }
@@ -95,8 +90,8 @@ Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
 
-   Matrix m = new struct matrix;
-
+   Matrix m(new struct matrix);
+   
    m -> data = (double **) malloc (sizeof (double *) * rows);
    if (m -> data == NULL) {
         fprintf (stderr,"failure point 2: r = %d, c = %d\n", rows, cols);
@@ -118,8 +113,7 @@ Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
    m -> nrows = rows;
    m -> ncols = cols;
    m -> size = 0;
-   m -> refcount = 1;
-   m -> parent = NULL;
+   m -> parent.reset();
 
    return m;
 }
@@ -136,19 +130,6 @@ Matrix CreateColumnVector (unsigned int size)
 
 matrix::~matrix()
 {
-    if (this -> parent != NULL) {
-        this -> parent -> refcount --;
- 
-        if (this -> parent -> refcount == 0)
-            delete this -> parent;
-        
-        this -> data ++;
-        free (this -> data);
-        return;
-        
-    } else if (-- this -> refcount) 
-        return;
-
     this -> data [1] ++;
     free (this -> data [1]);
     
@@ -165,7 +146,7 @@ Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int s
    A -> nrows = rows; 
    A -> ncols = cols;
    A -> size = size;
-   A -> parent = NULL;
+   A -> parent.reset();
 
    if (diag != NULL)
        A->diag = *diag;
@@ -221,13 +202,13 @@ Matrix MakeCompactFromFull (const Matrix A)
    unsigned	height;
 
    if (IsCompact(A))
-      return NullMatrix;
+       return Matrix();
 
    if (!IsSquare(A))
-      return NullMatrix;
+       return Matrix();
 
    if (!IsSymmetricMatrix(A))
-      return NullMatrix;
+       return Matrix();
 
    rows = Mrows (A);
    cols = Mcols (A);
@@ -241,7 +222,7 @@ Matrix MakeCompactFromFull (const Matrix A)
    }
 
    if (size)
-      return NullMatrix;
+       return Matrix();
 
 	/*
 	 * determine the height of the columns and store in diag

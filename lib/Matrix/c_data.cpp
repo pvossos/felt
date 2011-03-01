@@ -83,7 +83,6 @@ CreateSubsectionComplexMatrix(ComplexMatrix a,
    for (i = 1 ; i <= b -> nrows ; i++)
       b -> data [i] = &(a -> data [i + sr - 1][sc - 1]); 
 
-   b -> refcount = 0;
    b -> size = 0;
 
    root = a;
@@ -91,7 +90,6 @@ CreateSubsectionComplexMatrix(ComplexMatrix a,
       root = root -> parent;
 
    b -> parent = root;
-   root -> refcount ++;
 
    return b;
 }
@@ -101,8 +99,8 @@ ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
 
-   ComplexMatrix m = new struct complex_matrix;
-
+   ComplexMatrix m(new struct complex_matrix);
+   
    m -> data = (complex **) malloc (sizeof (complex *) * rows);
    if (m -> data == NULL)
 	Fatal ("unable to allocate full matrix");
@@ -118,8 +116,7 @@ ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
    m -> nrows = rows;
    m -> ncols = cols;
    m -> size = 0;
-   m -> refcount = 1;
-   m -> parent = NULL;
+   m -> parent.reset();
 
    return m;
 }
@@ -136,19 +133,6 @@ ComplexMatrix CreateComplexColumnVector (unsigned int size)
 
 complex_matrix::~complex_matrix()
 {
-    if (this -> parent != NULL) {
-        this -> parent -> refcount --;
- 
-        if (this -> parent -> refcount == 0)
-            delete (this -> parent);
-      
-        this -> data ++;
-        free (this -> data);
-        return;
-    } 
-    else if (-- this -> refcount)
-        return;
-
     this -> data [1] ++;
     free (this -> data [1]);
 
@@ -166,7 +150,7 @@ ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols,
    A -> nrows = rows; 
    A -> ncols = cols;
    A -> size = size;
-   A -> parent = NULL;
+   A -> parent.reset();
 
    if (diag != NULL)
        A -> diag = *diag;
@@ -222,13 +206,13 @@ ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A)
    unsigned	height;
 
    if (IsCompact(A))
-      return (ComplexMatrix) NullMatrix;
+       return ComplexMatrix();
 
    if (!IsSquare(A))
-      return (ComplexMatrix) NullMatrix;
+       return ComplexMatrix();
 
    if (!IsSymmetricComplexMatrix(A))
-      return (ComplexMatrix) NullMatrix;
+       return ComplexMatrix();
 
    rows = Mrows (A);
    cols = Mcols (A);
@@ -242,7 +226,7 @@ ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A)
    }
 
    if (size)
-      return (ComplexMatrix) NullMatrix;
+       return ComplexMatrix();
 
 	/*
 	 * determine the height of the columns and store in diag

@@ -134,30 +134,26 @@ ComplexMatrix CreateComplexColumnVector (unsigned int size)
    return CreateFullComplexMatrix (size, 1);
 }
 
-void DestroyComplexMatrix (ComplexMatrix m)
+complex_matrix::~complex_matrix()
 {
-    if (m -> parent != NULL) {
-        m -> parent -> refcount --;
+    if (this -> parent != NULL) {
+        this -> parent -> refcount --;
  
-        if (m -> parent -> refcount == 0)
-            DestroyComplexMatrix (m -> parent);
+        if (this -> parent -> refcount == 0)
+            delete (this -> parent);
       
-        m -> data ++;
-        free (m -> data);
-        delete m;
-
+        this -> data ++;
+        free (this -> data);
         return;
     } 
-    else if (-- m -> refcount)
+    else if (-- this -> refcount)
         return;
 
-    m -> data [1] ++;
-    free (m -> data [1]);
+    this -> data [1] ++;
+    free (this -> data [1]);
 
-    m -> data ++;
-    free (m -> data);
-
-    delete m;
+    this -> data ++;
+    free (this -> data);
 }
 
 ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols,

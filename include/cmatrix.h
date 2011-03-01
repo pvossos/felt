@@ -30,6 +30,8 @@
 typedef struct complex_matrix *ComplexMatrix;
 
 struct complex_matrix {
+   complex_matrix() { /* NO-OP */ };
+   ~complex_matrix();
    unsigned	nrows;		/* number of rows 			 */
    unsigned	ncols;		/* number of columns			 */
    complex	**data;		/* matrix data				 */
@@ -37,6 +39,9 @@ struct complex_matrix {
    unsigned	size;		/* actual size of compact storage	 */
    unsigned	refcount;	/* count of children			 */
    ComplexMatrix parent;	/* parent of possible subsection	 */
+private:
+     complex_matrix& operator=(const complex_matrix &rhs);
+     complex_matrix(const complex_matrix &am);
 };
 
 # define rdata(m,y,x)   (((m) -> data [(y)][(x)]).r)
@@ -71,10 +76,6 @@ ComplexMatrix CreateComplexRowVector (unsigned int size);
 */
 ComplexMatrix CreateComplexColumnVector (unsigned int size);
 
-/*!
-  \param m matrix to free
-*/
-void DestroyComplexMatrix (ComplexMatrix m);
 
 /*!
   \param rows number of rows

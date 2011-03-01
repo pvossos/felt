@@ -57,7 +57,7 @@ int InvertComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p)
          sdata(b,j,i) = cmdata(work,j,1);
    }
    
-   DestroyComplexMatrix (work);
+   delete (work);
    return 0;
 }
 

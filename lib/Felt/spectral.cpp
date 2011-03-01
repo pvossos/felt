@@ -435,8 +435,8 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
       w += analysis.step;
    }
 
-   DestroyComplexMatrix (Z);
-   DestroyComplexMatrix (Ht);
+   delete (Z);
+   delete (Ht);
 
    return H; 
 }

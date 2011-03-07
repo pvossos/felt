@@ -21,7 +21,7 @@
 # include "matrix.h"
 # include "cmatrix.h"
 
-int IsSymmetricComplexMatrix (const ComplexMatrix a)
+int IsSymmetricComplexMatrix (const ComplexMatrix &a)
 {
    unsigned	i, j;
    int		status;

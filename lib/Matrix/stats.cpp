@@ -22,7 +22,7 @@
 # include <string.h>
 # include "matrix.h"
 
-int MaximumMatrix (const Matrix a, double *x)
+int MaximumMatrix (const Matrix &a, double *x)
 {
    double	max;
    unsigned	m, n;
@@ -42,7 +42,7 @@ int MaximumMatrix (const Matrix a, double *x)
    return 0;
 }
 
-int MinimumMatrix (const Matrix a, double *x)
+int MinimumMatrix (const Matrix &a, double *x)
 {
    double	min;
    unsigned	m, n;
@@ -62,7 +62,7 @@ int MinimumMatrix (const Matrix a, double *x)
    return 0;
 }
 
-int SumMatrix (const Matrix a, double *x)
+int SumMatrix (const Matrix &a, double *x)
 {
    double	sum;
    unsigned	m, n;
@@ -81,7 +81,7 @@ int SumMatrix (const Matrix a, double *x)
    return 0;
 }
 
-int MeanMatrix (const Matrix a, double *x)
+int MeanMatrix (const Matrix &a, double *x)
 {
    double	mean;
 
@@ -91,7 +91,7 @@ int MeanMatrix (const Matrix a, double *x)
    return 0;
 }
 
-int StddevMatrix (const Matrix a, double *x)
+int StddevMatrix (const Matrix &a, double *x)
 {
    double	sum, sum2;
    unsigned	m, n;

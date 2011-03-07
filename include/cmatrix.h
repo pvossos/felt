@@ -59,7 +59,7 @@ typedef ComplexMatrix ComplexVector;
   \param row row index
   \param col column index
 */
-complex cmdata (const ComplexMatrix A, unsigned int row, unsigned int col);
+complex cmdata (const ComplexMatrix &A, unsigned int row, unsigned int col);
 
 /*!
   \param rows number of rows
@@ -90,18 +90,17 @@ ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols,
 /*!
   \param a matrix to copy data from
 */
-ComplexMatrix CreateCopyComplexMatrix (const ComplexMatrix a);
+ComplexMatrix CreateCopyComplexMatrix (const ComplexMatrix &a);
 
 /*!
   \param A compact matrix to expand
 */
-ComplexMatrix MakeFullFromCompactComplex (const ComplexMatrix A);
+ComplexMatrix MakeFullFromCompactComplex (const ComplexMatrix &A);
 
 /*!
   \param A full matrix to compact
 */
-
-ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A);
+ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix &A);
 
 	/*
 	 * prototypes for the BASIC matrix routines
@@ -111,7 +110,7 @@ ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A);
   \brief A = 0 
   \param a the Matrix to fill with zeros
  */
-int ZeroComplexMatrix (ComplexMatrix a);
+int ZeroComplexMatrix (ComplexMatrix &a);
 
 
 /*!
@@ -119,19 +118,19 @@ int ZeroComplexMatrix (ComplexMatrix a);
   \param a the source Matrix
   \param b the destination Matrix
  */
-int CopyComplexMatrix (ComplexMatrix b, const ComplexMatrix a);
+int CopyComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a);
 
 /*!
   \brief a(i,j) = rand()
   \param a Matrix to randomize
   \param seed optional seed
  */
-int RandomComplexMatrix (ComplexMatrix a, int seed);
+int RandomComplexMatrix (ComplexMatrix &a, int seed);
 
 /*!
   \param a the Matrix to mirror
  */
-int MirrorComplexMatrix (ComplexMatrix a);
+int MirrorComplexMatrix (ComplexMatrix &a);
 
 /*!
   \brief c = a * b
@@ -139,7 +138,7 @@ int MirrorComplexMatrix (ComplexMatrix a);
   \param a source matrix 1
   \param b source matrix 2
  */
-int MultiplyComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b);
+int MultiplyComplexMatrices (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b);
 
 /*!
   \brief c = a + b
@@ -147,7 +146,7 @@ int MultiplyComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const Compl
   \param a source Matrix 1
   \param b source Matrix 2
  */
-int AddComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b);
+int AddComplexMatrices (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b);
 
 /*!
   \brief c = a - b
@@ -155,7 +154,7 @@ int AddComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMat
   \param a source Matrix 1
   \param b source Matrix 2
 */
-int SubtractComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b);
+int SubtractComplexMatrices (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b);
 
 /*!
   \brief b(i,j) = factor*a(i,j) + offset
@@ -164,28 +163,28 @@ int SubtractComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const Compl
   \param factor multiplicative scale factor
   \param offset additive offset
  */
-int ScaleComplexMatrix(ComplexMatrix b, const ComplexMatrix a, complex factor, complex offset);
+int ScaleComplexMatrix(ComplexMatrix &b, const ComplexMatrix &a, complex factor, complex offset);
 
 /*!
   \brief b = |a|
   \param b real destination matrix
   \param a complex source matrix
 */
-int ModulusComplexMatrix(Matrix b, const ComplexMatrix a);
+int ModulusComplexMatrix(Matrix &b, const ComplexMatrix &a);
 
 /*!
   \brief b = aT
   \param b destination matrix
   \param a source matrix
 */
-int TransposeComplexMatrix(ComplexMatrix b, const ComplexMatrix a);
+int TransposeComplexMatrix(ComplexMatrix &b, const ComplexMatrix &a);
 
 /*!
   \brief print matrix m to file fp
   \param m matrix to print
   \param fp file pointer for output
 */
-int PrintComplexMatrix (const ComplexMatrix m, FILE *fp);
+int PrintComplexMatrix (const ComplexMatrix &m, FILE *fp);
 
 	/*
 	 * protoypes for the FACTORization machine
@@ -197,7 +196,7 @@ int PrintComplexMatrix (const ComplexMatrix m, FILE *fp);
   \param a factored source matrix
   \param p pivot vector
 */
-int InvertComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p);
+int InvertComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a, const Matrix &p);
 
 /*!
   \brief  factor a into LU and store in b
@@ -206,7 +205,7 @@ int InvertComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p)
   \param p permutation vector
   \param info singularity code
 */
-int LUFactorComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p, int *info);
+int LUFactorComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a, const Matrix &p, int *info);
 
 
 /*!
@@ -216,7 +215,7 @@ int LUFactorComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix 
   \param b RHS vector
   \param p pivot vector
 */
-int LUBackSolveComplexMatrix (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b, Matrix p);
+int LUBackSolveComplexMatrix (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b, const Matrix &p);
 
 /*!
   \brief calculates |a|
@@ -224,27 +223,27 @@ int LUBackSolveComplexMatrix (ComplexMatrix c, const ComplexMatrix a, const Comp
   \param a LU factorized source matrix
   \param p pivot vector
 */
-int DeterminantComplexMatrix(complex *result, const ComplexMatrix a, const Matrix p);
+int DeterminantComplexMatrix(complex *result, const ComplexMatrix &a, const Matrix &p);
 
 /*!
   \brief compute one column of inv(a)
   \param b destination matrix
   \param a factored source matrix
 */
-int InvertCroutComplexMatrix (ComplexMatrix b, const ComplexMatrix a, unsigned int col);
+int InvertCroutComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a, unsigned int col);
 
 /*!
   \brief Crout factorize A and store in A
   \param A source and destination matrix
 */
-int CroutFactorComplexMatrix (ComplexMatrix A);
+int CroutFactorComplexMatrix (ComplexMatrix &A);
 
 /*!
   \brief  solve Ax=b and store x in b
   \param A Crout factored LHS matrix
   \param b RHS (and dest) vector
 */
-int CroutBackSolveComplexMatrix (const ComplexMatrix A, ComplexMatrix b);
+int CroutBackSolveComplexMatrix (const ComplexMatrix &A, ComplexMatrix &b);
 
         /*
          * prototypes for the PROPERTY routines
@@ -254,7 +253,7 @@ int CroutBackSolveComplexMatrix (const ComplexMatrix A, ComplexMatrix b);
   \brief Aij == Aji ? 1 : 0
   \param a matrix to check for symmetry
 */
-int IsSymmetricComplexMatrix (const ComplexMatrix a);
+int IsSymmetricComplexMatrix (const ComplexMatrix &a);
 
 /*----------------------------------------------------------------------*/
 

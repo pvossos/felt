@@ -26,7 +26,7 @@
 
 # define PRINT_TOL 1.0e-12
 
-int ZeroComplexMatrix (ComplexMatrix a)
+int ZeroComplexMatrix (ComplexMatrix &a)
 {
    unsigned	i,j;
 
@@ -47,7 +47,7 @@ int ZeroComplexMatrix (ComplexMatrix a)
    return 0;
 }
 
-int MirrorComplexMatrix (ComplexMatrix a)
+int MirrorComplexMatrix (ComplexMatrix &a)
 {
    unsigned	i, j;
 
@@ -64,7 +64,7 @@ int MirrorComplexMatrix (ComplexMatrix a)
    return 0;
 }
 
-int CopyComplexMatrix (ComplexMatrix b, const ComplexMatrix a)
+int CopyComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a)
 {
    unsigned	i, j;
 
@@ -94,7 +94,7 @@ int CopyComplexMatrix (ComplexMatrix b, const ComplexMatrix a)
    return 0;
 }
 
-int RandomComplexMatrix (ComplexMatrix a, int seed)
+int RandomComplexMatrix (ComplexMatrix &a, int seed)
 {
    unsigned	i, j;
    static int	seeded = 0;
@@ -120,7 +120,7 @@ int RandomComplexMatrix (ComplexMatrix a, int seed)
    return 0;
 }
 
-int MultiplyComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b)
+int MultiplyComplexMatrices (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b)
 {
    unsigned	i,j,k;
 
@@ -143,7 +143,7 @@ int MultiplyComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const Compl
    return 0;
 }
 
-int AddComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b)
+int AddComplexMatrices (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b)
 {
    unsigned	i,j;
 
@@ -163,7 +163,7 @@ int AddComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMat
    return 0;
 }
 
-int SubtractComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const ComplexMatrix b)
+int SubtractComplexMatrices (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b)
 {
    unsigned	i,j;
 
@@ -183,7 +183,7 @@ int SubtractComplexMatrices (ComplexMatrix c, const ComplexMatrix a, const Compl
    return 0;
 }
 
-int ScaleComplexMatrix(ComplexMatrix b, const ComplexMatrix a, complex factor, complex offset)
+int ScaleComplexMatrix(ComplexMatrix &b, const ComplexMatrix &a, complex factor, complex offset)
 {
    unsigned	i,j;
 
@@ -200,7 +200,7 @@ int ScaleComplexMatrix(ComplexMatrix b, const ComplexMatrix a, complex factor, c
    return 0;
 }
 
-int ModulusComplexMatrix(Matrix b, const ComplexMatrix a)
+int ModulusComplexMatrix(Matrix &b, const ComplexMatrix &a)
 {
    unsigned	i,j;
    
@@ -237,7 +237,7 @@ int TransposeComplexMatrix(ComplexMatrix b, const ComplexMatrix a)
    return 0;
 }
 
-int PrintComplexMatrix (const ComplexMatrix m, FILE *fp)
+int PrintComplexMatrix (const ComplexMatrix &m, FILE *fp)
 {
    complex	val;
    unsigned	start, end;

@@ -23,10 +23,18 @@ extern "C" {
 #include "lauxlib.h"
 }
 
+//----------------------------------------------------------------------!
+
+// define missing macros, available in older lua versions
+
 #define tl_boxpointer(L,u) \
     (*(void **)(lua_newuserdata(L, sizeof(void *))) = (u))
 
 #define tl_unboxpointer(L,i)   (*(void **)(lua_touserdata(L, i)))
+
+//----------------------------------------------------------------------!
+
+// all wrapped classes should define the following
 
 template<typename T>
 std::string tl_metaname() 
@@ -34,12 +42,11 @@ std::string tl_metaname()
     assert(false);
     return "NONE";
 }
-    
-template<> std::string tl_metaname<unsigned>()
-{
-    return "unsigned";
-}
 
+//----------------------------------------------------------------------!
+
+// auxilliary function, needs improvement
+    
 template<typename T>
 int tl_setup(lua_State *L, const luaL_reg *m, const luaL_reg *f) 
 {
@@ -55,36 +62,9 @@ int tl_setup(lua_State *L, const luaL_reg *m, const luaL_reg *f)
     return 1;
 }
 
-/* unboxed pointers */
-template<typename T>
-T* tl_checku(lua_State *L, int index)
-{
-    const std::string name = tl_metaname<T>();
-    luaL_checktype(L, index, LUA_TUSERDATA);
-    T *obj = (T *) luaL_checkudata(L, index, name.c_str());
-    if (obj == NULL)
-        luaL_typerror(L, index, name.c_str());
-    return obj;
-}
-  
-template<typename T>
-struct tl_array
-{
-    T *data;
-    size_t size;
-};
+//----------------------------------------------------------------------!
 
-template<typename T>
-T* tl_checkn(lua_State *L, int index, size_t &size)
-{
-    const std::string name = tl_metaname<T>() + "Array";
-    luaL_checktype(L, index, LUA_TUSERDATA);
-    tl_array<T> *obj = (tl_array<T> *) luaL_checkudata(L, index, name.c_str());
-    if (obj == NULL)
-        luaL_typerror(L, index, name.c_str());
-    size = obj->size;
-    return obj->data;
-}
+// check boxed
   
 template<typename T>
 T tl_check(lua_State *L, int index) 
@@ -92,13 +72,11 @@ T tl_check(lua_State *L, int index)
     const std::string name = tl_metaname<T>();
     luaL_checktype(L, index, LUA_TUSERDATA);
     T* v = (T*) luaL_checkudata(L, index, name.c_str());
-    if (!v) luaL_typerror(L, index, name.c_str());
+    if (!v)
+        luaL_typerror(L, index, name.c_str());
     T p = *v;
-    if (!p) {
-        char buf[100];
-        std::sprintf(buf, "NULL %s", name.c_str());
-        luaL_error(L, buf);
-    }
+    if (!p)
+        luaL_error(L, "NULL %s", name.c_str());
     return p;
 }
     
@@ -114,13 +92,15 @@ bool tl_check<bool>(lua_State *L, int index)
     return (bool) lua_tointeger(L, index);
 }
 
+//----------------------------------------------------------------------!
+
+// push boxed
+
 template<typename T>
 void tl_push(lua_State *L, T p) 
 {
     const std::string name = tl_metaname<T>();
     tl_boxpointer(L, p);
-    //T* v = (T*) lua_newuserdata(L, sizeof(T));
-    //*v = p;
     luaL_getmetatable(L, name.c_str());
     lua_setmetatable(L, -2);
 #ifdef SHOWNEWDELETE
@@ -158,6 +138,37 @@ void tl_push(lua_State *L, char val)
     lua_pushfstring(L,"%c", (int) val);
 }
 
+//----------------------------------------------------------------------!
+
+// low-level arrays wrapper
+
+template<typename T>
+struct tl_array
+{
+    T *data;
+    size_t size;
+};
+
+//----------------------------------------------------------------------!
+
+// check low-level arrays
+
+template<typename T>
+T* tl_checkn(lua_State *L, int index, size_t &size)
+{
+    const std::string name = tl_metaname<T>() + "Array";
+    luaL_checktype(L, index, LUA_TUSERDATA);
+    tl_array<T> *obj = (tl_array<T> *) luaL_checkudata(L, index, name.c_str());
+    if (!obj)
+        luaL_typerror(L, index, name.c_str());
+    size = obj->size;
+    return obj->data;
+}
+
+//----------------------------------------------------------------------!
+
+// push low-level arrays
+
 template<typename T>
 void tl_pushn(lua_State *L, T *p, size_t size)
 {
@@ -168,6 +179,10 @@ void tl_pushn(lua_State *L, T *p, size_t size)
     luaL_getmetatable(L, name.c_str());
     lua_setmetatable(L, -2);
 }
+
+//----------------------------------------------------------------------!
+
+// arrays meta-functions
 
 template<typename T>
 int tl_array_tostring(lua_State *L)
@@ -215,6 +230,57 @@ int tl_array_size(lua_State *L)
     lua_pushnumber(L, size);
     return 1;
 }
+
+//----------------------------------------------------------------------!
+
+// wrap arrays in one line.
+
+template<typename T>
+struct tl_array_wrapper
+{
+    typedef std::map<std::string, lua_CFunction> metamap;
+
+    tl_array_wrapper(bool readonlyp = false)
+        {
+            name_ = tl_metaname<T>() + "Array";
+            meta_["__len"] = tl_array_size<T>;
+            meta_["__index"] = tl_array_index<T>;
+            if (!readonlyp)
+                meta_["__newindex"] = tl_array_newindex<T>;
+            meta_["__tostring"] = tl_array_tostring<T>;
+        }
+
+    /*
+    lua_CFunction& operator[](const metamap::key_type &key)
+        {
+            return meta_[key];
+        }
+    */
+
+    void registerm(lua_State *L) const
+        {
+            const size_t n = meta_.size();
+            luaL_reg *meta = new luaL_reg[n+1];
+            size_t i = 0;
+            metamap::const_iterator it;
+            for (it = meta_.begin(); it != meta_.end(); ++it) {
+                meta[i].name = it->first.c_str();
+                meta[i].func = it->second;
+                i++;
+            }
+            meta[i].name = NULL;
+            meta[i].func = NULL;
+            luaL_newmetatable(L, name_.c_str());
+            luaL_register(L, NULL, meta);
+        }
+
+    metamap meta_;
+    std::string name_;
+};
+
+//----------------------------------------------------------------------!
+
+// properties helper, use for __index & __newindex
 
 template<typename T>
 int tl_index_wprop(lua_State *L)
@@ -273,6 +339,10 @@ int tl_newindex_wprop(lua_State *L)
     return 0;
 }
 
+//----------------------------------------------------------------------!
+
+// experimental functions
+
 template<typename T>
 int tl_gc(lua_State *L) 
 {
@@ -327,49 +397,6 @@ int tl_gettern(lua_State *L)
     tl_pushn<V>(L, vals, nn);
     return 1;
 }
-
-//----------------------------------------------------------------------!
-
-template<typename T>
-struct tl_array_wrapper
-{
-    typedef std::map<std::string, lua_CFunction> metamap;
-
-    tl_array_wrapper(bool readonlyp = false)
-        {
-            name_ = tl_metaname<T>() + "Array";
-            meta_["__len"] = tl_array_size<T>;
-            meta_["__index"] = tl_array_index<T>;
-            if (!readonlyp)
-                meta_["__newindex"] = tl_array_newindex<T>;
-            meta_["__tostring"] = tl_array_tostring<T>;
-        }
-    
-    lua_CFunction& operator[](const metamap::key_type &key)
-        {
-            return meta_[key];
-        }
-
-    void registerm(lua_State *L) const
-        {
-            const size_t n = meta_.size();
-            luaL_reg *meta = new luaL_reg[n+1];
-            size_t i = 0;
-            metamap::const_iterator it;
-            for (it = meta_.begin(); it != meta_.end(); ++it) {
-                meta[i].name = it->first.c_str();
-                meta[i].func = it->second;
-                i++;
-            }
-            meta[i].name = NULL;
-            meta[i].func = NULL;
-            luaL_newmetatable(L, name_.c_str());
-            luaL_register(L, NULL, meta);
-        }
-
-    metamap meta_;
-    std::string name_;
-};
 
 //----------------------------------------------------------------------!
 

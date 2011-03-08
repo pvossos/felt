@@ -44,17 +44,21 @@ extern "C" {
 
 //----------------------------------------------------------------------!
 
-template<>
-std::string tl_metaname<double>()
+template<> std::string tl_metaname<double>()
 {
-    return "FElt.double";
+    return "double";
+}
+
+template<> std::string tl_metaname<unsigned>()
+{
+    return "unsigned";
 }
 
 //----------------------------------------------------------------------!
+
 // Nodes
 
-template<>
-std::string tl_metaname<Node>()
+template<> std::string tl_metaname<Node>() 
 {
     return "FElt.Node";
 };
@@ -76,17 +80,24 @@ static int Node_get_eq_force(lua_State *L)
 
 static int Node_new(lua_State *L)
 {
+    /*
+      FIXME: this is error-prone, wait for smart_ptr integration.
+
     unsigned num = luaL_checkint(L, 1);
     Node nn = CreateNode(num);
     lua_pushlightuserdata(L, (void *) nn);
     lua_pushboolean(L, 1);
     lua_settable(L, LUA_ENVIRONINDEX);
     tl_push<Node>(L, nn);
-    return 1;
+    */
+    return 0;
 }
 
 static int Node_gc(lua_State *L)
 {
+    /*
+      FIXME: this is error-prone, wait for smart_ptr integration.
+
     Node nn = tl_check<Node>(L, 1);
     lua_pushlightuserdata(L, (void *) nn);
     lua_gettable(L, LUA_ENVIRONINDEX);
@@ -97,6 +108,7 @@ static int Node_gc(lua_State *L)
         printf("Node_gc for Node @ %p\n", nn);
         DestroyNode(nn);
     }
+    */
     return 0;
 }
 

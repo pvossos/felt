@@ -298,6 +298,16 @@ int tl_getter(lua_State *L)
     return 1;
 }
 
+// alt version, also works on non-POD types
+template<typename S, typename V, V S::*pp>
+int tl_getter2(lua_State *L)
+{
+    typedef S* T;
+    T p = tl_check<T>(L, 1);
+    tl_push<V>(L, p->*pp);
+    return 1;
+}
+
 template<typename T, typename V, size_t offs>
 int tl_setter(lua_State *L)
 {

@@ -100,7 +100,7 @@ static int Node_gc(lua_State *L)
     return 0;
 }
 
-#define GETTER(typ, field) tl_getter<Node, typ, offsetof(struct node, field)>
+#define GETTER(typ, field) tl_getter2<node, typ, &node::field>
 #define GETTERN(typ, field, nn) tl_gettern<Node, typ, offsetof(struct node, field), nn>
 
 static const luaL_reg Node_meta[] = {
@@ -189,7 +189,7 @@ static int Stress_get_values(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<Stress, typ, offsetof(struct stress, field)>
+#define GETTER(typ, field) tl_getter2<stress, typ, &stress::field>
 #define GETTERN(typ, field, nn) tl_gettern<Stress, typ, offsetof(struct stress, field), nn>
 
 static const luaL_reg Stress_meta[] = {
@@ -246,7 +246,7 @@ static int Element_get_distributed(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<Element, typ, offsetof(struct element, field)>
+#define GETTER(typ, field) tl_getter2<element, typ, &element::field>
 
 static const luaL_reg Element_meta[] = {
     { "__tostring", Element_tostring },
@@ -279,7 +279,7 @@ static int Material_tostring(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<Material, typ, offsetof(struct material, field)>
+#define GETTER(typ, field) tl_getter2<material, typ, &material::field>
 
 static const luaL_reg Material_meta[] = {
     { "__tostring", Material_tostring },
@@ -528,7 +528,7 @@ static int Distributed_values(lua_State *L)
     return 3;
 }
 
-#define GETTER(typ, field) tl_getter<Distributed, typ, offsetof(struct distributed, field)>
+#define GETTER(typ, field) tl_getter2<distributed, typ, &distributed::field>
 
 static const luaL_reg Distributed_meta[] = {
     { "__tostring", Distributed_tostring },
@@ -672,7 +672,7 @@ static int Definition_get_dofs(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<Definition, typ, offsetof(struct definition, field)>
+#define GETTER(typ, field) tl_getter2<definition, typ, &definition::field>
 #define SETTER(typ, field) tl_setter<Definition, typ, offsetof(struct definition, field)>
 #define GETTERN(typ, field, nn) tl_gettern<Definition, typ, offsetof(struct definition, field), nn>
 
@@ -724,7 +724,7 @@ static int AnalysisPtr_tostring(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<AnalysisPtr, typ, offsetof(struct analysis, field)>
+#define GETTER(typ, field) tl_getter2<struct analysis, typ, &analysis::field>
 
 static const luaL_reg AnalysisPtr_meta[] = {
     { "__tostring", AnalysisPtr_tostring },

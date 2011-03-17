@@ -419,6 +419,7 @@ std::pair<lua_CFunction, lua_CFunction> tl_getset()
                        tl_setter<S, V, pp>);
 }
 
+/*
 template<typename T, typename V, size_t offs, size_t nn>
 int tl_gettern(lua_State *L)
 {
@@ -428,6 +429,7 @@ int tl_gettern(lua_State *L)
     tl_pushn<V>(L, vals, nn);
     return 1;
 }
+*/
 
 //----------------------------------------------------------------------!
 

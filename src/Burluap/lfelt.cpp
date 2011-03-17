@@ -78,6 +78,13 @@ static int Node_get_eq_force(lua_State *L)
     return 1;
 }
 
+static int Node_get_dx(lua_State *L)
+{
+    Node nn = tl_check<Node>(L, 1);
+    tl_pushn<double>(L, nn->dx+1, 6);
+    return 1;
+}
+
 static int Node_new(lua_State *L)
 {
     /*
@@ -114,13 +121,12 @@ static int Node_gc(lua_State *L)
 
 #define GETTER(typ, field) tl_getter<node, typ, &node::field>
 #define GETSET(typ, field) tl_getset<node, typ, &node::field>()
-#define GETTERN(typ, field, nn) tl_gettern<Node, typ, offsetof(struct node, field), nn>
 
 static void
 register_Nodes(lua_State *L)
 {
     tl_wrapper<node> w(true);
-    w.prop("dx", GETTERN(double, dx[1], 6));
+    w.prop("dx", Node_get_dx);
     w.prop("number", GETTER(unsigned, number));
     w.prop("x", GETSET(double, x));
     w.prop("y", GETSET(double, y));
@@ -134,7 +140,6 @@ register_Nodes(lua_State *L)
 
 #undef GETTER
 #undef GETSET
-#undef GETTERN
 
 //----------------------------------------------------------------------!
 
@@ -385,17 +390,27 @@ int tl_tostring<Force>(lua_State *L)
     return 1;
 }
 
-#define GETTERN(typ, field, nn) tl_gettern<Force, typ, offsetof(struct force, field), nn>
+static int Force_get_force(lua_State *L)
+{
+    Force ff = tl_check<Force>(L, 1);
+    tl_pushn<VarExpr>(L, ff->force+1, 6);
+    return 1;
+}
+
+static int Force_get_spectrum(lua_State *L)
+{
+    Force ff = tl_check<Force>(L, 1);
+    tl_pushn<VarExpr>(L, ff->spectrum+1, 6);
+    return 1;
+}
 
 void register_Forces(lua_State *L)
 {
     tl_wrapper<force> w(true);
-    w.prop("force", GETTERN(VarExpr, force[1], 6));
-    w.prop("spectrum", GETTERN(VarExpr, spectrum[1], 6));
+    w.prop("force", Force_get_force);
+    w.prop("spectrum", Force_get_spectrum);
     w.registerm(L);
 }
-
-#undef GETTERN
 
 //----------------------------------------------------------------------!
 
@@ -415,20 +430,51 @@ int tl_tostring<Constraint>(lua_State *L)
     return 1;
 }
 
-#define GETTERN(typ, field, nn) tl_gettern<Constraint, typ, offsetof(struct constraint, field), nn>
+static int Constraint_get_constraint(lua_State *L)
+{
+    Constraint cc = tl_check<Constraint>(L, 1);
+    tl_pushn<char>(L, cc->constraint+1, 6);
+    return 1;
+}
+
+static int Constraint_get_ix(lua_State *L)
+{
+    Constraint cc = tl_check<Constraint>(L, 1);
+    tl_pushn<double>(L, cc->ix+1, 3);
+    return 1;
+}
+
+static int Constraint_get_vx(lua_State *L)
+{
+    Constraint cc = tl_check<Constraint>(L, 1);
+    tl_pushn<double>(L, cc->vx+1, 3);
+    return 1;
+}
+
+static int Constraint_get_ax(lua_State *L)
+{
+    Constraint cc = tl_check<Constraint>(L, 1);
+    tl_pushn<double>(L, cc->ax+1, 3);
+    return 1;
+}
+
+static int Constraint_get_dx(lua_State *L)
+{
+    Constraint cc = tl_check<Constraint>(L, 1);
+    tl_pushn<VarExpr>(L, cc->dx+1, 3);
+    return 1;
+}
 
 void register_Constraints(lua_State *L)
 {
     tl_wrapper<constraint> w(true);
-    w.prop("constraint", GETTERN(char, constraint[1], 6));
-    w.prop("ix", GETTERN(double, ix[1], 3));
-    w.prop("vx", GETTERN(double, vx[1], 3));
-    w.prop("ax", GETTERN(double, ax[1], 3));
-    w.prop("dx", GETTERN(VarExpr, dx[1], 6));
+    w.prop("constraint", Constraint_get_constraint);
+    w.prop("ix", Constraint_get_ix);
+    w.prop("vx", Constraint_get_vx);
+    w.prop("ax", Constraint_get_ax);
+    w.prop("dx", Constraint_get_dx);
     w.registerm(L);
 };
-
-#undef GETTERN
 
 //----------------------------------------------------------------------!
 

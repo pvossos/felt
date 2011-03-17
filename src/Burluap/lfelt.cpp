@@ -63,7 +63,7 @@ template<> std::string tl_metaname<Node>()
     return "FElt.Node";
 };
 
-static int Node_tostring(lua_State *L)
+template<> int tl_tostring<Node>(lua_State *L)
 {
     Node im = tl_check<Node>(L, 1);
     lua_pushfstring(L, "Node %d @ [%f, %f, %f]",
@@ -112,27 +112,28 @@ static int Node_gc(lua_State *L)
     return 0;
 }
 
-#define GETTER(typ, field) tl_getter2<node, typ, &node::field>
+#define GETTER(typ, field) tl_getter<node, typ, &node::field>
+#define GETSET(typ, field) tl_getset<node, typ, &node::field>()
 #define GETTERN(typ, field, nn) tl_gettern<Node, typ, offsetof(struct node, field), nn>
 
-static const luaL_reg Node_meta[] = {
-    { "__tostring", Node_tostring },
-    { "__index", tl_index_wprop<Node> },
-    { "__newindex", tl_newindex_wprop<Node> },
-    { "__gc", Node_gc },
-    { "get_dx", GETTERN(double, dx[1], 6) },
-    { "get_number", GETTER(unsigned, number) },
-    { "get_x", GETTER(double, x) },
-    { "get_y", GETTER(double, y) },
-    { "get_z", GETTER(double, z) },
-    { "get_m", GETTER(double, m) },
-    { "get_constraint", GETTER(Constraint, constraint) },
-    { "get_force", GETTER(Force, force) },
-    { "get_eq_force", Node_get_eq_force },
-    {0, 0}
-};
+static void
+register_Nodes(lua_State *L)
+{
+    tl_wrapper<node> w(true);
+    w.prop("dx", GETTERN(double, dx[1], 6));
+    w.prop("number", GETTER(unsigned, number));
+    w.prop("x", GETSET(double, x));
+    w.prop("y", GETSET(double, y));
+    w.prop("z", GETSET(double, z));
+    w.prop("m", GETSET(double, m));
+    w.prop("constraint", GETTER(Constraint, constraint));
+    w.prop("force", GETTER(Force, force));
+    w.prop("eq_force", Node_get_eq_force);
+    w.registerm(L);
+}
 
 #undef GETTER
+#undef GETSET
 #undef GETTERN
 
 //----------------------------------------------------------------------!
@@ -186,7 +187,7 @@ template<> std::string tl_metaname<Stress>()
     return "FElt.Stress";
 }
 
-static int Stress_tostring(lua_State *L)
+template<> int tl_tostring<Stress>(lua_State *L)
 {
     Stress ss = tl_check<Stress>(L, 1);
     lua_pushfstring(L, "Stress @ [%f, %f, %f]",
@@ -201,30 +202,34 @@ static int Stress_get_values(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter2<stress, typ, &stress::field>
-#define GETTERN(typ, field, nn) tl_gettern<Stress, typ, offsetof(struct stress, field), nn>
+#define GETSET(typ, field) tl_getset<stress, typ, &stress::field>()
 
-static const luaL_reg Stress_meta[] = {
-    { "__tostring", Stress_tostring },
-    { "__index", tl_index_wprop<Stress> },
-    { "get_x", GETTER(double, x) },
-    { "get_y", GETTER(double, y) },
-    { "get_z", GETTER(double, z) },
-    { "get_values", Stress_get_values },
-    { 0, 0 }
-};
+void register_Stresses(lua_State *L)
+{
+    tl_wrapper<stress> w(true);
+    w.prop("x", GETSET(double, x));
+    w.prop("y", GETSET(double, y));
+    w.prop("z", GETSET(double, z));
+    w.prop("values", Stress_get_values);
+    w.registerm(L);
+}
 
-#undef GETTER
-#undef GETTERN
+#undef GETSET
 
 //----------------------------------------------------------------------!
 
 // Elements
 
-template<>
-std::string tl_metaname<Element>()
+template<> std::string tl_metaname<Element>()
 {
     return "FElt.Element";
+}
+
+template<> int tl_tostring<Element>(lua_State *L)
+{
+    Element ee = tl_check<Element>(L, 1);
+    lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
+    return 1;
 }
 
 static int Element_get_nodes(lua_State *L)
@@ -241,13 +246,6 @@ static int Element_get_stresses(lua_State *L)
     return 1;
 }
 
-static int Element_tostring(lua_State *L)
-{
-    Element ee = tl_check<Element>(L, 1);
-    lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
-    return 1;
-}
-
 static int Element_get_distributed(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
@@ -258,19 +256,19 @@ static int Element_get_distributed(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter2<element, typ, &element::field>
+#define GETTER(typ, field) tl_getter<element, typ, &element::field>
 
-static const luaL_reg Element_meta[] = {
-    { "__tostring", Element_tostring },
-    { "__index", tl_index_wprop<Element> },
-    { "get_number", GETTER(unsigned, number) },
-    { "get_nodes", Element_get_nodes },
-    { "get_distributed", Element_get_distributed },
-    { "get_stresses", Element_get_stresses },
-    { "get_material", GETTER(Material, material) },
-    { "get_definition", GETTER(Definition, definition) },
-    { 0, 0 }
-};
+void register_Elements(lua_State *L)
+{
+    tl_wrapper<element> w(true);
+    w.prop("number", GETTER(unsigned, number));
+    w.prop("nodes", Element_get_nodes);
+    w.prop("distributed", Element_get_distributed);
+    w.prop("stresses", Element_get_stresses);
+    w.prop("material", GETTER(Material, material));
+    w.prop("definition", GETTER(Definition, definition));
+    w.registerm(L);
+}
 
 #undef GETTER
 
@@ -284,37 +282,39 @@ std::string tl_metaname<Material>()
     return "FElt.Material";
 }
 
-static int Material_tostring(lua_State *L)
+template<>
+int tl_tostring<Material>(lua_State *L)
 {
     Material mt = tl_check<Material>(L, 1);
     lua_pushfstring(L, "[Material %s @ %p]", mt->name, mt);
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter2<material, typ, &material::field>
+#define GETTER(typ, field) tl_getter<material, typ, &material::field>
 
-static const luaL_reg Material_meta[] = {
-    { "__tostring", Material_tostring },
-    { "__index", tl_index_wprop<Material> },
-    { "get_E", GETTER(double, E) },
-    { "get_Ix", GETTER(double, Ix) },
-    { "get_Iy", GETTER(double, Iy) },
-    { "get_Iz", GETTER(double, Iz) },
-    { "get_A", GETTER(double, A) },
-    { "get_J", GETTER(double, J) },
-    { "get_G", GETTER(double, G) },
-    { "get_t", GETTER(double, t) },
-    { "get_rho", GETTER(double, rho) },
-    { "get_nu", GETTER(double, nu) },
-    { "get_kappa", GETTER(double, kappa) },
-    { "get_Rk", GETTER(double, Rk) },
-    { "get_Rm", GETTER(double, Rm) },        
-    { "get_Kx", GETTER(double, Kx) },        
-    { "get_Ky", GETTER(double, Ky) },        
-    { "get_Kz", GETTER(double, Kz) },        
-    { "get_c", GETTER(double, c) },
-    { 0, 0 }
-};
+static void
+register_Materials(lua_State *L)
+{
+    tl_wrapper<material> w(true);
+    w.prop("E", GETTER(double, E));
+    w.prop("Ix", GETTER(double, Ix));
+    w.prop("Iy", GETTER(double, Iy));
+    w.prop("Iz", GETTER(double, Iz));
+    w.prop("A", GETTER(double, A));
+    w.prop("J", GETTER(double, J));
+    w.prop("G", GETTER(double, G));
+    w.prop("t", GETTER(double, t));
+    w.prop("rho", GETTER(double, rho));
+    w.prop("nu", GETTER(double, nu));
+    w.prop("kappa", GETTER(double, kappa));
+    w.prop("Rk", GETTER(double, Rk));
+    w.prop("Rm", GETTER(double, Rm));        
+    w.prop("Kx", GETTER(double, Kx));        
+    w.prop("Ky", GETTER(double, Ky));        
+    w.prop("Kz", GETTER(double, Kz));        
+    w.prop("c", GETTER(double, c));
+    w.registerm(L);
+}
 
 #undef GETTER
         
@@ -377,7 +377,8 @@ std::string tl_metaname<Force>()
     return "FElt.Force";
 }
 
-static int Force_tostring(lua_State *L)
+template<>
+int tl_tostring<Force>(lua_State *L)
 {
     Force ff = tl_check<Force>(L, 1);
     lua_pushfstring(L, "[Force %s @ %p]", ff->name, ff);
@@ -386,13 +387,13 @@ static int Force_tostring(lua_State *L)
 
 #define GETTERN(typ, field, nn) tl_gettern<Force, typ, offsetof(struct force, field), nn>
 
-static const luaL_reg Force_meta[] = {
-    { "__tostring", Force_tostring },
-    { "__index", tl_index_wprop<Force> },
-    { "get_force", GETTERN(VarExpr, force[1], 6) },
-    { "get_spectrum", GETTERN(VarExpr, spectrum[1], 6) },
-    { 0, 0 }
-};
+void register_Forces(lua_State *L)
+{
+    tl_wrapper<force> w(true);
+    w.prop("force", GETTERN(VarExpr, force[1], 6));
+    w.prop("spectrum", GETTERN(VarExpr, spectrum[1], 6));
+    w.registerm(L);
+}
 
 #undef GETTERN
 
@@ -406,7 +407,8 @@ std::string tl_metaname<Constraint>()
     return "FElt.Constraint";
 }
 
-static int Constraint_tostring(lua_State *L)
+template<>
+int tl_tostring<Constraint>(lua_State *L)
 {
     Constraint cc = tl_check<Constraint>(L, 1);
     lua_pushfstring(L, "[Constraint %s @ %p]", cc->name, cc);
@@ -415,15 +417,15 @@ static int Constraint_tostring(lua_State *L)
 
 #define GETTERN(typ, field, nn) tl_gettern<Constraint, typ, offsetof(struct constraint, field), nn>
 
-static const luaL_reg Constraint_meta[] = {
-    { "__tostring", Force_tostring },
-    { "__index", tl_index_wprop<Force> },
-    { "get_constraint", GETTERN(char, constraint[1], 6) },
-    { "get_ix", GETTERN(double, ix[1], 3) },
-    { "get_vx", GETTERN(double, vx[1], 3) },
-    { "get_ax", GETTERN(double, ax[1], 3) },
-    { "get_dx", GETTERN(VarExpr, dx[1], 6) },
-    { 0, 0 }
+void register_Constraints(lua_State *L)
+{
+    tl_wrapper<constraint> w(true);
+    w.prop("constraint", GETTERN(char, constraint[1], 6));
+    w.prop("ix", GETTERN(double, ix[1], 3));
+    w.prop("vx", GETTERN(double, vx[1], 3));
+    w.prop("ax", GETTERN(double, ax[1], 3));
+    w.prop("dx", GETTERN(VarExpr, dx[1], 6));
+    w.registerm(L);
 };
 
 #undef GETTERN
@@ -492,7 +494,7 @@ template<> std::string tl_metaname<Distributed>()
     return "FElt.Distributed";
 }
 
-static int Distributed_tostring(lua_State *L)
+template<> int tl_tostring<Distributed>(lua_State *L)
 {
     Distributed dd = tl_check<Distributed>(L, 1);
     lua_pushfstring(L, "[Distributed %s @ %p]", dd->name, dd);
@@ -540,14 +542,14 @@ static int Distributed_values(lua_State *L)
     return 3;
 }
 
-#define GETTER(typ, field) tl_getter2<distributed, typ, &distributed::field>
+#define GETTER(typ, field) tl_getter<distributed, typ, &distributed::field>
 
-static const luaL_reg Distributed_meta[] = {
-    { "__tostring", Distributed_tostring },
-    { "__index", tl_index_wprop<Distributed> },
-    { "values", Distributed_values },
-    { "get_direction",  GETTER(Direction, direction) },
-    { 0, 0 }
+void register_Distributed(lua_State *L)
+{
+    tl_wrapper<distributed> w(true);
+    w["values"] = Distributed_values;
+    w.prop("direction", GETTER(Direction, direction));
+    w.registerm(L);
 };
 
 #undef GETTER
@@ -568,7 +570,7 @@ template<> std::string tl_metaname<Definition>()
     return "FElt.Definition";
 }
 
-static int Definition_tostring(lua_State *L)
+template<> int tl_tostring<Definition>(lua_State *L)
 {
     Definition dd = tl_check<Definition>(L, 1);
     lua_pushfstring(L, "[Definition %s @ %p]", dd->name, dd);
@@ -672,9 +674,10 @@ static int Definition_gc(lua_State *L)
 {
     Definition dd = tl_check<Definition>(L, 1);
     DefnUdata *du = (DefnUdata *) dd->udata;
-    
+
+    //FIXME
     //lua_unref(L, LUA_REGISTRYINDEX, du->setup_ref);
-    
+    return 0;
 }
 
 static int Definition_get_dofs(lua_State *L)
@@ -684,29 +687,22 @@ static int Definition_get_dofs(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter2<definition, typ, &definition::field>
-#define SETTER(typ, field) tl_setter<Definition, typ, offsetof(struct definition, field)>
-#define GETTERN(typ, field, nn) tl_gettern<Definition, typ, offsetof(struct definition, field), nn>
+#define GETTER(typ, field) tl_getter<definition, typ, &definition::field>
+#define GETSET(typ, field) tl_getset<definition, typ, &definition::field>()
 
-static const luaL_reg Definition_meta[] = {
-    { "__tostring", Definition_tostring },
-    { "__index", tl_index_wprop<Definition> },
-    { "__newindex", tl_newindex_wprop<Definition> },
-    { "get_num_nodes",  GETTER(unsigned, numnodes) },
-    { "set_num_nodes",  SETTER(unsigned, numnodes) },
-    { "get_shape_nodes",  GETTER(unsigned, shapenodes) },
-    { "set_shape_nodes",  SETTER(unsigned, shapenodes) },
-    { "get_num_stresses",  GETTER(unsigned, numstresses) },
-    { "set_num_stresses",  SETTER(unsigned, numstresses) },
-    { "get_retainK",  GETTER(unsigned, retainK) },
-    { "set_retainK",  SETTER(unsigned, retainK) },
-    { "get_dofs", Definition_get_dofs },
-    { 0, 0 }
-};
+void register_Definitions(lua_State *L)
+{
+    tl_wrapper<struct definition> w(true);
+    w.prop("num_nodes", GETSET(unsigned, numnodes));
+    w.prop("shape_nodes", GETSET(unsigned, shapenodes));
+    w.prop("num_stresses", GETSET(unsigned, numstresses));
+    w.prop("retainK", GETSET(unsigned, retainK));
+    w.prop("dofs", Definition_get_dofs);
+    w.registerm(L);
+}
 
 #undef GETTER
-#undef SETTER
-#undef GETTERN
+#undef GETSET
 
 //----------------------------------------------------------------------!
 
@@ -729,31 +725,33 @@ template<> std::string tl_metaname<AnalysisPtr>()
     return "FElt.Analysis";
 }
 
-static int AnalysisPtr_tostring(lua_State *L)
+template<> int tl_tostring<AnalysisPtr>(lua_State *L)
 {
     AnalysisPtr ap = tl_check<AnalysisPtr>(L, 1);
     lua_pushfstring(L, "[Analysis @ %p]", ap);
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter2<struct analysis, typ, &analysis::field>
+#define GETTER(typ, field) tl_getter<struct analysis, typ, &analysis::field>
+#define GETSET(typ, field) tl_getset<struct analysis, typ, &analysis::field>()
 
-static const luaL_reg AnalysisPtr_meta[] = {
-    { "__tostring", AnalysisPtr_tostring },
-    { "__index", tl_index_wprop<AnalysisPtr> },
-    { "get_start", GETTER(double, start) },
-    { "get_step", GETTER(double, step) },
-    { "get_stop", GETTER(double, stop) },
-    { "get_gamma", GETTER(double, gamma) },
-    { "get_beta", GETTER(double, beta) },
-    { "get_alpha", GETTER(double, alpha) },
-    { "get_Rk", GETTER(double, Rk) },
-    { "get_Rm", GETTER(double, Rm) },
-    { "get_mass_mode", GETTER(char, mass_mode) },
-    { 0, 0 }
+void register_AnalysisPtr(lua_State *L)
+{
+    tl_wrapper<struct analysis> w(true);
+    w.prop("start", GETSET(double, start));
+    w.prop("step", GETSET(double, step));
+    w.prop("stop", GETSET(double, stop));
+    w.prop("gamma", GETSET(double, gamma));
+    w.prop("beta", GETSET(double, beta));
+    w.prop("alpha", GETSET(double, alpha));
+    w.prop("Rk", GETSET(double, Rk));
+    w.prop("Rm", GETSET(double, Rm));
+    w.prop("mass_mode", GETSET(char, mass_mode));
+    w.registerm(L);
 };
 
 #undef GETTER
+#undef GETSET
 
 //----------------------------------------------------------------------!
 
@@ -766,7 +764,7 @@ template<> std::string tl_metaname<ProblemPtr>()
     return "FElt.Problem";
 }
 
-static int ProblemPtr_tostring(lua_State *L)
+template<> int tl_tostring<ProblemPtr>(lua_State *L)
 {
     ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
     lua_pushfstring(L, "[Problem '%s' @ %p]", pp->title, pp);
@@ -787,12 +785,12 @@ static int ProblemPtr_get_elements(lua_State *L)
     return 1;
 }
 
-static const luaL_reg ProblemPtr_meta[] = {
-    { "__tostring", ProblemPtr_tostring },
-    { "__index", tl_index_wprop<ProblemPtr> },
-    { "get_nodes", ProblemPtr_get_nodes },
-    { "get_elements", ProblemPtr_get_elements },
-    { 0, 0 }
+void register_ProblemPtr(lua_State *L)
+{
+    tl_wrapper<Problem> w(true);
+    w.prop("nodes", ProblemPtr_get_nodes);
+    w.prop("elements", ProblemPtr_get_elements);
+    w.registerm(L);
 };
 
 //----------------------------------------------------------------------!
@@ -891,23 +889,25 @@ register_funs(lua_State *L, const char *tbl)
 
     //tl_setup<DefnUdata>(L, NULL, NULL);
     
-    tl_setup<Definition>(L, Definition_meta, NULL);
+    register_Definitions(L);
+
+    register_Nodes(L);
+
+    register_Materials(L);
     
-    tl_setup<Node>(L, Node_meta, NULL);
-
-    tl_setup<Material>(L, Material_meta, NULL);
+    register_Elements(L);
     
-    tl_setup<Element>(L, Element_meta, NULL);
+    register_Stresses(L);
 
-    tl_setup<Force>(L, Force_meta, NULL);
-
-    tl_setup<Constraint>(L, Constraint_meta, NULL);
-
-    tl_setup<Distributed>(L, Distributed_meta, NULL);
-
-    tl_setup<AnalysisPtr>(L, AnalysisPtr_meta, NULL);
+    register_Forces(L);
     
-    tl_setup<ProblemPtr>(L, ProblemPtr_meta, NULL);
+    register_Constraints(L);
+
+    register_Distributed(L);
+    
+    register_AnalysisPtr(L);
+    
+    register_ProblemPtr(L);
 
     tl_array_wrapper<unsigned>().registerm(L);
     

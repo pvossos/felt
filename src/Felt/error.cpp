@@ -46,8 +46,8 @@ void error (const char *format, ...)
 
     va_start (ap, format);
 
-    if (problem.line)
-	fprintf (stderr, "%s:%d: ", problem.filename, problem.line);
+    if (psource.line)
+	fprintf (stderr, "%s:%d: ", psource.filename, psource.line);
 
     vfprintf (stderr, format, ap);
     fprintf (stderr, "\n");

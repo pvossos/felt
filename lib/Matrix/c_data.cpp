@@ -100,11 +100,8 @@ CreateSubsectionComplexMatrix(ComplexMatrix a,
 ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
-   ComplexMatrix	m;
 
-   m = (struct complex_matrix *) malloc (sizeof (struct complex_matrix));
-   if (m == NULL)
-	Fatal ("unable to allocate full matrix");
+   ComplexMatrix m = new struct complex_matrix;
 
    m -> data = (complex **) malloc (sizeof (complex *) * rows);
    if (m -> data == NULL)
@@ -139,36 +136,32 @@ ComplexMatrix CreateComplexColumnVector (unsigned int size)
 
 void DestroyComplexMatrix (ComplexMatrix m)
 {
-   if (m -> parent != NULL) {
-      m -> parent -> refcount --;
+    if (m -> parent != NULL) {
+        m -> parent -> refcount --;
  
-      if (m -> parent -> refcount == 0)
-         DestroyComplexMatrix (m -> parent);
+        if (m -> parent -> refcount == 0)
+            DestroyComplexMatrix (m -> parent);
       
-      m -> data ++;
-      free (m -> data);
-      free (m); 
+        m -> data ++;
+        free (m -> data);
+        delete m;
 
-      return;
-   } 
-   else if (-- m -> refcount)
-      return;
+        return;
+    } 
+    else if (-- m -> refcount)
+        return;
 
-   m -> data [1] ++;
-   free (m -> data [1]);
+    m -> data [1] ++;
+    free (m -> data [1]);
 
-   m -> data ++;
-   free (m -> data);
+    m -> data ++;
+    free (m -> data);
 
-   if (IsCompact (m)) {
-      m -> diag ++;
-      free (m -> diag);
-   }
-   
-   free (m);
+    delete m;
 }
 
-ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols, unsigned int size, unsigned int *diag)
+ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols,
+                                          unsigned int size, const cvector1<unsigned> *diag)
 {
    ComplexMatrix	A;
 
@@ -179,17 +172,9 @@ ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols, 
    A -> size = size;
    A -> parent = NULL;
 
-   if (diag != NULL) {
-      A -> diag = (unsigned *) malloc (sizeof (unsigned) * rows);
-      if (A -> diag == NULL)
-         Fatal ("unable to create compact matrix");
-
-      A -> diag --;
-
-      memcpy ((void *) &(A -> diag[1]), (void *) &(diag[1]), 
-              sizeof(unsigned)*rows);
-   }
-
+   if (diag != NULL)
+       A -> diag = *diag;
+   
    return A;
 }
 
@@ -203,14 +188,9 @@ ComplexMatrix CreateCopyComplexMatrix (const ComplexMatrix a)
    cols = a -> ncols;
 
    if (IsCompact(a)) {
-      size = Msize(a)*sizeof(complex);
-      b = CreateCompactComplexMatrix (rows, cols, Msize(a), NULL); 
-      b -> diag = (unsigned *) malloc (sizeof(unsigned) * rows);
-      if (b -> diag == NULL)
-	Fatal ("unable to create compact matrix");
-      b -> diag --;
-      memcpy ((void *) &(b -> diag[1]), (void *) &(a -> diag[1]), 
-              sizeof(unsigned)*rows);
+       size = Msize(a)*sizeof(complex);
+       b = CreateCompactComplexMatrix (rows, cols, Msize(a), NULL); 
+       b->diag = a->diag;
    }
    else { 
       size = rows*cols*sizeof (complex);
@@ -238,7 +218,6 @@ ComplexMatrix MakeFullFromCompactComplex (const ComplexMatrix A)
 
 ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A)
 {
-   unsigned	*diag;
    ComplexMatrix	compA;
    unsigned	i,j,k,
 		curr_row;
@@ -269,16 +248,12 @@ ComplexMatrix MakeCompactFromFullComplex (const ComplexMatrix A)
    if (size)
       return (ComplexMatrix) NullMatrix;
 
-   diag = (unsigned *) malloc (sizeof(unsigned) * cols);
-   if (diag == NULL)
-	Fatal ("unable to create compact matrix");
-
-   diag--;
-    
 	/*
 	 * determine the height of the columns and store in diag
 	 */
 
+   cvector1<unsigned> diag(cols);
+   
    for (j = 1 ; j <= cols ; j++) {
       diag [j] = 0;
       for (i = 1 ; i <= rows; i++) {

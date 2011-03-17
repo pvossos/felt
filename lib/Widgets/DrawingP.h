@@ -27,7 +27,6 @@
 # ifndef _DrawingP_h
 # define _DrawingP_h
 
-# include "Drawing.h"
 # include "Figure.h"
 # include <X11/Xaw/SimpleP.h>
 

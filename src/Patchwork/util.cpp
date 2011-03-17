@@ -31,28 +31,15 @@
 # include <stdlib.h>
 # include "fe.h"
 # include "problem.h"
-# include "objects.h"
-# include "Tree.h"
 # include "patchwork.h"
-
-# define INITIAL_NODES		50
-# define INITIAL_ELEMENTS	50
-
-static int	max_nodes;
-static int	max_elements;
 
 int
 InitializeProblem(void)
 {
    ReadFeltFile (NULL);
 
-   problem.nodes = (Node *) malloc (sizeof (Node) * INITIAL_NODES);
-   problem.elements = (Element *) malloc (sizeof (Element) * INITIAL_ELEMENTS);
-   problem.nodes --;
-   problem.elements --;
-
-   max_nodes = INITIAL_NODES;
-   max_elements = INITIAL_ELEMENTS;
+   problem.nodes.clear();
+   problem.elements.clear();
 
    return 0;
 }
@@ -60,9 +47,7 @@ InitializeProblem(void)
 Node
 AddNode(double x, double y, double z, Constraint constraint, Force force)
 {
-   Node		node;
-
-   node = CreateNode (++ problem.num_nodes);
+   Node node = new node_t(problem.nodes.size()+1);
 
    node -> x = x;
    node -> y = y;
@@ -71,20 +56,13 @@ AddNode(double x, double y, double z, Constraint constraint, Force force)
    node -> force = force;
    node -> constraint = constraint;
 
-   if (problem.num_nodes > max_nodes) {
-      max_nodes += 50;
-      problem.nodes = (Node *) realloc (problem.nodes + 1, 
-                                        sizeof (Node) * max_nodes);
-      problem.nodes --;
-   }
-
-   problem.nodes [problem.num_nodes] = node;
+   problem.nodes.push_back(node);
 
    if (force) 
-      TreeInsert (problem.force_tree, (Item) force);
+       problem.force_set.insert(force);
 
    if (constraint)
-      TreeInsert (problem.constraint_tree, (Item) constraint);
+       problem.constraint_set.insert(constraint);
 
    return node;
 }
@@ -94,9 +72,8 @@ AddElement(Definition defn, Node *nodes, Material material,
            Distributed *distributed, unsigned numdistributed)
 {
    unsigned	i;
-   Element	element;
 
-   element = CreateElement (++ problem.num_elements, defn);
+   Element element = new element_t(problem.elements.size()+1, defn);
    for (i = 1 ; i <= defn -> numnodes ; i++)
       element -> node [i] = nodes [i-1]; 
 
@@ -104,20 +81,13 @@ AddElement(Definition defn, Node *nodes, Material material,
 
    for (i = 1 ; i <= numdistributed ; i++) {
       element -> distributed [i] = distributed [i-1];
-      TreeInsert (problem.distributed_tree, distributed [i-1]);
+      problem.distributed_set.insert(distributed[i-1]);
    }
 
-   if (problem.num_elements > max_elements) {
-      max_elements += 50;
-      problem.elements = (Element *) realloc (problem.elements + 1, 
-                                        sizeof (Element) * max_elements);
-      problem.elements --;
-   }
+   problem.elements.push_back(element);
 
-   problem.elements [problem.num_elements] = element;
-
-   if (material) 
-      TreeInsert (problem.material_tree, (Item) material);
+   if (material)
+       problem.material_set.insert(material);
 
    return element;
 }

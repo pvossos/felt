@@ -31,316 +31,175 @@
 # include "objects.h"
 # include "allocate.h"
 
-Node
-CreateNode(unsigned int number)
+node_t::node_t(unsigned number)
 {
-    Node     node;
-    unsigned i;
+    this -> number     = number;
+    this -> m          = 0.0;
+    this -> force      = NULL;
+    this -> eq_force.clear();
+    this -> constraint = NULL;
+    this -> aux        = NULL;
+    this -> stress.clear();
+    this -> numelts    = 0;
 
-
-    if (!(node = AllocNew (struct node)))
-	Fatal ("unable to allocate memory for new node");
-
-    node -> number     = number;
-    node -> m          = 0.0;
-    node -> force      = NULL;
-    node -> eq_force   = NULL;
-    node -> constraint = NULL;
-    node -> aux        = NULL;
-    node -> stress     = NULL;
-    node -> numelts    = 0;
-
-    for (i = 1; i <= 6; i ++)
-	node -> dx [i] = 0;
-
-    return node;
+    for (unsigned i = 1; i <= 6; i ++)
+        this -> dx [i] = 0;
 }
 
-void
-DestroyNode(Node node)
+node_t::~node_t()
 {
-    if (node) {
-	Deallocate (node -> aux);
-	Deallocate (node -> eq_force);
-	Deallocate (node);
+    Deallocate (this -> aux);
+    this->eq_force.clear();
+    this->stress.clear();
+}
+
+element_t::element_t(unsigned number, Definition defn)
+{
+    this->node.clear();
+    if (defn)
+        this->node.resize(defn->numnodes, NULL);
+    
+    this -> K  	  = NullMatrix;
+    this -> M	  = NullMatrix;
+    this -> f	  = NullMatrix;
+    this -> aux 	  = NULL;
+    this -> number 	  = number;
+    this -> definition = defn;
+
+    this -> material = NULL;
+    this -> numdistributed = 0;
+
+    for (unsigned i = 0; i <= 3; i ++)
+        this -> distributed [i] = NULL;
+
+    this -> stress = NULL;
+    this -> ninteg = 0;
+}
+
+element_t::~element_t()
+{
+    for (unsigned i = 1; i <= this -> ninteg; i ++) {
+        this->stress[i]->values.clear();
+        delete this->stress[i];
+    }
+    this->stress.clear();
+    Deallocate (this -> aux);
+}
+
+force_t::force_t(const char *name)
+{
+    this -> aux = NULL;
+    this -> color = "";
+    if (name)
+        this -> name = name;
+    for (unsigned i = 0; i < 7; i ++) {
+        this -> force [i].value = 0;
+        this -> force [i].expr  = NULL;
+        this -> force [i].text  = NULL;
+        this -> spectrum [i].value = 0;
+        this -> spectrum [i].expr  = NULL;
+        this -> spectrum [i].text  = NULL;
     }
 }
 
-Element
-CreateElement(unsigned int number, Definition defn)
+force_t::~force_t()
 {
-    unsigned i;
-    Element  element;
-
-
-    if (!(element = AllocNew (struct element)))
-	Fatal ("unable to allocate memory for new element");
-
-    element -> node = NULL;
-
-    if (defn && !(element -> node = Allocate (Node, defn -> numnodes)))
-	Fatal ("unable to allocate memory for nodes of new element");
-
-    element -> K  	  = NullMatrix;
-    element -> M	  = NullMatrix;
-    element -> f	  = NullMatrix;
-    element -> aux 	  = NULL;
-    element -> number 	  = number;
-    element -> definition = defn;
-
-    if (element -> node) {
-	UnitOffset (element -> node);
-	for (i = 1; i <= defn -> numnodes; i ++)
-	    element -> node [i] = NULL;
+    for (unsigned i = 1; i <= 6; i ++) {
+        FreeCode (this -> force [i].expr);
+        Deallocate (this -> force [i].text);
     }
-
-    element -> material = NULL;
-    element -> numdistributed = 0;
-
-    for (i = 0; i <= 3; i ++)
-	element -> distributed [i] = NULL;
-
-    element -> stress = NULL;
-    element -> ninteg = 0;
-
-    return element;
+    //Deallocate (force -> name);
+    //Deallocate (force -> color);
+    Deallocate (this -> aux);
 }
 
-void
-DestroyElement(Element element)
+material_t::material_t(const char *name)
 {
-    unsigned i;
+    this -> aux   = NULL;
+    this -> color = "";
+    if (name)
+        this -> name  = name;
+    this -> E     = 0;
+    this -> Ix    = 0;
+    this -> Iy    = 0;
+    this -> Iz    = 0;
+    this -> A     = 0;
+    this -> J     = 0;
+    this -> G     = 0;
+    this -> t     = 0;
+    this -> rho   = 0;
+    this -> nu    = 0;
+    this -> kappa = 0;
+    this -> Rk    = 0;
+    this -> Rm    = 0;
+    this -> Kx    = 0;
+    this -> Ky    = 0;
+    this -> Kz    = 0;
+    this -> c     = 0;
+}
 
+material_t::~material_t()
+{
+    //Deallocate (material -> name);
+    //Deallocate (material -> color);
+    Deallocate (this -> aux);
+}
 
-    if (element) {
-        for (i = 1; i <= element -> ninteg; i ++) {
-	    ZeroOffset (element -> stress [i] -> values);	
-	    Deallocate (element -> stress [i] -> values);		
-	    Deallocate (element -> stress [i]);
+constraint_t::constraint_t(const char *name)
+{
+    this -> aux = NULL;
+    this -> color = "";
+    if (name)
+        this -> name = name;
+    for (unsigned i = 0; i < 7; i ++) {
+        this -> constraint [i] = 0;
+        this -> dx [i].expr  = NULL;
+        this -> dx [i].text  = NULL;
+        this -> dx [i].value = 0;
+        this -> ix [i] = 0;
+    }
+
+    for (unsigned i = 0; i < 4; i ++) {
+        this -> vx [i] = 0;
+        this -> ax [i] = UnspecifiedValue;
+    }
+}
+
+constraint_t::~constraint_t()
+{
+	for (unsigned i = 1; i <= 6; i ++) {
+	    FreeCode (this -> dx [i].expr);
+	    Deallocate (this -> dx [i].text);
 	}
-	ZeroOffset (element -> stress);
-	Deallocate (element -> stress);
-	ZeroOffset (element -> node);
-	Deallocate (element -> node);
-	Deallocate (element -> aux);
-	Deallocate (element);
-    }
+    Deallocate (this -> aux);
 }
 
-Force
-CreateForce(char *name)
+distributed_t::distributed_t(const char *name, unsigned int nvalues)
 {
-    int   i;
-    Force force;
+    this -> aux = NULL;
+    this -> color = "";
+    this -> value = NULL;
 
-
-    if (!(force = AllocNew (struct force)))
-	Fatal ("unable to allocate memory for new force");
-
-    force -> aux = NULL;
-    force -> color = NULL;
-    force -> name = name;
-    for (i = 0; i < 7; i ++) {
-	force -> force [i].value = 0;
-	force -> force [i].expr  = NULL;
-	force -> force [i].text  = NULL;
-	force -> spectrum [i].value = 0;
-	force -> spectrum [i].expr  = NULL;
-	force -> spectrum [i].text  = NULL;
-    }
-
-    return force;
+    if (name)
+        this -> name = name;
+    this -> value.resize(nvalues);
 }
 
-void
-DestroyForce(Force force)
+distributed_t::~distributed_t()
 {
-    int i;
-
-
-    if (force) {
-	for (i = 1; i <= 6; i ++) {
-	    FreeCode (force -> force [i].expr);
-	    Deallocate (force -> force [i].text);
-	}
-	Deallocate (force -> name);
-	Deallocate (force -> color);
-	Deallocate (force -> aux);
-	Deallocate (force);
-    }
+    this->value.clear();
+    Deallocate (this -> aux);
 }
 
-Material
-CreateMaterial(char *name)
+loadcase_t::loadcase_t(const char *name)
 {
-    Material material;
-
-
-    if (!(material = AllocNew (struct material)))
-	Fatal ("unable to allocate memory for new material");
-
-    material -> aux   = NULL;
-    material -> color = NULL;
-    material -> name  = name;
-    material -> E     = 0;
-    material -> Ix    = 0;
-    material -> Iy    = 0;
-    material -> Iz    = 0;
-    material -> A     = 0;
-    material -> J     = 0;
-    material -> G     = 0;
-    material -> t     = 0;
-    material -> rho   = 0;
-    material -> nu    = 0;
-    material -> kappa = 0;
-    material -> Rk    = 0;
-    material -> Rm    = 0;
-    material -> Kx    = 0;
-    material -> Ky    = 0;
-    material -> Kz    = 0;
-    material -> c     = 0;
-
-    return material;
+    if (name)
+        this -> name = name;
 }
 
-void
-DestroyMaterial(Material material)
+loadcase_t::~loadcase_t()
 {
-    if (material) {
-	Deallocate (material -> name);
-	Deallocate (material -> color);
-	Deallocate (material -> aux);
-	Deallocate (material);
-    }
-}
-
-Constraint
-CreateConstraint(char *name)
-{
-    int        i;
-    Constraint constraint;
-
-
-    if (!(constraint = AllocNew (struct constraint)))
-	Fatal ("unable to allocate memory for new constraint");
-
-    constraint -> aux = NULL;
-    constraint -> color = NULL;
-    constraint -> name = name;
-    for (i = 0; i < 7; i ++) {
-	constraint -> constraint [i] = 0;
-	constraint -> dx [i].expr  = NULL;
-	constraint -> dx [i].text  = NULL;
-	constraint -> dx [i].value = 0;
-	constraint -> ix [i] = 0;
-    }
-
-    for (i = 0; i < 4; i ++) {
-	constraint -> vx [i] = 0;
-	constraint -> ax [i] = UnspecifiedValue;
-    }
-
-    return constraint;
-}
-
-void
-DestroyConstraint(Constraint constraint)
-{
-    int i;
-
-
-    if (constraint) {
-	for (i = 1; i <= 6; i ++) {
-	    FreeCode (constraint -> dx [i].expr);
-	    Deallocate (constraint -> dx [i].text);
-	}
-	Deallocate (constraint -> name);
-	Deallocate (constraint -> color);
-	Deallocate (constraint -> aux);
-	Deallocate (constraint);
-    }
-}
-
-Distributed
-CreateDistributed(char *name, unsigned int nvalues)
-{
-    Distributed distributed;
-
-
-    if (!(distributed = AllocNew (struct distributed)))
-	Fatal ("unable to allocate memory for new distributed");
-
-    distributed -> aux = NULL;
-    distributed -> color = NULL;
-    distributed -> value = NULL;
-
-    if (nvalues && !(distributed -> value = Allocate (Pair, nvalues)))
-	Fatal ("unable to allocate memory values for new distributed");
-
-    distributed -> name = name;
-    distributed -> nvalues = nvalues;
-    UnitOffset (distributed -> value);
-
-    return distributed;
-}
-
-void
-DestroyDistributed(Distributed distributed)
-{
-    if (distributed) {
-	ZeroOffset (distributed -> value);
-	Deallocate (distributed -> value);
-	Deallocate (distributed -> name);
-	Deallocate (distributed -> color);
-	Deallocate (distributed -> aux);
-	Deallocate (distributed);
-    }
-}
-
-LoadCase
-CreateLoadCase(char *name)
-{
-    LoadCase	loadcase;
-
-
-    if (!(loadcase = AllocNew (struct loadcase)))
-	Fatal ("unable to allocate memory for new load case");
-
-    loadcase -> numforces = 0;
-    loadcase -> numloads  = 0;
-    loadcase -> nodes     = NULL;
-    loadcase -> elements  = NULL;
-    loadcase -> forces    = NULL;
-    loadcase -> loads     = NULL;
-
-    loadcase -> name = name;
-
-    return loadcase;
-}
-
-void
-DestroyLoadCase(LoadCase loadcase)
-{
-    if (loadcase) {
-        if (loadcase -> forces) {
-	   ZeroOffset (loadcase -> forces);
-           Deallocate (loadcase -> forces);
-        }
-        if (loadcase -> loads) {
-	   ZeroOffset (loadcase -> loads); 
-           Deallocate (loadcase -> loads);
-        }
-        if (loadcase -> nodes) {
-	   ZeroOffset (loadcase -> nodes); 
-           Deallocate (loadcase -> nodes);
-        }
-        if (loadcase -> elements) {
-	   ZeroOffset (loadcase -> elements);
-           Deallocate (loadcase -> elements);
-        }
-
-	Deallocate (loadcase);
-    }
+    // NO-OP
 }
 
 void

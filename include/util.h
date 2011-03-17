@@ -47,21 +47,21 @@ void ListAddCursorTranslations (Widget viewport);
 
 void ListAddCursorAccelerators (Widget viewport, Widget w);
 
-void SetTextString (Widget w, String value);
+void SetTextString (Widget w, const char *value);
 
 String GetTextString (Widget w);
 
 Cardinal GetTextWidth (XFontStruct *font, String text, Cardinal length);
 
-void SetLabelString (Widget w, String value);
+void SetLabelString (Widget w, const char *value);
 
 String GetLabelString (Widget w);
 
 void AddAutoRepeatAction (XtAppContext app_context);
 
-Widget CreateHelpButton (Widget parent, String name);
+Widget CreateHelpButton (Widget parent, const char *name);
 
-void UpdateHelpMessage (Widget button, String message, Dimension width);
+void UpdateHelpMessage (Widget button, const char* message, Dimension width);
 
 /*----------------------------------------------------------------------*/
 

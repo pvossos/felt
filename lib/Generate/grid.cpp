@@ -20,7 +20,6 @@
 # include <math.h>
 # include "error.h"
 # include "fe.h"
-# include "objects.h"
 # include "meshgen.hpp"
 # include "rules.h"
 
@@ -64,16 +63,12 @@ GenerateGrid(Grid grid, cvector1<Element> &element, cvector1<Node> &node,
 	 */
    
    node.resize(nn);
-   for (i = 1 ; i <= nn ; i++) {
-      if (!(node [i] = CreateNode (0)))
-         Fatal ("allocation error in grid generation");
-   }
+   for (i = 1 ; i <= nn ; i++)
+       node[i] = new node_t;
 
    element.resize(ne);
-   for (i = 1 ; i <= ne ; i++) {
-      if (!(element [i] = CreateElement (0, grid -> definition)))
-         Fatal ("allocation error in grid generation");
-   }
+   for (i = 1 ; i <= ne ; i++)
+       element [i] = new element_t(0, grid -> definition);
 
 	/*
 	 * a couple of simple computations

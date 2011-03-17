@@ -26,39 +26,29 @@
 
 # ifndef _GENERATOR_H
 # define _GENERATOR_H
+
+# include <vector>
 # include "fe.h"
 # include "mesh.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "geninput.h"
 
 /*----------------------------------------------------------------------*/
 
 typedef struct {
-    char     *filename;			/* file name			*/
     char     *material;			/* material name		*/
     char     *constraint;		/* constraint name		*/
-    Line     *lines;			/* array of lines		*/
-    Grid     *grids;			/* array of grids		*/
-    Grid     *quadgrids;		/* array of quadrilateral grids */
-    Grid     *brickgrids;		/* array of brick grids         */
-    TriMesh  *trimeshes;		/* array of trianglular meshes	*/
+    std::vector<Line> lines;			/* array of lines		*/
+    std::vector<Grid> grids;			/* array of grids		*/
+    std::vector<Grid> quadgrids;		/* array of quadrilateral grids */
+    std::vector<Grid> brickgrids;		/* array of brick grids         */
+    std::vector<TriMesh> trimeshes;		/* array of trianglular meshes	*/
     unsigned  start_node;		/* starting node number		*/
     unsigned  start_element;		/* starting element number	*/
-    unsigned  num_lines;		/* number of line generators	*/
-    unsigned  num_grids;		/* number of grid generators	*/
-    unsigned  num_quadgrids;		/* number of qgrid generators   */
-    unsigned  num_brickgrids;		/* number of brick generators   */
-    unsigned  num_trimeshes;		/* number of tri-meshes		*/
-    unsigned  line;			/* current line number		*/
-    unsigned  num_errors;		/* number of errors		*/
 } Generator;
 
 extern Generator generator;
 
-void init_cord_lexer (FILE *fp);
-int	 cord_yyparse	(void);
+extern "C" void init_cord_lexer (FILE *fp);
 
 /*!
   Parses and removes the preprocesor options from the command line
@@ -76,15 +66,6 @@ int ReadCorduroyFile (const char *input_name);
 
 int WriteCorduroyFile (const char *filename);
 
-/*!
-  Looks up an element definition by name.			
-*/
-Definition defnlookup(char *name);
-
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _GENERATOR_H */

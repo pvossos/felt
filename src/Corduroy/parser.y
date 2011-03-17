@@ -29,6 +29,7 @@
 # include <string.h>
 # include "code.h"
 # include "error.h"
+# include "problem.h"
 # include "generator.h"
 # include "allocate.h"
 # include "definition.h"
@@ -37,8 +38,8 @@
 # define alloca malloc		/* prevents alloca from being called */
 # endif
 
-extern void cord_yyerror (const char *msg);
-extern int  cord_yylex   (void);
+extern "C" void cord_yyerror (const char *msg);
+extern "C" int  cord_yylex   (void);
 
 
 typedef double xy_pair [2];
@@ -193,23 +194,12 @@ generator
 
 line_generator
 	: line_specifier line_parameter_list
-	    {
-		Line new_line;
-
-
-		if (generator.num_lines == line_size) {
-		    line_size = line_size ? line_size << 1 : 4;
-		    if (!Reallocate (generator.lines, Line, line_size))
-			Fatal ("unable to allocate line array");
-		}
-
-		if (!(new_line = AllocNew (struct _line)))
-		    Fatal ("unable to allocate new line");
-
-		*new_line = line;
-		generator.lines [generator.num_lines ++] = new_line;
-		last_line_definition = line.definition;
-	    }
+        {
+             Line new_line = new struct _line;
+             *new_line = line;
+             generator.lines.push_back(new_line);
+             last_line_definition = line.definition;
+        }
 	;
 
 
@@ -262,7 +252,7 @@ line_parameter
 
 	| RULE_EQ rule
 	    {
-		line.rule = $2;
+             line.rule = (Rule) $2;
 	    }
 	;
 
@@ -272,21 +262,10 @@ line_parameter
 grid_generator
 	: grid_specifier grid_parameter_list
 	    {
-		Grid new_grid;
-
-
-		if (generator.num_grids == grid_size) {
-		    grid_size = grid_size ? grid_size << 1 : 4;
-		    if (!Reallocate (generator.grids, Grid, grid_size))
-			Fatal ("unable to allocate grid array");
-		}
-
-		if (!(new_grid = AllocNew (struct _grid)))
-		    Fatal ("unable to allocate new grid");
-
-		*new_grid = grid;
-		generator.grids [generator.num_grids ++] = new_grid;
-		last_grid_definition = grid.definition;
+             Grid new_grid = new struct _grid;
+             *new_grid = grid;
+             generator.grids.push_back(new_grid);
+             last_grid_definition = grid.definition;
 	    }
 	;
 
@@ -349,17 +328,17 @@ grid_parameter
 
 	| X_RULE_EQ rule
 	    {
-		grid.xrule = $2;
+             grid.xrule = (Rule) $2;
 	    }
 
 	| Y_RULE_EQ rule
 	    {
-		grid.yrule = $2;
+             grid.yrule = (Rule) $2;
 	    }
 
 	| Z_RULE_EQ rule
 	    {
-		grid.zrule = $2;
+             grid.zrule = (Rule) $2;
 	    }
 	;
 
@@ -369,21 +348,10 @@ grid_parameter
 quadgrid_generator
 	: quadgrid_specifier quadgrid_parameter_list
 	    {
-		Grid new_quadgrid;
-
-
-		if (generator.num_quadgrids == quadgrid_size) {
-		    quadgrid_size = quadgrid_size ? quadgrid_size << 1 : 4;
-		    if (!Reallocate (generator.quadgrids, Grid, quadgrid_size))
-			Fatal ("unable to allocate quadgrid array");
-		}
-
-		if (!(new_quadgrid = AllocNew (struct _grid)))
-		    Fatal ("unable to allocate new quadgrid");
-
-		*new_quadgrid = quadgrid;
-		generator.quadgrids [generator.num_quadgrids ++] = new_quadgrid;
-		last_quadgrid_definition = quadgrid.definition;
+             Grid new_quadgrid = new struct _grid;
+             *new_quadgrid = quadgrid;
+             generator.quadgrids.push_back(new_quadgrid);
+             last_quadgrid_definition = quadgrid.definition;
 	    }
 	;
 
@@ -437,12 +405,12 @@ quadgrid_parameter
 
 	| X_RULE_EQ rule
 	    {
-		quadgrid.xrule = $2;
+             quadgrid.xrule = (Rule) $2;
 	    }
 
 	| Y_RULE_EQ rule
 	    {
-		quadgrid.yrule = $2;
+             quadgrid.yrule = (Rule) $2;
 	    }
 	;
 
@@ -451,21 +419,10 @@ quadgrid_parameter
 brickgrid_generator
 	: brickgrid_specifier brickgrid_parameter_list
 	    {
-		Grid new_brickgrid;
-
-
-		if (generator.num_brickgrids == brickgrid_size) {
-		    brickgrid_size = brickgrid_size ? brickgrid_size << 1 : 4;
-		    if (!Reallocate (generator.brickgrids, Grid, brickgrid_size))
-			Fatal ("unable to allocate brickgrid array");
-		}
-
-		if (!(new_brickgrid = AllocNew (struct _grid)))
-		    Fatal ("unable to allocate new brickgrid");
-
-		*new_brickgrid = brickgrid;
-		generator.brickgrids [generator.num_brickgrids ++] = new_brickgrid;
-		last_brickgrid_definition = brickgrid.definition;
+             Grid new_brickgrid = new struct _grid;
+             *new_brickgrid = brickgrid;
+             generator.brickgrids.push_back(new_brickgrid);
+             last_brickgrid_definition = brickgrid.definition;
 	    }
 	;
 
@@ -531,17 +488,17 @@ brickgrid_parameter
 
 	| X_RULE_EQ rule
 	    {
-		brickgrid.xrule = $2;
+             brickgrid.xrule = (Rule) $2;
 	    }
 
 	| Y_RULE_EQ rule
 	    {
-		brickgrid.yrule = $2;
+             brickgrid.yrule = (Rule) $2;
 	    }
 
 	| Z_RULE_EQ rule
 	    {
-		brickgrid.zrule = $2;
+             brickgrid.zrule = (Rule) $2;
 	    }
 	;
 
@@ -551,21 +508,10 @@ brickgrid_parameter
 trimesh_generator
 	: trimesh_specifier trimesh_parameter_list
 	    {
-		TriMesh new_mesh;
-
-
-		if (generator.num_trimeshes == trimesh_size) {
-		    trimesh_size = trimesh_size ? trimesh_size << 1 : 4;
-		    if (!Reallocate (generator.trimeshes, TriMesh, trimesh_size))
-			Fatal ("unable to allocate mesh array");
-		}
-
-		if (!(new_mesh = AllocNew (struct _trimesh)))
-		    Fatal ("unable to allocate new trimesh");
-
-		*new_mesh = trimesh;
-		generator.trimeshes [generator.num_trimeshes ++] = new_mesh;
-		last_trimesh_definition = trimesh.definition;
+             TriMesh new_mesh = new struct _trimesh;
+             *new_mesh = trimesh;
+             generator.trimeshes.push_back(new_mesh);
+             last_trimesh_definition = trimesh.definition;
 	    }
 	;
 

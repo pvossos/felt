@@ -26,12 +26,9 @@
 
 # ifndef _LoadCase_h
 # define _LoadCase_h
-# include "fe.h"
-# include "Tree.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "problem.h"
+# include "fe.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -41,16 +38,13 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title);
 
 void LoadCaseDialogPopup (LoadCaseDialog loadcased);
 
-void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Tree tree, Tree force_tree, Tree load_tree);
+void LoadCaseDialogUpdate (LoadCaseDialog loadcased, Problem::LoadCaseSet *tree,
+                           Problem::ForceSet *force_tree, Problem::DistributedSet *load_tree);
 
 LoadCase LoadCaseDialogActive (LoadCaseDialog loadcased);
 
 void LoadCaseDialogDisplay (LoadCaseDialog loadcased, LoadCase loadcase);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _LoadCase_h */

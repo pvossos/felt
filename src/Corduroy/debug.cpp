@@ -52,7 +52,7 @@ int WriteCorduroyFile (const char *filename)
     printf ("\n");
 
 
-    for (i = 0; i < generator.num_lines; i ++) {
+    for (i = 0; i < generator.lines.size(); i ++) {
 	line = generator.lines [i];
 
 	printf ("line\n");
@@ -66,7 +66,7 @@ int WriteCorduroyFile (const char *filename)
 	printf ("\n");
     }
 
-    for (i = 0; i < generator.num_grids; i ++) {
+    for (i = 0; i < generator.grids.size(); i ++) {
 	grid = generator.grids [i];
 
 	printf ("grid\n");
@@ -84,7 +84,7 @@ int WriteCorduroyFile (const char *filename)
 	printf ("\n");
     }
 
-    for (i = 0; i < generator.num_quadgrids; i ++) {
+    for (i = 0; i < generator.quadgrids.size(); i ++) {
 	grid = generator.quadgrids [i];
 
 	printf ("quadrilateral grid\n");
@@ -100,7 +100,7 @@ int WriteCorduroyFile (const char *filename)
 	printf ("\n");
     }
 
-    for (i = 0; i < generator.num_brickgrids; i ++) {
+    for (i = 0; i < generator.brickgrids.size(); i ++) {
 	grid = generator.brickgrids [i];
 
 	printf ("brick grid\n");
@@ -118,7 +118,7 @@ int WriteCorduroyFile (const char *filename)
 	printf ("\n");
     }
 
-    for (i = 0; i < generator.num_trimeshes; i ++) {
+    for (i = 0; i < generator.trimeshes.size(); i ++) {
 	mesh = generator.trimeshes [i];
 
 	printf ("triangular mesh\n");

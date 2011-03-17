@@ -3,7 +3,12 @@
 
 #include "cvector1.hpp"
 
-cvector1u RenumberNodes	(Node *, Element *, unsigned, unsigned);
-void RestoreNodeNumbers (Node *, unsigned*, unsigned);
+cvector1u RenumberNodes(Node *, Element *, unsigned, unsigned);
+
+cvector1u RenumberProblemNodes();
+
+void RestoreNodeNumbers(Node *, const unsigned*, unsigned);
+
+void RestoreProblemNodeNumbers(const cvector1u &old);
 
 #endif

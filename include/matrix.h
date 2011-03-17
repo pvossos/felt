@@ -19,12 +19,10 @@
 
 # ifndef _MATRIX_H
 # define _MATRIX_H
+
 # include <stdio.h>		/* for FILE definition			*/
 # include "status.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "cvector1.hpp"
 
 /*----------------------------------------------------------------------*/
 
@@ -34,7 +32,7 @@ struct matrix {
    unsigned	nrows;		/* number of rows 			 */
    unsigned	ncols;		/* number of columns			 */
    double	**data;		/* matrix data				 */
-   unsigned	*diag;		/* diagonal addresses for compact column */
+   cvector1<unsigned> diag; /* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
    unsigned	refcount;	/* count of children			 */
    Matrix	parent;		/* parent of possible subsection	 */
@@ -120,7 +118,7 @@ void DestroyMatrix (Matrix m);
   \param diag diagonial index array
  */
 Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, 
-                            unsigned int size, unsigned int *diag);
+                            unsigned int size, const cvector1<unsigned> *diag);
 
 /*!
   \param a matrix to copy data from
@@ -546,9 +544,5 @@ Matrix MatlabToMatrix (FILE *fp);
 int GaussSeidel(Matrix x, const Matrix A, const Matrix b);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif	/* _MATRIX_H */

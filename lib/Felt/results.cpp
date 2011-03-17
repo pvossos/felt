@@ -53,18 +53,14 @@ void
 WriteStructuralResults(FILE *output, char *title, const cvector1<Reaction> &R)
 {
     FILE       *fd;
-    Element    *element;
-    Node       *node;
-    unsigned	numelts,
-		numnodes;
     unsigned	i,j,k;
     unsigned	count;
     static const char	*dof_names [ ] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
 
-    element = problem.elements;
-    node    = problem.nodes;
-    numnodes = problem.num_nodes;
-    numelts  = problem.num_elements;
+    const Element *element = problem.elements.c_ptr1();
+    const Node *node = problem.nodes.c_ptr1();
+    const unsigned numnodes = problem.nodes.size();
+    const unsigned numelts  = problem.elements.size();
 
     fd = GetDetailStream( );
     if (fd)
@@ -87,7 +83,7 @@ WriteStructuralResults(FILE *output, char *title, const cvector1<Reaction> &R)
     fprintf (output,"-------------------------------------------------------------------------------\n");
     for (i = 1; i <= numelts ; i++) {
         fprintf (output,"%3d: ", element[i] -> number);
-        if (element [i] -> ninteg == 0 || element[i] -> stress == NULL)
+        if (element [i] -> ninteg == 0 || element[i] -> stress.empty())
            fprintf (output,"  No stresses available for this element\n");
         else {
            count = 0;
@@ -140,12 +136,10 @@ WriteStructuralResults(FILE *output, char *title, const cvector1<Reaction> &R)
 void
 WriteTemperatureResults(FILE *fp, char *title)
 {
-   Node		*node;
-   unsigned	numnodes;
    unsigned	i;
 
-   node    = problem.nodes;
-   numnodes = problem.num_nodes;
+   const Node *node = problem.nodes.c_ptr1();
+   const unsigned numnodes = problem.nodes.size();
 
    fprintf (fp,"** %s **\n\n",title);
    fprintf (fp,"Steady State Nodal Temperatures\n");
@@ -254,8 +248,8 @@ WriteTransientTable(Matrix dtable, Matrix ttable, FILE *fp)
    unsigned	number;
    unsigned	ntables;
 
-   ntables = (unsigned) (analysis.numnodes * analysis.numdofs / 4);
-   if ((analysis.numdofs * analysis.numnodes) % 4 != 0)
+   ntables = (unsigned) (analysis.nodes.size() * analysis.numdofs / 4);
+   if ((analysis.numdofs * analysis.nodes.size()) % 4 != 0)
       ntables++;
 
 	/*
@@ -271,7 +265,7 @@ WriteTransientTable(Matrix dtable, Matrix ttable, FILE *fp)
       fprintf (fp,"\n------------------------------------------------------------------\n");
       fprintf (fp,"       time");
       number = 1;
-      for (m = node ; m <= analysis.numnodes && number <= 4 ; m++) {
+      for (m = node ; m <= analysis.nodes.size() && number <= 4 ; m++) {
          for (n = dof ; n <= analysis.numdofs && number <= 4 ; n++) {
             fprintf (fp,"        %s(%d)", labels[(int) analysis.dofs[n]],
                      analysis.nodes[m] -> number);
@@ -295,7 +289,7 @@ WriteTransientTable(Matrix dtable, Matrix ttable, FILE *fp)
 
          number = 1;
          dof = start_dof;
-         for (j = node ; j <= analysis.numnodes && number <= 4  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 4  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 4 ; k++) {
                fprintf (fp, "  %11.5g",
                         MatrixData (dtable)[i][(j-1)*analysis.numdofs + k]);
@@ -346,8 +340,8 @@ PlotTransientTable(Matrix dtable, Matrix ttable, double dt, FILE *fp)
    unsigned	dof, node;
    int		position;
 
-   ngraphs = (unsigned) (analysis.numnodes * analysis.numdofs / 10);
-   if ((analysis.numdofs * analysis.numnodes) % 10 != 0)
+   ngraphs = (unsigned) (analysis.nodes.size() * analysis.numdofs / 10);
+   if ((analysis.numdofs * analysis.nodes.size()) % 10 != 0)
       ngraphs++;
 
    node = 1;
@@ -364,7 +358,7 @@ PlotTransientTable(Matrix dtable, Matrix ttable, double dt, FILE *fp)
          start_dof = dof;
          number = 1;
 
-         for (m = node ; m <= analysis.numnodes && number <= 10 ; m++) {
+         for (m = node ; m <= analysis.nodes.size() && number <= 10 ; m++) {
             for (n = dof ; n <= analysis.numdofs && number <= 10 ; n++) {
         
                data = MatrixData (dtable)[i][(m-1)*analysis.numdofs + n];
@@ -400,7 +394,7 @@ PlotTransientTable(Matrix dtable, Matrix ttable, double dt, FILE *fp)
          sprintf (buffer2,"|                                                                   ");
          sprintf (buffer,"|                                                                   ");
 
-         for (j = node ; j <= analysis.numnodes && number <= 10  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 10  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 10 ; k++) {
                data = MatrixData (dtable)[i][(j-1)*analysis.numdofs + k];
                position = (int) ((data - min)*dscale);
@@ -432,7 +426,7 @@ PlotTransientTable(Matrix dtable, Matrix ttable, double dt, FILE *fp)
 
       number = 1;
       dof = start_dof;
-      for (i = node ; i <= analysis.numnodes && number <= 10 ; i++) {
+      for (i = node ; i <= analysis.nodes.size() && number <= 10 ; i++) {
          for (j = dof ; j <= analysis.numdofs && number <= 10 ; j++) {
             fprintf (fp,"         %c %c %c    %s(%d)\n", symbols [number],
                      symbols [number], symbols [number],
@@ -473,8 +467,8 @@ WriteOutputSpectra(Matrix P, FILE *fp)
    unsigned	ntables;
    double	freq;
 
-   ntables = (unsigned) (analysis.numnodes * analysis.numdofs / 4);
-   if ((analysis.numdofs * analysis.numnodes) % 4 != 0)
+   ntables = (unsigned) (analysis.nodes.size() * analysis.numdofs / 4);
+   if ((analysis.numdofs * analysis.nodes.size()) % 4 != 0)
       ntables++;
 
 	/*
@@ -490,7 +484,7 @@ WriteOutputSpectra(Matrix P, FILE *fp)
       fprintf (fp,"\n------------------------------------------------------------------\n");
       fprintf (fp,"       freq");
       number = 1;
-      for (m = node ; m <= analysis.numnodes && number <= 4 ; m++) {
+      for (m = node ; m <= analysis.nodes.size() && number <= 4 ; m++) {
          for (n = dof ; n <= analysis.numdofs && number <= 4 ; n++) {
             fprintf (fp,"       %s(%d)", spectra_labels[(int) analysis.dofs[n]],
                      analysis.nodes[m] -> number);
@@ -510,7 +504,7 @@ WriteOutputSpectra(Matrix P, FILE *fp)
          fprintf (fp,"%11.5g", freq);
          number = 1;
          dof = start_dof;
-         for (j = node ; j <= analysis.numnodes && number <= 4  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 4  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 4 ; k++) {
                fprintf (fp, "  %11.5g",
                         mdata(P,i,(j-1)*analysis.numdofs + k));
@@ -557,8 +551,8 @@ PlotOutputSpectra(Matrix P, FILE *fp)
    int		position;
    double	freq;
 
-   ngraphs = (unsigned) (analysis.numnodes * analysis.numdofs / 10);
-   if ((analysis.numdofs * analysis.numnodes) % 10 != 0)
+   ngraphs = (unsigned) (analysis.nodes.size() * analysis.numdofs / 10);
+   if ((analysis.numdofs * analysis.nodes.size()) % 10 != 0)
       ngraphs++;
 
    node = 1;
@@ -575,7 +569,7 @@ PlotOutputSpectra(Matrix P, FILE *fp)
          start_dof = dof;
          number = 1;
 
-         for (m = node ; m <= analysis.numnodes && number <= 10 ; m++) {
+         for (m = node ; m <= analysis.nodes.size() && number <= 10 ; m++) {
             for (n = dof ; n <= analysis.numdofs && number <= 10 ; n++) {
         
                data = MatrixData (P)[i][(m-1)*analysis.numdofs + n];
@@ -612,7 +606,7 @@ PlotOutputSpectra(Matrix P, FILE *fp)
          sprintf (buffer2,"|                                                                   ");
          sprintf (buffer,"|                                                                   ");
 
-         for (j = node ; j <= analysis.numnodes && number <= 10  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 10  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 10 ; k++) {
                data = MatrixData (P)[i][(j-1)*analysis.numdofs + k];
                position = (int) ((data - min)*dscale);
@@ -643,7 +637,7 @@ PlotOutputSpectra(Matrix P, FILE *fp)
 
       number = 1;
       dof = start_dof;
-      for (i = node ; i <= analysis.numnodes && number <= 10 ; i++) {
+      for (i = node ; i <= analysis.nodes.size() && number <= 10 ; i++) {
          for (j = dof ; j <= analysis.numdofs && number <= 10 ; j++) {
             fprintf (fp,"         %c %c %c    %s(%d)\n", symbols [number],
                      symbols [number], symbols [number],
@@ -686,8 +680,8 @@ WriteTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &force
    unsigned	input;
 
    const size_t numforced = forced.size();
-   ntables = (unsigned) (numforced*analysis.numnodes*analysis.numdofs / 4);
-   if ((numforced * analysis.numdofs * analysis.numnodes) % 4 != 0)
+   ntables = (unsigned) (numforced*analysis.nodes.size()*analysis.numdofs / 4);
+   if ((numforced * analysis.numdofs * analysis.nodes.size()) % 4 != 0)
       ntables++;
 
 	/*
@@ -710,7 +704,7 @@ WriteTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &force
          inode = forced [i].node -> number;
          idof = forced [i].dof;
 
-         for (m = node ; m <= analysis.numnodes && number <= 4 ; m++) {
+         for (m = node ; m <= analysis.nodes.size() && number <= 4 ; m++) {
             for (n = dof ; n <= analysis.numdofs && number <= 4 ; n++) {
                fprintf (fp," %s(%d)->%s(%d)", labels[idof], inode, 
                         labels[(int) analysis.dofs[n]], 
@@ -737,7 +731,7 @@ WriteTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &force
          dof = start_dof;
          node = start_node;
          for (i = input ; i <= numforced && number <= 4 ; i++) {
-            for (j = node ; j <= analysis.numnodes && number <= 4  ; j++) {
+            for (j = node ; j <= analysis.nodes.size() && number <= 4  ; j++) {
                for (k = dof ; k <= analysis.numdofs && number <= 4 ; k++) {
                   fprintf (fp, "  %11.5g",
                            mdata(H[i],l,(j-1)*analysis.numdofs + k));
@@ -781,8 +775,8 @@ PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced
    double	freq;
 
    const size_t numforced = forced.size();
-   ngraphs = (unsigned) (analysis.numnodes * analysis.numdofs * numforced / 10);
-   if ((analysis.numdofs * analysis.numnodes * numforced) % 10 != 0)
+   ngraphs = (unsigned) (analysis.nodes.size() * analysis.numdofs * numforced / 10);
+   if ((analysis.numdofs * analysis.nodes.size() * numforced) % 10 != 0)
       ngraphs++;
 
    node = 1;
@@ -802,7 +796,7 @@ PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced
          number = 1;
 
          for (o = input ; o <= numforced && number <= 10 ; o++) {
-            for (m = node ; m <= analysis.numnodes && number <= 10 ; m++) {
+            for (m = node ; m <= analysis.nodes.size() && number <= 10 ; m++) {
                for (n = dof ; n <= analysis.numdofs && number <= 10 ; n++) {
         
                   data = MatrixData (H [o])[i][(m-1)*analysis.numdofs + n];
@@ -842,7 +836,7 @@ PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced
          sprintf (buffer,"|                                                                   ");
 
          for (l = input ; l <= numforced && number <= 10 ; l++) {
-            for (j = node ; j <= analysis.numnodes && number <= 10  ; j++) {
+            for (j = node ; j <= analysis.nodes.size() && number <= 10  ; j++) {
                for (k = dof ; k <= analysis.numdofs && number <= 10 ; k++) {
                   data = MatrixData (H [l])[i][(j-1)*analysis.numdofs + k];
                   position = (int) ((data - min)*dscale);
@@ -883,7 +877,7 @@ PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced
          inode = forced [i].node -> number;
          idof = forced [i].dof;
 
-         for (i = node ; i <= analysis.numnodes && number <= 10 ; i++) {
+         for (i = node ; i <= analysis.nodes.size() && number <= 10 ; i++) {
             for (j = dof ; j <= analysis.numdofs && number <= 10 ; j++) {
                fprintf (fp,"         %c %c %c    %s(%d)->%s(%d)\n", 
                         symbols [number], symbols [number], symbols [number],
@@ -922,8 +916,6 @@ PlotTransferFunctions(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced
 int
 WriteMaterialStatistics(FILE *output)
 {
-   Element	*element;
-   unsigned	numelts;
    unsigned	i,j,
  		num_materials,
 		number [50];
@@ -936,8 +928,8 @@ WriteMaterialStatistics(FILE *output)
 		l,v,a,
 		tot_mass;
 
-   element = problem.elements;
-   numelts = problem.num_elements;
+   const Element *element = problem.elements.c_ptr1();
+   const unsigned numelts = problem.elements.size();
 
    num_materials = 0;
    flag = 0;
@@ -1051,13 +1043,11 @@ WriteMaterialStatistics(FILE *output)
 int
 WriteGraphicsFile(char *filename, double mag)
 {
-   Element	*element;
-   unsigned	numelts;
    FILE		*output;
    unsigned	i,j;
 
-   numelts = problem.num_elements;
-   element = problem.elements;
+   const unsigned numelts = problem.elements.size();
+   const Element *element = problem.elements.c_ptr1();
 
    if ((output = fopen (filename, "w")) == NULL)
       return 1;
@@ -1198,8 +1188,8 @@ WriteLoadCaseTable(Matrix dtable, FILE *fp)
    unsigned	number;
    unsigned	ntables;
 
-   ntables = (unsigned) (analysis.numnodes * analysis.numdofs / 4);
-   if ((analysis.numdofs * analysis.numnodes) % 4 != 0)
+   ntables = (unsigned) (analysis.nodes.size() * analysis.numdofs / 4);
+   if ((analysis.numdofs * analysis.nodes.size()) % 4 != 0)
       ntables++;
 
 	/*
@@ -1215,7 +1205,7 @@ WriteLoadCaseTable(Matrix dtable, FILE *fp)
       fprintf (fp,"\n--------------------------------------------------------------------\n");
       fprintf (fp,"   loadcase");
       number = 1;
-      for (m = node ; m <= analysis.numnodes && number <= 4 ; m++) {
+      for (m = node ; m <= analysis.nodes.size() && number <= 4 ; m++) {
          for (n = dof ; n <= analysis.numdofs && number <= 4 ; n++) {
             fprintf (fp,"        %s(%d)", labels[(int) analysis.dofs[n]],
                      analysis.nodes[m] -> number);
@@ -1231,11 +1221,11 @@ WriteLoadCaseTable(Matrix dtable, FILE *fp)
 	 */
 
       for (i = 1 ; i <= MatrixRows (dtable) ; i++) {
-         fprintf (fp,"%11s", problem.loadcases [i] -> name);
+          fprintf (fp,"%11s", problem.loadcases [i] -> name.c_str());
 
          number = 1;
          dof = start_dof;
-         for (j = node ; j <= analysis.numnodes && number <= 4  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 4  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 4 ; k++) {
                fprintf (fp, "  %11.5g",
                         MatrixData (dtable)[i][(j-1)*analysis.numdofs + k]);
@@ -1280,8 +1270,8 @@ PlotLoadCaseTable(Matrix dtable, FILE *fp)
    unsigned	dof, node;
    int		position;
 
-   ngraphs = (unsigned) (analysis.numnodes * analysis.numdofs / 10);
-   if ((analysis.numdofs * analysis.numnodes) % 10 != 0)
+   ngraphs = (unsigned) (analysis.nodes.size() * analysis.numdofs / 10);
+   if ((analysis.numdofs * analysis.nodes.size()) % 10 != 0)
       ngraphs++;
 
    node = 1;
@@ -1298,7 +1288,7 @@ PlotLoadCaseTable(Matrix dtable, FILE *fp)
          start_dof = dof;
          number = 1;
 
-         for (m = node ; m <= analysis.numnodes && number <= 10 ; m++) {
+         for (m = node ; m <= analysis.nodes.size() && number <= 10 ; m++) {
             for (n = dof ; n <= analysis.numdofs && number <= 10 ; n++) {
         
                data = MatrixData (dtable)[i][(m-1)*analysis.numdofs + n];
@@ -1334,7 +1324,7 @@ PlotLoadCaseTable(Matrix dtable, FILE *fp)
          sprintf (buffer2,"|                                                                   ");
          sprintf (buffer,"|                                                                   ");
 
-         for (j = node ; j <= analysis.numnodes && number <= 10  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 10  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 10 ; k++) {
                data = MatrixData (dtable)[i][(j-1)*analysis.numdofs + k];
                position = (int) ((data - min)*dscale);
@@ -1353,7 +1343,7 @@ PlotLoadCaseTable(Matrix dtable, FILE *fp)
          }
          fprintf (fp,"           %s\n",buffer1);
 
-         fprintf (fp,"%10s %67s\n", problem.loadcases [i] -> name, buffer);
+         fprintf (fp,"%10s %67s\n", problem.loadcases [i] -> name.c_str(), buffer);
          fprintf (fp,"           %s\n",buffer2);          
       }
       fprintf (fp, "\n");
@@ -1364,7 +1354,7 @@ PlotLoadCaseTable(Matrix dtable, FILE *fp)
 
       number = 1;
       dof = start_dof;
-      for (i = node ; i <= analysis.numnodes && number <= 10 ; i++) {
+      for (i = node ; i <= analysis.nodes.size() && number <= 10 ; i++) {
          for (j = dof ; j <= analysis.numdofs && number <= 10 ; j++) {
             fprintf (fp,"         %c %c %c    %s(%d)\n", symbols [number],
                      symbols [number], symbols [number],
@@ -1399,8 +1389,8 @@ WriteLoadRangeTable(Matrix dtable, FILE *fp)
    unsigned	number;
    unsigned	ntables;
 
-   ntables = (unsigned) (analysis.numnodes * analysis.numdofs / 4);
-   if ((analysis.numdofs * analysis.numnodes) % 4 != 0)
+   ntables = (unsigned) (analysis.nodes.size() * analysis.numdofs / 4);
+   if ((analysis.numdofs * analysis.nodes.size()) % 4 != 0)
       ntables++;
 
 	/*
@@ -1416,7 +1406,7 @@ WriteLoadRangeTable(Matrix dtable, FILE *fp)
       fprintf (fp,"\n------------------------------------------------------------------\n");
       fprintf (fp,"       input");
       number = 1;
-      for (m = node ; m <= analysis.numnodes && number <= 4 ; m++) {
+      for (m = node ; m <= analysis.nodes.size() && number <= 4 ; m++) {
          for (n = dof ; n <= analysis.numdofs && number <= 4 ; n++) {
             fprintf (fp,"        %s(%d)", labels[(int) analysis.dofs[n]],
                      analysis.nodes[m] -> number);
@@ -1437,7 +1427,7 @@ WriteLoadRangeTable(Matrix dtable, FILE *fp)
 
          number = 1;
          dof = start_dof;
-         for (j = node ; j <= analysis.numnodes && number <= 4  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 4  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 4 ; k++) {
                fprintf (fp, "  %11.5g",
                         MatrixData (dtable)[i][(j-1)*analysis.numdofs + k]);
@@ -1482,8 +1472,8 @@ PlotLoadRangeTable(Matrix dtable, FILE *fp)
    unsigned	dof, node;
    int		position;
 
-   ngraphs = (unsigned) (analysis.numnodes * analysis.numdofs / 10);
-   if ((analysis.numdofs * analysis.numnodes) % 10 != 0)
+   ngraphs = (unsigned) (analysis.nodes.size() * analysis.numdofs / 10);
+   if ((analysis.numdofs * analysis.nodes.size()) % 10 != 0)
       ngraphs++;
 
 
@@ -1501,7 +1491,7 @@ PlotLoadRangeTable(Matrix dtable, FILE *fp)
          start_dof = dof;
          number = 1;
 
-         for (m = node ; m <= analysis.numnodes && number <= 10 ; m++) {
+         for (m = node ; m <= analysis.nodes.size() && number <= 10 ; m++) {
             for (n = dof ; n <= analysis.numdofs && number <= 10 ; n++) {
         
                data = MatrixData (dtable)[i][(m-1)*analysis.numdofs + n];
@@ -1537,7 +1527,7 @@ PlotLoadRangeTable(Matrix dtable, FILE *fp)
          sprintf (buffer2,"|                                                                   ");
          sprintf (buffer,"|                                                                   ");
 
-         for (j = node ; j <= analysis.numnodes && number <= 10  ; j++) {
+         for (j = node ; j <= analysis.nodes.size() && number <= 10  ; j++) {
             for (k = dof ; k <= analysis.numdofs && number <= 10 ; k++) {
                data = MatrixData (dtable)[i][(j-1)*analysis.numdofs + k];
                position = (int) ((data - min)*dscale);
@@ -1567,7 +1557,7 @@ PlotLoadRangeTable(Matrix dtable, FILE *fp)
 
       number = 1;
       dof = start_dof;
-      for (i = node ; i <= analysis.numnodes && number <= 10 ; i++) {
+      for (i = node ; i <= analysis.nodes.size() && number <= 10 ; i++) {
          for (j = dof ; j <= analysis.numdofs && number <= 10 ; j++) {
             fprintf (fp,"         %c %c %c    %s(%d)\n", symbols [number],
                      symbols [number], symbols [number],

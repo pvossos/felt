@@ -24,6 +24,7 @@
  *		definitions for writing FElt files and objects.		*
  ************************************************************************/
 
+# include <algorithm>
 # include <stdio.h>
 # include <ctype.h>
 # include <string.h>
@@ -160,10 +161,10 @@ WriteNode(Node node)
     fprintf (fp, "y=%g z=%g", node -> y, node -> z);
 
     if (!prev_node || node -> constraint != prev_node -> constraint)
-	fprintf (fp, " constraint=%s", Quote (node -> constraint -> name));
+	fprintf (fp, " constraint=%s", Quote (node -> constraint -> name.c_str()));
 
     if (node -> force)
-	fprintf (fp, " force=%s", Quote (node -> force -> name));
+	fprintf (fp, " force=%s", Quote (node -> force -> name.c_str()));
 
     if (node -> m)
         fprintf (fp, " mass=%g", node -> m);
@@ -197,11 +198,11 @@ WriteElement(Element element)
     }
 
     if (!prev_element || element -> material != prev_element -> material)
-	fprintf (fp, " material=%s", Quote (element -> material -> name));
+	fprintf (fp, " material=%s", Quote (element -> material -> name.c_str()));
 
     for (i = 1; i <= element -> numdistributed; i ++) {
 	fprintf (fp, i == 1 ? " load=" : " ");
-	fprintf (fp, "%s", Quote (element -> distributed [i] -> name));
+	fprintf (fp, "%s", Quote (element -> distributed [i] -> name.c_str()));
     }
 
     fprintf (fp, "\n");
@@ -217,18 +218,13 @@ WriteElement(Element element)
  ************************************************************************/
 
 static int
-WriteMaterial(Item item)
+WriteMaterial(Material material)
 {
-    Material material;
-
-
-    material = (Material) item;
-
     if (material -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (material -> name));
+	fprintf (fp, "%s", Quote (material -> name.c_str()));
 
-        if (material -> color)
-            fprintf (fp, " color=%s", material -> color);
+        if (material -> color.c_str())
+            fprintf (fp, " color=%s", material -> color.c_str());
 
 	cfprintf (fp, " E=%g",     material -> E);
 	cfprintf (fp, " A=%g",     material -> A);
@@ -261,27 +257,24 @@ WriteMaterial(Item item)
  ************************************************************************/
 
 static int
-WriteLoad(Item item)
+WriteLoad(Distributed load)
 {
     unsigned	 i;
-    Distributed  load;
     static const char *direction_names [ ] = {"", "LocalX", "LocalY", "LocalZ",
 					"GlobalX", "GlobalY", "GlobalZ",
 					"parallel", "perpendicular", 
 					"radial", "axial"};
 
 
-    load = (Distributed) item;
-
     if (load -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (load -> name));
+	fprintf (fp, "%s", Quote (load -> name.c_str()));
 
-        if (load -> color)
-            fprintf (fp, " color=%s", load -> color);
+        if (load -> color.c_str())
+            fprintf (fp, " color=%s", load -> color.c_str());
 
 	fprintf (fp, " direction=%s", direction_names [load -> direction]);
 
-	for (i = 1; i <= load -> nvalues; i ++) {
+	for (i = 1; i <= load -> value.size(); i ++) {
 	    fprintf (fp, i == 1 ? " values=" : " ");
 	    fprintf (fp, "(%u,", load -> value [i].node);
 	    fprintf (fp, "%g)", load -> value [i].magnitude);
@@ -304,18 +297,13 @@ WriteLoad(Item item)
  ************************************************************************/
 
 static int
-WriteConstraint(Item item)
+WriteConstraint(Constraint constraint)
 {
-    Constraint constraint;
-
-
-    constraint = (Constraint) item;
-
     if (constraint -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (constraint -> name));
+	fprintf (fp, "%s", Quote (constraint -> name.c_str()));
 
-        if (constraint -> color)
-            fprintf (fp, " color=%s", constraint -> color);
+        if (constraint -> color.c_str())
+            fprintf (fp, " color=%s", constraint -> color.c_str());
 
         if (constraint -> dx [Tx].expr == NULL)
 	   fprintf (fp, " Tx=%s", ConstraintSymbol (constraint, Tx));
@@ -384,19 +372,13 @@ WriteConstraint(Item item)
  ************************************************************************/
 
 static int
-WriteForce(Item item)
+WriteForce(Force force)
 {
-    Force force;
-
-
-    force = (Force) item;
-
-
     if (force -> aux == mark_flag) {
-	fprintf (fp, "%s", Quote (force -> name));
+	fprintf (fp, "%s", Quote (force -> name.c_str()));
 
-        if (force -> color)
-            fprintf (fp, " color=%s", force -> color);
+        if (force -> color.c_str())
+            fprintf (fp, " color=%s", force -> color.c_str());
 
 	if (force -> force [Fx].expr)
 	    fprintf (fp, " Fx=%s", force -> force [Fx].text);
@@ -472,27 +454,24 @@ WriteForce(Item item)
  ************************************************************************/
 
 static int
-WriteLoadCase(Item item)
+WriteLoadCase(LoadCase lc)
 {
-   LoadCase	lc;
    unsigned     i;
 
-   lc = (LoadCase) item;
+   fprintf (fp, "%s\n", lc -> name.c_str());
 
-   fprintf (fp, "%s\n", lc -> name);
-
-   if (lc -> numforces) {
-      fprintf (fp, "node-forces=");
-      for (i = 1 ; i <= lc -> numforces ; i++)
-         fprintf (fp, "(%d, %s) ", lc -> nodes [i] -> number, lc -> forces [i] -> name);
-
+   if (!lc->forces.empty()) {
+       fprintf (fp, "node-forces=");
+       for (i = 1 ; i <= lc->forces.size(); i++)
+           fprintf (fp, "(%d, %s) ", lc -> nodes [i] -> number, lc -> forces [i] -> name.c_str());
+       
       fprintf (fp, "\n");
    }
 
-   if (lc -> numloads) {
+   if (!lc->loads.empty()) {
       fprintf (fp, "element-loads=");
-      for (i = 1 ; i <= lc -> numloads ; i++)
-         fprintf (fp, "(%d, %s) ", lc -> elements [i] -> number, lc -> loads [i] -> name);
+      for (i = 1 ; i <= lc->loads.size(); i++)
+          fprintf (fp, "(%d, %s) ", lc -> elements [i] -> number, lc -> loads [i] -> name.c_str());
 
       fprintf (fp, "\n");
    }
@@ -549,13 +528,13 @@ WriteAnalysisParameters(void)
     else if (analysis.mass_mode == 'c')
 	fprintf (fp, "mass-mode=consistent\n");
 
-    if (analysis.numnodes > 0) {
+    if (!analysis.nodes.empty()) {
         fprintf (fp, "nodes=[");
-        for (i = 1; i <= analysis.numnodes; i ++)
-    	    if (i < analysis.numnodes)	
-	        fprintf (fp, "%d, ", analysis.nodes [i] -> number);
-	    else
-	        fprintf (fp, "%d]\n", analysis.nodes [i] -> number);
+        for (i = 1; i <= analysis.nodes.size(); i ++)
+    	    if (i < analysis.nodes.size())	
+                fprintf (fp, "%d, ", analysis.nodes [i] -> number);
+            else
+                fprintf (fp, "%d]\n", analysis.nodes [i] -> number);
     }
 
     if (analysis.numdofs > 0) {
@@ -592,13 +571,13 @@ WriteCanvasConfiguration(void)
     EndSection   (fp);
 
     StartSection (fp);
-    PrintString  (fp, "node-color",    appearance.node_color);
-    PrintString  (fp, "element-color", appearance.element_color);
-    PrintString  (fp, "label-font",    appearance.label_font);
+    PrintString  (fp, "node-color",    appearance.node_color.c_str());
+    PrintString  (fp, "element-color", appearance.element_color.c_str());
+    PrintString  (fp, "label-font",    appearance.label_font.c_str());
     PrintNewline (fp);
 
-    PrintString  (fp, "tool-color", appearance.tool_color);
-    PrintString  (fp, "tool-font",  appearance.tool_font);
+    PrintString  (fp, "tool-color", appearance.tool_color.c_str());
+    PrintString  (fp, "tool-font",  appearance.tool_font.c_str());
     PrintNewline (fp);
     EndSection   (fp);
 
@@ -630,16 +609,14 @@ WriteFigureList(void)
 {
     unsigned i;
     unsigned j;
-    char    *last_font;
-    char    *last_color;
+    std::string last_font = "";
+    std::string last_color = "";
     FigInfo *figure;
 
 
-    last_font = NULL;
-    last_color = NULL;
     fprintf (fp, "\nfigure list\n");
 
-    for (i = 0; i < appearance.num_figures; i ++) {
+    for (i = 0; i < appearance.figures.size(); i ++) {
 	figure = &appearance.figures [i];
 
 	switch (figure -> type) {
@@ -652,9 +629,9 @@ WriteFigureList(void)
 
 	case POLYLINE:
 	    fprintf (fp, "polyline");
-	    if (figure -> num_points) {
+	    if (!figure->points.empty()) {
 		fprintf (fp, " points=[");
-		for (j = 0; j < figure -> num_points; j ++) {
+		for (j = 0; j < figure->points.size(); j ++) {
 		    if (j) fprintf (fp, " ");
 		    fprintf (fp, "(%g,", figure -> points [j].x);
 		    fprintf (fp, "%g)", figure -> points [j].y);
@@ -666,13 +643,13 @@ WriteFigureList(void)
 	case TEXT:
 	    fprintf (fp, "text");
 	    fprintf (fp, " x=%g y=%g", figure -> x, figure -> y);
-	    if (figure -> text)
-		fprintf (fp, " text=%s", Quote (figure -> text));
-	    if (figure -> font)
-		if (!last_font || !strcmp (figure -> font, last_font)) {
-		    fprintf (fp, " font=%s", Quote (figure -> font));
-		    last_font = figure -> font;
-		}
+	    if (!figure -> text.empty())
+            fprintf (fp, " text=%s", Quote (figure -> text.c_str()));
+	    if (!figure -> font.empty())
+            if (last_font.empty() || last_font != figure->font) {
+                fprintf (fp, " font=%s", Quote (figure -> font.c_str()));
+                last_font = figure -> font;
+            }
 	    break;
 
 	case ARC:
@@ -685,10 +662,10 @@ WriteFigureList(void)
 	    break;
 	}
 
-	if (figure -> color)
-	    if (!last_color || strcmp (figure -> color, last_color)) {
-		fprintf (fp, " color=%s", Quote (figure -> color));
-		last_color = figure -> color;
+	if (!figure -> color.empty())
+	    if (last_color.empty() || figure->color != last_color) {
+            fprintf (fp, " color=%s", Quote (figure -> color.c_str()));
+            last_color = figure -> color;
 	    }
 
 	fprintf (fp, "\n");
@@ -727,8 +704,8 @@ WriteFile(char *flag)
     if (problem.title != NULL && strcmp (problem.title, ""))   
        fprintf (fp, "title=%s\n", Quote (problem.title));
 
-    fprintf (fp, "nodes=%u ", problem.num_nodes);
-    fprintf (fp, "elements=%u", problem.num_elements);
+    fprintf (fp, "nodes=%u ", problem.nodes.size());
+    fprintf (fp, "elements=%u", problem.elements.size());
 
     if (problem.mode != Static)
 	fprintf (fp, " analysis=%s", analysis_names [problem.mode]);
@@ -746,10 +723,9 @@ WriteFile(char *flag)
 
     /* Write and load case definitions */
 
-    if (TreeSize (problem.loadcase_tree)) {
+    if (!problem.loadcase_set.empty()) {
         fprintf (fp, "\nload cases\n");
-        TreeSetIterator (problem.loadcase_tree, WriteLoadCase);
-        TreeIterate (problem.loadcase_tree);
+        std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), WriteLoadCase);
     }
 
     /* Write the nodes section marking referenced objects. */
@@ -758,11 +734,11 @@ WriteFile(char *flag)
     any_forces = 0;
     any_loads = 0;
 
-    if (problem.num_nodes) {
+    if (!problem.nodes.empty()) {
 	prev_node = NULL;
 	fprintf (fp, "\nnodes\n");
 
-	for (i = 1; i <= problem.num_nodes; i ++) {
+	for (i = 1; i <= problem.nodes.size(); i ++) {
 	    node = problem.nodes [i];
 	    WriteNode (node);
 	    prev_node = node;
@@ -778,10 +754,10 @@ WriteFile(char *flag)
 
     /* Write the elements section marking referenced objects. */
 
-    if (problem.num_elements) {
+    if (!problem.elements.empty()) {
 	prev_element = NULL;
 
-	for (i = 1; i <= problem.num_elements; i ++) {
+	for (i = 1; i <= problem.elements.size(); i ++) {
 	    element = problem.elements [i];
 	    definition = element -> definition;
 
@@ -803,37 +779,33 @@ WriteFile(char *flag)
 
     /* Write the materials section. */
 
-    if (TreeSize (problem.material_tree) > 0) {
-	fprintf (fp, "\nmaterial properties\n");
-	TreeSetIterator (problem.material_tree, WriteMaterial);
-	TreeIterate (problem.material_tree);
+    if (!problem.material_set.empty()) {
+        fprintf (fp, "\nmaterial properties\n");
+        std::for_each(problem.material_set.begin(), problem.material_set.end(), WriteMaterial);
     }
 
 
     /* Write the distributed loads section. */
 
     if (any_loads || !mark_flag) {
-	fprintf (fp, "\ndistributed loads\n");
-	TreeSetIterator (problem.distributed_tree, WriteLoad);
-	TreeIterate (problem.distributed_tree);
+        fprintf (fp, "\ndistributed loads\n");
+        std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), WriteLoad);
     }
 
 
     /* Write the constraints section. */
 
-    if (TreeSize (problem.constraint_tree) > 0) {
-	fprintf (fp, "\nconstraints\n");
-	TreeSetIterator (problem.constraint_tree, WriteConstraint);
-	TreeIterate (problem.constraint_tree);
+    if (!problem.constraint_set.empty()) {
+        fprintf (fp, "\nconstraints\n");
+        std::for_each(problem.constraint_set.begin(), problem.constraint_set.end(), WriteConstraint);
     }
 
 
     /* Write the forces section. */
 
     if (any_forces || !mark_flag) {
-	fprintf (fp, "\nforces\n");
-	TreeSetIterator (problem.force_tree, WriteForce);
-	TreeIterate (problem.force_tree);
+        fprintf (fp, "\nforces\n");
+        std::for_each(problem.force_set.begin(), problem.force_set.end(), WriteForce);
     }
 
 
@@ -841,8 +813,8 @@ WriteFile(char *flag)
 
     WriteCanvasConfiguration ( );
 
-    if (appearance.num_figures)
-	WriteFigureList ( );
+    if (!appearance.figures.empty())
+        WriteFigureList ( );
 
 
     /* Clean up, close the file, and return success. */

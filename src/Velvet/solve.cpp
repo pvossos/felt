@@ -17,6 +17,7 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+# include <algorithm>
 # include <stdio.h>
 # include <unistd.h>
 # include <X11/Intrinsic.h>
@@ -50,14 +51,12 @@ extern NodeDialog    node_d;
 
 static unsigned	array_count;
 
-static int BuildNodeArray (Item item)
+static int BuildNodeArray (Node node)
 {
    FigureAttributes	attr;
    char			buffer [10];
-   Node			node;
    Drawn		drawn; 
 
-   node = (Node) item;
    problem.nodes [++array_count] = node;
 
    if (array_count != node -> number) {
@@ -73,14 +72,12 @@ static int BuildNodeArray (Item item)
    return 0;
 }
 
-static int BuildElementArray (Item item)
+static int BuildElementArray (Element element)
 {
    FigureAttributes	attr;
    char			buffer [10];
-   Element		element;
    Drawn		drawn; 
 
-   element = (Element) item;
    problem.elements [++array_count] = element;
 
    if (array_count != element -> number) {
@@ -111,8 +108,6 @@ int SolveProblem (void)
 {
     unsigned	 numnodes;		/* total number of nodes	*/
     unsigned	 numelts;		/* total number of elements	*/
-    Node	*node;			/* the array of nodes		*/
-    Element	*element;		/* array of elements		*/
     Matrix	 K,			/* global stiffness matrix	*/
 		 Kcond;			/* condensed stiffness matrix	*/
     Matrix	 M, C;
@@ -144,8 +139,8 @@ int SolveProblem (void)
 
     numnodes = CompactNodeNumbers ( );
     numelts  = CompactElementNumbers ( );
-    node     = problem.nodes;
-    element  = problem.elements;
+    const Node *node = problem.nodes.c_ptr1();
+    const Element *element = problem.elements.c_ptr1();
 
     mode     = SetAnalysisMode ( );
 
@@ -207,7 +202,7 @@ int SolveProblem (void)
     FindDOFS ( );
 
     if (solution -> renumber)
-        old_numbers = RenumberNodes (node, element, numnodes, numelts);
+        old_numbers = RenumberProblemNodes();
 
     error_flag = 0;
 
@@ -249,7 +244,7 @@ int SolveProblem (void)
           break;
        }
       
-       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+       RestoreProblemNodeNumbers(old_numbers);
        
        WriteTransientTable (dtable, ttable, output);
 
@@ -291,7 +286,7 @@ int SolveProblem (void)
            if (!solution -> transfer)
                S = ComputeOutputSpectra (H, forced);
 
-           RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+           RestoreProblemNodeNumbers(old_numbers);
        
            if (solution -> transfer) {
                WriteTransferFunctions (H, forced, output);
@@ -351,7 +346,7 @@ int SolveProblem (void)
           break;
         }   
 
-       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+       RestoreProblemNodeNumbers(old_numbers);
 
        WriteStructuralResults (output, solution -> title, R);
 
@@ -391,7 +386,7 @@ int SolveProblem (void)
           break;
        }    
          
-       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+       RestoreProblemNodeNumbers(old_numbers);
 
        if (mode == StaticLoadCases)
           WriteLoadCaseTable (dtable, output);
@@ -433,7 +428,7 @@ int SolveProblem (void)
           break;
        }    
          
-       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+       RestoreProblemNodeNumbers(old_numbers);
 
        WriteLoadRangeTable (dtable, output);
 
@@ -471,7 +466,7 @@ int SolveProblem (void)
           break;
        }    
         
-       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+       RestoreProblemNodeNumbers(old_numbers);
 
        WriteStructuralResults (output, solution -> title, cvector1<Reaction>(0));
 
@@ -524,7 +519,7 @@ int SolveProblem (void)
           WriteModalResults (output, Mm, Cm, Km, lambda);
        }
 
-       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+       RestoreProblemNodeNumbers(old_numbers);
                     
        break;
 
@@ -558,7 +553,7 @@ int SolveProblem (void)
           break;
        }
       
-       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+       RestoreProblemNodeNumbers(old_numbers);
 
        WriteTransientTable (dtable, NullMatrix, output);
 
@@ -589,7 +584,7 @@ int SolveProblem (void)
           break;
        }    
 
-       RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+       RestoreProblemNodeNumbers(old_numbers);
 
        WriteTemperatureResults (output, problem.title);
 
@@ -597,7 +592,7 @@ int SolveProblem (void)
     }
    
     if (error_flag && !old_numbers.empty())
-        RestoreNodeNumbers (node, old_numbers.c_ptr1(), numnodes);
+        RestoreProblemNodeNumbers(old_numbers);
     
     if (!error_flag && solution -> summary)
        WriteMaterialStatistics (output);
@@ -668,62 +663,51 @@ int SolveProblem (void)
 
 int CompactNodeNumbers (void)
 {
-    unsigned		numnodes;
-
-    numnodes = TreeSize (problem.node_tree);
-    if (numnodes == 0)
-       return problem.num_nodes = 0;
+    unsigned numnodes = problem.node_set.size();
+    if (numnodes == 0) {
+        problem.nodes.clear();
+        return 0;
+    }
 
 	/*
 	 * build the array of _consecutive_ pointers to nodes by
 	 * creating new space for it and then iterating on the tree
 	 */
 
-    if (problem.nodes) {
-       ZeroOffset (problem.nodes); 
-       Deallocate (problem.nodes);
-    }
-    problem.nodes = Allocate (Node, numnodes);
-    UnitOffset (problem.nodes);
+    problem.nodes.clear();
+    problem.nodes.resize(numnodes);
 
     DW_SetAutoRedraw (drawing, False);
 
     array_count = 0;
-    TreeSetIterator (problem.node_tree, BuildNodeArray);
-    TreeIterate (problem.node_tree);
+    std::for_each(problem.node_set.begin(), problem.node_set.end(), BuildNodeArray);
 
     if (canvas -> node_numbers)
        DW_SetAutoRedraw (drawing, True);
 
-    return problem.num_nodes = numnodes;
+    return numnodes;
 }          
     
 int CompactElementNumbers (void)
 {
-    unsigned		numelts;
-
-    numelts = TreeSize (problem.element_tree);
-    if (numelts == 0) 
-       return problem.num_elements = 0;
-
-    if (problem.elements) {
-       ZeroOffset (problem.elements); 
-       Deallocate (problem.elements);
+    unsigned numelts = problem.element_set.size();
+    if (numelts == 0) {
+        problem.elements.clear();
+        return 0;
     }
 
-    problem.elements = Allocate (Element, numelts);
-    UnitOffset (problem.elements);
+    problem.elements.clear();
+    problem.elements.resize(numelts);
 
     DW_SetAutoRedraw (drawing, False);
 
     array_count = 0;
-    TreeSetIterator (problem.element_tree, BuildElementArray);
-    TreeIterate (problem.element_tree);
+    std::for_each(problem.element_set.begin(), problem.element_set.end(), BuildElementArray);
 
     if (canvas -> element_numbers)
        DW_SetAutoRedraw (drawing, True);
 
-    return problem.num_elements = numelts;
+    return numelts;
 }
 
 void SetupAndSolve (void)
@@ -749,9 +733,7 @@ void SetupAnimate (void)
     unsigned		numnodes, numelts;
     Matrix		dtable;
     cvector1u	old_numbers;
-    Node		*anodes;
     char		adofs [7];
-    unsigned		anumnodes;
     unsigned		anumdofs;
     double		z_plane;
     Boolean		draw3d;
@@ -792,11 +774,8 @@ void SetupAnimate (void)
     for (i = 1 ; i <= analysis.numdofs ; i++)
        adofs [i] = analysis.dofs [i];
 
-    anodes = analysis.nodes;
+    cvector1<Node> anodes = analysis.nodes;
     analysis.nodes = problem.nodes;
-
-    anumnodes = analysis.numnodes;
-    analysis.numnodes = numnodes;
 
     if (draw3d) {
        analysis.numdofs = 3;
@@ -812,8 +791,7 @@ void SetupAnimate (void)
 
 
     if (solution -> renumber)
-        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
-                                     numnodes, numelts);
+        old_numbers = RenumberProblemNodes();
 
     K = M = C = dtable = NullMatrix;
  
@@ -831,17 +809,16 @@ void SetupAnimate (void)
        dtable = IntegrateHyperbolicDE (K, M, C);
 
        if (draw3d)
-          AnimateStructure3D (dtable, problem.nodes, problem.elements,
-                              numnodes, numelts);
+           AnimateStructure3D (dtable, problem.nodes.c_ptr1(), problem.elements.c_ptr1(),
+                               numnodes, numelts);
        else
-          AnimateStructure (dtable, problem.nodes, problem.elements,
-                            numnodes, numelts);
-
-       RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), numnodes);
+           AnimateStructure (dtable, problem.nodes.c_ptr1(), problem.elements.c_ptr1(),
+                             numnodes, numelts);
+       
+       RestoreProblemNodeNumbers(old_numbers);
     }
 
     analysis.nodes = anodes;
-    analysis.numnodes = anumnodes;
     analysis.numdofs = anumdofs;
 
     for (i = 1 ; i <= analysis.numdofs ; i++) 
@@ -864,7 +841,6 @@ void SetupAnimate (void)
 
 void SetupStresses (Boolean build_elt)
 {
-    Element    *e;
     unsigned	numelts;
     unsigned	nd,i,j;
     int		depth;
@@ -886,17 +862,17 @@ void SetupStresses (Boolean build_elt)
     if (build_elt) 
         numelts = CompactElementNumbers ( );
     else
-        numelts = problem.num_elements;
+        numelts = problem.elements.size();
 
     if (numelts == 0) 
        return;
 
-    e = problem.elements;
+    const Element *e = problem.elements.c_ptr1();
 
     nd = 0;
     flag = 1;
     for (i = 1; i <= numelts ; i++) {
-         if (e [i] -> node [1] -> stress == NULL) {
+        if (e [i] -> node [1] -> stress.empty()) {
             error ("could not get nodally averaged stresses for all elements");
             return;
          }
@@ -951,8 +927,8 @@ void SetupDisplacements (Boolean build_arrays)
         numnodes = CompactNodeNumbers ( );
     }
     else {
-        numelts = problem.num_elements;
-        numnodes = problem.num_nodes;
+        numelts = problem.elements.size();
+        numnodes = problem.nodes.size();
     }
 
     if (numelts == 0 || numnodes == 0)
@@ -974,7 +950,7 @@ void SetupDisplacements (Boolean build_arrays)
 
     SetWaitCursor (drawing);
     CreateOpenGLShell("displShell", "Displacement Plot", False,
-                      solution -> d_component, problem.elements, numelts, True);
+                      solution -> d_component, problem.elements.c_ptr1(), numelts, True);
     SetNormalCursor (drawing);
 
     return;
@@ -985,9 +961,8 @@ void SetupModeShapes (Matrix phi, Matrix lambda)
     unsigned	i,j;
     double	z_plane;
     Boolean	draw3d;
-    unsigned	numelts;
 
-    numelts = problem.num_elements;
+    const unsigned numelts = problem.elements.size();
 
     draw3d = False;
     z_plane = problem.elements[1] -> node[1] -> z;
@@ -1005,12 +980,12 @@ void SetupModeShapes (Matrix phi, Matrix lambda)
     }
  
     if (draw3d)
-       DrawModeShapes3D (phi, lambda, problem.nodes, problem.elements, 
-                         problem.num_nodes, problem.num_elements);
+        DrawModeShapes3D (phi, lambda, problem.nodes.c_ptr1(), problem.elements.c_ptr1(), 
+                          problem.nodes.size(), problem.elements.size());
     else
-       DrawModeShapes (phi, lambda, problem.nodes, problem.elements, 
-                       problem.num_nodes, problem.num_elements);
-
+        DrawModeShapes (phi, lambda, problem.nodes.c_ptr1(), problem.elements.c_ptr1(), 
+                        problem.nodes.size(), problem.elements.size());
+    
     return;
 }
 
@@ -1021,13 +996,13 @@ void SetupStructure (Boolean build_elt)
     if (build_elt) 
        numelts = CompactElementNumbers ( );
     else
-       numelts = problem.num_elements;
+       numelts = problem.elements.size();
 
     if (numelts == 0)
        return;
 
     CreateOpenGLShell("structShell", "Structure Plot", False, 0,
-                      problem.elements, numelts, False);
+                      problem.elements.c_ptr1(), numelts, False);
 }
 
 void OptimizeNumbering (void)
@@ -1048,15 +1023,14 @@ void OptimizeNumbering (void)
        return;
   
     for (i = 1 ; i <= numnodes ; i++) 
-       TreeDelete (problem.node_tree, problem.nodes [i]);
+        problem.node_set.erase(problem.nodes[i]);
 
-    RenumberNodes (problem.nodes, problem.elements, 
-                   numnodes, numelts);
+    RenumberProblemNodes();
 
     DW_SetAutoRedraw (drawing, False);
     for (i = 1 ; i <= numnodes ; i++) {
        node = problem.nodes [i];
-       TreeInsert (problem.node_tree, node);
+       problem.node_set.insert(node);
 
        drawn = (Drawn) (node -> aux);
        if (drawn -> label != NULL) {     

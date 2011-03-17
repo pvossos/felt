@@ -74,7 +74,7 @@ template<> int tl_tostring<Node>(lua_State *L)
 static int Node_get_eq_force(lua_State *L)
 {
     Node nn = tl_check<Node>(L, 1);
-    tl_pushn<double>(L, nn->stress+1, 6);
+    tl_pushn<double>(L, nn->stress.c_ptr(), nn->stress.size());
     return 1;
 }
 
@@ -119,13 +119,13 @@ static int Node_gc(lua_State *L)
     return 0;
 }
 
-#define GETTER(typ, field) tl_getter<node, typ, &node::field>
-#define GETSET(typ, field) tl_getset<node, typ, &node::field>()
+#define GETTER(typ, field) tl_getter<node_t, typ, &node_t::field>
+#define GETSET(typ, field) tl_getset<node_t, typ, &node_t::field>()
 
 static void
 register_Nodes(lua_State *L)
 {
-    tl_wrapper<node> w(true);
+    tl_wrapper<node_t> w(true);
     w.prop("dx", Node_get_dx);
     w.prop("number", GETTER(unsigned, number));
     w.prop("x", GETSET(double, x));
@@ -163,14 +163,14 @@ felt(lua_State *L)
 static int
 pnodes(lua_State *L)
 {
-    tl_pushn<Node>(L, problem.nodes+1, problem.num_nodes);
+    tl_pushn<Node>(L, problem.nodes.c_ptr(), problem.nodes.size());
     return 1;
 }
 
 static int
 pelements(lua_State *L)
 {
-    tl_pushn<Element>(L, problem.elements+1, problem.num_elements);
+    tl_pushn<Element>(L, problem.elements.c_ptr(), problem.elements.size());
     return 1;
 }
 
@@ -203,7 +203,7 @@ template<> int tl_tostring<Stress>(lua_State *L)
 static int Stress_get_values(lua_State *L)
 {
     Stress ss = tl_check<Stress>(L, 1);
-    tl_pushn<double>(L, ss->values+1, ss->numvalues);
+    tl_pushn<double>(L, ss->values.c_ptr(), ss->values.size());
     return 1;
 }
 
@@ -240,14 +240,16 @@ template<> int tl_tostring<Element>(lua_State *L)
 static int Element_get_nodes(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
-    tl_pushn<Node>(L, ee->node+1, ee->definition->numnodes);
+    assert(ee->definition->numnodes == ee->node.size());
+    tl_pushn<Node>(L, ee->node.c_ptr(), ee->node.size());
     return 1;
 }
 
 static int Element_get_stresses(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
-    tl_pushn<Stress>(L, ee->stress+1, ee->ninteg);
+    assert(ee->ninteg == ee->stress.size());
+    tl_pushn<Stress>(L, ee->stress.c_ptr(), ee->stress.size());
     return 1;
 }
 
@@ -261,11 +263,11 @@ static int Element_get_distributed(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<element, typ, &element::field>
+#define GETTER(typ, field) tl_getter<element_t, typ, &element_t::field>
 
 void register_Elements(lua_State *L)
 {
-    tl_wrapper<element> w(true);
+    tl_wrapper<element_t> w(true);
     w.prop("number", GETTER(unsigned, number));
     w.prop("nodes", Element_get_nodes);
     w.prop("distributed", Element_get_distributed);
@@ -291,16 +293,16 @@ template<>
 int tl_tostring<Material>(lua_State *L)
 {
     Material mt = tl_check<Material>(L, 1);
-    lua_pushfstring(L, "[Material %s @ %p]", mt->name, mt);
+    lua_pushfstring(L, "[Material %s]", mt->name.c_str());
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<material, typ, &material::field>
+#define GETTER(typ, field) tl_getter<material_t, typ, &material_t::field>
 
 static void
 register_Materials(lua_State *L)
 {
-    tl_wrapper<material> w(true);
+    tl_wrapper<material_t> w(true);
     w.prop("E", GETTER(double, E));
     w.prop("Ix", GETTER(double, Ix));
     w.prop("Iy", GETTER(double, Iy));
@@ -386,7 +388,7 @@ template<>
 int tl_tostring<Force>(lua_State *L)
 {
     Force ff = tl_check<Force>(L, 1);
-    lua_pushfstring(L, "[Force %s @ %p]", ff->name, ff);
+    lua_pushfstring(L, "[Force %s]", ff->name.c_str());
     return 1;
 }
 
@@ -406,7 +408,7 @@ static int Force_get_spectrum(lua_State *L)
 
 void register_Forces(lua_State *L)
 {
-    tl_wrapper<force> w(true);
+    tl_wrapper<force_t> w(true);
     w.prop("force", Force_get_force);
     w.prop("spectrum", Force_get_spectrum);
     w.registerm(L);
@@ -426,7 +428,7 @@ template<>
 int tl_tostring<Constraint>(lua_State *L)
 {
     Constraint cc = tl_check<Constraint>(L, 1);
-    lua_pushfstring(L, "[Constraint %s @ %p]", cc->name, cc);
+    lua_pushfstring(L, "[Constraint %s]", cc->name.c_str());
     return 1;
 }
 
@@ -467,7 +469,7 @@ static int Constraint_get_dx(lua_State *L)
 
 void register_Constraints(lua_State *L)
 {
-    tl_wrapper<constraint> w(true);
+    tl_wrapper<constraint_t> w(true);
     w.prop("constraint", Constraint_get_constraint);
     w.prop("ix", Constraint_get_ix);
     w.prop("vx", Constraint_get_vx);
@@ -543,7 +545,7 @@ template<> std::string tl_metaname<Distributed>()
 template<> int tl_tostring<Distributed>(lua_State *L)
 {
     Distributed dd = tl_check<Distributed>(L, 1);
-    lua_pushfstring(L, "[Distributed %s @ %p]", dd->name, dd);
+    lua_pushfstring(L, "[Distributed %s]", dd->name.c_str());
     return 1;
 }
 
@@ -573,7 +575,7 @@ static int Distributed_values(lua_State *L)
     Distributed dd = tl_check<Distributed>(L, 1);
 
     // push upvalues
-    lua_pushinteger(L, dd->nvalues);
+    lua_pushinteger(L, dd->value.size());
     lua_pushinteger(L, 1);
     
     // push closure
@@ -584,15 +586,15 @@ static int Distributed_values(lua_State *L)
     
     // push control var
     lua_pushboolean(L, 1);
-    
+
     return 3;
 }
 
-#define GETTER(typ, field) tl_getter<distributed, typ, &distributed::field>
+#define GETTER(typ, field) tl_getter<distributed_t, typ, &distributed_t::field>
 
 void register_Distributed(lua_State *L)
 {
-    tl_wrapper<distributed> w(true);
+    tl_wrapper<distributed_t> w(true);
     w["values"] = Distributed_values;
     w.prop("direction", GETTER(Direction, direction));
     w.registerm(L);
@@ -820,14 +822,14 @@ template<> int tl_tostring<ProblemPtr>(lua_State *L)
 static int ProblemPtr_get_nodes(lua_State *L)
 {
     ProblemPtr pp = tl_check<ProblemPtr>(L, 1);    
-    tl_pushn<Node>(L, pp->nodes+1, pp->num_nodes);
+    tl_pushn<Node>(L, pp->nodes.c_ptr(), pp->nodes.size());
     return 1;
 }
 
 static int ProblemPtr_get_elements(lua_State *L)
 {
     ProblemPtr pp = tl_check<ProblemPtr>(L, 1);    
-    tl_pushn<Element>(L, pp->elements+1, pp->num_elements);
+    tl_pushn<Element>(L, pp->elements.c_ptr(), pp->elements.size());
     return 1;
 }
 

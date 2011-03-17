@@ -318,7 +318,7 @@ int main (int argc, char **argv)
     if (debug) 
 	fDumpFeltFile (fp_out);
 
-    if (problem.num_nodes == 0 || problem.num_elements == 0) 
+    if (problem.nodes.empty() || problem.elements.empty()) 
         Fatal ("nothing to do");
 
 	/*
@@ -362,8 +362,7 @@ int main (int argc, char **argv)
 	 */
 
     if (renumber) 
-        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
-                                     problem.num_nodes, problem.num_elements);
+        old_numbers = RenumberProblemNodes();
 
 	/*
 	 * switch on the problem type
@@ -452,7 +451,7 @@ int main (int argc, char **argv)
 
           R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (table)
              WriteStructuralResults (fp_out, title, R);
@@ -464,17 +463,17 @@ int main (int argc, char **argv)
           if (contour_out) {
              for (i = 0 ; i < num_contour ; i++) {
                 if (strcmp(contour_result, "stress") == 0)
-                   PlotStressField (contour_out [i], problem.elements, 
-				    problem.num_elements, contour_component [i],
-				    contour_hequal, contour_overlay,
+                    PlotStressField (contour_out [i], problem.elements.c_ptr1(), 
+                                    problem.elements.size(), contour_component [i],
+                                    contour_hequal, contour_overlay,
                                     contour_width, contour_height);
                 else if (strcmp(contour_result, "displacement") == 0)
-                   PlotDisplacementField (contour_out [i], problem.nodes, 
-					  problem.num_nodes, problem.elements, 
-				          problem.num_elements,
-                                          contour_component [i], 
-					  contour_hequal, contour_overlay,
-                                          contour_width, contour_height);
+                    PlotDisplacementField (contour_out [i], problem.nodes.c_ptr1(), 
+                                           problem.nodes.size(), problem.elements.c_ptr1(), 
+                                           problem.elements.size(),
+                                           contour_component [i], 
+                                           contour_hequal, contour_overlay,
+                                           contour_width, contour_height);
              }
           }
 
@@ -498,18 +497,18 @@ int main (int argc, char **argv)
           if (d == NullVector)
              Fatal("could not solve for displacements, probably a singularity");
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (table)
              WriteTemperatureResults (fp_out, title);
 
           if (contour_out) {
              if (strcmp(contour_result, "displacement") == 0)
-                PlotDisplacementField (contour_out [0], problem.nodes, 
-				       problem.num_nodes, problem.elements, 
-				       problem.num_elements, 1,
-                                       contour_hequal, contour_overlay,
-                                       contour_width, contour_height);
+                 PlotDisplacementField (contour_out [0], problem.nodes.c_ptr1(), 
+                                        problem.nodes.size(), problem.elements.c_ptr1(), 
+                                        problem.elements.size(), 1,
+                                        contour_hequal, contour_overlay,
+                                        contour_width, contour_height);
           }
 
           break;
@@ -539,7 +538,7 @@ int main (int argc, char **argv)
           if (dtable == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (table)
              if (mode == StaticLoadCases)
@@ -573,7 +572,7 @@ int main (int argc, char **argv)
           if (dtable == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           if (table)
              WriteLoadRangeTable (dtable, fp_out);
@@ -603,7 +602,7 @@ int main (int argc, char **argv)
           if (d == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           if (table)
               WriteStructuralResults (fp_out, title, cvector1<Reaction>(0));
@@ -611,12 +610,12 @@ int main (int argc, char **argv)
           if (contour_out) {
              if (strcmp(contour_result, "displacement") == 0)
                 for (i = 0 ; i < num_contour ; i++)
-                   PlotDisplacementField (contour_out [i], problem.nodes, 
-				          problem.num_nodes, problem.elements, 
-				          problem.num_elements, 
-				  	  contour_component [i],
-                                          contour_hequal, contour_overlay,
-                                          contour_width, contour_height);
+                    PlotDisplacementField (contour_out [i], problem.nodes.c_ptr1(), 
+                                           problem.nodes.size(), problem.elements.c_ptr1(), 
+                                           problem.elements.size(), 
+                                           contour_component [i],
+                                           contour_hequal, contour_overlay,
+                                           contour_width, contour_height);
           }
 
           break;

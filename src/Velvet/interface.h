@@ -175,7 +175,7 @@ TextCommand commands [ ] = {
    {"move figure", MoveFigure}, {"move tool", MoveFigure},
    {"delete figure", DeleteTool}, {"delete tool", DeleteTool},
 
-   {"dummy", -1},
+   {"dummy", InvalidId},
 };
 
 

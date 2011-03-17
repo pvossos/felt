@@ -325,12 +325,12 @@ QuadElementStress(Element element, unsigned int type)
       element -> stress [i] -> values [5] = 0.0;
       element -> stress [i] -> values [6] = 0.0;
 
-      PrincipalStresses2D(element -> stress [i] -> values);
+      PrincipalStresses2D(element -> stress [i] -> values.c_ptr1());
    }
 
    for (i = 1 ; i <= numnodes ; i++) {
-      if (element -> node [i] -> stress == NULL)
-         AllocateNodalStress(element -> node [i]);
+       if (element -> node [i] -> stress.empty())
+           AllocateNodalStress(element -> node [i]);
 
       element -> node [i] -> numelts ++;
 
@@ -556,16 +556,16 @@ IsoQuadEquivNodalForces(Element element, int *err_count)
 
    for (i = 1 ; i <= element -> numdistributed ; i++) {
 
-      if (element -> distributed[i] -> nvalues != 2) {
+      if (element -> distributed[i] -> value.size() != 2) {
          error ("load %s does not have 2 nodal values (element %d)",
-                 element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(), element -> number);
          count++;
       }
 
       if (element -> distributed[i] -> direction != GlobalX &&
          element -> distributed[i] -> direction != GlobalY) {
           error ("invalid direction specified for load %s (element %d)",
-                 element -> distributed[i] -> name,element -> number);
+                 element -> distributed[i] -> name.c_str(), element -> number);
           count++;
       }
 
@@ -574,13 +574,13 @@ IsoQuadEquivNodalForces(Element element, int *err_count)
 
       if (node_a < 1 || node_a > 4 || node_b < 1 || node_b > 4) {
          error ("incorrect node numbering for load %s (element %d)", 
-                element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(), element -> number);
          count++;
       }
 
       if (node_a == node_b) {
          error ("incorrect node numbering for load %s (element %d)", 
-                element -> distributed[i] -> name,element -> number);
+                element -> distributed[i] -> name.c_str(), element -> number);
          count++;
       }
 

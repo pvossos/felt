@@ -20,9 +20,9 @@
 # include <math.h>
 # include "error.h"
 # include "fe.h"
-# include "objects.h"
 # include "mesh.h"
 # include "cvector1.hpp"
+# include "problem.h"
 
 # define TOLERANCE	0.001
 # define DIST(a,b)	(sqrt(((a) -> x - (b) -> x)*((a) -> x - (b) -> x) + \
@@ -82,7 +82,7 @@ MergeNodes(cvector1<Node> &node, cvector1<Element> &element,
    for (size_t i = 1 ; i <= numnodes ; i++) {
       if (merges [i]) {
           Reconnect (node [merges[i]], node[i], element);
-          DestroyNode (node [i]);
+          delete node [i];
       }
       else {
          count++;
@@ -165,3 +165,15 @@ CoalesceNodes(cvector1<Node> &node, cvector1<Element> &element)
 
    return new_nodes;
 }
+
+bool
+CoalesceProblemNodes()
+{
+    bool ret = false;
+    const Node *prev = problem.nodes.c_ptr1();
+    cvector1<Node> rn = CoalesceNodes(problem.nodes, problem.elements);
+    bool samep = rn.c_ptr1() == prev;
+    problem.nodes = rn;
+    return samep;
+}
+

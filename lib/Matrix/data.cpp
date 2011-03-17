@@ -94,13 +94,8 @@ Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc,
 Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
-   Matrix	m;
 
-   m = (struct matrix *) malloc (sizeof (struct matrix));
-   if (m == NULL) {
-        fprintf (stderr,"failure point 1: r = %d, c = %d\n", rows, cols);
-	Fatal ("unable to allocate full matrix");
-   }
+   Matrix m = new struct matrix;
 
    m -> data = (double **) malloc (sizeof (double *) * rows);
    if (m -> data == NULL) {
@@ -149,7 +144,7 @@ void DestroyMatrix (Matrix m)
       
       m -> data ++;
       free (m -> data);
-      free (m); 
+      delete m;
 
       return;
    } 
@@ -162,15 +157,10 @@ void DestroyMatrix (Matrix m)
    m -> data ++;
    free (m -> data);
 
-   if (IsCompact (m)) {
-      m -> diag ++;
-      free (m -> diag);
-   }
-   
-   free (m);
+   delete m;
 }
 
-Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int size, unsigned int *diag)
+Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int size, const cvector1<unsigned> *diag)
 {
    Matrix	A;
 
@@ -181,16 +171,8 @@ Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int s
    A -> size = size;
    A -> parent = NULL;
 
-   if (diag != NULL) {
-      A -> diag = (unsigned *) malloc (sizeof (unsigned) * rows);
-      if (A -> diag == NULL)
-         Fatal ("unable to create compact matrix");
-
-      A -> diag --;
-
-      memcpy ((void *) &(A -> diag[1]), (void *) &(diag[1]), 
-              sizeof(unsigned)*rows);
-   }
+   if (diag != NULL)
+       A->diag = *diag;
 
    return A;
 }
@@ -207,12 +189,7 @@ Matrix CreateCopyMatrix (const Matrix a)
    if (IsCompact(a)) {
       size = Msize(a)*sizeof(double);
       b = CreateCompactMatrix (rows, cols, Msize(a), NULL); 
-      b -> diag = (unsigned *) malloc (sizeof(unsigned) * rows);
-      if (b -> diag == NULL)
-	Fatal ("unable to create compact matrix");
-      b -> diag --;
-      memcpy ((void *) &(b -> diag[1]), (void *) &(a -> diag[1]), 
-              sizeof(unsigned)*rows);
+      b -> diag = a -> diag;
    }
    else { 
       size = rows*cols*sizeof (double);
@@ -240,7 +217,6 @@ Matrix MakeFullFromCompact (const Matrix A)
 
 Matrix MakeCompactFromFull (const Matrix A)
 {
-   unsigned	*diag;
    Matrix	compA;
    unsigned	i,j,k,
 		curr_row;
@@ -271,15 +247,11 @@ Matrix MakeCompactFromFull (const Matrix A)
    if (size)
       return NullMatrix;
 
-   diag = (unsigned *) malloc (sizeof(unsigned) * cols);
-   if (diag == NULL)
-	Fatal ("unable to create compact matrix");
-
-   diag--;
-    
 	/*
 	 * determine the height of the columns and store in diag
 	 */
+
+   cvector1<unsigned> diag(cols);
 
    for (j = 1 ; j <= cols ; j++) {
       diag [j] = 0;
@@ -317,9 +289,6 @@ int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix a)
     unsigned	blanks, address;
     unsigned	height;
     unsigned	temp;
-    unsigned	*diag;
-
-    diag = a -> diag;
 
     if (row > col) {
        temp = col;
@@ -330,11 +299,11 @@ int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix a)
     if (col == 1)
        height = 1;
     else
-       height = diag [col] - diag [col - 1];
+       height = a->diag [col] - a->diag [col - 1];
 
     blanks = col - height;
     if (row > blanks) 
-        address = diag [col] + row - col;
+        address = a->diag [col] + row - col;
     else
         address = 0;
 

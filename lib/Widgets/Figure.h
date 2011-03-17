@@ -26,6 +26,8 @@
 
 # ifndef _Figure_h
 # define _Figure_h
+
+# include "Drawing.h"
 # include "Cache.h"
 
 #ifdef __cplusplus

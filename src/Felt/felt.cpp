@@ -205,8 +205,8 @@ int main (int argc, char *argv[])
     if (debug) 
 	WriteFeltFile ("-");
 
-    if (problem.num_nodes == 0 || problem.num_elements == 0) 
-       Fatal ("nothing to do");
+    if (problem.nodes.empty() || problem.elements.empty()) 
+        Fatal ("nothing to do");
 
     if (preview)
        DrawStructureASCII (stdout, 78, 22);
@@ -240,8 +240,7 @@ int main (int argc, char *argv[])
 	 */
 
     if (renumber) 
-        old_numbers = RenumberNodes (problem.nodes, problem.elements, 
-                                     problem.num_nodes, problem.num_elements);
+        old_numbers = RenumberProblemNodes();
 
 	/*
 	 * switch on the problem type (transient or static)
@@ -274,7 +273,7 @@ int main (int argc, char *argv[])
           else
              dtable = RosenbrockHyperbolicDE (K, M, C, &ttable);
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (dtable == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
@@ -311,7 +310,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("fatal error in integration (probably a singularity).");
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (dotable)
              WriteTransientTable (dtable, NullMatrix, stdout);
@@ -347,10 +346,14 @@ int main (int argc, char *argv[])
     
           R = SolveForReactions (K, d, old_numbers.c_ptr1());
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           WriteStructuralResults (stdout, title, R);
 
+          DestroyMatrix(K);
+          DestroyMatrix(Kcond);
+          DestroyVector(Fcond);
+          DestroyVector(F);
           break;
 
        case StaticLoadCases:
@@ -381,7 +384,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("could not solve for global displacements");
             
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (dotable)
              if (mode == StaticLoadCases)
@@ -395,6 +398,8 @@ int main (int argc, char *argv[])
              else 
                 PlotLoadRangeTable (dtable, stdout);
 
+          DestroyMatrix(Kcond);
+          
           break; 
 
        case StaticSubstitutionLoadRange:
@@ -418,7 +423,7 @@ int main (int argc, char *argv[])
           if (dtable == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           if (dotable)
              WriteLoadRangeTable (dtable, stdout);
@@ -448,7 +453,7 @@ int main (int argc, char *argv[])
           if (d == NullMatrix)
              Fatal ("did not converge on a solution");
          
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
                 
           WriteStructuralResults (stdout, title, cvector1<Reaction>(0));
 
@@ -475,10 +480,12 @@ int main (int argc, char *argv[])
           if (d == NullVector)
              exit (1);
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           WriteTemperatureResults (stdout, title);
 
+          DestroyMatrix(Kcond);
+          
           break;
 
        case Modal:
@@ -551,7 +558,7 @@ int main (int argc, char *argv[])
                 break; 
           }
 
-          RestoreNodeNumbers (problem.nodes, old_numbers.c_ptr1(), problem.num_nodes);
+          RestoreProblemNodeNumbers(old_numbers);
 
           if (!dospectra) {
              if (dotable)
@@ -574,5 +581,29 @@ int main (int argc, char *argv[])
     if (summary)
        WriteMaterialStatistics (stdout);
 
+    // try cleanup
+    for (size_t i = 1; i <= problem.nodes.size(); i++)
+        delete problem.nodes[i];
+    problem.nodes.clear();
+
+    for (size_t i = 1; i <= problem.elements.size(); i++)
+        delete problem.elements[i];
+    problem.elements.clear();
+
+    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
+         it != problem.constraint_set.end(); ++it)
+        delete *it;
+    problem.constraint_set.clear();
+
+    for (Problem::ForceSet::iterator it = problem.force_set.begin();
+         it != problem.force_set.end(); ++it)
+        delete *it;
+    problem.force_set.clear();
+
+    for (Problem::MaterialSet::iterator it = problem.material_set.begin();
+         it != problem.material_set.end(); ++it)
+        delete *it;
+    problem.material_set.clear();
+    
     exit (0);
 }

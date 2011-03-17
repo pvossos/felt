@@ -26,12 +26,9 @@
 
 # ifndef _Constraint_h
 # define _Constraint_h
-# include "Tree.h"
-# include "fe.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "problem.h"
+# include "fe.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -49,16 +46,12 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
 
 void ConstraintDialogPopup (ConstraintDialog constraintd);
 
-void ConstraintDialogUpdate (ConstraintDialog constraintd, Tree tree);
+void ConstraintDialogUpdate (ConstraintDialog constraintd, Problem::ConstraintSet *tree);
 
 Constraint ConstraintDialogActive (ConstraintDialog constraintd);
 
 void ConstraintDialogDisplay (ConstraintDialog constraintd, Constraint constraint);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Constraint_h */

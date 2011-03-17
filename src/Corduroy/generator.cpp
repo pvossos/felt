@@ -39,7 +39,10 @@
 # define LIBDIR "/usr/local/lib/felt"
 # endif
 
+int     cord_yyparse   (void);
+
 Generator generator;
+GeneratorInput geninput;
 
 static char *cpp;
 static char  cpp_command [2048];
@@ -88,28 +91,25 @@ int ReadCorduroyFile (const char *input_name)
     generator.start_element = 1;
     generator.material      = NULL;
     generator.constraint    = NULL;
-    generator.num_errors    = 0;
-    generator.line	    = 1;
-    generator.lines	    = NULL;
-    generator.grids	    = NULL;
-    generator.quadgrids	    = NULL;
-    generator.trimeshes	    = NULL;
-    generator.num_lines	    = 0;
-    generator.num_grids	    = 0;
-    generator.num_quadgrids = 0;
-    generator.num_trimeshes = 0;
+    geninput.num_errors    = 0;
+    geninput.line	    = 1;
+    generator.lines.clear();
+    generator.grids.clear();
+    generator.brickgrids.clear();
+    generator.quadgrids.clear();
+    generator.trimeshes.clear();
 
     if (input_name) 
-	generator.filename = strdup (streq(input_name, "-") ? "stdin" : input_name);
+	geninput.filename = strdup (streq(input_name, "-") ? "stdin" : input_name);
     else
-	generator.filename = strdup ("");
+	geninput.filename = strdup ("");
 
     /* Parse the input. */
     
     if (input_name) {
 	init_cord_lexer (input);
 	cord_yyparse ( );
-	generator.line = 0;
+	geninput.line = 0;
 
 	if (cpp)
 	    pclose (input);
@@ -118,10 +118,10 @@ int ReadCorduroyFile (const char *input_name)
 
 	/* Report any errors. */
 
-	if (generator.num_errors) {
-	    const char *plural = generator.num_errors != 1 ? "errors" : "error";
-	    error ("%u %s found in input", generator.num_errors, plural);
-	    return generator.num_errors;
+	if (geninput.num_errors) {
+	    const char *plural = geninput.num_errors != 1 ? "errors" : "error";
+	    error ("%u %s found in input", geninput.num_errors, plural);
+	    return geninput.num_errors;
 	}
     }
     

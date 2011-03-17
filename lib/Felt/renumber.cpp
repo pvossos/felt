@@ -77,7 +77,7 @@ static void     DropTree (int iroot, vector<cvector1u> &ndstk, int *lvl, int *iw
                           const unsigned *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort);
 
 void
-RestoreNodeNumbers(Node *node, unsigned *old_numbers, unsigned int numnodes)
+RestoreNodeNumbers(Node *node, const unsigned *old_numbers, unsigned int numnodes)
 {
    if (!(old_numbers != NULL))
        return;
@@ -86,6 +86,12 @@ RestoreNodeNumbers(Node *node, unsigned *old_numbers, unsigned int numnodes)
       node [i] -> number = old_numbers [i]; 
 
    return;
+}
+
+void
+RestoreProblemNodeNumbers(const cvector1u &old)
+{
+    RestoreNodeNumbers(problem.nodes.c_ptr1(), old.c_ptr1(), problem.nodes.size());
 }
 
 cvector1u
@@ -1069,3 +1075,16 @@ CheckReverse(int *bestbw, int *bestpf, unsigned *new_numbers, vector<cvector1u> 
 
    return;
 }
+
+cvector1u
+RenumberProblemNodes()
+{
+    Node *node = problem.nodes.c_ptr1();
+    Element *element = problem.elements.c_ptr1();
+    unsigned numnodes = problem.nodes.size();
+    unsigned numelts = problem.elements.size();
+    cvector1u ret = RenumberNodes(node, element, numnodes, numelts);
+    assert(ret.size() == numnodes);
+    return ret;
+}
+

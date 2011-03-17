@@ -126,7 +126,7 @@ TrussEquivNodalForces(Element element, Matrix T, int *err_count)
       count ++;
    }
 
-   if (element -> distributed[1] -> nvalues != 2) {
+   if (element -> distributed[1] -> value.size() != 2) {
       error ("truss elt %d does not have 2 nodal values for a distributed load",
               element -> number);
       count++;
@@ -145,7 +145,7 @@ TrussEquivNodalForces(Element element, Matrix T, int *err_count)
        count++;
    }
 
-   for (i = 1 ; i <= element -> distributed[1] -> nvalues ; i++) {
+   for (i = 1 ; i <= element -> distributed[1] -> value.size() ; i++) {
       if (element -> distributed[1] -> value[i].node < 1 || 
           element -> distributed[1] -> value[i].node > 2) {
 

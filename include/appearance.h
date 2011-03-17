@@ -27,16 +27,11 @@
 # ifndef _APPEARANCE_H
 # define _APPEARANCE_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+#include <string>
+#include <vector>
+#include "appearanceinp.h"
 
 /*----------------------------------------------------------------------*/
-
-# define RECTANGLE 0
-# define POLYLINE  1
-# define TEXT      2
-# define ARC       3
 
 typedef struct {
     float x;
@@ -51,11 +46,10 @@ typedef struct {
     float	 height;
     float	 start;
     float	 length;
-    char	*color;
-    char	*text;
-    char	*font;
-    unsigned	 num_points;
-    FigInfoPair	*points;
+    std::string color;
+    std::string text;
+    std::string font;
+    std::vector<FigInfoPair> points;
 } FigInfo;
 
 typedef struct {
@@ -74,13 +68,12 @@ typedef struct {
     int      y_pos;
     int      width;
     int      height;
-    char    *node_color;
-    char    *element_color;
-    char    *label_font;
-    char    *tool_color;
-    char    *tool_font;
-    unsigned num_figures;
-    FigInfo *figures;
+    std::string node_color;
+    std::string element_color;
+    std::string label_font;
+    std::string tool_color;
+    std::string tool_font;
+    std::vector<FigInfo> figures;
 } Appearance;
 
 extern Appearance appearance;
@@ -92,9 +85,5 @@ extern Appearance appearance;
 void InitAppearance(void);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _APPEARANCE_H */

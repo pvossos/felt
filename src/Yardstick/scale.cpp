@@ -26,6 +26,7 @@
  *
  ****************************************************************************/
 
+# include <algorithm>
 # include "problem.h"
 # include "error.h"
 # include "yardstick.h"
@@ -38,10 +39,8 @@ static double	density;
 static double	length4;
 static double	length2;
 
-static int ScaleMaterial (Item item)
+static int ScaleMaterial (Material m)
 {
-   Material m = (Material) item;
-
    m -> E *= stress;
    m -> G *= stress;
 
@@ -58,12 +57,10 @@ static int ScaleMaterial (Item item)
    return 0;
 }
 
-static int ScaleDistributed (Item item)
+static int ScaleDistributed (Distributed d)
 {
-   Distributed	d = (Distributed) item;
-
-   if (d -> nvalues > 2) 
-      error ("cannot convert distributed load %s (more than 2 values).", d -> name); 
+   if (d -> value.size() > 2) 
+       error ("cannot convert distributed load %s (more than 2 values).", d -> name.c_str()); 
    else {
       d -> value [1].magnitude *= mass;
       d -> value [2].magnitude *= mass;
@@ -72,9 +69,8 @@ static int ScaleDistributed (Item item)
    return 0;
 }
 
-static int ScaleForce (Item item)
+static int ScaleForce (Force f)
 {
-   Force 	f = (Force) item;
    unsigned	i;
 
    for (i = 1 ; i <= 6 ; i++) {
@@ -82,15 +78,14 @@ static int ScaleForce (Item item)
          f -> force [i].value *= force;
  
       if (f -> force [i].expr != NULL)
-         error ("expression not converted in force %s.", f -> name);
+          error ("expression not converted in force %s.", f -> name.c_str());
    }
 
    return 0;
 }
 
-static int ScaleConstraint (Item item)
+static int ScaleConstraint (Constraint c)
 {
-   Constraint	c = (Constraint) item;
    unsigned	i;
 
    for (i = 1 ; i <= 6 ; i++)  {
@@ -111,10 +106,8 @@ static int ScaleConstraint (Item item)
    return 0;
 }
 
-static int ScaleNode (Item item)
+static int ScaleNode (Node n)
 {
-   Node	n = (Node) item;
-
    n -> x *= length;
    n -> y *= length;
    n -> z *= length;
@@ -140,7 +133,7 @@ static void ScaleAppearance (void)
    
    ScaleConfig(scale);
 
-   for (i = 0 ; i < appearance.num_figures ; i++) {
+   for (i = 0 ; i < appearance.figures.size(); i++) {
       f = &(appearance.figures [i]);
 
       switch (f -> type) {
@@ -154,7 +147,7 @@ static void ScaleAppearance (void)
          break;
 
       case POLYLINE:
-         for (j = 0 ; j < f -> num_points ; j++) {
+          for (j = 0 ; j < f -> points.size() ; j++) {
             f -> points [j].x *= length;
             f -> points [j].y *= length;
          }
@@ -184,20 +177,15 @@ void ScaleFeltFile (double l, double f)
    mass = force / length;
    density = mass / (length2*length);
 
-   TreeSetIterator (problem.node_tree, ScaleNode);
-   TreeIterate (problem.node_tree);
+   std::for_each(problem.node_set.begin(), problem.node_set.end(), ScaleNode);
 
-   TreeSetIterator (problem.material_tree, ScaleMaterial);
-   TreeIterate (problem.material_tree);
+   std::for_each(problem.material_set.begin(), problem.material_set.end(), ScaleMaterial);
 
-   TreeSetIterator (problem.distributed_tree, ScaleDistributed);
-   TreeIterate (problem.distributed_tree);
+   std::for_each(problem.distributed_set.begin(), problem.distributed_set.end(), ScaleDistributed);
 
-   TreeSetIterator (problem.force_tree, ScaleForce);
-   TreeIterate (problem.force_tree);
+   std::for_each(problem.force_set.begin(), problem.force_set.end(), ScaleForce);
 
-   TreeSetIterator (problem.constraint_tree, ScaleConstraint);
-   TreeIterate (problem.constraint_tree);
+   std::for_each(problem.constraint_set.begin(), problem.constraint_set.end(), ScaleConstraint);
 
    ScaleAppearance ( );
 

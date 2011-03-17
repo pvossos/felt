@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <vector>
 
 //----------------------------------------------------------------------!
 
@@ -33,6 +34,9 @@
 // at 1. Memory is managed automatically, but the underlying pointer
 // can also be released and managed manually (useful for example, in
 // combination with an external garbage collector).
+
+// UPDATE: nowadays, we no longer use C arrays, just a std::vector,
+// and override the operator[] to provide 1-based indexing.
 
 template<typename Value_T>
 class cvector1
@@ -47,92 +51,38 @@ public:
     typedef size_t size_type;
     typedef cvector1 self;
 
-    // constructors
-    cvector1()
-        {
-            m = NULL;
-            N = 0;
-        }
-    cvector1(size_type n) 
-        {
-            m = (Value_T *) std::malloc(n * sizeof(Value_T));
-            if (!m && n != 0) throw std::bad_alloc();
-            N = n;
-        }
-    cvector1(size_type n, const Value_T &val) 
-        {
-            m = (Value_T *) std::malloc(n * sizeof(Value_T));
-            if (!m && n != 0) throw std::bad_alloc();
-            for (size_t i = 0; i < n; i++)
-                m[i] = val;
-            N = n;
-        }
-    cvector1(Value_T *ptr, size_type n)
-        {
-            m = ptr;
-            N = n;
-        }
+    // ctors & dtor
+    cvector1(): vv() { /* NO-OP */ }
+    cvector1(size_type n) : vv(n) { /* NO-OP */ }
+    cvector1(size_type n, const Value_T &val) : vv(n, val) { /* NO-OP */ }
+    ~cvector1() { /* NO-OP */ }
     
-    // assignment operator, handles self-assignment
-    cvector1& operator=(const cvector1 &av)
-        {
-            Value_T *origm = m;
-            const size_t nbytes = av.size() * sizeof(Value_T);
-            m = (Value_T *) std::malloc(nbytes);
-            if (!m && nbytes != 0) {
-                m = origm;
-                throw std::bad_alloc();
-            }
-            std::memcpy(m, av.c_ptr(), nbytes);
-            if (origm)
-                std::free(origm);
-            N = av.size();
-            return *this;
-        }
+    // assignment op
+    cvector1& operator=(const cvector1 &av) { this->vv = av.vv; return *this; }
 
-    // copy constructor
-    cvector1(const cvector1 &av)
-        {
-            m = NULL;
-            N = 0;
-            *this = av;
-        }
+    // copy ctor
+    cvector1(const cvector1 &av) { this->vv = av.vv; }
     
-    // resize, compatible interface with std::vector
-    void resize(size_type n)
-        {
-            Value_T *origm = m;
-            m = (Value_T *) std::realloc(m, n * sizeof(Value_T));
-            if (!m && n != 0) {
-                m = origm;
-                throw std::bad_alloc();
-            }
-            N = n;
-        }
-    
-    // destructor. ATTN: non-virtual by design, do NOT subclass.
-    ~cvector1() { if (m) std::free(m); }
-    
-    // release the pointer, no longer manage it
-    Value_T* release()
-        {
-            Value_T *origm = m;
-            N = 0;
-            m = NULL;
-            return origm;
-        }
+    // add + remove elements
+    void resize(size_type n) { vv.resize(n); }
+    void resize(size_type n, const Value_T &init) { vv.resize(n, init); }
+    void push_back(const Value_T &val) { vv.push_back(val); }
+    void clear() { vv.clear(); }
 
-    // member functions
-    iterator begin( ) { return m; }
-    iterator end( ) { return m + N; }
-    const_iterator begin( ) const { return m; }
-    const_iterator end( ) const { return m + N; }
-    reference operator[](size_type n) { assert(n > 0 && n <= N); return m[n-1]; }
-    const_reference operator[](size_type n) const { assert(n > 0 && n <= N); return m[n-1]; }
-    size_type size() const { return N; }    
-    bool empty() const { return 0 == N; }
-    Value_T* c_ptr() { return &m[0]; }
-    const Value_T* c_ptr() const { return &m[0]; }
+    // access methods
+    iterator begin( ) { return vv.begin(); }
+    iterator end( ) { return vv.end(); }
+    const_iterator begin( ) const { return vv.begin(); }
+    const_iterator end( ) const { return vv.end(); }
+    reference operator[](size_type n) { assert(n > 0 && n <= vv.size()); return vv[n-1]; }
+    const_reference operator[](size_type n) const { assert(n > 0 && n <= vv.size()); return vv[n-1]; }
+    size_type size() const { return vv.size(); }    
+    bool empty() const { return vv.empty(); }
+    Value_T* c_ptr() { return &vv[0]; }
+    const Value_T* c_ptr() const { return &vv[0]; }
+
+    // equality op
+    bool operator==(const cvector1 &rhs) { return vv == rhs.vv; }
     
     // ATTN: deprecate asap. the original felt code, moved pointers to
     // allocated arrays one position backwards, in order to use
@@ -141,20 +91,11 @@ public:
     // code. However, we do provide the following methods as
     // convenience, so that we don't have to change a lot of old code
     // at once.
-    Value_T* c_ptr1() { return (0 != N) ? m-1 : NULL; }
-    const Value_T* c_ptr1() const { return (0 != N) ? m-1 : NULL; }
-    Value_T* release1() 
-        {
-            Value_T *origm = m;
-            size_type origN = N;
-            N = 0;
-            m = NULL;
-            return (0 != origN) ? origm-1 : NULL;
-        }
-    
+    Value_T* c_ptr1() { return (0 != vv.size()) ? &vv[0]-1 : NULL; }
+    const Value_T* c_ptr1() const { return (0 != vv.size()) ? &vv[0]-1 : NULL; }
+
 private:
-    Value_T *m;
-    size_type N;
+    std::vector<Value_T> vv;
 };
  
 //----------------------------------------------------------------------!

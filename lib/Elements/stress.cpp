@@ -30,7 +30,6 @@
 # include "fe.h"
 # include "misc.h"
 # include "error.h"
-# include "allocate.h"
 
 static int
 cubic(double a, double b, double c, double d, double *x)
@@ -153,34 +152,21 @@ SetupStressMemory(Element element)
 {
     unsigned	i;
 
-    element -> stress = Allocate (Stress, element -> ninteg);
-    if (element -> stress == NULL)
-        Fatal ("allocation error setting up stress memory\n");
-
-    UnitOffset (element -> stress);
-
+    element->stress.resize(element->ninteg);
+    
     for (i = 1 ; i <= element -> ninteg  ; i++) {
 
 	/*
 	 * now allocate space for each actual stress structure
 	 */
-
-        element -> stress[i] = Allocate (struct stress, 1);
-        if (element -> stress [i] == NULL)
-           Fatal ("allocation error setting up stress memory\n");
+        
+        element -> stress[i] = new struct stress; 
         
 	/*
 	 * followed by space for each actual stress value (fy and mz)
 	 */
 
-        element -> stress[i] -> values = 
-                 Allocate (double, element -> definition -> numstresses);
-  
-        if (element -> stress[i] -> values == NULL)
-           Fatal ("allocation error setting up stress memory\n");
-
-        element -> stress[i] -> numvalues = element -> definition -> numstresses;
-        UnitOffset (element -> stress[i] -> values);
+        element -> stress[i] -> values.resize(element->definition->numstresses);
     }
     
     return;
@@ -189,19 +175,8 @@ SetupStressMemory(Element element)
 void
 AllocateNodalStress(Node node)
 {
-   int		j;
-
-   if (node -> stress)
+   if (!node->stress.empty())
       return;
 
-   node -> stress = Allocate(double, 10);
-   if (!node -> stress)
-      Fatal("error allocating memory for nodal stresses");
-
-   UnitOffset(node -> stress);
- 
-   for (j = 1 ; j <= 10 ; j++)
-      node -> stress [j] = 0.0;
-
-   return;
+   node->stress.resize(10, 0);
 }

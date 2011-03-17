@@ -195,12 +195,12 @@ brickEltStress(Element element)
       element -> stress [i] -> values [5] = VectorData (stress) [5];
       element -> stress [i] -> values [6] = VectorData (stress) [6];
 
-      PrincipalStresses3D(element -> stress [i] -> values);
+      PrincipalStresses3D(element -> stress [i] -> values.c_ptr1());
    }
 
    for (i = 1 ; i <= 8 ; i++) {
-      if (element -> node [i] -> stress == NULL) 
-         AllocateNodalStress(element -> node [i]);
+       if (element -> node [i] -> stress.empty()) 
+           AllocateNodalStress(element -> node [i]);
       
       element -> node [i] -> numelts ++;
 

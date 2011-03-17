@@ -26,12 +26,9 @@
 
 # ifndef _Node_h
 # define _Node_h
-# include "Tree.h"
-# include "fe.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
+# include "problem.h"
+# include "fe.h"
 
 /*----------------------------------------------------------------------*/
 
@@ -50,16 +47,13 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
 
 void NodeDialogPopup (NodeDialog noded);
 
-void NodeDialogUpdate (NodeDialog noded, Tree nodes, Tree forces, Tree constraints);
+void NodeDialogUpdate (NodeDialog noded, Problem::NodeSet *nodes,
+                       Problem::ForceSet *forces, Problem::ConstraintSet *constraints);
 
 Node NodeDialogActive (NodeDialog noded);
 
 void NodeDialogDisplay (NodeDialog noded, Node node);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Node_h */

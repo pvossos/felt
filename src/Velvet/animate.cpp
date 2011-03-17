@@ -372,7 +372,7 @@ static void CreateAnimationShell (void)
    return; 
 }
 
-static void SetupArrays (Matrix dtable, Element *element, unsigned int numelts, unsigned int numnodes)
+static void SetupArrays (Matrix dtable, const Element *element, unsigned int numelts, unsigned int numnodes)
 {
    unsigned	i,j;
 
@@ -411,7 +411,7 @@ static void SetupArrays (Matrix dtable, Element *element, unsigned int numelts, 
 
 static int  	first_time = 1;
 
-void AnimateStructure (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
+void AnimateStructure (Matrix dtable, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	x_max, x_min,
@@ -497,7 +497,7 @@ void AnimateStructure (Matrix dtable, Node *node, Element *element, unsigned int
    AnimateOneStep ((XtPointer) 1);
 }
 
-void AnimateStructure3D (Matrix dtable, Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
+void AnimateStructure3D (Matrix dtable, const Node *node, const Element *element, unsigned int numnodes, unsigned int numelts)
 {
    unsigned	i,j;
    float	maxX, minX, 

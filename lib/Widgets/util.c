@@ -419,13 +419,11 @@ void ListAddCursorAccelerators (Widget viewport, Widget w)
  *		cursor at the end of the string.			*
  ************************************************************************/
 
-void SetTextString (Widget w, String value)
+void SetTextString (Widget w, const char *value_)
 {
     Arg args [1];
 
-
-    if (value == NULL)
-	value = "";
+    const char *value = value_ ? value_ : "";
 
     XawTextDisableRedisplay (w);
     XtSetArg (args [0], XtNstring, value);
@@ -479,13 +477,11 @@ Cardinal GetTextWidth (XFontStruct *font, String text, Cardinal length)
  * Description:	Sets the label string of a label widget.		*
  ************************************************************************/
 
-void SetLabelString (Widget w, String value)
+void SetLabelString (Widget w, const char *value_)
 {
     Arg args [1];
 
-
-    if (value == NULL)
-	value = "";
+    const char *value = value_ ? value_ : "";
 
     XtSetArg (args [0], XtNlabel, value);
     XtSetValues (w, args, 1);
@@ -570,7 +566,7 @@ void AddAutoRepeatAction (XtAppContext app_context)
  *		formatted text when activated by a key or button press.	*
  ************************************************************************/
 
-Widget CreateHelpButton (Widget parent, String name)
+Widget CreateHelpButton (Widget parent, const char *name)
 {
     Arg    args [3];
     Widget button;
@@ -615,7 +611,7 @@ Widget CreateHelpButton (Widget parent, String name)
  * Description:	Updates the text widget within the help shell.		*
  ************************************************************************/
 
-void UpdateHelpMessage (Widget button, String message, Dimension width)
+void UpdateHelpMessage (Widget button, const char* message, Dimension width)
 {
     Widget   text;
     Cardinal i;

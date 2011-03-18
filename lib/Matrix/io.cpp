@@ -289,7 +289,7 @@ static void WriteMAT (Matrix a, FILE *fp, const char *name, int arch)
 }
 
 
-int MatrixToMatlab (const Matrix a, FILE *fp, const char *name)
+int MatrixToMatlab (const Matrix &a, FILE *fp, const char *name)
 {
    int		arch;
   
@@ -320,7 +320,7 @@ Matrix MatlabToMatrix (FILE *fp)
 
    status = ReadMAT (fp, &a, NULL);
    if (status == 0)
-      return NullMatrix;
+       return Matrix();
 
    return a;
 }

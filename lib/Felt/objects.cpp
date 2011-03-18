@@ -35,9 +35,9 @@ node_t::node_t(unsigned number)
 {
     this -> number     = number;
     this -> m          = 0.0;
-    this -> force      = NULL;
+    this -> force.reset();
     this -> eq_force.clear();
-    this -> constraint = NULL;
+    this -> constraint.reset();
     this -> aux        = NULL;
     this -> stress.clear();
     this -> numelts    = 0;
@@ -57,20 +57,20 @@ element_t::element_t(unsigned number, Definition defn)
 {
     this->node.clear();
     if (defn)
-        this->node.resize(defn->numnodes, NULL);
+        this->node.resize(defn->numnodes);
     
-    this -> K  	  = NullMatrix;
-    this -> M	  = NullMatrix;
-    this -> f	  = NullMatrix;
+    this -> K.reset();
+    this -> M.reset();
+    this -> f.reset();
     this -> aux 	  = NULL;
     this -> number 	  = number;
     this -> definition = defn;
 
-    this -> material = NULL;
+    this -> material.reset();
     this -> numdistributed = 0;
 
     for (unsigned i = 0; i <= 3; i ++)
-        this -> distributed [i] = NULL;
+        this -> distributed [i].reset();
 
     this -> stress = NULL;
     this -> ninteg = 0;

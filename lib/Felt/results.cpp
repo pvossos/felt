@@ -282,7 +282,7 @@ WriteTransientTable(Matrix dtable, Matrix ttable, FILE *fp)
 	 */
 
       for (i = 1 ; i <= MatrixRows (dtable) ; i++) {
-         if (ttable == NullMatrix)
+         if (!ttable)
             fprintf (fp,"%11.5g",(i-1)*analysis.step);
          else
             fprintf (fp,"%11.5g",mdata(ttable,i,1));
@@ -412,7 +412,7 @@ PlotTransientTable(Matrix dtable, Matrix ttable, double dt, FILE *fp)
             dof = 1;
          }
          fprintf (fp,"           %s\n",buffer1);
-         if (ttable == NullMatrix)
+         if (!ttable)
             fprintf (fp,"%10.5g %67s\n",(i-1)*dt,buffer);
          else
             fprintf (fp,"%10.5g %67s\n",mdata(ttable,i,1),buffer);
@@ -1079,7 +1079,7 @@ void
 PrintGlobalMatrices(FILE *fp, Matrix M, Matrix C, Matrix K)
 {
 
-   if (M != NullMatrix) {
+   if (M) {
       if (!IsZeroMatrix (M)) {
          fprintf (fp, "M = \n");
          PrintMatrix (M, fp);
@@ -1088,7 +1088,7 @@ PrintGlobalMatrices(FILE *fp, Matrix M, Matrix C, Matrix K)
          fprintf (fp, "M = [0]\n\n");
    }
 
-   if (C != NullMatrix) {
+   if (C) {
       if (!IsZeroMatrix (C)) {
          fprintf (fp, "C = \n");
          PrintMatrix (C, fp);
@@ -1097,7 +1097,7 @@ PrintGlobalMatrices(FILE *fp, Matrix M, Matrix C, Matrix K)
          fprintf (fp, "C = [0]\n\n");
    }
 
-   if (K != NullMatrix) {
+   if (K) {
       if (!IsZeroMatrix (K)) {
          fprintf (fp, "K = \n");
          PrintMatrix (K, fp);
@@ -1119,13 +1119,13 @@ MatlabGlobalMatrices(char *filename, Matrix M, Matrix C, Matrix K)
       return 1;
    }
 
-   if (M != NullMatrix) 
+   if (M) 
       MatrixToMatlab (M, fp, "M");
 
-   if (C != NullMatrix) 
+   if (C) 
       MatrixToMatlab (C, fp, "C");
 
-   if (K != NullMatrix) 
+   if (K) 
       MatrixToMatlab (K, fp, "K");
 
    return 0;

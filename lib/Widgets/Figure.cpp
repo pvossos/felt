@@ -49,10 +49,7 @@ static struct {
 
 Figure DW_CreateFigure (DrawingWidget dw, FigureType type, Boolean flag, int arg)
 {
-    Figure fig;
-
-
-    fig = XtNew (struct figure);
+    Figure fig = new struct figure;
 
     fig -> type	      = type;
     fig -> prev	      = NULL;
@@ -129,7 +126,7 @@ void DW_DestroyFigure (Figure fig)
 	XtFree ((char *) fig -> info.group.fig);
 
     DW_CacheDelRef (fig -> color_data);
-    XtFree ((char *) fig);
+    delete fig;
 }
 
 

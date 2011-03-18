@@ -66,7 +66,7 @@ springEltSetup(Element element, char mass_mode, int tangent)
 
    factor = (element -> material -> A * element -> material -> E / L);
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (2, 2);
 
    MatrixData (element -> K) [1][1] = factor;
@@ -75,7 +75,7 @@ springEltSetup(Element element, char mass_mode, int tangent)
    MatrixData (element -> K) [2][2] = factor;
 
    if (mass_mode) {
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (2, 2);
 
       ZeroMatrix (element -> M);

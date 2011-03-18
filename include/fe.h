@@ -28,6 +28,7 @@
 # ifndef _FE_H
 # define _FE_H
 
+# include <boost/shared_ptr.hpp>
 # include <string>
 # include "cvector1.hpp"
 # include "code.h"
@@ -81,13 +82,14 @@ typedef struct {
 } VarExpr;
 
 struct element_t;
+typedef boost::shared_ptr<element_t> Element;
 
 /* An element definition */
 
 typedef struct definition {
     const char    *name;		/* element name			      */
-    int    (*setup) (element_t*, char, int);	/* initialization function	      */
-    int    (*stress) (element_t*);	/* stress resultant function	      */
+    int    (*setup) (Element, char, int);	/* initialization function	      */
+    int    (*stress) (Element);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
     unsigned numnodes;		/* number of nodes in element         */
     unsigned shapenodes;	/* number of nodes which define shape */
@@ -118,7 +120,7 @@ struct distributed_t {
     cvector1<Pair> value;			/* nodes and magnitudes     	  */
 };
 
-typedef distributed_t* Distributed;
+typedef boost::shared_ptr<distributed_t> Distributed;
 
 struct LtDistributed
 {
@@ -141,7 +143,7 @@ struct force_t {
     VarExpr spectrum [7];		/* input spectra		  */
 };
 
-typedef force_t* Force;
+typedef boost::shared_ptr<force_t> Force;
 
 struct LtForce
 {
@@ -167,7 +169,7 @@ struct constraint_t {
     VarExpr dx [7];			/* boundary displacement vector	  */
 };
 
-typedef constraint_t* Constraint;
+typedef boost::shared_ptr<constraint_t> Constraint;
 
 struct LtConstraint
 {
@@ -205,7 +207,7 @@ struct material_t {
     double c;				/* heat capacity		    */
 };
 
-typedef material_t* Material;
+typedef boost::shared_ptr<material_t> Material;
 
 struct LtMaterial
 {
@@ -235,7 +237,7 @@ struct node_t {
     int        numelts;			/* num of elts that use this node */
 };
 
-typedef node_t* Node;
+typedef boost::shared_ptr<node_t> Node;
 
 struct LtNode
 {
@@ -263,8 +265,6 @@ struct element_t {
     cvector1<Stress> stress;			/* element stresses             */
     unsigned    ninteg;			/* number of integration points */
 };
-
-typedef element_t* Element;
 
 struct LtElement
 {
@@ -295,7 +295,7 @@ struct loadcase_t {
      cvector1<Distributed> loads;
 };
 
-typedef loadcase_t* LoadCase;
+typedef boost::shared_ptr<loadcase_t> LoadCase;
 
 struct LtLoadCase
 {

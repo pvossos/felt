@@ -64,8 +64,6 @@ MultiplyQtKQ(Matrix x, Matrix Q, Matrix K)
          sdata(x, j, i) = result;
       }                  
    }
-
-   DestroyMatrix (temp);
 }
 
 int
@@ -140,11 +138,6 @@ ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r)
    if (status)
       return status;
 
-   DestroyMatrix (Q);
-   DestroyMatrix (p);
-   DestroyMatrix (x_tran);
-   DestroyMatrix (A);
-
    *x_r = x_orig;
    *lambda_r = lambda;
 
@@ -181,7 +174,7 @@ ModalNodalDisplacements(Matrix x)
  
 
    if (numtrans == 0)
-      return NullMatrix;
+       return Matrix();
 
    nummodes = Mcols(x);
 
@@ -234,8 +227,6 @@ MultiplyUTmU(Matrix M, Matrix u, Matrix m)
 
       M -> data [j][1] = result;
    }
-
-   DestroyMatrix (temp);
 }
 
 int

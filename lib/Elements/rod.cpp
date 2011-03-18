@@ -78,7 +78,7 @@ rodEltSetup(Element element, char mass_mode, int tangent)
 
    factor = element -> material -> A * element -> material -> Kx / length;
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (2,2);
 
    MatrixData (element -> K) [1][1] = factor;
@@ -88,7 +88,7 @@ rodEltSetup(Element element, char mass_mode, int tangent)
 
    if (element -> numdistributed > 0) {
       equiv = RodResolveConvection (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (i = 1; i <= 2 ; i++) 
@@ -96,7 +96,7 @@ rodEltSetup(Element element, char mass_mode, int tangent)
    }
 
    if (mass_mode) {
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (2,2);
      
       if (mass_mode == 'l') 
@@ -166,10 +166,10 @@ RodResolveConvection(Element element, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
    static Matrix	convK;
  
-   if (equiv == NullMatrix) {
+   if (!equiv) {
       equiv = CreateVector (2);
       convK = CreateMatrix (2,2);
    }
@@ -215,7 +215,7 @@ RodResolveConvection(Element element, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
 	/*

@@ -466,8 +466,6 @@ void SelectCallback (Widget w, XtPointer clientData, XtPointer callData)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure           figure;
-    Node             node;
-    Element          element;
     Drawn            drawn;
 
 
@@ -482,14 +480,15 @@ void SelectCallback (Widget w, XtPointer clientData, XtPointer callData)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
-    element = (Element) attributes.user_data;
-    drawn = (Drawn) node -> aux;
+    bool is_element = attributes.user_data.type() == typeid(Element);
 
-    if (drawn -> type == DrawnNode) {
+    if (!is_element) {
+        Node node = boost::any_cast<Node>(attributes.user_data);
+        drawn = (Drawn) node->aux;
+        
         if (report -> event -> xbutton.button == 1) {
 	   NodeDialogDisplay (node_d, node);
 	   NodeDialogPopup (node_d);
@@ -506,6 +505,8 @@ void SelectCallback (Widget w, XtPointer clientData, XtPointer callData)
 	   NodeDialogPopup (node_d);
 	}
     } else if (drawn -> type == DrawnElement) {
+        Element element = boost::any_cast<Element>(attributes.user_data);
+        
         if (report -> event -> xbutton.button == 1) {
 	    ElementDialogDisplay (element_d, element);
 	    ElementDialogPopup (element_d);

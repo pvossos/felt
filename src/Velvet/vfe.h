@@ -47,9 +47,7 @@ typedef struct drawn {
 
 void DrawProblem (double z);
 
-typedef int  (*MaterialDestructor) (Material);
-
-void DestroyProblem (bool delmaterials);
+void DestroyProblem (/*bool delmaterials*/);
 
 void SetNodeNumbering (int value);
 

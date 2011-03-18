@@ -89,7 +89,7 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
    for (i = 1 ; i <= numelts ; i++) {
       err = ElementSetup (element [i], analysis.mass_mode);
 
-      if (element [i] -> M == NullMatrix) {
+      if (!element [i] -> M) {
          error("mass matrix not defined for element %d", element [i] -> number);
          err_count ++;
       } 
@@ -102,7 +102,7 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
       ndofs = element[i] -> definition -> numdofs;
       nodes = element[i] -> definition -> numnodes;
      
-      if (element[i] -> K == NullMatrix || element[i] -> M == NullMatrix ||
+      if (!element[i] -> K || !element[i] -> M ||
           !IsSquare(element[i] -> K) || !IsSquare(element[i] -> M) ||
           Mrows(element[i] -> K) != Mrows(element[i] -> M) ||
           Mrows(element[i] -> K) > ndofs*nodes) {
@@ -218,13 +218,10 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
          }
       }
 
-      if (!element[i] -> definition -> retainK) {
-         DestroyMatrix (element[i] -> K);
-         element[i] -> K = NullMatrix;
-      }
+      if (!element[i] -> definition -> retainK)
+          element[i] -> K.reset();
 
-      DestroyMatrix (element[i] -> M);
-      element[i] -> M = NullMatrix;
+      element[i] -> M.reset();
 
    } /* end second loop over elements */
 
@@ -382,10 +379,10 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 * use as the RHS of our implicit update equation
 	 */
 
-   ZeroConstrainedDOF (Kp, NULL, &Kp_fact, NULL);
+   ZeroConstrainedDOF (Kp, Matrix(), &Kp_fact, NULL);
    if (CroutFactorMatrix (Kp_fact)) {
       error ("singular K' matrix in hyperbolic integration - cannot proceed");
-      return NullMatrix;
+      return Matrix();
    }
    
 	/* 
@@ -410,11 +407,11 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 	 */
 
    if (build_a0) {
-      ZeroConstrainedDOF (M, NULL, &Mt, NULL);
+       ZeroConstrainedDOF (M, Matrix(), &Mt, NULL);
 
       if (CroutFactorMatrix (Mt)) {
          error ("singular M matrix in hyperbolic integration - cannot proceed");
-         return NullMatrix;
+         return Matrix();
       }
 
       MultiplyMatrices (a, K, d);
@@ -424,11 +421,11 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 
       if (CroutBackSolveMatrix (Mt, a)) {
          error ("singular M matrix in hyperbolic integration - cannot proceed");
-         return NullMatrix;
+         return Matrix();
       }
    }
    else
-      Mt = NullMatrix;
+       Mt.reset();
 
 
 	/*
@@ -524,19 +521,6 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
       }
    }    
 
-	/*
-	 * clean up ... 
-	 */
-
-   DestroyVector (F);
-   DestroyVector (a);
-   DestroyVector (d);
-   DestroyVector (v);
-   DestroyMatrix (Kp);
-   DestroyMatrix (Kp_fact);
-   if (Mt)
-      DestroyMatrix (Mt);
-
    return dtable;
 }
 
@@ -597,10 +581,10 @@ IntegrateParabolicDE(Vector K, Vector M)
       VectorData (Kp) [i] = VectorData (M) [i] + 
                             VectorData (Kp) [i]*c1;
 
-   ZeroConstrainedDOF (Kp, NULL, &Kp_fact, NULL);
+   ZeroConstrainedDOF (Kp, Matrix(), &Kp_fact, NULL);
    if (CroutFactorMatrix (Kp_fact)) {
       error ("error in parabolic integration - K' matrix is singular.");
-      return NullMatrix;
+      return Matrix();
    }
 
 	/* 
@@ -688,16 +672,6 @@ IntegrateParabolicDE(Vector K, Vector M)
 
       CopyMatrix (F, F1); 	/* copy F(i+1) to F(i) for the next step */
    }    
-
-	/*
-	 * clean up ... 
-	 */
-
-   DestroyVector (F);
-   DestroyVector (F1);
-   DestroyVector (d);
-   DestroyMatrix (Kp);
-   DestroyMatrix (Kp_fact);
 
    return dtable;
 }

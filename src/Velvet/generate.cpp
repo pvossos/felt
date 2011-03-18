@@ -92,7 +92,7 @@ static void VelvetCoalesceNodes (void)
    figure = DW_RetrieveAll (drawing, False, &num_figures);
    for (i = 0 ; i < num_figures ; i++) {
       DW_GetAttributes (drawing, figure [i], &attr);
-      if (attr.user_data != NULL)
+      if (!attr.user_data.empty())
          DW_RemoveFigure (drawing, figure [i]);
    }
 

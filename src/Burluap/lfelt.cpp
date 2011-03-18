@@ -119,13 +119,13 @@ static int Node_gc(lua_State *L)
     return 0;
 }
 
-#define GETTER(typ, field) tl_getter<node_t, typ, &node_t::field>
-#define GETSET(typ, field) tl_getset<node_t, typ, &node_t::field>()
+#define GETTER(typ, field) tl_getter_shared<node_t, typ, &node_t::field>
+#define GETSET(typ, field) tl_getset_shared<node_t, typ, &node_t::field>()
 
 static void
 register_Nodes(lua_State *L)
 {
-    tl_wrapper<node_t> w(true);
+    tl_wrapper<Node> w(true);
     w.prop("dx", Node_get_dx);
     w.prop("number", GETTER(unsigned, number));
     w.prop("x", GETSET(double, x));
@@ -211,7 +211,7 @@ static int Stress_get_values(lua_State *L)
 
 void register_Stresses(lua_State *L)
 {
-    tl_wrapper<stress> w(true);
+    tl_wrapper<Stress> w(true);
     w.prop("x", GETSET(double, x));
     w.prop("y", GETSET(double, y));
     w.prop("z", GETSET(double, z));
@@ -233,7 +233,7 @@ template<> std::string tl_metaname<Element>()
 template<> int tl_tostring<Element>(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
-    lua_pushfstring(L, "[Element %d @ %p]", ee->number, ee);
+    lua_pushfstring(L, "[Element %d]", ee->number);
     return 1;
 }
 
@@ -263,11 +263,11 @@ static int Element_get_distributed(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<element_t, typ, &element_t::field>
+#define GETTER(typ, field) tl_getter_shared<element_t, typ, &element_t::field>
 
 void register_Elements(lua_State *L)
 {
-    tl_wrapper<element_t> w(true);
+    tl_wrapper<Element> w(true);
     w.prop("number", GETTER(unsigned, number));
     w.prop("nodes", Element_get_nodes);
     w.prop("distributed", Element_get_distributed);
@@ -297,12 +297,12 @@ int tl_tostring<Material>(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<material_t, typ, &material_t::field>
+#define GETTER(typ, field) tl_getter_shared<material_t, typ, &material_t::field>
 
 static void
 register_Materials(lua_State *L)
 {
-    tl_wrapper<material_t> w(true);
+    tl_wrapper<Material> w(true);
     w.prop("E", GETTER(double, E));
     w.prop("Ix", GETTER(double, Ix));
     w.prop("Iy", GETTER(double, Iy));
@@ -408,7 +408,7 @@ static int Force_get_spectrum(lua_State *L)
 
 void register_Forces(lua_State *L)
 {
-    tl_wrapper<force_t> w(true);
+    tl_wrapper<Force> w(true);
     w.prop("force", Force_get_force);
     w.prop("spectrum", Force_get_spectrum);
     w.registerm(L);
@@ -469,7 +469,7 @@ static int Constraint_get_dx(lua_State *L)
 
 void register_Constraints(lua_State *L)
 {
-    tl_wrapper<constraint_t> w(true);
+    tl_wrapper<Constraint> w(true);
     w.prop("constraint", Constraint_get_constraint);
     w.prop("ix", Constraint_get_ix);
     w.prop("vx", Constraint_get_vx);
@@ -554,7 +554,7 @@ static int Distributed_values_iter(lua_State *L)
     int nvalues = luaL_checkint(L, lua_upvalueindex(1));
     int i = luaL_checkint(L, lua_upvalueindex(2));
     
-    Distributed dd = (Distributed) lua_touserdata(L, 1);
+    distributed_t *dd = (distributed_t *) lua_touserdata(L, 1);
     if (i > nvalues) {
         lua_pushnil(L);
         return 1;
@@ -582,7 +582,7 @@ static int Distributed_values(lua_State *L)
     lua_pushcclosure(L, &Distributed_values_iter, 2);
     
     // push state
-    lua_pushlightuserdata(L, dd);
+    lua_pushlightuserdata(L, dd.get());
     
     // push control var
     lua_pushboolean(L, 1);
@@ -590,11 +590,11 @@ static int Distributed_values(lua_State *L)
     return 3;
 }
 
-#define GETTER(typ, field) tl_getter<distributed_t, typ, &distributed_t::field>
+#define GETTER(typ, field) tl_getter_shared<distributed_t, typ, &distributed_t::field>
 
 void register_Distributed(lua_State *L)
 {
-    tl_wrapper<distributed_t> w(true);
+    tl_wrapper<Distributed> w(true);
     w["values"] = Distributed_values;
     w.prop("direction", GETTER(Direction, direction));
     w.registerm(L);
@@ -740,7 +740,7 @@ static int Definition_get_dofs(lua_State *L)
 
 void register_Definitions(lua_State *L)
 {
-    tl_wrapper<struct definition> w(true);
+    tl_wrapper<Definition> w(true);
     w.prop("num_nodes", GETSET(unsigned, numnodes));
     w.prop("shape_nodes", GETSET(unsigned, shapenodes));
     w.prop("num_stresses", GETSET(unsigned, numstresses));
@@ -785,7 +785,7 @@ template<> int tl_tostring<AnalysisPtr>(lua_State *L)
 
 void register_AnalysisPtr(lua_State *L)
 {
-    tl_wrapper<struct analysis> w(true);
+    tl_wrapper<AnalysisPtr> w(true);
     w.prop("start", GETSET(double, start));
     w.prop("step", GETSET(double, step));
     w.prop("stop", GETSET(double, stop));
@@ -835,7 +835,7 @@ static int ProblemPtr_get_elements(lua_State *L)
 
 void register_ProblemPtr(lua_State *L)
 {
-    tl_wrapper<Problem> w(true);
+    tl_wrapper<ProblemPtr> w(true);
     w.prop("nodes", ProblemPtr_get_nodes);
     w.prop("elements", ProblemPtr_get_elements);
     w.registerm(L);

@@ -94,20 +94,17 @@ resolve_node(Node node)
         node->constraint = SetSearch(problem.constraint_set, c->name);
         if (!node->constraint)
             error ("node %u used undefined constraint %s", number, c->name.c_str());
-        delete c;
     } else {
-        node -> constraint = &default_constraint;
+        node -> constraint.reset(new constraint_t(default_constraint));
     }
 
     /* Resolve the force. */
 
     if (node->force) {
         Force f = node->force;
-        Problem::ForceSet::iterator it = problem.force_set.find(f);
-        node -> force = it != problem.force_set.end() ? *it : NULL;
+        node -> force = SetSearch(problem.force_set, f->name);
         if (!node -> force)
             error ("node %u uses undefined force %s", number, f->name.c_str());
-        delete f;
     }
 
     return 0;
@@ -137,9 +134,8 @@ resolve_element(Element element)
         element->material = SetSearch(problem.material_set, m->name);
         if (!element->material)
             error ("element %u uses undefined material %s", number, m->name.c_str());
-        delete m;
     } else {
-        element -> material = &default_material;
+        element -> material.reset(new material_t(default_material));
     }
 
     /* Resolve the loads. */
@@ -149,7 +145,6 @@ resolve_element(Element element)
         element->distributed[i] = SetSearch(problem.distributed_set, d->name);
         if (!element->distributed[i])
             error ("element %u used undefined load %s", number, d->name.c_str());
-        delete d;
     }
 
     /* Set the pointers to the nodes. */
@@ -159,13 +154,10 @@ resolve_element(Element element)
             if (element -> node [i]) {
                 Node n = element->node[i];
                 element -> node [i] = problem.nodes [n->number];
-                delete n;
             }
     
     return 0;
 }
-
-static int case_count;
 
 /************************************************************************
  * Function:	resolve_loadcase					*	
@@ -176,42 +168,31 @@ static int case_count;
 static int
 resolve_loadcase(LoadCase loadcase)
 {
-    unsigned	       i;
-
-    /* Store the loadcase in the array. */
-
-    problem.loadcases [case_count] = loadcase;
-
-    for (i = 1 ; i <= loadcase->forces.size(); i++) {
+    for (unsigned i = 1 ; i <= loadcase->forces.size(); i++) {
        Node n = loadcase->nodes[i];
        loadcase -> nodes [i] = SetSearch(problem.node_set, n->number);
        if (!loadcase -> nodes [i])
            error ("load case %s used undefined node %d", loadcase->name.c_str(), n->number);
-       delete n;
 
        Force f = loadcase->forces[i];
        loadcase -> forces [i] = SetSearch(problem.force_set, f->name);
        if (!loadcase -> forces [i])
            error ("load case %s used undefined force %s", loadcase->name.c_str(), f->name.c_str());
-       delete f;
     }
 
-    for (i = 1 ; i <= loadcase->loads.size(); i++) {
+    for (unsigned i = 1 ; i <= loadcase->loads.size(); i++) {
        Element e = loadcase->elements[i];
        loadcase -> elements [i] = SetSearch(problem.element_set, e->number);
        if (!loadcase -> elements [i])
            error ("load case %s used undefined element %d", loadcase->name.c_str(), e->number);
-       delete e;
 
        Distributed l = loadcase->loads[i];
        loadcase -> loads [i] = SetSearch(problem.distributed_set, l->name);
        if (!loadcase -> loads [i])
            error ("load case %s used undefined load %s", loadcase->name.c_str(), l->name.c_str());
-       delete l;
     }
 
-    case_count ++;
-
+    problem.loadcases.push_back(loadcase);
     return 0;
 }
 
@@ -250,13 +231,7 @@ resolve_names(void)
                 error ("element %u is not defined", i);
     }
 
-    problem.loadcases.resize(problem.loadcase_set.size(), NULL);
-    
-    if (!problem.loadcases.empty()) {
-
-        case_count = 1;
-        std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), resolve_loadcase);
-    }
+    std::for_each(problem.loadcase_set.begin(), problem.loadcase_set.end(), resolve_loadcase);
 
 	/*
 	 * resolve any node references given in the analysis parameters
@@ -270,7 +245,6 @@ resolve_names(void)
             analysis.nodes [i] = SetSearch(problem.node_set, n->number);
             if (!analysis.nodes [i])
                 error ("analysis node %d not defined", n->number);
-            delete n;
         }
     }
 
@@ -279,7 +253,6 @@ resolve_names(void)
         analysis.input_node = SetSearch(problem.node_set, n->number);
         if (!analysis.input_node)
             error ("analysis input node %d not defined", n->number);
-        delete n;
     }
 }
 
@@ -360,7 +333,7 @@ ReadFeltFile(const char *filename)
     analysis.mass_mode = 0;
     analysis.nodes.clear();
     analysis.numdofs   = 0;
-    analysis.input_node = NULL;
+    analysis.input_node.reset();
     analysis.input_dof = 0;
 
     for (i = 1 ; i <= 3 ; i++)

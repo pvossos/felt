@@ -99,10 +99,10 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
    static Vector	weights;
    static Matrix	tempK;
    static Matrix	N, dNdxi, dNde,
-                        dNdx, dNdy = NullMatrix;
+                        dNdx, dNdy;
    static Matrix	Bt, temp;
 
-   if (dNdy == NullMatrix) {
+   if (!dNdy) {
   
       N     = CreateMatrix (4,4);
       dNdxi = CreateMatrix (4,4);
@@ -141,9 +141,9 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
    else if (type == PLANESTRAIN)
       D = PlaneStrainD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
    
    for (int i = 1 ; i <= ninteg ; i++) {
@@ -153,7 +153,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
       }
    } 
 
-   if (element -> K == NullMatrix) {
+   if (!element -> K) {
       element -> K = CreateMatrix (8,8);
 
       if (numnodes == 3) {
@@ -173,7 +173,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 
    for (int i = 1 ; i <= ninteg ; i++) {
       B = IsoQuadLocalB (element, numnodes, dNdx, dNdy, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       MatrixRows (Bt) = MatrixRows (temp) = MatrixCols (B);
@@ -214,7 +214,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 
    if (element -> numdistributed > 0) {
       equiv = IsoQuadEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (size_t i = 1; i <= numnodes ; i++) {
@@ -229,12 +229,12 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 static int
 QuadElementStress(Element element, unsigned int type)
 {
-   static Vector	stress = NullMatrix,
+   static Vector	stress,
 			d;
    static Matrix	temp;
    static Vector	weights;
    static Matrix	N, dNdxi, dNde,
-                        dNdx, dNdy = NullMatrix;
+                        dNdx, dNdy;
    unsigned		numnodes;
    int			ninteg;
    Matrix		D,
@@ -246,7 +246,7 @@ QuadElementStress(Element element, unsigned int type)
    unsigned		i,j;
    double		x,y;
 
-   if (dNdy == NullMatrix) {
+   if (!dNdy) {
   
       N     = CreateMatrix (4,4);
       dNdxi = CreateMatrix (4,4);
@@ -256,7 +256,7 @@ QuadElementStress(Element element, unsigned int type)
       weights = CreateVector (4);
    }
    
-   if (stress == NullMatrix) {
+   if (!stress) {
       stress = CreateVector (3);
       d = CreateVector (8);
       temp = CreateMatrix (3,8);
@@ -269,9 +269,9 @@ QuadElementStress(Element element, unsigned int type)
    else if (type == PLANESTRESS)
       D = PlaneStressD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    if (element -> number == 1)
@@ -299,7 +299,7 @@ QuadElementStress(Element element, unsigned int type)
 
    for (int i = 1 ; i <= ninteg ; i++) {
       B = IsoQuadLocalB (element, numnodes, dNdx, dNdy, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       x = y = 0.0;
@@ -366,9 +366,9 @@ static Matrix
 IsoQuadLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point)
 {
    unsigned		i;
-   static Matrix	B = NullMatrix;
+   static Matrix	B;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (3,8);
 
    for (i = 1 ; i <= numnodes ; i++) {
@@ -391,9 +391,9 @@ GlobalQuadShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx
    unsigned		i,j;
    static Vector	jac,
 			dxdxi, dxde,
-			dydxi, dyde = NullMatrix;
+			dydxi, dyde;
 
-   if (dyde == NullMatrix) {
+   if (!dyde) {
 
       dxdxi = CreateVector (4);
       dxde  = CreateVector (4);
@@ -535,9 +535,9 @@ IsoQuadEquivNodalForces(Element element, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
  
-   if (equiv == NullMatrix) 
+   if (!equiv) 
       equiv = CreateVector (8);
 
    count = 0;
@@ -603,7 +603,7 @@ IsoQuadEquivNodalForces(Element element, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
       wa = element -> distributed[i] -> value[1].magnitude;

@@ -16,6 +16,7 @@
 #include <string>
 #include <map>
 #include <utility>
+#include <boost/shared_ptr.hpp>
 
 #ifdef SHOWNEWDELETE
 #include <cstdio>
@@ -30,11 +31,20 @@ extern "C" {
 //----------------------------------------------------------------------!
 
 // define missing macros, available in older lua versions
+// EDIT: redefined as templates, in order to keep type information.
 
-#define tl_boxpointer(L,u) \
-    (*(void **)(lua_newuserdata(L, sizeof(void *))) = (u))
+template<typename T>
+void tl_boxpointer(lua_State *L, T p)
+{
+    T *pp = (T *) lua_newuserdata(L, sizeof(T *));
+    *pp = p;
+}
 
-#define tl_unboxpointer(L,i)   (*(void **)(lua_touserdata(L, i)))
+template<typename T>
+T tl_unboxpointer(lua_State *L, int i)
+{
+    return *(T **)(lua_touserdata(L, i));
+}
 
 //----------------------------------------------------------------------!
 
@@ -51,7 +61,7 @@ std::string tl_metaname()
 template<typename T>
 int tl_tostring(lua_State *L)
 {
-    T p = tl_unboxpointer(L, 1);
+    T p = tl_unboxpointer<T>(L, 1);
     lua_pushfstring(L, "[%s @ %p]", tl_metaname<T>().c_str(), p);
     return 1;
 }
@@ -219,7 +229,7 @@ int tl_array_index(lua_State *L)
         lua_pushnil(L);
         return 1;
     }
-    tl_push(L, data[idx-1]);
+    tl_push<T>(L, data[idx-1]);
     return 1;
 }
 
@@ -388,6 +398,16 @@ int tl_getter(lua_State *L)
     return 1;
 }
 
+// shared_ptr version
+template<typename S, typename V, V S::*pp>
+int tl_getter_shared(lua_State *L)
+{
+    typedef boost::shared_ptr<S> T;
+    T p = tl_check<T>(L, 1);
+    tl_push<V>(L, p.get()->*pp);
+    return 1;
+}
+
 /*
 template<typename T, typename V, size_t offs>
 int tl_setter(lua_State *L)
@@ -411,12 +431,32 @@ int tl_setter(lua_State *L)
     return 0;
 }
 
+// shared_ptr version
+template<typename S, typename V, V S::*pp>
+int tl_setter_shared(lua_State *L)
+{
+    typedef boost::shared_ptr<S> T;
+    T p = tl_check<T>(L, 1);
+    V nu = tl_check<V>(L, 2);
+    p.get()->*pp = nu;
+    return 0;
+}
+
 template<typename S, typename V, V S::*pp>
 std::pair<lua_CFunction, lua_CFunction> tl_getset()
 {
     return
         std::make_pair(tl_getter<S, V, pp>,
                        tl_setter<S, V, pp>);
+}
+
+// shared_ptr version
+template<typename S, typename V, V S::*pp>
+std::pair<lua_CFunction, lua_CFunction> tl_getset_shared()
+{
+    return
+        std::make_pair(tl_getter_shared<S, V, pp>,
+                       tl_setter_shared<S, V, pp>);
 }
 
 /*
@@ -435,10 +475,9 @@ int tl_gettern(lua_State *L)
 
 // wrap structs easier
 
-template<typename S>
+template<typename T>
 struct tl_wrapper
 {
-    typedef S* T;
     typedef std::map<std::string, lua_CFunction> metamap;
     
     tl_wrapper(bool wprops = true)

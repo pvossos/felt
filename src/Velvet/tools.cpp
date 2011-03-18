@@ -78,7 +78,7 @@ DeleteFigureGroup(Figure *figures, unsigned nfigures)
     for (i = 0; i < nfigures; i ++) {
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
-	if (attr.user_data != NULL)
+	if (!attr.user_data.empty())
 	    continue;
 
 	if (firsttime == True) {
@@ -125,7 +125,7 @@ void DeleteToolCB (Widget w, XtPointer clientData, XtPointer callData)
                               
    if (figure != NULL) {
       DW_GetAttributes (w, figure, &attributes);
-      if (attributes.user_data == NULL) {
+      if (attributes.user_data.empty()) {
           DW_RemoveFigure (w, figure);
           figure_set.erase(figure);
       }
@@ -841,8 +841,8 @@ MoveToolCB(Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data != NULL)
-	return;
+    if (!attributes.user_data.empty())
+        return;
 
     startx = report -> snapped.x;
     starty = report -> snapped.y;

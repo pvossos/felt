@@ -20,22 +20,28 @@
 # ifndef _MATRIX_H
 # define _MATRIX_H
 
+# include <boost/shared_ptr.hpp>
 # include <stdio.h>		/* for FILE definition			*/
 # include "status.h"
 # include "cvector1.hpp"
 
 /*----------------------------------------------------------------------*/
 
-typedef struct matrix *Matrix;
+struct matrix;
+typedef boost::shared_ptr<matrix> Matrix;
 
 struct matrix {
+   matrix() { /* NO-OP */};
+   ~matrix();
    unsigned	nrows;		/* number of rows 			 */
    unsigned	ncols;		/* number of columns			 */
    double	**data;		/* matrix data				 */
    cvector1<unsigned> diag; /* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
-   unsigned	refcount;	/* count of children			 */
    Matrix	parent;		/* parent of possible subsection	 */
+private:
+     matrix& operator=(const matrix &rhs);
+     matrix(const matrix &am);
 };
 
 # define Mrows(m)          ((m) -> nrows)
@@ -68,7 +74,6 @@ typedef Matrix Vector;
 
 # define CreateMatrix  CreateFullMatrix
 # define CreateVector  CreateColumnVector
-# define DestroyVector DestroyMatrix
 
 	/*
 	 * prototypes for DATA manipulation routines
@@ -79,7 +84,7 @@ typedef Matrix Vector;
   \param row row index
   \param col column index
 */
-double mdata (const Matrix A, unsigned int row, unsigned int col);
+double mdata (const Matrix &A, unsigned int row, unsigned int col);
 
 /*!
   \param a matrix to subsection
@@ -88,7 +93,7 @@ double mdata (const Matrix A, unsigned int row, unsigned int col);
   \param er ending row
   \param ec ending column
 */
-Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec);
+Matrix CreateSubsectionMatrix (const Matrix &a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec);
 
 /*!
   \param rows number of rows
@@ -107,11 +112,6 @@ Matrix CreateRowVector (unsigned int size);
 Matrix CreateColumnVector (unsigned int size);
 
 /*!
-  \param m matrix to free
-*/
-void DestroyMatrix (Matrix m);
-
-/*!
   \param rows number of rows
   \param cols number of columns
   \param size actual size of storage
@@ -123,17 +123,17 @@ Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols,
 /*!
   \param a matrix to copy data from
 */
-Matrix CreateCopyMatrix (const Matrix a);
+Matrix CreateCopyMatrix (const Matrix &a);
 
 /*!
   \param A compact matrix to expand
 */
-Matrix MakeFullFromCompact (const Matrix A);
+Matrix MakeFullFromCompact (const Matrix &A);
 
 /*!
   \param A full matrix to compact
 */
-Matrix MakeCompactFromFull (const Matrix A);
+Matrix MakeCompactFromFull (const Matrix &A);
 
 /*!
   Given a compact column storage scheme described by diag
@@ -147,7 +147,7 @@ Matrix MakeCompactFromFull (const Matrix A);
   need to worry about what would be in that spot of
   the full matrix.
  */
-int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix a);
+int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix &a);
 
 	/*
 	 * prototypes for the BASIC matrix routines
@@ -157,32 +157,32 @@ int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix a);
   \brief A = 0 
   \param a the Matrix to fill with zeros
  */
-int ZeroMatrix (Matrix a);
+int ZeroMatrix (Matrix &a);
 
 /*!
   \brief B = A
   \param a the source Matrix
   \param b the destination Matrix
  */
-int CopyMatrix (Matrix b, const Matrix a);
+int CopyMatrix (Matrix &b, const Matrix &a);
 
 /*!
   \brief A = [I]
   \param a destination matrix for identity
  */
-int IdentityMatrix (Matrix a);
+int IdentityMatrix (Matrix &a);
 
 /*!
   \brief a(i,j) = rand()
   \param a Matrix to randomize
   \param seed optional seed
  */
-int RandomMatrix (Matrix a, int seed);
+int RandomMatrix (Matrix &a, int seed);
 
 /*!
   \param a the Matrix to mirror
  */
-int MirrorMatrix (Matrix a);
+int MirrorMatrix (Matrix &a);
 
 /*!
   \brief c = a * b
@@ -190,7 +190,7 @@ int MirrorMatrix (Matrix a);
   \param a source matrix 1
   \param b source matrix 2
  */
-int MultiplyMatrices (Matrix c, const Matrix a, const Matrix b);
+int MultiplyMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = a + b
@@ -198,7 +198,7 @@ int MultiplyMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a source Matrix 1
   \param b source Matrix 2
  */
-int AddMatrices (Matrix c, const Matrix a, const Matrix b);
+int AddMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = a - b
@@ -206,7 +206,7 @@ int AddMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a source Matrix 1
   \param b source Matrix 2
 */
-int SubtractMatrices (Matrix c, const Matrix a, const Matrix b);
+int SubtractMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = a % b
@@ -214,7 +214,7 @@ int SubtractMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a source Matrix 1
   \param b source Matrix 2
  */
-int ModMatrices (Matrix c, const Matrix a, const Matrix b);
+int ModMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = b + alpha * a
@@ -223,7 +223,7 @@ int ModMatrices (Matrix c, const Matrix a, const Matrix b);
   \param b source vector 2
   \param alpha scale factor
 */
-int Saxpy (Matrix c, const Matrix a, const Matrix b, double alpha);
+int Saxpy (Matrix &c, const Matrix &a, const Matrix &b, double alpha);
 
 /*!
   \brief c = b + A * a
@@ -232,7 +232,7 @@ int Saxpy (Matrix c, const Matrix a, const Matrix b, double alpha);
   \param b source vector 2
   \param A source Matrix
 */
-int Gaxpy (Matrix c, const Matrix a, const Matrix b, const Matrix A);
+int Gaxpy (Matrix &c, const Matrix &a, const Matrix &b, const Matrix &A);
 
 /*!
   \brief b(i,j) = factor*a(i,j) + offset
@@ -241,14 +241,14 @@ int Gaxpy (Matrix c, const Matrix a, const Matrix b, const Matrix A);
   \param factor multiplicative scale factor
   \param offset additive offset
  */
-int ScaleMatrix(Matrix b, const Matrix a, double factor, double offset);
+int ScaleMatrix(Matrix &b, const Matrix &a, double factor, double offset);
 
 /*!
   \brief b(i,j) = sqrt(a(i,j))
   \param b destination matrix
   \param a source matrix
  */
-int SqrtMatrix(Matrix b, const Matrix a);
+int SqrtMatrix(Matrix &b, const Matrix &a);
 
 /*!
   \brief x = aTb
@@ -256,14 +256,14 @@ int SqrtMatrix(Matrix b, const Matrix a);
   \param a source vector (row) 1
   \param b sourve vector 2
  */
-int DotBProduct(double *x, const Matrix a, const Matrix b);
+int DotBProduct(double *x, const Matrix &a, const Matrix &b);
 
 /*!
   \brief b = aT
   \param b destination matrix
   \param a source matrix
 */
-int TransposeMatrix(Matrix b, const Matrix a);
+int TransposeMatrix(Matrix &b, const Matrix &a);
 
 /*!
   \brief  c = (a == b)
@@ -271,7 +271,7 @@ int TransposeMatrix(Matrix b, const Matrix a);
   \param a first RHS matrix
   \param b second RHS matrix
 */
-int CompareEQMatrices (Matrix c, const Matrix a, const Matrix b);
+int CompareEQMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = (a != b)
@@ -279,7 +279,7 @@ int CompareEQMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a first RHS matrix
   \param b second RHS matrix
 */
-int CompareNEQMatrices (Matrix c, const Matrix a, const Matrix b);
+int CompareNEQMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = (a > b)
@@ -287,7 +287,7 @@ int CompareNEQMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a first RHS matrix
   \param b second RHS matrix
 */
-int CompareGTMatrices (Matrix c, const Matrix a, const Matrix b);
+int CompareGTMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = (a < b)
@@ -295,7 +295,7 @@ int CompareGTMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a first RHS matrix
   \param b second RHS matrix
 */
-int CompareLTMatrices (Matrix c, const Matrix a, const Matrix b);
+int CompareLTMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = (a <= b)
@@ -303,7 +303,7 @@ int CompareLTMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a first RHS matrix
   \param b second RHS matrix
 */
-int CompareLTEMatrices (Matrix c, const Matrix a, const Matrix b);
+int CompareLTEMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief c = (a >= b)
@@ -311,14 +311,14 @@ int CompareLTEMatrices (Matrix c, const Matrix a, const Matrix b);
   \param a first RHS matrix
   \param b second RHS matrix
 */
-int CompareGTEMatrices (Matrix c, const Matrix a, const Matrix b);
+int CompareGTEMatrices (Matrix &c, const Matrix &a, const Matrix &b);
 
 /*!
   \brief print matrix m to file fp
   \param m matrix to print
   \param fp file pointer for output
 */
-int PrintMatrix (const Matrix m, FILE *fp);
+int PrintMatrix (const Matrix &m, FILE *fp);
 
 /*!
   \brief  print matrix m to fp
@@ -329,7 +329,7 @@ int PrintMatrix (const Matrix m, FILE *fp);
   \param ec ending column
   \param fp file pointer for output
 */
-int PrintMatrixSubsection (const Matrix m, unsigned int sr, unsigned int sc,
+int PrintMatrixSubsection (const Matrix &m, unsigned int sr, unsigned int sc,
                            unsigned int er, unsigned int ec, FILE *fp);
 
 	/*
@@ -342,7 +342,7 @@ int PrintMatrixSubsection (const Matrix m, unsigned int sr, unsigned int sc,
   \param r destination matrix for r
   \param a source matrix
 */
-int QRFactorMatrix (Matrix q, Matrix r, const Matrix a);
+int QRFactorMatrix (Matrix &q, Matrix &r, const Matrix &a);
 
 
 /*!
@@ -350,7 +350,7 @@ int QRFactorMatrix (Matrix q, Matrix r, const Matrix a);
   \param b destination matrix
   \param a source matrix
 */
-int CholeskyFactorMatrix (Matrix b, const Matrix a);
+int CholeskyFactorMatrix (Matrix &b, const Matrix &a);
 
 
 /*!
@@ -359,7 +359,7 @@ int CholeskyFactorMatrix (Matrix b, const Matrix a);
   \param a factored source matrix
   \param p pivot vector
 */
-int InvertMatrix (Matrix b, const Matrix a, const Matrix p);
+int InvertMatrix (Matrix &b, const Matrix &a, const Matrix &p);
 
 /*
   \brief result = |a|
@@ -367,7 +367,7 @@ int InvertMatrix (Matrix b, const Matrix a, const Matrix p);
   \param a factorized source matrix
   \param p pivot vector
 */
-int DeterminantMatrix (double *result, const Matrix a, const Matrix p);
+int DeterminantMatrix (double *result, const Matrix &a, const Matrix &p);
 
 /*!
   \brief  factor a into LU and store in b
@@ -376,7 +376,7 @@ int DeterminantMatrix (double *result, const Matrix a, const Matrix p);
   \param p permutation vector
   \param info singularity code
 */
-int LUFactorMatrix (Matrix b, const Matrix a, const Matrix p, int *info);
+int LUFactorMatrix (Matrix &b, const Matrix &a, const Matrix &p, int *info);
 
 /*!
   \brief  solve Ax=b and store result in c
@@ -385,7 +385,7 @@ int LUFactorMatrix (Matrix b, const Matrix a, const Matrix p, int *info);
   \param b RHS vector
   \param p pivot vector
 */
-int LUBackSolveMatrix (Matrix c, const Matrix a, const Matrix b, const Matrix p);
+int LUBackSolveMatrix (Matrix &c, const Matrix &a, const Matrix &b, const Matrix &p);
 
 /*!
   \brief separate matrices from factors
@@ -395,20 +395,20 @@ int LUBackSolveMatrix (Matrix c, const Matrix a, const Matrix b, const Matrix p)
   \param a factored form of matrix
   \param p pivot vector
 */
-int FormLUPMatrices (Matrix L, Matrix U, Matrix P, const Matrix a, const Matrix p);
+int FormLUPMatrices (Matrix &L, Matrix &U, Matrix &P, const Matrix &a, const Matrix &p);
 
 /*!
   \brief crout factorize A and store in A
   \param A source and destination matrix
 */
-int CroutFactorMatrix (Matrix A);
+int CroutFactorMatrix (Matrix &A);
 
 /*!
   \brief  solve Ax=b and store x in b
   \param A Crout factored LHS matrix
   \param b RHS (and dest) vector
 */
-int CroutBackSolveMatrix (const Matrix A, Matrix b);
+int CroutBackSolveMatrix (const Matrix &A, Matrix &b);
 
 	/*
  	 * prototypes for the EIGEN routines
@@ -420,7 +420,7 @@ int CroutBackSolveMatrix (const Matrix A, Matrix b);
   \param tol convergence tolerance
   \param maxit limiting number of iterations
 */
-int GeneralMatrixEigenModes (const Matrix a, Matrix lambda, double tol, unsigned int maxit);
+int GeneralMatrixEigenModes (const Matrix &a, Matrix lambda, double tol, unsigned int maxit);
 
 /*!
   \param diag vector of diagonal elements
@@ -429,7 +429,7 @@ int GeneralMatrixEigenModes (const Matrix a, Matrix lambda, double tol, unsigned
   \param x eigenvectors output
   \param maxit iteration limit
 */
-int TridiagSymmMatrixEigenModes (const Matrix diag, const Matrix sub_diag, const Matrix lambda, Matrix x, unsigned int maxit);
+int TridiagSymmMatrixEigenModes (const Matrix &diag, const Matrix &sub_diag, const Matrix &lambda, Matrix &x, unsigned int maxit);
 
 /*!
   \param a source matrix
@@ -437,33 +437,33 @@ int TridiagSymmMatrixEigenModes (const Matrix diag, const Matrix sub_diag, const
   \param x matrix for eigenvectors
   \param maxit iteration limit
 */
-int SymmetricMatrixEigenModes (const Matrix a, const Matrix lambda, Matrix x, unsigned int maxit);
+int SymmetricMatrixEigenModes (const Matrix &a, const Matrix &lambda, Matrix &x, unsigned int maxit);
 
 /*!
   \param a symmetric, tri-diagonal input
   \param diag output vector of diag elements
   \param sub_diag vector of sub-diagonal elements
  */
-int BuildTridiagonalVectors (const Matrix a, Matrix diag, Matrix sub_diag);
+int BuildTridiagonalVectors (const Matrix &a, Matrix &diag, Matrix &sub_diag);
 
 /*!
   \param b destination matrix
   \param a eigenvectors to normalize
   \param keep_sign flag to preserve sign
 */
-int NormalizeByMaximum (Matrix b, const Matrix a, unsigned int keep_sign);
+int NormalizeByMaximum (Matrix &b, const Matrix &a, unsigned int keep_sign);
 
 /*!
   \param b destination matrix
   \param a eigenvectors to normalize
 */
-int NormalizeByFirst (Matrix b, const Matrix a);
+int NormalizeByFirst (Matrix &b, const Matrix &a);
 
 /*!
   \param b destination matrix
   \param a eigenvectors to normalize
 */
-int NormalizeByLength (Matrix b, const Matrix a);
+int NormalizeByLength (Matrix &b, const Matrix &a);
 
 /*!
   \param a source matrix
@@ -471,7 +471,7 @@ int NormalizeByLength (Matrix b, const Matrix a);
   \param sub_diag dest vector for sub-diag elements
   \param z accumulated orthog. transforms
  */
-int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z);
+int TridiagonalReduction (const Matrix &a, Matrix &diag, Matrix &sub_diag, Matrix &z);
 
 	/*
 	 * prototypes for the NORM routines
@@ -481,21 +481,21 @@ int TridiagonalReduction (const Matrix a, Matrix diag, Matrix sub_diag, Matrix z
   \param result returns ||a||_f
   \param a matrix to take norm of
 */
-int FrobeniusNormMatrix (double *result, const Matrix a);
+int FrobeniusNormMatrix (double *result, const Matrix &a);
 
 /*!
   \param result pointer to space for result, ||a||_p
   \param a source matrix
   \param p "1", "inf" type of norm
 */
-int PNormMatrix (double *result, const Matrix a, const char *p);
+int PNormMatrix (double *result, const Matrix &a, const char *p);
 
 /*!
   \param result pointer to space for result, ||a||_p
   \param a source vector
   \param p "1", "2", "inf" type of norm
 */
-int PNormVector (double *result, const Matrix a, const char *p);
+int PNormVector (double *result, const Matrix &a, const char *p);
 
 	/*
 	 * prototypes for the PROPERTY routines
@@ -505,33 +505,33 @@ int PNormVector (double *result, const Matrix a, const char *p);
   \brief Aij == Aji ? 1 : 0
   \param a Matrix to check for symmetry
 */
-int IsSymmetricMatrix (const Matrix a);
+int IsSymmetricMatrix (const Matrix &a);
 
 /*!
   \brief Aij == 0 ? 1 : 0
   \param a Matrix to check for symmetry
 */
-int IsZeroMatrix (const Matrix a);
+int IsZeroMatrix (const Matrix &a);
 
 	/*
 	 * prototypes for the STATISTICS routines
 	 */
 
-int MaximumMatrix (const Matrix a, double *x);
+int MaximumMatrix (const Matrix &a, double *x);
 
-int MinimumMatrix (const Matrix a, double *x);
+int MinimumMatrix (const Matrix &a, double *x);
 
-int SumMatrix (const Matrix a, double *x);
+int SumMatrix (const Matrix &a, double *x);
 
-int MeanMatrix (const Matrix a, double *x);
+int MeanMatrix (const Matrix &a, double *x);
 
-int StddevMatrix (const Matrix a, double *x);
+int StddevMatrix (const Matrix &a, double *x);
 
 	/*
 	 * prototypes for the IO routines
 	 */
 
-int MatrixToMatlab (const Matrix a, FILE *fp, const char *name);
+int MatrixToMatlab (const Matrix &a, FILE *fp, const char *name);
 
 int MatricesToMatlab (const Matrix *a, unsigned int n, FILE *fp, const char **name);
 
@@ -541,7 +541,7 @@ Matrix MatlabToMatrix (FILE *fp);
 	 * prototypes for the SOLVER routines
 	 */
 
-int GaussSeidel(Matrix x, const Matrix A, const Matrix b);
+int GaussSeidel(Matrix &x, const Matrix &A, const Matrix &b);
 
 /*----------------------------------------------------------------------*/
 

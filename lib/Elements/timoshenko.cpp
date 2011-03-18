@@ -146,7 +146,7 @@ timoshenkoEltSetup(Element element, char mass_mode, int tangent)
 	 */
 
     khat = LocalK (element);
-    if (khat == NullMatrix)
+    if (!khat)
        return 1;
  
     T = TransformMatrix (element);
@@ -161,7 +161,7 @@ timoshenkoEltSetup(Element element, char mass_mode, int tangent)
 	 * matrix, it will simply carry out k = T(trans) * K * T
 	 */
 
-    if (element -> K == NullMatrix)
+    if (!element -> K)
        element -> K = CreateMatrix (6,6);
 
     MultiplyAtBA (element -> K, T, khat);
@@ -200,12 +200,12 @@ timoshenkoEltSetup(Element element, char mass_mode, int tangent)
         else if (mass_mode == 'l')
            mhat = LumpedMassMatrix (element);
         else
-           mhat = NullMatrix;
+            mhat.reset();
 
-        if (mhat == NullMatrix)
+        if (!mhat)
            return 1;
 
-        if (element -> M == NullMatrix)
+        if (!element -> M)
            element -> M = CreateMatrix (6,6);
 
         MultiplyAtBA (element -> M, T, mhat);
@@ -231,7 +231,7 @@ timoshenkoEltStress(Element element)
 {
     unsigned	    i;			/* loop index			 */
     int		    count;		/* count of errors		 */
-    static Vector   dlocal = NULL;	/* local nodal displacements	 */
+    static Vector   dlocal;	/* local nodal displacements	 */
     static Vector   d;			/* global nodal displacements	 */
     static Vector   f;  		/* actual internal forces	 */
     Vector	    equiv;		/* equivalent nodal forces	 */
@@ -244,7 +244,7 @@ timoshenkoEltStress(Element element)
 	 * we need memory for, but that are really just local to this function.
 	 */
 
-    if (dlocal == NULL) {
+    if (!dlocal) {
         dlocal = CreateVector (4);
         d = CreateVector (6);
         f = CreateVector (4);
@@ -301,7 +301,7 @@ timoshenkoEltStress(Element element)
 	 */
 
     if (element -> numdistributed > 0) {
-        count = EquivNodalForces (element, NULL, &equiv, 2);
+        count = EquivNodalForces (element, Matrix(), &equiv, 2);
         if (count)
             return count;
 
@@ -345,7 +345,7 @@ timoshenkoEltStress(Element element)
 static Matrix
 LocalK(Element element)
 {
-    static Matrix k = NULL;	/* the local stiffness matrix	       */
+    static Matrix k;	/* the local stiffness matrix	       */
     double	  L;		/* the element length		       */
     double	  phi;		/* bending stiffness / shear stiffness */
     double	  factor;	/* common factor in stiffness matrix   */
@@ -356,14 +356,14 @@ LocalK(Element element)
 	 * create an element of this kind.
 	 */
 
-    if (k == NULL) 
+    if (!k) 
         k = CreateMatrix (4,4);
 
     L = ElementLength (element, 2);
     if (L <= TINY) {
         error ("length of element %d is zero to machine precision",
                element -> number);
-        return NullMatrix;
+        return Matrix();
     }   
 
     phi = 12.0/(L*L)*(element -> material -> E*element -> material -> Ix/
@@ -420,14 +420,14 @@ LocalK(Element element)
 static Matrix
 ConsistentMassMatrix(Element element)
 {
-    static Matrix m = NULL;       /* the local stiffness matrix	          */
+    static Matrix m;       /* the local stiffness matrix	          */
     double	  L;		  /* the element length		          */
     double	  phi;		  /* bending stiffness / shear stiffness  */
     double        phi2;           /* phi squared		          */
     double	  const1;	  /* constant term for rotational mass    */
     double	  const2;	  /* constant term for translational mass */
 
-    if (m == NULL) 
+    if (!m) 
         m = CreateMatrix (4, 4);
 
 	/*
@@ -483,12 +483,12 @@ ConsistentMassMatrix(Element element)
 static Matrix
 LumpedMassMatrix(Element element)
 {
-    static Matrix m = NULL;       /* the local stiffness matrix	 */
+    static Matrix m;       /* the local stiffness matrix	 */
     double	  factor ;	  /* constant term		 */
     double	  I_factor;
     double	  L;
 
-    if (m == NULL) {
+    if (!m) {
         m = CreateMatrix (4, 4);
         ZeroMatrix (m);
     }
@@ -516,7 +516,7 @@ static Matrix
 TransformMatrix(Element element)
 {
     double         s,c; 	/* direction cosines			*/
-    static Matrix  T = NULL; 	/* transform matrix to return		*/
+    static Matrix  T; 	/* transform matrix to return		*/
     double	   L;		/* element length			*/
 
 	/*
@@ -524,7 +524,7 @@ TransformMatrix(Element element)
 	 * guy once!
 	 */
 
-    if (T == NULL) 
+    if (!T) 
        T = CreateMatrix (4,6);
 
 	/*
@@ -568,7 +568,7 @@ TransformMatrix(Element element)
 static int
 EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
 {
-    static Vector  equiv = NULL;	/* the equiv vector in local coord */
+    static Vector  equiv;	/* the equiv vector in local coord */
     static Vector  eq_global;		/* equiv in global coordinates     */
     double	   wa, wb;		/* values of load at nodes	   */
     double	   L;			/* the element length		   */
@@ -578,7 +578,7 @@ EquivNodalForces(Element element, Matrix T, Vector *eq_stress, int mode)
     int		   count;		/* error count			   */
     static Matrix  Tt;			/* transpose of transform matrixi  */
 
-    if (equiv == NULL) {
+    if (!equiv) {
         equiv     = CreateVector (4);
         eq_global = CreateVector (6);
         Tt	  = CreateMatrix (6,4);

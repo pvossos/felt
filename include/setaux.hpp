@@ -83,9 +83,20 @@ Key* SetMaximum(const std::set<Key*, Comp> &ss)
 
 //----------------------------------------------------------------------!
 
-/*
 #include<boost/shared_ptr.hpp>
 #include<boost/make_shared.hpp>
+
+template<typename Key, typename Comp>
+boost::shared_ptr<Key> SetSearch(const std::set<boost::shared_ptr<Key>, Comp> &ss, unsigned nn)
+{
+    typename boost::shared_ptr<Key> kp = boost::make_shared<Key>(nn);
+    
+    typename std::set<boost::shared_ptr<Key>,Comp>::iterator it = ss.find(kp);
+    if (it != ss.end())
+        return *it;
+    else 
+        return boost::shared_ptr<Key>();
+}
 
 template<typename Key, typename Comp>
 boost::shared_ptr<Key> SetSearch(const std::set<boost::shared_ptr<Key>, Comp> &ss, const std::string &key)
@@ -104,10 +115,34 @@ boost::shared_ptr<Key> SetMinimum(const std::set<boost::shared_ptr<Key>, Comp> &
 {
     if (ss.empty())
         return boost::shared_ptr<Key>();
-    else
+    else 
         return *ss.begin();
 }
-*/
+
+template<typename Key, typename Comp>
+boost::shared_ptr<Key> SetMaximum(const std::set<boost::shared_ptr<Key>, Comp> &ss)
+{
+    if (ss.empty())
+        return boost::shared_ptr<Key>();
+    else 
+        return *ss.rbegin();
+}
+
+template<typename Key, typename Comp>
+boost::shared_ptr<Key> SetPredecessor(const std::set<boost::shared_ptr<Key>, Comp> &ss,
+                                      const boost::shared_ptr<Key> &val)
+{
+    typename std::set<boost::shared_ptr<Key>,Comp>::const_iterator it = ss.lower_bound(val);
+    return it != ss.begin() ? *(--it) : boost::shared_ptr<Key>();
+}
+
+template<typename Key, typename Comp>
+boost::shared_ptr<Key> SetSuccessor(const std::set<boost::shared_ptr<Key>, Comp> &ss,
+                                    const boost::shared_ptr<Key> &val)
+{
+    typename std::set<boost::shared_ptr<Key>,Comp>::const_iterator it = ss.upper_bound(val);
+    return it != ss.end() ? *it : boost::shared_ptr<Key>();
+}
 
 //----------------------------------------------------------------------!
 

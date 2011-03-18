@@ -20,7 +20,7 @@
 # include <stdio.h>
 # include "matrix.h"
 
-int IsSymmetricMatrix (const Matrix a)
+int IsSymmetricMatrix (const Matrix &a)
 {
    unsigned	i, j;
    int		status;
@@ -43,7 +43,7 @@ int IsSymmetricMatrix (const Matrix a)
    return status;
 }
 
-int IsZeroMatrix (const Matrix a)
+int IsZeroMatrix (const Matrix &a)
 {
    unsigned	i, j;
    int		status;

@@ -684,7 +684,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Create a new node as needed. */
 
     if (noded -> new_copy) {
-        noded -> active = new node_t(noded -> new_copy);
+        noded -> active.reset(new node_t(noded -> new_copy));
         noded->nodes->insert(noded->active);
     }
 
@@ -699,8 +699,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the force. */
     {
         f_dummy.name = GetTextString (noded -> f_name);
-        Problem::ForceSet::iterator it = noded->forces->find(&f_dummy);
-        active -> force = it != noded->forces->end() ? *it : NULL;
+        active->force = SetSearch(*noded->forces, f_dummy.name);
     }
 
     /* Retrieve the values from the text entries. */
@@ -773,7 +772,6 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
         node = SetSuccessor(*noded->nodes, noded->active);
     
     noded->nodes->erase(noded->active);
-	delete noded -> active;
 	noded -> active = node;
     }
 
@@ -887,10 +885,10 @@ NodeDialog NodeDialogCreate (Widget parent, String name, String title, XtCallbac
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    noded = XtNew (struct node_dialog);
+    noded = new struct node_dialog;
     noded -> callback = callback;
     noded -> closure = closure;
-    noded -> active = NULL;
+    noded -> active.reset();
     noded -> new_forces = True;
     noded -> new_constraints = True;
 

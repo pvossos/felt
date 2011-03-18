@@ -143,7 +143,7 @@ ConstructStiffness(int *status)
       ndofs = element[i] -> definition -> numdofs;
       nodes = element[i] -> definition -> numnodes;
 
-      if (element[i] -> K == NullMatrix || !IsSquare(element[i] -> K) || 
+      if (!element[i] -> K || !IsSquare(element[i] -> K) || 
           Mrows(element[i] -> K) > ndofs*nodes) {
 
          error ("%s element %d has an invalid stiffness matrix",
@@ -182,7 +182,7 @@ ConstructStiffness(int *status)
 
    if (err_count) {
       *status = err_count;
-      return NULL;
+      return Matrix();
    }
 
 	/*
@@ -248,10 +248,8 @@ ConstructStiffness(int *status)
          }
       }
 
-      if (!element[i] -> definition -> retainK) {
-         DestroyMatrix (element[i] -> K);
-         element[i] -> K = NullMatrix;
-      }
+      if (!element[i] -> definition -> retainK)
+          element[i] -> K.reset();
 
    } /* end second loop over elements */
 
@@ -317,10 +315,10 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 	 * space for the condensed stiffness and mass matrices
 	 */
 
-   Cc = NullMatrix;
+   Cc.reset();
    Kc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
    Mc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
-   if (C != NullMatrix)
+   if (C)
       Cc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
 
    cvector1u diag(new_dofs);
@@ -356,7 +354,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
             if (dof_map [affected_dof]) {
                Kc -> data [m][1] = K -> data [j][1];
                Mc -> data [m][1] = M -> data [j][1];
-               if (C != NullMatrix)
+               if (C)
                   Cc -> data [m][1] = C -> data [j][1]; 
 
                m++; 
@@ -379,7 +377,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
    for (i = 1 ; i <= new_dofs ; i++)
       Mc -> diag [i] = Kc -> diag [i];
 
-   if (C != NullMatrix) {
+   if (C) {
        Cc -> diag = cvector1u(new_dofs);
  
       for (i = 1 ; i <= new_dofs ; i++)
@@ -393,7 +391,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 
    *Kcond = Kc;
    *Mcond = Mc;
-   if (C != NullMatrix)
+   if (C)
       *Ccond = Cc;
    return;
 }
@@ -419,8 +417,8 @@ ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
 
    Kcond = CreateCopyMatrix (K);
 
-   Fcond = NullMatrix;
-   if (F != NULL)
+   Fcond.reset();
+   if (F)
       Fcond = CreateCopyMatrix (F);
    
    for (i = 1 ; i <= problem.nodes.size(); i++) {
@@ -519,7 +517,7 @@ ConstructForceVector(void)
 
    F = CreateVector (size);
 
-   if (F == NullVector)
+   if (!F)
       Fatal ("allocation error constructing global nodal force vector");
 
    for (i = 1 ; i <= size ; i++) 
@@ -595,11 +593,11 @@ Vector
 SolveForDisplacements(Vector K, Vector F)
 {
    if (FactorStiffnessMatrix (K))
-      return NullVector;
+       return Vector();
 
    if (CroutBackSolveMatrix (K, F)) {
       error ("could not back substitute for nodal displacements");
-      return NullVector;
+      return Vector();
    }
 
    ApplyNodalDisplacements (F);
@@ -616,7 +614,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
    LoadCase	 lc;
 
    if (FactorStiffnessMatrix (K))
-      return NullMatrix;
+       return Matrix();
 
    F = CreateColumnVector (Mrows(Fbase));
 
@@ -646,7 +644,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
       if (CroutBackSolveMatrix (K, F)) {
           error ("could not back substitute for displacements in loadcase %s",
                  lc->name.c_str());
-         return NullMatrix;
+          return Matrix();
       }
 
       for (k = 1 ; k <= analysis.nodes.size() ; k++) {
@@ -671,7 +669,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
    Matrix	 F;
 
    if (FactorStiffnessMatrix (K))
-      return NullMatrix;
+       return Matrix();
 
    cvector1i mask     = BuildConstraintMask ( );
 
@@ -695,7 +693,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
  
       if (CroutBackSolveMatrix (K, F)) {
          error ("could not back substitute for displacements");
-         return NullMatrix;
+         return Matrix();
       }
 
       for (k = 1 ; k <= analysis.nodes.size() ; k++) {

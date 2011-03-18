@@ -49,7 +49,6 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
     unsigned         j;
     Figure           fig;
     Drawn            drawn;
-    Element          element;
     Boolean          firsttime;
     Boolean	     newinfo;
     FigureAttributes attr;
@@ -62,10 +61,10 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	fig = figures [i];
 	DW_GetAttributes (drawing, fig, &attr);
 
-	if (attr.user_data == NULL || attr.type == TextFigure)
+	if (attr.user_data.empty() || attr.type == TextFigure)
 	    continue;
 
-	element = (Element) attr.user_data;
+	Element element = boost::any_cast<Element>(attr.user_data);
 	drawn = (Drawn) element -> aux;
 	if (drawn -> type != DrawnElement)
 	    continue;
@@ -84,13 +83,12 @@ DeleteElementGroup(Figure *figures, unsigned nfigures)
 	DW_RemoveFigure (drawing, drawn -> label);
     
     problem.element_set.erase(element);
-	delete element;
     }
 
 
     if (newinfo == True) {
-	ElementDialogDisplay (element_d, NULL);
-	ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
+        ElementDialogDisplay (element_d, Element());
+        ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
     }
 
     if (firsttime == False) {
@@ -134,7 +132,6 @@ DoDeleteElt(Element element)
     problem.element_set.erase(element);
     ElementDialogUpdate (element_d, &problem.element_set, NULL, NULL, NULL);
 
-    delete element;
     ChangeStatusLine (message, True);
     changeflag = True;
 }
@@ -145,7 +142,6 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure           figure;
-    Element          element;
     Drawn            drawn;
 
 
@@ -171,10 +167,10 @@ void DeleteEltCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    element = (Element) attributes.user_data;
+    Element element = boost::any_cast<Element>(attributes.user_data);
     drawn = (Drawn) element -> aux;
     if (drawn -> type != DrawnElement)
 	return;
@@ -228,7 +224,6 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
     DrawingReport   *report;
     FigureAttributes attributes;
     Figure           figure;
-    Element          element;
     Drawn            drawn;
 
 
@@ -249,10 +244,10 @@ void EditElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    element = (Element) attributes.user_data;
+    Element element = boost::any_cast<Element>(attributes.user_data);
     drawn = (Drawn) element -> aux;
     if (drawn -> type != DrawnElement)
 	return;
@@ -344,7 +339,7 @@ void DoAddElement (Node node)
     Element element = SetMaximum(problem.element_set);
     max = element != NULL ? element -> number : 0;
 
-    element = new element_t(max + 1, ElementListDefinition (element_l));
+    element.reset(new element_t(max + 1, ElementListDefinition (element_l)));
     element -> material = MaterialDialogActive (material_d);
     for (i = 1; i <= num_nodes; i ++)
 	element -> node [i] = nodes [i];
@@ -369,8 +364,8 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 	return;
 
     if (dummy.number == 0) {
-	DoAddElement (NULL);
-	return;
+        DoAddElement(Node());
+        return;
     }
 
     Node found = SetSearch(problem.node_set, dummy.number);    
@@ -385,7 +380,6 @@ void AddElementAP (Widget w, XEvent *event, String *params, Cardinal *num)
 
 void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 {
-    Node             node;
     Drawn            drawn;
     Figure           figure;
     DrawingReport   *report;
@@ -407,10 +401,10 @@ void AddElementCB (Widget w, XtPointer client_data, XtPointer call_data)
 	return;
 
     DW_GetAttributes (w, figure, &attributes);
-    if (attributes.user_data == NULL)
-	return;
+    if (attributes.user_data.empty())
+        return;
 
-    node = (Node) attributes.user_data;
+    Node node = boost::any_cast<Node>(attributes.user_data);
     drawn = (Drawn) node -> aux;
     if (drawn -> type != DrawnNode)
 	return;
@@ -553,7 +547,7 @@ int DrawElement (Element element)
     drawn -> label = label;
     element -> aux = (char *) drawn;
 
-    attr.user_data = (char *) element;
+    attr.user_data = element;
 
     if (fig != NULL)
 	DW_SetAttributes (drawing, fig, DW_FigureUserData, &attr);

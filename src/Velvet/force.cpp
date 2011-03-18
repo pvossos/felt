@@ -487,7 +487,6 @@ static void LoadForceValues (ForceDialog forced)
 static void Change (Widget w, XtPointer client_data, XtPointer call_data)
 {
     Force		 active;
-    force_t	 dummy;
     ForceDialog		 forced;
     XawListReturnStruct	*info;
 
@@ -502,9 +501,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
         if (info -> list_index == XAW_LIST_NONE)
             return;
         
-        dummy.name = info -> string;
-        Problem::ForceSet::iterator it = forced->tree->find(&dummy);
-        forced -> active = it != forced->tree->end() ? *it : NULL;
+        forced->active = SetSearch(*forced->tree, info->string);
     }
 
     active = forced -> active;
@@ -534,7 +531,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     force_t     old;
     force_t     dummy;
     String	     text;
-    Force	     found;
     Force	     active;
     Boolean	     duplicate;
     ForceDialog	     forced;
@@ -550,8 +546,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the force. */
 
     dummy.name = GetTextString (forced -> name);
-    Problem::ForceSet::iterator it = forced->tree->find(&dummy);
-    found = it != forced->tree->end() ? *it : NULL;
+    Force found = SetSearch(*forced->tree, dummy.name);
     duplicate = found && (found != forced -> active || forced -> new_copy);
 
     /* Figure out which values to assign: forces or spectra */
@@ -581,10 +576,10 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new force or new name as needed. */
 
 	if (forced -> new_copy)
-	    forced -> active = new force_t(dummy.name.c_str());
+	    forced -> active.reset(new force_t(dummy.name.c_str()));
 	else if (strcmp (forced -> active -> name.c_str(), dummy.name.c_str())) {
-            old.name = forced -> active -> name;
-            forced->tree->erase(&old);
+            Force old(new force_t(forced -> active -> name.c_str()));
+            forced->tree->erase(old);
             forced->active->name = dummy.name;
             forced->tree->insert(forced->active);
     }
@@ -682,8 +677,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     forced->tree->erase(forced->active);
-	delete forced -> active;
-	forced -> active = NULL;
+	forced -> active.reset();
     }
 
     ForceDialogUpdate (forced, forced -> tree);
@@ -828,7 +822,7 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    forced = XtNew (struct force_dialog);
+    forced = new struct force_dialog;
 
     forced -> callback = callback;
 
@@ -836,7 +830,7 @@ ForceDialog ForceDialogCreate (Widget parent, String name, String title, XtCallb
 
     forced -> forces   = NULL;
 
-    forced -> active   = NULL;
+    forced -> active.reset();
 
     forced -> shell    = XtCreatePopupShell (name,
 			 topLevelShellWidgetClass, parent,

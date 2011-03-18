@@ -102,7 +102,7 @@ CreateNonlinearStiffness(int *status)
 
    if (err_count) {
       *status = err_count;
-      return NULL;
+      return Matrix();
    }
 
 	/*
@@ -152,7 +152,7 @@ AssembleCurrentState(Matrix K, Matrix F, int tangent)
    dofs = problem.dofs_pos;
 
    ZeroMatrix (K);
-   if (F != NullMatrix)
+   if (F)
       ZeroMatrix (F);
 
    for (i = 1 ; i <= numelts ; i++) {
@@ -174,7 +174,7 @@ AssembleCurrentState(Matrix K, Matrix F, int tangent)
                affected_row_dof = dofs[e -> definition -> dofs[l]];
                row = base_row + affected_row_dof - 1;
 
-               if (F != NullMatrix) {
+               if (F) {
                   value = mdata(e -> f, (j - 1)*ndofs + l, 1);
                   sdata(F, row, 1) += value;
                }
@@ -337,7 +337,7 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
    if (tangent)
       Felement = CreateColumnVector (n);
    else
-      Felement = NullMatrix;
+       Felement.reset();
 
    ZeroMatrix (d_cum);
 
@@ -378,7 +378,7 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
       }
 
       if (!converged)
-         return NullMatrix;
+          return Matrix();
 
       detail("step %u converged in %u iterations", step, iter);
 
@@ -388,7 +388,7 @@ StaticNonlinearDisplacements(Matrix K, Matrix Fnodal, int tangent)
    RestoreCoordinates (d_cum);
       
    if (!converged) 
-      return NullMatrix;
+       return Matrix();
 
    return d;
 }
@@ -424,7 +424,7 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
    if (tangent)
       Felement = CreateColumnVector (n);
    else
-      Felement = NullMatrix;
+       Felement.reset();
 
    idof = GlobalDOF (analysis.input_node -> number, analysis.input_dof);
    Fidof = mdata(Fnodal, idof, 1);
@@ -473,7 +473,7 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
 
          if (!converged) {
             detail("convergence failure at force level %u, step %u", ca, step);
-            return NullMatrix;
+            return Matrix();
          }
 
          detail("force level %u, step %u converged in %u iterations", 
@@ -494,7 +494,7 @@ SolveNonlinearLoadRange(Matrix K, Matrix Fnodal, int tangent)
 
       
    if (!converged) 
-      return NullMatrix;
+       return Matrix();
 
    return dtable;
 }

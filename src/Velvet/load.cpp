@@ -638,7 +638,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     String		value;
     distributed_t  dummy;
     distributed_t  old;
-    Distributed	 	found;
     Distributed	 	active;
     Boolean	 	duplicate;
     char		*ptr;
@@ -656,8 +655,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the load. */
 
     dummy.name = GetTextString (loadd -> name);
-    Problem::DistributedSet::iterator it = loadd->tree->find(&dummy);
-    found = it != loadd->tree->end() ? *it : NULL;
+    Distributed found = SetSearch(*loadd->tree, dummy.name);
     duplicate = found && (found != loadd -> active || loadd -> new_copy);
 
 
@@ -689,12 +687,12 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new load or new name as needed. */
 
 	if (loadd -> new_copy)
-        loadd -> active = new distributed_t(dummy.name.c_str(), count);
+        loadd -> active.reset(new distributed_t(dummy.name.c_str(), count));
 	else if (strcmp (loadd -> active -> name.c_str(), dummy.name.c_str())) {
-           old.name = loadd -> active -> name;
-           loadd->tree->erase(&old);
-           loadd->active->name = dummy.name;
-           loadd->tree->insert(loadd->active);
+        Distributed old(new distributed_t(loadd -> active -> name.c_str()));
+        loadd->tree->erase(old);
+        loadd->active->name = dummy.name;
+        loadd->tree->insert(loadd->active);
 	}
 
 	active = loadd -> active;
@@ -770,8 +768,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     loadd->tree->erase(loadd->active);
-	delete loadd -> active;
-	loadd -> active = NULL;
+	loadd -> active.reset();
     }
 
     LoadDialogUpdate (loadd, loadd -> tree);
@@ -868,7 +865,7 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    loadd = XtNew (struct load_dialog);
+    loadd = new struct load_dialog;
 
     loadd -> callback = callback;
 
@@ -876,7 +873,7 @@ LoadDialog LoadDialogCreate (Widget parent, String name, String title, XtCallbac
 
     loadd -> loads    = NULL;
 
-    loadd -> active   = NULL;
+    loadd -> active.reset();
 
     loadd -> shell    = XtCreatePopupShell (name,
 			 topLevelShellWidgetClass, parent,

@@ -726,7 +726,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     XtGetValues (analysisd -> load_steps, args, 1);
     analysis.load_steps = atoi (value);
 
-    analysis.input_node = NULL;
+    analysis.input_node.reset();
 
     XtGetValues (analysisd -> input_node, args, 1);
     if (strcmp(value, "") != 0) {

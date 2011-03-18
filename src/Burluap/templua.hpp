@@ -43,7 +43,7 @@ void tl_boxpointer(lua_State *L, T p)
 template<typename T>
 T tl_unboxpointer(lua_State *L, int i)
 {
-    return *(T **)(lua_touserdata(L, i));
+    return *(T *)(lua_touserdata(L, i));
 }
 
 //----------------------------------------------------------------------!
@@ -56,7 +56,6 @@ std::string tl_metaname()
     assert(false);
     return "NONE";
 }
-
 
 template<typename T>
 int tl_tostring(lua_State *L)
@@ -71,9 +70,8 @@ int tl_tostring(lua_State *L)
 // check boxed
   
 template<typename T>
-T tl_check(lua_State *L, int index) 
+T tl_check_primitive(lua_State *L, int index, const std::string &name)
 {
-    const std::string name = tl_metaname<T>();
     luaL_checktype(L, index, LUA_TUSERDATA);
     T* v = (T*) luaL_checkudata(L, index, name.c_str());
     if (!v)
@@ -82,6 +80,15 @@ T tl_check(lua_State *L, int index)
     if (!p)
         luaL_error(L, "NULL %s", name.c_str());
     return p;
+}
+
+template<typename T>
+T tl_check(lua_State *L, int index) 
+{
+    const std::string name = tl_metaname<T>();
+    // ATTN: better support for smart pointers
+    //return tl_check_primitive<T>(L, index, name);
+    return *tl_check_primitive<T*>(L, index, name);
 }
     
 template<>
@@ -110,7 +117,9 @@ template<typename T>
 void tl_push(lua_State *L, T p) 
 {
     const std::string name = tl_metaname<T>();
-    tl_boxpointer(L, p);
+    // ATTN: better support for smart pointers
+    //tl_boxpointer(L, p);
+    tl_boxpointer<T*>(L, new T(p));
     luaL_getmetatable(L, name.c_str());
     lua_setmetatable(L, -2);
 #ifdef SHOWNEWDELETE
@@ -364,29 +373,10 @@ int tl_newindex_wprop(lua_State *L)
 template<typename T>
 int tl_gc(lua_State *L) 
 {
-    const std::string name = tl_metaname<T>();
-    // FIXME: unbox?
-    T* p = (T*) lua_touserdata(L, 1);
-    if (!p) luaL_typerror(L, 1, name.c_str());
-    assert(*p);
-    delete *p;
-#ifdef SHOWNEWDELETE
-    std::printf("DELETE %s [%p]!\n", name.c_str(), p);
-#endif
+    // ATTN: better support for smart pointers
+    delete tl_unboxpointer<T*>(L, 1);
     return 0;
 }
-
-/*
-template<typename T, typename V, size_t offs>
-int tl_getter(lua_State *L)
-{
-    T p = tl_check<T>(L, 1);
-    char *pp = (char *) p;
-    V val = *((V *) (pp + offs));
-    tl_push<V>(L, val);
-    return 1;
-}
-*/
 
 // alt version, also works on non-POD types
 template<typename S, typename V, V S::*pp>
@@ -407,18 +397,6 @@ int tl_getter_shared(lua_State *L)
     tl_push<V>(L, p.get()->*pp);
     return 1;
 }
-
-/*
-template<typename T, typename V, size_t offs>
-int tl_setter(lua_State *L)
-{
-    T p = tl_check<T>(L, 1);
-    V nu = tl_check<V>(L, 2);
-    char *pp = (char *) p;
-    *((V *) (pp + offs)) = nu;
-    return 0;
-}
-*/
 
 // alt version, also works on non-POD types
 template<typename S, typename V, V S::*pp>
@@ -459,18 +437,6 @@ std::pair<lua_CFunction, lua_CFunction> tl_getset_shared()
                        tl_setter_shared<S, V, pp>);
 }
 
-/*
-template<typename T, typename V, size_t offs, size_t nn>
-int tl_gettern(lua_State *L)
-{
-    T p = tl_check<T>(L, 1);
-    char *pp = (char *) p;
-    V *vals = (V *) (pp + offs);
-    tl_pushn<V>(L, vals, nn);
-    return 1;
-}
-*/
-
 //----------------------------------------------------------------------!
 
 // wrap structs easier
@@ -484,6 +450,7 @@ struct tl_wrapper
         {
             name_ = tl_metaname<T>();
             meta_["__tostring"] = tl_tostring<T>;
+            meta_["__gc"] = tl_gc<T>;
             
             if (wprops) {
                 meta_["__index"] = tl_index_wprop<T>;

@@ -87,36 +87,10 @@ static int Node_get_dx(lua_State *L)
 
 static int Node_new(lua_State *L)
 {
-    /*
-      FIXME: this is error-prone, wait for smart_ptr integration.
-
     unsigned num = luaL_checkint(L, 1);
-    Node nn = CreateNode(num);
-    lua_pushlightuserdata(L, (void *) nn);
-    lua_pushboolean(L, 1);
-    lua_settable(L, LUA_ENVIRONINDEX);
+    Node nn(new node_t(num));
     tl_push<Node>(L, nn);
-    */
-    return 0;
-}
-
-static int Node_gc(lua_State *L)
-{
-    /*
-      FIXME: this is error-prone, wait for smart_ptr integration.
-
-    Node nn = tl_check<Node>(L, 1);
-    lua_pushlightuserdata(L, (void *) nn);
-    lua_gettable(L, LUA_ENVIRONINDEX);
-    if (!lua_isnil(L, -1)) {
-        lua_pushlightuserdata(L, (void *) nn);
-        lua_pushnil(L);
-        lua_settable(L, LUA_ENVIRONINDEX);
-        printf("Node_gc for Node @ %p\n", nn);
-        DestroyNode(nn);
-    }
-    */
-    return 0;
+    return 1;
 }
 
 #define GETTER(typ, field) tl_getter_shared<node_t, typ, &node_t::field>

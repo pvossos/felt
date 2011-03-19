@@ -148,15 +148,6 @@ pelements(lua_State *L)
     return 1;
 }
 
-static const struct luaL_reg felt_reg[] = {
-    {"version", version},
-    {"felt", felt},
-    {"pnodes", pnodes},
-    {"pelements", pelements},
-    {"Node", Node_new},
-    {NULL, NULL} /* sentinel */
-};
-
 //----------------------------------------------------------------------!
 
 // Stresses
@@ -234,6 +225,14 @@ static int Element_get_distributed(lua_State *L)
         return 0;
     Distributed *dd = ee->distributed;
     tl_pushn<Distributed>(L, dd+1, ee->numdistributed);
+    return 1;
+}
+
+static int Element_new(lua_State *L)
+{
+    unsigned num = luaL_checkint(L, 1);
+    Element ee(new element_t(num));
+    tl_push<Element>(L, ee);
     return 1;
 }
 
@@ -691,13 +690,20 @@ static int Definition_new(lua_State *L)
     return 1;
 }
 
-static int Definition_gc(lua_State *L)
+template<> int tl_gc<Definition>(lua_State *L)
 {
     Definition dd = tl_check<Definition>(L, 1);
-    DefnUdata *du = (DefnUdata *) dd->udata;
 
-    //FIXME
-    //lua_unref(L, LUA_REGISTRYINDEX, du->setup_ref);
+    // if it was created in lua, it will have the following pointer,
+    // and we need to cleanup.
+    DefnUdata *du = (DefnUdata *) dd->udata;
+    if (du) {
+        luaL_unref(L, LUA_REGISTRYINDEX, du->setup_ref);
+        luaL_unref(L, LUA_REGISTRYINDEX, du->stress_ref);
+    }
+
+    // continue with normal gc code
+    delete tl_unboxpointer<Definition*>(L, 1);
     return 0;
 }
 
@@ -708,8 +714,8 @@ static int Definition_get_dofs(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<definition_t, typ, &definition_t::field>
-#define GETSET(typ, field) tl_getset<definition_t, typ, &definition_t::field>()
+#define GETTER(typ, field) tl_getter_shared<definition_t, typ, &definition_t::field>
+#define GETSET(typ, field) tl_getset_shared<definition_t, typ, &definition_t::field>()
 
 void register_Definitions(lua_State *L)
 {
@@ -806,43 +812,57 @@ static int ProblemPtr_get_elements(lua_State *L)
     return 1;
 }
 
+static int ProblemPtr_add_definition(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
+    Definition dd = tl_check<Definition>(L, 2);
+    int irv = AddDefinition(dd);
+    lua_pushboolean(L, irv);
+    return 1;
+}
+
+static int ProblemPtr_remove_definition(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
+    Definition dd = tl_check<Definition>(L, 2);
+    int irv = RemoveDefinition(dd);
+    lua_pushboolean(L, irv);
+    return 1;
+}
+
+static int ProblemPtr_lookup_definition(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
+    const char *name = luaL_checkstring(L, 2);
+    Definition dd = LookupDefinition(name);
+    if (!dd)
+        return 0;
+    tl_push<Definition>(L, dd);
+    return 1;
+}
+
 void register_ProblemPtr(lua_State *L)
 {
     tl_wrapper<ProblemPtr> w(true);
     w.prop("nodes", ProblemPtr_get_nodes);
     w.prop("elements", ProblemPtr_get_elements);
+    w["add_definition"] = ProblemPtr_add_definition;
+    w["remove_definition"] = ProblemPtr_remove_definition;
+    w["lookup_definition"] = ProblemPtr_lookup_definition;
     w.registerm(L);
 };
 
 //----------------------------------------------------------------------!
 
-/*
-template<> std::string tl_metaname<DefnUdata>()
-{
-    return "FElt.DefnUdata";
-}
-*/
-
-
-int add_definition(lua_State *L)
-{
-    const char* name = luaL_checkstring(L, 1);
-    luaL_checktype(L, 2, LUA_TFUNCTION);
-    luaL_checktype(L, 3, LUA_TFUNCTION);
-
-    // alloc
-    Definition def(new definition_t(name));
-
-    return 0;
-}
-
-int remove_definition(lua_State *L)
-{
-    const char *name = luaL_checkstring(L, 1);
-    
-    //lua_unref(L, LUA_REGISTRYINDEX,
-
-}
+static const struct luaL_reg felt_reg[] = {
+    {"version", version},
+    {"felt", felt},
+    {"pnodes", pnodes},
+    {"pelements", pelements},
+    {"Node", Node_new},
+    {"Element", Element_new},
+    {NULL, NULL} /* sentinel */
+};
 
 //----------------------------------------------------------------------!
 

@@ -31,16 +31,27 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int RodLumpedCapacityMatrix (Element e);
 static int RodConsistentCapacityMatrix (Element e);
 static int rodEltSetup  (Element element, char mass_mode, int tangent);
 static int rodEltStress (Element element);
 
-struct definition rodDefinition = {
-   "rod", rodEltSetup, rodEltStress, 
-   Linear, 2, 2, 0, 1, {0, 1, 0, 0, 0, 0, 0}, 0
-};
+void rodInit()
+{
+    Definition dd(new definition_t("rod"));
+    dd->setup = rodEltSetup;
+    dd->stress = rodEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 0;
+    dd->numdofs = 1;
+    dd->dofs = {0, 1, 0, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static Vector RodResolveConvection (Element element, int *err_count);
 

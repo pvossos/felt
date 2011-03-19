@@ -32,6 +32,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
@@ -50,17 +51,35 @@ static int  	 QuadElementStress    (Element element, unsigned int type);
 static int quad_PlaneStrainEltSetup (Element element, char mass_mode, int tangent), quad_PlaneStrainEltStress (Element element);
 static int quad_PlaneStressEltSetup (Element element, char mass_mode, int tangent), quad_PlaneStressEltStress (Element element);
 
-struct definition quad_PlaneStrainDefinition = {
-   "quad_PlaneStrain", 
-   quad_PlaneStrainEltSetup, quad_PlaneStrainEltStress, 
-   Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void quad_PlaneStrainInit()
+{
+    Definition dd(new definition_t("quad_PlaneStrain"));
+    dd->setup = quad_PlaneStrainEltSetup;
+    dd->stress = quad_PlaneStrainEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 4;
+    dd->shapenodes = 4;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
-struct definition quad_PlaneStressDefinition = {
-   "quad_PlaneStress", 
-   quad_PlaneStressEltSetup, quad_PlaneStressEltStress, 
-   Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void quad_PlaneStressInit()
+{
+    Definition dd(new definition_t("quad_PlaneStress"));
+    dd->setup = quad_PlaneStressEltSetup;
+    dd->stress = quad_PlaneStressEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 4;
+    dd->shapenodes = 4;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 quad_PlaneStrainEltSetup(Element element, char mass_mode, int tangent)

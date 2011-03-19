@@ -29,15 +29,10 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
-
+# include "definition.h"
 
 static int beam3dEltSetup (Element element, char mass_mode, int tangent);
 static int beam3dEltStress (Element element);
-
-struct definition beam3dDefinition = {
-    "beam3d", beam3dEltSetup, beam3dEltStress,
-    Linear, 2, 2, 6, 6, {0, 1, 2, 3, 4, 5, 6}, 1
-};
 
 static Matrix Beam3dLumpedMassMatrix  (Element element);
 static Matrix Beam3dLocalK            (Element element);
@@ -45,6 +40,21 @@ static Matrix Beam3dTransformMatrix   (Element element);
 static Vector Beam3dEquivNodalForces  (Element element, int *err_count);
 
 static void ResolveEndForces (Vector equiv, double wa, double wb, Direction direction, double L);
+
+void beam3dInit()
+{
+    Definition dd(new definition_t("beam3d"));
+    dd->setup = beam3dEltSetup;
+    dd->stress = beam3dEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 6;
+    dd->numdofs = 6;
+    dd->dofs = {0, 1, 2, 3, 4, 5, 6};
+    dd->retainK = 1;
+    AddDefinition(dd);
+}
 
 static int
 beam3dEltSetup(Element element, char mass_mode, int tangent)

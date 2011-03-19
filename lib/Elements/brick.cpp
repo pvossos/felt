@@ -30,22 +30,10 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int brickEltSetup (Element element, char mass_mode, int tangent);
 static int brickEltStress (Element element);
-
-struct definition brickDefinition = {
-   "brick",
-   brickEltSetup,
-   brickEltStress,
-   Solid, 			/* shape				     */
-   8, 				/* shape nodes				     */
-   8, 				/* number of nodes			     */
-   10, 				/* # of stress components at each int. point */
-   3,				/* number of DOFs per node		     */
-  {0, 1, 2, 3, 0, 0, 0}, 	/* DOF map				     */
-   0				/* retain K flag			     */
-};
 
 static void	LocalShapeFunctions (Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdzt, int first, int nodal);
 static Vector	GlobalShapeFunctions (Element element, Matrix dNdxi, Matrix dNde, Matrix dNdzt, Matrix dNdx, Matrix dNdy, Matrix dNdz);
@@ -65,6 +53,21 @@ static Matrix	dNdzt;
 static Matrix	dNdx;
 static Matrix 	dNdy;
 static Matrix	dNdz;
+
+void brickInit()
+{
+    Definition dd(new definition_t("brick"));
+    dd->setup = brickEltSetup;
+    dd->stress = brickEltStress;
+    dd->shape = Solid;
+    dd->numnodes = 8;
+    dd->shapenodes = 8;
+    dd->numstresses = 10;
+    dd->numdofs = 3;
+    dd->dofs = {0, 1, 2, 3, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 brickEltSetup(Element element, char mass_mode, int tangent)

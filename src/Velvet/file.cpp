@@ -231,7 +231,7 @@ int VelvetReadFeltFile (char *file)
     if (elt)
         ElementListSet (element_l, elt -> definition);
     else 
-        ElementListSet (element_l, NULL);
+        ElementListSet (element_l, Definition());
 
     return 0;
 }
@@ -258,7 +258,7 @@ void StartNew (void)
     DestroyProblem(/*true*/);
     figure_set.clear();
 
-    ElementListSet (element_l, NULL);
+    ElementListSet (element_l, Definition());
 
     ReadFeltFile (NULL);
 

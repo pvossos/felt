@@ -277,12 +277,12 @@ int main (int argc, char **argv)
               all_nodes [i] -> x, all_nodes [i] -> y, all_nodes [i] -> z);
 
    definition = all_elements [1] -> definition;
-   printf ("\n%s elements\n", definition -> name);
+   printf ("\n%s elements\n", definition -> name.c_str());
 
    for (i = 1 ; i <= ne ; i++) {
       if (all_elements [i] -> definition != definition) {
          definition = all_elements [i] -> definition;
-         printf ("\n%s elements\n", definition -> name);
+         printf ("\n%s elements\n", definition -> name.c_str());
       }
 
       printf ("%d   nodes=[%d,", all_elements [i] -> number, 

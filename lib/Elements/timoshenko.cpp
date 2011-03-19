@@ -28,6 +28,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 	/*	
          * Here's the definition structure.  This is a very simple
@@ -39,18 +40,20 @@
 static int timoshenkoEltSetup (Element element, char mass_mode, int tangent);
 static int timoshenkoEltStress (Element element);
 
-struct definition timoshenkoDefinition = {
-    "timoshenko",
-    timoshenkoEltSetup,
-    timoshenkoEltStress,
-    Linear, 			/* The shape of this element		   */
-    2, 				/* 2 nodes per element			   */
-    2, 				/* 2 nodes define the shape (it's a line!) */
-    2, 				/* 2 magnitudes in each stress structure   */
-    3, 				/* 3 global DOF / node			   */
-   {0, 1, 2, 6, 0, 0, 0},      	/* DOF 1 is Tx, DOF 2 is Ty DOF 3 is Rz .. */
-    1				/* retain stiffness after assembling	   */
-};
+void timoshenkoInit()
+{
+    Definition dd(new definition_t("timoshenko"));
+    dd->setup = timoshenkoEltSetup;
+    dd->stress = timoshenkoEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 2;
+    dd->numdofs = 3;
+    dd->dofs = {0, 1, 2, 6, 0, 0, 0};
+    dd->retainK = 1;
+    AddDefinition(dd);
+}
 
 	/*
 	 * We'll declare these three functions as static because other

@@ -31,6 +31,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
@@ -41,17 +42,35 @@ static int iso2d_PlaneStressEltStress (Element element);
 static int iso2d_PlaneStrainEltSetup (Element element, char mass_mode, int tangent);
 static int iso2d_PlaneStrainEltStress (Element element);
 
-struct definition iso2d_PlaneStressDefinition = {
-   "iso2d_PlaneStress", 
-   iso2d_PlaneStressEltSetup, iso2d_PlaneStressEltStress, 
-   Planar, 9, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void iso2d_PlaneStressInit()
+{
+    Definition dd(new definition_t("iso2d_PlaneStress"));
+    dd->setup = iso2d_PlaneStressEltSetup;
+    dd->stress = iso2d_PlaneStressEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 9;
+    dd->shapenodes = 4;
+    dd->numstresses = 6;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
-struct definition iso2d_PlaneStrainDefinition = {
-   "iso2d_PlaneStrain", 
-   iso2d_PlaneStrainEltSetup, iso2d_PlaneStrainEltStress, 
-   Planar, 9, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void iso2d_PlaneStrainInit()
+{
+    Definition dd(new definition_t("iso2d_PlaneStrain"));
+    dd->setup = iso2d_PlaneStrainEltSetup;
+    dd->stress = iso2d_PlaneStrainEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 9;
+    dd->shapenodes = 4;
+    dd->numstresses = 6;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static unsigned LocalIsoShapeFunctions   (Element element, Matrix N, Matrix dNdx, Matrix dNde, Vector weights);
 static Vector   GlobalIsoShapeFunctions  (Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes);

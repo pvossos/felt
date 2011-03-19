@@ -202,6 +202,17 @@ loadcase_t::~loadcase_t()
     // NO-OP
 }
 
+definition_t::definition_t(const char *name)
+{
+    if (name)
+        this->name = name;
+}
+
+definition_t::~definition_t()
+{
+    // NO-OP
+}
+
 void
 AssignForce(Force force, DOF dof, Code expr, char *text)
 {

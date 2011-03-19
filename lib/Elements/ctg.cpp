@@ -31,6 +31,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int CTGLumpedCapacityMatrix (Element e, double A);
 static int CTGConsistentCapacityMatrix (Element e, double area);
@@ -40,10 +41,20 @@ static Matrix	PlanarConductivity (Element element);
 static int	ctgEltSetup (Element element, char mass_mode, int tangent);
 static int	ctgEltStress (Element element);
 
-struct definition ctgDefinition = {
-   "ctg", ctgEltSetup, ctgEltStress, 
-   Planar, 3, 3, 0, 1, {0, 1, 0, 0, 0, 0, 0}, 0
-};
+void ctgInit()
+{
+    Definition dd(new definition_t("ctg"));
+    dd->setup = ctgEltSetup;
+    dd->stress = ctgEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 0;
+    dd->numdofs = 1;
+    dd->dofs = {0, 1, 0, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 ctgEltSetup(Element element, char mass_mode, int tangent)

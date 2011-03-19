@@ -762,7 +762,7 @@ WriteFile(char *flag)
 	    definition = element -> definition;
 
 	    if (!prev_element || prev_element -> definition != definition)
-		fprintf(fp,"\n%s elements\n", Quote (definition -> name));
+            fprintf(fp,"\n%s elements\n", Quote (definition -> name.c_str()));
 
 	    WriteElement (element);
 	    prev_element = element;

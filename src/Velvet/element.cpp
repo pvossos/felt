@@ -632,7 +632,7 @@ static void SetType (ElementDialog eltd, Definition defn)
     unsigned numnodes;
 
 
-    SetLabelString (eltd -> type, defn -> name);
+    SetLabelString (eltd -> type, defn -> name.c_str());
 
     eltd -> offset = 0;
     eltd -> definition = defn;

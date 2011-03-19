@@ -854,6 +854,202 @@ void register_ProblemPtr(lua_State *L)
 
 //----------------------------------------------------------------------!
 
+// Matrices
+
+template<> std::string tl_metaname<Matrix>()
+{
+    return "FElt.Matrix";
+}
+
+template<> int tl_tostring<Matrix>(lua_State *L)
+{
+    Matrix mt = tl_check<Matrix>(L, 1);
+    lua_pushfstring(L, "Matrix %dx%d @ %p",
+                    mt->nrows, mt->ncols, mt.get());
+    return 1;
+}
+
+static int Matrix_new(lua_State *L)
+{
+    if (lua_istable(L, 1)) {
+        // no explicit dimensions, construct from given table
+        lua_pushvalue(L, 1);
+        size_t nrows = lua_objlen(L, -1);
+        size_t ncols = 0;
+        Matrix mt;
+        
+        for (size_t i = 1; i <= nrows; i++) {
+            lua_pushinteger(L, i);
+            lua_gettable(L, -2);
+            luaL_argcheck(L, lua_istable(L, -1), 1, "Invalid initializer expression");
+            if (1 == i) {
+                ncols = lua_objlen(L, -1);
+                mt = CreateFullMatrix(nrows, ncols);
+            } else {
+                luaL_argcheck(L, ncols == lua_objlen(L, -1), 1, "Invalid initializer expression");
+            }
+            
+            for (size_t j = 1; j <= ncols; j++) {
+                lua_pushinteger(L, j);
+                lua_gettable(L, -2);
+                double val = lua_tonumber(L, -1);
+                sdata(mt.get(), i, j) = val;
+
+                // pop i,j value
+                lua_pop(L, 1);
+            }
+            
+            // pop row
+            lua_pop(L, 1);
+        }
+
+        tl_push<Matrix>(L, mt);
+        return 1;
+        
+    } else {
+        // just construct from given dimensions, no init
+        unsigned rows = luaL_checkint(L, 1);
+        unsigned cols = luaL_checkint(L, 2);
+        Matrix mt = CreateFullMatrix(rows, cols);
+        tl_push<Matrix>(L, mt);
+        return 1;
+    }
+}
+
+// FIXME: maybe move the code in ref & set in Matrix_index2 &
+// Matrix_newindex2 closures, since we don't really need two separate
+// functions from the lua side.
+static int Matrix_ref(lua_State *L)
+{
+    Matrix mt = tl_check<Matrix>(L, 1);
+    unsigned ii = luaL_checkint(L, 2);
+    luaL_argcheck(L, ii >= 1 && ii <= mt->nrows, 1, "Invalid row index");
+    unsigned jj = luaL_checkint(L, 3);
+    luaL_argcheck(L, jj >= 1 && jj <= mt->ncols, 2, "Invalid column index");
+
+    double val = sdata(mt.get(), ii, jj);
+    lua_pushnumber(L, val);
+    return 1;
+}
+
+static int Matrix_set(lua_State *L)
+{
+    Matrix mt = tl_check<Matrix>(L, 1);
+    unsigned ii = luaL_checkint(L, 2);
+    luaL_argcheck(L, ii >= 1 && ii <= mt->nrows, 1, "Invalid row index");
+    unsigned jj = luaL_checkint(L, 3);
+    luaL_argcheck(L, jj >= 1 && jj <= mt->ncols, 2, "Invalid column index");
+
+    double newval = luaL_checknumber(L, 4);
+    printf("in set(%d, %d) = %f\n", ii, jj, newval);
+    sdata(mt.get(), ii, jj) = newval;
+    return 0;
+}
+
+static int Matrix_index2(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TTABLE);
+    unsigned jj = luaL_checkint(L, 2);
+    
+    // get original matrix
+    lua_pushvalue(L, lua_upvalueindex(1));
+
+    // get ref function
+    lua_pushliteral(L, "ref");
+    lua_gettable(L, -2);
+    
+    // setup argument 1 (the matrix itself)
+    lua_pushvalue(L, -2);
+
+    // setup arg 2, the row index
+    lua_pushvalue(L, lua_upvalueindex(2));
+
+    // setup arg 3, the column index
+    lua_pushinteger(L, jj);
+    
+    // call and return
+    lua_call(L, 3, 1);
+    return 1;
+}
+
+static int Matrix_newindex2(lua_State *L)
+{
+    luaL_checktype(L, 1, LUA_TTABLE);
+    unsigned jj = luaL_checkint(L, 2);
+    double val = luaL_checknumber(L, 3);
+    printf("val = %g\n", val);
+    
+    // get original matrix
+    lua_pushvalue(L, lua_upvalueindex(1));
+
+    // get ref function
+    lua_pushliteral(L, "set");
+    lua_gettable(L, -2);
+    
+    // setup argument 1 (the matrix itself)
+    lua_pushvalue(L, -2);
+
+    // setup arg 2, the row index
+    lua_pushvalue(L, lua_upvalueindex(2));
+
+    // setup arg 3, the column index
+    lua_pushinteger(L, jj);
+    
+    // setup arg 4, the new value
+    lua_pushvalue(L, 3);
+    
+    // call and return
+    lua_call(L, 4, 0);
+    return 0;
+}
+
+static int Matrix_index1(lua_State *L)
+{
+    Matrix mt = tl_check<Matrix>(L, 1);
+    unsigned ii = luaL_checkint(L, 2);
+
+    // create an empty table, so that we can hack its metatable
+    lua_newtable(L);
+
+    // create a metatable from scratch, and set its __index &
+    // __newindex metamethods. 
+    lua_newtable(L);
+    lua_pushliteral(L, "__index");
+    lua_pushvalue(L, 1);
+    lua_pushvalue(L, 2);
+    lua_pushcclosure(L, Matrix_index2, 2);
+    lua_settable(L, -3);
+    
+    lua_pushliteral(L, "__newindex");
+    lua_pushvalue(L, 1);
+    lua_pushvalue(L, 2);
+    lua_pushcclosure(L, Matrix_newindex2, 2);
+    lua_settable(L, -3);
+    
+    // set metatable + return temp table.
+    lua_setmetatable(L, -2);
+
+    return 1;
+}
+
+#define GETTER(typ, field) tl_getter_shared<matrix, typ, &matrix::field>
+
+static void
+register_Matrices(lua_State *L)
+{
+    tl_wrapper<Matrix> w(true);
+    w.prop("nrows", GETTER(unsigned, nrows));
+    w.prop("ncols", GETTER(unsigned, ncols));
+    w["ref"] = Matrix_ref;
+    w["set"] = Matrix_set;
+    w["__numeric_index"] = Matrix_index1;
+    w.registerm(L);
+}
+
+#undef GETTER
+
+//----------------------------------------------------------------------!
+
 static const struct luaL_reg felt_reg[] = {
     {"version", version},
     {"felt", felt},
@@ -861,6 +1057,7 @@ static const struct luaL_reg felt_reg[] = {
     {"pelements", pelements},
     {"Node", Node_new},
     {"Element", Element_new},
+    {"Matrix", Matrix_new},
     {NULL, NULL} /* sentinel */
 };
 
@@ -947,6 +1144,8 @@ register_funs(lua_State *L, const char *tbl)
     
     register_ProblemPtr(L);
 
+    register_Matrices(L);
+    
     tl_array_wrapper<unsigned>().registerm(L);
     
     tl_array_wrapper<Node>().registerm(L);

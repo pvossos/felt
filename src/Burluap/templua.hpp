@@ -313,7 +313,21 @@ template<typename T>
 int tl_index_wprop(lua_State *L)
 {
     const std::string name = tl_metaname<T>();
-        
+
+    // if numeric, check __numeric_index in metatable
+    if (LUA_TNUMBER == lua_type(L, 2)) {
+        lua_getmetatable(L, 1);
+        lua_pushliteral(L, "__numeric_index");
+        lua_rawget(L, -2);
+        if (!lua_isnil(L, -1)) {
+            lua_pushvalue(L, 1);
+            lua_pushvalue(L, 2);
+            lua_call(L, 2, 1);
+            return 1;
+        }
+        lua_pop(L, 1);
+    }
+    
     // check if key actually exists in metatable
     luaL_getmetatable(L, name.c_str());
     lua_pushvalue(L, 2);

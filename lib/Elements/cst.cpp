@@ -30,6 +30,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
@@ -39,21 +40,41 @@ static int CSTPlaneStrainEltStress (Element element);
 static int CSTPlaneStressEltSetup (Element element, char mass_mode, int tangent);
 static int CSTPlaneStressEltStress (Element element);
 
-struct definition CSTPlaneStrainDefinition = {
-    "CSTPlaneStrain", CSTPlaneStrainEltSetup, CSTPlaneStrainEltStress, 
-    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
-
-struct definition CSTPlaneStressDefinition = {
-    "CSTPlaneStress", CSTPlaneStressEltSetup, CSTPlaneStressEltStress, 
-    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
-
 static void    CSTLumpedMassMatrix (Element element, double area);
 static Matrix  CSTLocalB 	    (Element element, double *area);
 static Vector	CSTEquivNodalForces (Element element, int *err_count);
 static int	CSTElementSetup (Element element, char mass_mode, int tangent, unsigned int type);
 static int	CSTElementStress    (Element element, unsigned int type);
+
+void CSTPlaneStrainInit()
+{
+    Definition dd(new definition_t("CSTPlaneStrain"));
+    dd->setup = CSTPlaneStrainEltSetup;
+    dd->stress = CSTPlaneStrainEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
+
+void CSTPlaneStressInit()
+{
+    Definition dd(new definition_t("CSTPlaneStress"));
+    dd->setup = CSTPlaneStressEltSetup;
+    dd->stress = CSTPlaneStressEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 CSTPlaneStrainEltSetup(Element element, char mass_mode, int tangent)

@@ -37,14 +37,25 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int htkEltSetup (Element element, char mass_mode, int tangent);
 static int htkEltStress (Element element);
 
-struct definition htkDefinition = {
-   "htk", htkEltSetup, htkEltStress, 
-   Planar, 4, 4, 5, 3, {0, 3, 4, 5, 0, 0, 0}, 0
-};
+void htkInit()
+{
+    Definition dd(new definition_t("htk"));
+    dd->setup = htkEltSetup;
+    dd->stress = htkEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 4;
+    dd->shapenodes = 4;
+    dd->numstresses = 5;
+    dd->numdofs = 3;
+    dd->dofs = {0, 3, 4, 5, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 # define TRIANGLE	3
 # define QUADRILATERAL	4

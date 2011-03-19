@@ -28,15 +28,10 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
-
+# include "definition.h"
 
 static int beamEltSetup (Element element, char mass_mode, int tangent);
 static int beamEltStress (Element element);
-
-struct definition beamDefinition = {
-    "beam", beamEltSetup, beamEltStress, 
-    Linear, 2, 2, 3, 3, {0, 1, 2, 6, 0, 0, 0}, 1
-};
 
 static Matrix BeamLocalK           (Element element);
 static Matrix BeamTransformMatrix  (Element element);
@@ -44,6 +39,21 @@ static Vector BeamEquivNodalForces (Element element, int *err_count);
 static Matrix BeamConsistentMassMatrix (Element element);
 static Matrix BeamLumpedMassMatrix (Element element);
 static void   ResolveEndForces	    (Vector equiv, double wa, double wb, Direction direction, double L);
+
+void beamInit()
+{
+    Definition dd(new definition_t("beam"));
+    dd->setup = beamEltSetup;
+    dd->stress = beamEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 3;
+    dd->numdofs = 3;
+    dd->dofs = {0, 1, 2, 6, 0, 0, 0};
+    dd->retainK = 1;
+    AddDefinition(dd);
+}
 
 static int
 beamEltSetup(Element element, char mass_mode, int tangent)

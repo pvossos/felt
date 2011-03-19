@@ -29,16 +29,25 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
-
+# include "definition.h"
 
 static int trussEltSetup (Element element, char mass_mode, int tangent); 
 static int trussEltStress (Element element); 
 
-struct definition trussDefinition = {
-    "truss", trussEltSetup, trussEltStress, 
-    Linear, 2, 2, 1, 3, {0, 1, 2, 3, 0, 0, 0}, 0
-};
-
+void trussInit()
+{
+    Definition dd(new definition_t("truss"));
+    dd->setup = trussEltSetup;
+    dd->stress = trussEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 1;
+    dd->numdofs = 3;
+    dd->dofs = {0, 1, 2, 3, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static Matrix
 TrussMassMatrix(Element element, char mass_mode)

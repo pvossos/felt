@@ -61,8 +61,6 @@ FindDOFS(void)
       problem.dofs_num[i] = 0;
    }
 
-   otype = NULL;	
- 
    for (i = 1 ; i <= ne ; i++) {
 
       type = e[i] -> definition;
@@ -147,7 +145,7 @@ ConstructStiffness(int *status)
           Mrows(element[i] -> K) > ndofs*nodes) {
 
          error ("%s element %d has an invalid stiffness matrix",
-                element[i] -> definition -> name, element[i] -> number);
+                element[i] -> definition -> name.c_str(), element[i] -> number);
 
          err_count ++;
          continue;

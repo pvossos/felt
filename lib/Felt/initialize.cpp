@@ -26,48 +26,48 @@
 
 # include "definition.h"
 
-extern struct definition trussDefinition;
-extern struct definition beamDefinition;
-extern struct definition beam3dDefinition;
-extern struct definition timoshenkoDefinition;
-extern struct definition iso2d_PlaneStrainDefinition;
-extern struct definition iso2d_PlaneStressDefinition;
-extern struct definition quad_PlaneStrainDefinition;
-extern struct definition quad_PlaneStressDefinition;
-extern struct definition CSTPlaneStrainDefinition;
-extern struct definition CSTPlaneStressDefinition;
-extern struct definition htkDefinition;
-extern struct definition brickDefinition;
-extern struct definition springDefinition;
-extern struct definition ctgDefinition;
-extern struct definition rodDefinition;
-extern struct definition axisymmetricDefinition;
+extern void trussInit();
+extern void beamInit();
+extern void beam3dInit();
+extern void timoshenkoInit();
+extern void iso2d_PlaneStrainInit();
+extern void iso2d_PlaneStressInit();
+extern void quad_PlaneStrainInit();
+extern void quad_PlaneStressInit();
+extern void CSTPlaneStrainInit();
+extern void CSTPlaneStressInit();
+extern void htkInit();
+extern void brickInit();
+extern void springInit();
+extern void ctgInit();
+extern void rodInit();
+extern void axisymmetricInit();
 
 # ifdef CONTRIB
-extern struct definition PLTGZ4Definition;
+extern void PLTGZ4Init();
 # endif
 
 void
 add_all_definitions(void)
 {
-    AddDefinition (&trussDefinition);
-    AddDefinition (&beamDefinition);
-    AddDefinition (&beam3dDefinition);
-    AddDefinition (&iso2d_PlaneStrainDefinition);
-    AddDefinition (&iso2d_PlaneStressDefinition);
-    AddDefinition (&quad_PlaneStrainDefinition);
-    AddDefinition (&quad_PlaneStressDefinition);
-    AddDefinition (&CSTPlaneStrainDefinition);
-    AddDefinition (&CSTPlaneStressDefinition);
-    AddDefinition (&timoshenkoDefinition);
-    AddDefinition (&htkDefinition);
-    AddDefinition (&brickDefinition);
-    AddDefinition (&springDefinition);
-    AddDefinition (&ctgDefinition);
-    AddDefinition (&rodDefinition);
-    AddDefinition (&axisymmetricDefinition);
+    trussInit();
+    beamInit();
+    beam3dInit();
+    iso2d_PlaneStrainInit();
+    iso2d_PlaneStressInit();
+    quad_PlaneStrainInit();
+    quad_PlaneStressInit();
+    CSTPlaneStrainInit();
+    CSTPlaneStressInit();
+    timoshenkoInit();
+    htkInit();
+    brickInit();
+    springInit();
+    ctgInit();
+    rodInit();
+    axisymmetricInit();
 
 # ifdef CONTRIB
-    AddDefinition (&PLTGZ4Definition);
+    PLTGZ4Init();
 # endif
 }

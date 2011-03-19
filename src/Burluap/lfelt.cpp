@@ -595,7 +595,7 @@ template<> std::string tl_metaname<Definition>()
 template<> int tl_tostring<Definition>(lua_State *L)
 {
     Definition dd = tl_check<Definition>(L, 1);
-    lua_pushfstring(L, "[Definition %s @ %p]", dd->name, dd);
+    lua_pushfstring(L, "[Definition %s]", dd->name.c_str());
     return 1;
 }
 
@@ -659,8 +659,7 @@ static int Definition_new(lua_State *L)
     luaL_checktype(L, 8, LUA_TTABLE);
     bool retainK = lua_toboolean(L, 9);
     
-    Definition df = new definition;
-    df->name = strdup(name);
+    Definition df(new definition_t(name));
     df->shape = shape;
     df->numnodes = numnodes;
     df->shapenodes = shapenodes;
@@ -709,8 +708,8 @@ static int Definition_get_dofs(lua_State *L)
     return 1;
 }
 
-#define GETTER(typ, field) tl_getter<definition, typ, &definition::field>
-#define GETSET(typ, field) tl_getset<definition, typ, &definition::field>()
+#define GETTER(typ, field) tl_getter<definition_t, typ, &definition_t::field>
+#define GETSET(typ, field) tl_getset<definition_t, typ, &definition_t::field>()
 
 void register_Definitions(lua_State *L)
 {
@@ -831,11 +830,8 @@ int add_definition(lua_State *L)
     luaL_checktype(L, 2, LUA_TFUNCTION);
     luaL_checktype(L, 3, LUA_TFUNCTION);
 
-
-
-
     // alloc
-    Definition def = new definition;
+    Definition def(new definition_t(name));
 
     return 0;
 }

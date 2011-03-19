@@ -108,7 +108,7 @@ ConstructDynamic(Vector *Kr, Vector *Mr, Vector *Cr)
           Mrows(element[i] -> K) > ndofs*nodes) {
 
           error ("invalid element matrices setup for %s element %d",
-                 element[i] -> definition -> name, element[i] -> number);
+                 element[i] -> definition -> name.c_str(), element[i] -> number);
 
           err_count ++;
           continue;

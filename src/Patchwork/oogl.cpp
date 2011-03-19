@@ -181,11 +181,11 @@ int WriteOoglFile (char *filename)
       }
    }
 
-   const char *element_name = problem.elements [1] -> definition -> name;
+   std::string element_name = problem.elements [1] -> definition -> name;
    
    fprintf (output,"LIST\n");
    
-if (strncmp (element_name, "beam", 4) == 0) {
+   if (element_name.substr(0, 4) == "beam") {
    fprintf (output,"{VECT\n");
    fprintf (output,"%d %d 1\n",problem.elements.size(),2*problem.elements.size());
    fprintf (output,"\n");
@@ -211,7 +211,7 @@ if (strncmp (element_name, "beam", 4) == 0) {
    }
    fputs (color1,output);
 }
-else if (strncmp (element_name, "CST", 3) == 0) {      
+else if (element_name.substr(0, 3) == "CST") {      
    for (i = 1 ; i <= problem.elements.size() ; i++) {
    fprintf (output,"{ QUAD  ");
     
@@ -228,7 +228,7 @@ else if (strncmp (element_name, "CST", 3) == 0) {
       fprintf (output,"}\n");
    }     
 }
-else if (strncmp (element_name, "quad", 4) == 0) {      
+else if (element_name.substr(0, 4) == "quad") {      
    for (i = 1 ; i <= problem.elements.size() ; i++) {
    fprintf (output,"{ QUAD  ");
     
@@ -243,7 +243,7 @@ else if (strncmp (element_name, "quad", 4) == 0) {
       fprintf (output,"}\n");
    }     
 }
-else if (strncmp (element_name, "truss", 5) == 0) {      
+else if (element_name.substr(0, 5) ==  "truss") {      
    for (i = 1 ; i <= problem.elements.size() ; i++) {
    fprintf (output,"{ VECT \n1 2 1\n2\n1\n\n");
     

@@ -434,7 +434,7 @@ Definition ElementListDefinition (ElementList elementl)
     if (item -> list_index != XAW_LIST_NONE)
        return LookupDefinition (element_names [item -> list_index]);
     else
-       return NULL;
+       return Definition();
 }
 
 /************************************************************************
@@ -459,7 +459,7 @@ static int	count;
 
 static int SetName (Definition item)
 {
-    element_names [count ++] = XtNewString (item -> name);
+    element_names [count ++] = XtNewString (item -> name.c_str());
     return 0;
 }
 

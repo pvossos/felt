@@ -25,9 +25,9 @@
  *		up element definitions.					*
  ************************************************************************/
 
-# include <string.h>
 # include "problem.h"
 # include "definition.h"
+# include "setaux.hpp"
 
 int
 AddDefinition(Definition definition)
@@ -42,10 +42,7 @@ RemoveDefinition(Definition definition)
 }
 
 Definition
-LookupDefinition(char *name)
+LookupDefinition(const char *name)
 {
-    struct definition definition;
-    definition.name = name;
-    std::set<Definition, LtDefinition>::iterator it = problem.definition_set.find(&definition);
-    return it != problem.definition_set.end() ? *it : NULL;
+    return SetSearch(problem.definition_set, name);
 }

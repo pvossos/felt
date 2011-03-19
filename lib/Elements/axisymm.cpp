@@ -31,17 +31,28 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int axisymmetricEltSetup(Element element, char mass_mode, int tangent);
 static int axisymmetricEltStress(Element element);
 
-struct definition axisymmetricDefinition = {
-    "axisymmetric", axisymmetricEltSetup, axisymmetricEltStress, 
-    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
-
 static Matrix  AxisymmetricLocalB           (Element element, double *area, double *r_avg, double *z_avg);
 static Vector  AxisymmetricEquivNodalForces (Element element, double area, int *err_count);
+
+void axisymmetricInit()
+{
+    Definition dd(new definition_t("axisymmetric"));
+    dd->setup = axisymmetricEltSetup;
+    dd->stress = axisymmetricEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 axisymmetricEltSetup(Element element, char mass_mode, int tangent)

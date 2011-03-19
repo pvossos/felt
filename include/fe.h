@@ -86,8 +86,10 @@ typedef boost::shared_ptr<element_t> Element;
 
 /* An element definition */
 
-typedef struct definition {
-    const char    *name;		/* element name			      */
+struct definition_t {
+    definition_t(const char*name = NULL);
+    ~definition_t();
+    std::string name;		/* element name			      */
     int    (*setup) (Element, char, int);	/* initialization function	      */
     int    (*stress) (Element);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
@@ -98,13 +100,15 @@ typedef struct definition {
     unsigned dofs [7];		/* degrees of freedom                 */
     unsigned retainK;		/* retain element K after assemblage  */
     void *udata;            /* user data pointer */
-} *Definition;
+};
+
+typedef boost::shared_ptr<definition_t> Definition;
 
 struct LtDefinition
 {
      bool operator()(const Definition a, const Definition b) const
           {
-               return strcmp(a->name,b->name) < 0;
+               return a->name < b->name;
           }
 };
 
@@ -250,7 +254,7 @@ struct LtNode
 /* An element */
 
 struct element_t {
-    element_t(unsigned number = 0, Definition defn = NULL);
+    element_t(unsigned number = 0, Definition defn = Definition());
     ~element_t();
     char       *aux;			/* auxillary data pointer 	*/
     unsigned    number;			/* element number         	*/

@@ -631,12 +631,12 @@ int main (int argc, char **argv)
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
-          RemoveConstrainedDOF (K, M, C, &Kcond, &Mcond, &Ccond);
+          RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond);
 
           if (matrices)
              PrintGlobalMatrices (fp_out, Mcond, Ccond, Kcond);
  
-          status = ComputeEigenModes (Kcond, Mcond, &lambda, &x);
+          status = ComputeEigenModes (Kcond, Mcond, lambda, x);
 
           if (status == M_NOTPOSITIVEDEFINITE)
              Fatal ("coefficient matrix is not positive definite.");
@@ -650,7 +650,7 @@ int main (int argc, char **argv)
              PlotModeShapes (x, fp_out);
 */           
           if (!eigen) {
-             FormModalMatrices (x, Mcond, Ccond, Kcond, &Mm, &Cm, &Km, orthonormal);
+             FormModalMatrices (x, Mcond, Ccond, Kcond, Mm, Cm, Km, orthonormal);
              WriteModalResults (fp_out, Mm, Cm, Km, lambda);
           }
            

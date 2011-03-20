@@ -478,12 +478,12 @@ int SolveProblem (void)
           break;
        }
 
-       RemoveConstrainedDOF (K, M, C, &Kcond, &Mcond, &Ccond);
+       RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond);
  
        if (solution -> matrices)
           PrintGlobalMatrices (output, Mcond, Ccond, Kcond);
 
-       status = ComputeEigenModes (Kcond, Mcond, &lambda, &x);
+       status = ComputeEigenModes (Kcond, Mcond, lambda, x);
        if (status == M_NOTPOSITIVEDEFINITE) {
           error ("coefficient matrix is not positive definite.");
           error_flag = 1;
@@ -504,7 +504,7 @@ int SolveProblem (void)
        WriteEigenResults (lambda, x, solution -> title, output);
        
        if (!solution -> eigen) {
-          FormModalMatrices (x, Mcond, Ccond, Kcond, &Mm, &Cm, &Km, solution -> orthonormal);
+          FormModalMatrices (x, Mcond, Ccond, Kcond, Mm, Cm, Km, solution -> orthonormal);
           WriteModalResults (output, Mm, Cm, Km, lambda);
        }
 

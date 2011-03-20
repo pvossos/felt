@@ -261,7 +261,7 @@ ConstructStiffness(int *status)
 }
 
 void
-RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond, Matrix *Ccond)
+RemoveConstrainedDOF(const Matrix &K, const Matrix &M, const Matrix &C, Matrix &Kcond, Matrix &Mcond, Matrix &Ccond)
 {
     unsigned active;
    unsigned	*dofs;
@@ -387,10 +387,9 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 	 * set the pointers for return
 	 */
 
-   *Kcond = Kc;
-   *Mcond = Mc;
-   if (C)
-      *Ccond = Cc;
+   Kcond = Kc;
+   Mcond = Mc;
+   Ccond = Cc;
    return;
 }
 

@@ -382,8 +382,8 @@ void ZeroConstrainedDOF(const Vector &K, const Vector &F, Vector *Kc, Vector *Fc
   stiffness and mass matrices by removing those rows and columns
   entirely.
 */
-void RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, 
-                          Matrix *Kcond, Matrix *Mcond, Matrix *Ccond);
+void RemoveConstrainedDOF(const Matrix &K, const Matrix &M, const Matrix &C, 
+                          Matrix &Kcond, Matrix &Mcond, Matrix &Ccond);
 
 /*!
   Zeros out the row and column given by dof.  Places a one on the
@@ -496,7 +496,7 @@ int CheckAnalysisParameters(AnalysisType mode);
 	 * routines in modal.c
 	 */
 
-int ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r);
+int ComputeEigenModes(const Matrix &K, const Matrix &M, Matrix &lambda_r, Matrix &x_r);
 
 /*!
   Given a table of mode shapes and a list of nodes and active dofs,
@@ -507,9 +507,8 @@ int ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r);
 */
 Matrix ModalNodalDisplacements(Matrix x);
 
-int FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, 
-                      Matrix *Mr, Matrix *Cr, Matrix *Kr, 
-                      int ortho);
+int FormModalMatrices(Matrix &u, const Matrix &m, const Matrix &c, const Matrix &k, 
+                      Matrix &Mr, Matrix &Cr, Matrix &Kr, int ortho);
 
 	/*
 	 * routines in spectral.c

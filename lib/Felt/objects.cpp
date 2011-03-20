@@ -215,7 +215,8 @@ definition_t::definition_t(const char *name)
 
 definition_t::~definition_t()
 {
-    delete this->udata;
+    if (this->udata)
+        free(this->udata);
 }
 
 void

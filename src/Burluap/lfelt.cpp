@@ -676,7 +676,11 @@ static int Definition_new(lua_State *L)
     }
     
     // setup udata & callbacks
-    DefnUdata *du = new DefnUdata;
+
+    // ATTN: why not call new here? because this is stored as a void*
+    // in definition struct, and delete wouldn't know how to
+    // deallocate it. free otoh, works ok.
+    DefnUdata *du = (DefnUdata *) calloc(1, sizeof(DefnUdata));
     du->L = L;
     lua_pushvalue(L, 2);
     du->setup_ref = luaL_ref(L, LUA_REGISTRYINDEX);

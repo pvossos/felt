@@ -1036,6 +1036,45 @@ static int Matrix_index1(lua_State *L)
     return 1;
 }
 
+static int Matrix_add(lua_State *L)
+{
+    Matrix ma = tl_check<Matrix>(L, 1);
+    Matrix mb = tl_check<Matrix>(L, 2);
+    Matrix mc = CreateFullMatrix(ma->nrows, ma->ncols);
+    AddMatrices(mc, ma, mb);
+    tl_push<Matrix>(L, mc);
+    return 1;
+}
+
+static int Matrix_sub(lua_State *L)
+{
+    Matrix ma = tl_check<Matrix>(L, 1);
+    Matrix mb = tl_check<Matrix>(L, 2);
+    Matrix mc = CreateFullMatrix(ma->nrows, ma->ncols);
+    SubtractMatrices(mc, ma, mb);
+    tl_push<Matrix>(L, mc);
+    return 1;
+}
+
+static int Matrix_mul(lua_State *L)
+{
+    Matrix ma = tl_check<Matrix>(L, 1);
+    Matrix mb = tl_check<Matrix>(L, 2);
+    Matrix mc = CreateFullMatrix(ma->nrows, mb->ncols);
+    MultiplyMatrices(mc, ma, mb);
+    tl_push<Matrix>(L, mc);
+    return 1;
+}
+
+static int Matrix_transpose(lua_State *L)
+{
+    Matrix ma = tl_check<Matrix>(L, 1);
+    Matrix mb = CreateFullMatrix(ma->ncols, ma->nrows);
+    TransposeMatrix(mb, ma);
+    tl_push<Matrix>(L, mb);
+    return 1;
+}
+
 #define GETTER(typ, field) tl_getter_shared<matrix, typ, &matrix::field>
 
 static void
@@ -1046,7 +1085,11 @@ register_Matrices(lua_State *L)
     w.prop("ncols", GETTER(unsigned, ncols));
     w["ref"] = Matrix_ref;
     w["set"] = Matrix_set;
+    w["transpose"] = Matrix_transpose;
     w["__numeric_index"] = Matrix_index1;
+    w["__add"] = Matrix_add;
+    w["__sub"] = Matrix_sub;
+    w["__mul"] = Matrix_mul;
     w.registerm(L);
 }
 

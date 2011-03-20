@@ -31,6 +31,7 @@ extern "C" {
 #include "problem.h"
 #include "definition.h"
 #include "objects.h"
+#include "transient.hpp"
 
 //----------------------------------------------------------------------!
 
@@ -1145,6 +1146,14 @@ static int Matrix_transpose(lua_State *L)
     return 1;
 }
 
+// FIXME: maybe merge in __tostring
+static int Matrix_print(lua_State *L)
+{
+    Matrix m = tl_check<Matrix>(L, 1);
+    PrintMatrix(m, NULL);
+    return 0;
+}
+
 #define GETTER(typ, field) tl_getter_shared<matrix, typ, &matrix::field>
 
 static void
@@ -1155,6 +1164,7 @@ register_Matrices(lua_State *L)
     w.prop("ncols", GETTER(unsigned, ncols));
     w["ref"] = Matrix_ref;
     w["set"] = Matrix_set;
+    w["print"] = Matrix_print;
     w["transpose"] = Matrix_transpose;
     w["__numeric_index"] = Matrix_index1;
     w["__add"] = Matrix_add;
@@ -1184,6 +1194,16 @@ static int construct_stiffness(lua_State *L)
     return 1;
 }
 
+static int construct_dynamic(lua_State *L)
+{
+    Matrix K, M, C;
+    ConstructDynamic(&K, &M, &C);
+    tl_push(L, K);
+    tl_push(L, M);
+    tl_push(L, C);
+    return 3;
+}
+
 static int construct_forces(lua_State *L)
 {
     Vector F = ConstructForceVector();
@@ -1206,6 +1226,19 @@ static int zero_constrained(lua_State *L)
     return 2;
 }
 
+static int remove_constrained(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix M = tl_check<Matrix>(L, 2);
+    Matrix C = tl_check<Matrix>(L, 3);
+    Matrix Kc, Mc, Cc;
+    RemoveConstrainedDOF(K, M, C, Kc, Mc, Cc);
+    tl_push<Matrix>(L, Kc);
+    tl_push<Matrix>(L, Mc);
+    tl_push<Matrix>(L, Cc);
+    return 3;
+}
+
 static int solve_displacements(lua_State *L)
 {
     Matrix K = tl_check<Matrix>(L, 1);
@@ -1213,6 +1246,41 @@ static int solve_displacements(lua_State *L)
     Vector D = SolveForDisplacements(K, F);
     tl_push<Vector>(L, D);
     return 1;
+}
+
+static int compute_modes(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix M = tl_check<Matrix>(L, 2);
+    Matrix lambda_r, x_r;
+    ComputeEigenModes(K, M, lambda_r, x_r);
+    tl_push<Matrix>(L, lambda_r);
+    tl_push<Matrix>(L, x_r);
+    return 2;
+}
+
+static int normalize_by_first(lua_State *L)
+{
+    Matrix a = tl_check<Matrix>(L, 1);
+    Matrix b = CreateCopyMatrix(a);
+    NormalizeByFirst(b, a);
+    tl_push<Matrix>(L, b);
+    return 1;
+}
+
+static int form_modal(lua_State *L)
+{
+    Matrix u = tl_check<Matrix>(L, 1);
+    Matrix Mc = tl_check<Matrix>(L, 2);
+    Matrix Cc = tl_check<Matrix>(L, 3);
+    Matrix Kc = tl_check<Matrix>(L, 4);
+    bool orthop = tl_check<bool>(L, 5);
+    Matrix Mm, Cm, Km;
+    FormModalMatrices(u, Mc, Cc, Kc, Mm, Cm, Km, (int) orthop);
+    tl_push(L, Mm);
+    tl_push(L, Cm);
+    tl_push(L, Km);
+    return 3;
 }
 
 static int element_stresses(lua_State *L)
@@ -1234,9 +1302,14 @@ static const struct luaL_reg felt_reg[] = {
 
     {"find_dofs", find_dofs},
     {"construct_stiffness", construct_stiffness},
+    {"construct_dynamic", construct_dynamic},
     {"construct_forces", construct_forces},
     {"zero_constrained", zero_constrained},
+    {"remove_constrained", remove_constrained},
     {"solve_displacements", solve_displacements},
+    {"compute_modes", compute_modes},
+    {"normalize_by_first", normalize_by_first},
+    {"form_modal", form_modal},
     {"element_stresses", element_stresses},
     
     {NULL, NULL} /* sentinel */

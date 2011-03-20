@@ -395,7 +395,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 }
 
 void
-ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
+ZeroConstrainedDOF(const Vector &K, const Vector &F, Vector *Kc, Vector *Fc)
 {
    unsigned	active;
    unsigned	*dofs;
@@ -558,7 +558,7 @@ ClearNodes(void)
 }
   
 int
-FactorStiffnessMatrix(Vector K)
+FactorStiffnessMatrix(Vector &K)
 {
    unsigned	 active;
    unsigned	*dofs;
@@ -588,7 +588,7 @@ FactorStiffnessMatrix(Vector K)
 }
 
 Vector
-SolveForDisplacements(Vector K, Vector F)
+SolveForDisplacements(Vector &K, Vector &F)
 {
    if (FactorStiffnessMatrix (K))
        return Vector();
@@ -1275,7 +1275,7 @@ RemoveConstrainedMatrixDOF(Matrix a)
 }
 
 int
-ZeroConstrainedMatrixDOF(Matrix b, Matrix a)
+ZeroConstrainedMatrixDOF(Matrix &b, const Matrix &a)
 {
    unsigned	active;
    unsigned	*dofs;

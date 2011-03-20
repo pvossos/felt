@@ -34,6 +34,11 @@ extern "C" {
 
 //----------------------------------------------------------------------!
 
+void SetupStressMemory(Element element);
+double ElementLength(Element element, unsigned int coords);
+
+//----------------------------------------------------------------------!
+
 #define LUA_ENUM(L, name, val) \
     lua_pushlstring(L, #name, sizeof(#name)-1); \
     lua_pushnumber(L, val);                     \
@@ -165,10 +170,29 @@ template<> int tl_tostring<Stress>(lua_State *L)
     return 1;
 }
 
+static int Stress_len(lua_State *L)
+{
+    Stress ss = tl_check<Stress>(L, 1);
+    lua_pushinteger(L, ss->values.size());
+    return 1;
+}
+
+/*
 static int Stress_get_values(lua_State *L)
 {
     Stress ss = tl_check<Stress>(L, 1);
     tl_pushn<double>(L, ss->values.c_ptr(), ss->values.size());
+    return 1;
+}
+*/
+
+static int Stress_numeric_index(lua_State *L)
+{
+    Stress ss = tl_check<Stress>(L, 1);
+    unsigned ii = tl_check<unsigned>(L, 2);
+    if (!(ii >= 1 && ii <= ss->values.size()))
+        return 0;
+    tl_push(L, ss->values[ii]);
     return 1;
 }
 
@@ -180,7 +204,9 @@ void register_Stresses(lua_State *L)
     w.prop("x", GETSET(double, x));
     w.prop("y", GETSET(double, y));
     w.prop("z", GETSET(double, z));
-    w.prop("values", Stress_get_values);
+    w["__len"] = Stress_len;
+    w["__numeric_index"] = Stress_numeric_index;
+    //w.prop("values", Stress_get_values);
     w.registerm(L);
 }
 
@@ -210,6 +236,22 @@ static int Element_get_nodes(lua_State *L)
     return 1;
 }
 
+static int Element_get_ninteg(lua_State *L)
+{
+    Element ee = tl_check<Element>(L, 1);
+    tl_push(L, ee->ninteg);
+    return 1;
+}
+
+static int Element_set_ninteg(lua_State *L)
+{
+    Element ee = tl_check<Element>(L, 1);
+    unsigned ninteg = tl_check<unsigned>(L, 2);
+    ee->ninteg = ninteg;
+    SetupStressMemory(ee);
+    return 0;
+}
+
 static int Element_get_stresses(lua_State *L)
 {
     Element ee = tl_check<Element>(L, 1);
@@ -236,21 +278,37 @@ static int Element_new(lua_State *L)
     return 1;
 }
 
+static int Element_length(lua_State *L)
+{
+    Element ee = tl_check<Element>(L, 1);
+    luaL_argcheck(L, ee->definition->shape == Linear, 1, 
+                  "length of non-linear element is undefined");
+    double val = ElementLength(ee, 3);
+    lua_pushnumber(L, val);
+    return 1;
+}
+
 #define GETTER(typ, field) tl_getter_shared<element_t, typ, &element_t::field>
+#define GETSET(typ, field) tl_getset_shared<element_t, typ, &element_t::field>()
 
 void register_Elements(lua_State *L)
 {
     tl_wrapper<Element> w(true);
     w.prop("number", GETTER(unsigned, number));
     w.prop("nodes", Element_get_nodes);
+    w.prop("K", GETSET(Matrix, K));
+    w.prop("M", GETSET(Matrix, M));
+    w.prop("ninteg", Element_get_ninteg, Element_set_ninteg);
     w.prop("distributed", Element_get_distributed);
     w.prop("stresses", Element_get_stresses);
     w.prop("material", GETTER(Material, material));
     w.prop("definition", GETTER(Definition, definition));
+    w.prop("length", Element_length);
     w.registerm(L);
 }
 
 #undef GETTER
+#undef GETSET
 
 //----------------------------------------------------------------------!
 
@@ -845,9 +903,19 @@ static int ProblemPtr_lookup_definition(lua_State *L)
     return 1;
 }
 
+static int ProblemPtr_get_mode(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
+    tl_push<AnalysisType>(L, pp->mode);
+    return 1;
+}
+
+#define GETTER(typ, field) tl_getter<Problem, typ, &Problem::field>
+
 void register_ProblemPtr(lua_State *L)
 {
     tl_wrapper<ProblemPtr> w(true);
+    w.prop("mode", GETTER(AnalysisType, mode));
     w.prop("nodes", ProblemPtr_get_nodes);
     w.prop("elements", ProblemPtr_get_elements);
     w["add_definition"] = ProblemPtr_add_definition;
@@ -855,6 +923,8 @@ void register_ProblemPtr(lua_State *L)
     w["lookup_definition"] = ProblemPtr_lookup_definition;
     w.registerm(L);
 };
+
+#undef GETTER
 
 //----------------------------------------------------------------------!
 
@@ -1097,6 +1167,62 @@ register_Matrices(lua_State *L)
 
 //----------------------------------------------------------------------!
 
+// various free functions
+
+static int find_dofs(lua_State *L)
+{
+    int num_dofs = FindDOFS();
+    tl_push(L, num_dofs);
+    return 1;
+}
+
+static int construct_stiffness(lua_State *L)
+{
+    int status;
+    Matrix K = ConstructStiffness(&status);
+    tl_push(L, K);
+    return 1;
+}
+
+static int construct_forces(lua_State *L)
+{
+    Vector F = ConstructForceVector();
+    tl_push(L, F);
+    return 1;
+}
+
+static int zero_constrained(lua_State *L)
+{
+    Matrix k = tl_check<Matrix>(L, 1);
+    Matrix f = tl_check<Matrix>(L, 2);
+    Matrix kc = CreateCopyMatrix(k);
+    Matrix fc = CreateCopyMatrix(f);
+    // ATTN: the following funtions doesn't seem to work properly, so
+    // we wrap the other one.
+    //ZeroConstrainedMatrixDOF(mc, m);
+    ZeroConstrainedDOF(k, f, &kc, &fc);
+    tl_push<Matrix>(L, kc);
+    tl_push<Matrix>(L, fc);
+    return 2;
+}
+
+static int solve_displacements(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Vector F = tl_check<Vector>(L, 2);
+    Vector D = SolveForDisplacements(K, F);
+    tl_push<Vector>(L, D);
+    return 1;
+}
+
+static int element_stresses(lua_State *L)
+{
+    ElementStresses();
+    return 0;
+}
+
+//----------------------------------------------------------------------!
+
 static const struct luaL_reg felt_reg[] = {
     {"version", version},
     {"felt", felt},
@@ -1105,6 +1231,14 @@ static const struct luaL_reg felt_reg[] = {
     {"Node", Node_new},
     {"Element", Element_new},
     {"Matrix", Matrix_new},
+
+    {"find_dofs", find_dofs},
+    {"construct_stiffness", construct_stiffness},
+    {"construct_forces", construct_forces},
+    {"zero_constrained", zero_constrained},
+    {"solve_displacements", solve_displacements},
+    {"element_stresses", element_stresses},
+    
     {NULL, NULL} /* sentinel */
 };
 
@@ -1165,7 +1299,7 @@ register_funs(lua_State *L, const char *tbl)
         LUA_ENUM(L, StaticSubstitutionLoadRange, i); i++;        
         LUA_ENUM(L, StaticIncrementalLoadRange, i); i++;
     }
-    lua_settable(L, -1);
+    lua_settable(L, -3);
         
     lua_replace(L, LUA_ENVIRONINDEX);
 
@@ -1204,7 +1338,9 @@ register_funs(lua_State *L, const char *tbl)
     tl_array_wrapper<VarExpr>().registerm(L);
 
     tl_array_wrapper<Distributed>().registerm(L);
-
+    
+    tl_array_wrapper<Stress>().registerm(L);
+    
     // non-member functions
     luaL_register(L, tbl, felt_reg);
 

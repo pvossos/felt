@@ -309,6 +309,9 @@ struct tl_array_wrapper
 
 // properties helper, use for __index & __newindex
 
+// super-loaded __index metamethods: supports numeric indices for
+// array-like operation, properties for easy access to get_* methods
+// and if these fail, normal lookup in metatable.
 template<typename T>
 int tl_index_wprop(lua_State *L)
 {

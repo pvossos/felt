@@ -100,7 +100,7 @@ Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
 
    m -> data --;
 
-   m -> data [1] = (double *) malloc (sizeof (double) * rows * cols);
+   m -> data [1] = (double *) calloc (rows * cols, sizeof(double));
    if (m -> data [1] == NULL) {
         fprintf (stderr,"failure point 3: r = %d, c = %d\n", rows, cols);
 	Fatal ("unable to allocate full matrix");

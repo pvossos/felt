@@ -373,7 +373,7 @@ Matrix ConstructStiffness(int *status);
   element stiffness matrix laying around.  All we'll do here is make
   sure that the displacement will come out zero.
 */
-void ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc);
+void ZeroConstrainedDOF(const Vector &K, const Vector &F, Vector *Kc, Vector *Fc);
 
 /*!
   As opposed to simply zeroing out the rows and columns associated
@@ -430,12 +430,12 @@ void AssembleLoadCaseForce(Matrix F, LoadCase lc);
  displacements.  The system must not be singular (i.e. K and F should
  be condensed).
 */
-Vector SolveForDisplacements(Vector K, Vector F);
+Vector SolveForDisplacements(Vector &K, Vector &F);
 
 /*!
   Factorizes the problem stiffness matrix in place.
 */
-int FactorStiffnessMatrix(Vector K);
+int FactorStiffnessMatrix(Vector &K);
 
 void ApplyNodalDisplacements(Matrix d);
 
@@ -476,7 +476,7 @@ void LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_d
  Sort of like ZeroConstrainedDOF only simpler and more general because
  it only works on one thing at a time.
 */
-int ZeroConstrainedMatrixDOF(Matrix b, Matrix a);
+int ZeroConstrainedMatrixDOF(Matrix &b, const Matrix &a);
 
 /*
   A generalized form of RemoveConstrainedDOF for a single matrix.  If

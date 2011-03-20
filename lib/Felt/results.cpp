@@ -34,7 +34,7 @@
 # include "fe.h"
 # include "error.h"
 
-extern "C" double ElementArea(Element e, unsigned int n);
+double ElementArea(Element e, unsigned int n);
 
 /**************************************************************************
  *

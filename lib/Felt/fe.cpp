@@ -40,7 +40,7 @@
 # include "error.h"
 # include "transient.hpp"
 
-extern "C" Matrix ZeroRowCol(Matrix K, unsigned int dof);
+Matrix ZeroRowCol(Matrix K, unsigned int dof);
 
 int
 FindDOFS(void)

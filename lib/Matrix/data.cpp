@@ -51,46 +51,6 @@ double mdata (const Matrix A, unsigned int row, unsigned int col)
    return 0;
 }
 
-Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec)
-{
-   Matrix	b;
-   unsigned	i;
-   Matrix	root;
-
-   if (er > a -> nrows || ec > a -> ncols || sc < 1 || sr < 1)
-      return NULL;
-
-   if (IsCompact (a))
-      return NULL;
-
-   b = (struct matrix *) malloc (sizeof (struct matrix));
-   if (b == NULL)
-	Fatal ("unable to allocate subsection matrix");
-
-   b -> nrows = er - sr + 1;
-   b -> ncols = ec - sc + 1;
-
-   b -> data = (double **) malloc (sizeof (double *) * b -> nrows);
-   if (b -> data == NULL)
-	Fatal ("unable to allocate subsection matrix");
-   b -> data --;
-
-   for (i = 1 ; i <= b -> nrows ; i++)
-      b -> data [i] = &(a -> data [i + sr - 1][sc - 1]); 
-
-   b -> refcount = 0;
-   b -> size = 0;
-
-   root = a;
-   while (root -> parent)
-      root = root -> parent;
-
-   b -> parent = root;
-   root -> refcount ++;
-
-   return b;
-}
-
 Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
@@ -118,8 +78,6 @@ Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
    m -> nrows = rows;
    m -> ncols = cols;
    m -> size = 0;
-   m -> refcount = 1;
-   m -> parent = NULL;
 
    return m;
 }
@@ -136,21 +94,6 @@ Matrix CreateColumnVector (unsigned int size)
 
 void DestroyMatrix (Matrix m)
 {
-   if (m -> parent != NULL) {
-      m -> parent -> refcount --;
- 
-      if (m -> parent -> refcount == 0)
-         DestroyMatrix (m -> parent);
-      
-      m -> data ++;
-      free (m -> data);
-      delete m;
-
-      return;
-   } 
-   else if (-- m -> refcount)
-      return;
-
    m -> data [1] ++;
    free (m -> data [1]);
 
@@ -169,7 +112,6 @@ Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int s
    A -> nrows = rows; 
    A -> ncols = cols;
    A -> size = size;
-   A -> parent = NULL;
 
    if (diag != NULL)
        A->diag = *diag;

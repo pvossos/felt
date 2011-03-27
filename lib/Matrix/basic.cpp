@@ -488,38 +488,3 @@ int PrintMatrix (const Matrix m, FILE *fp)
    
    return 0;
 }
-
-int PrintMatrixSubsection (const Matrix m, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec, FILE *fp)
-{
-   double       val;
-   unsigned     i, j;
-
-   if (fp == NULL)
-      fp = stdout;
-
-   if (sr == 0)
-      sr = 1;
-   if (sc == 1)
-      sc = 1;
-   if (er == 0)
-      er = Mrows(m);
-   if (ec == 0)
-      ec = Mcols(m);
-
-   for (i = sr ; i <= er ; i ++) {
-      for (j = sc ; j <= ec ; j ++) {
-         val = mdata(m, i, j);
-         if (fabs(val) < PRINT_TOL)
-            val = 0.0;
-
-         fprintf (fp, "%9.4g ", val);
-         if (j % 8 == 0)
-            fprintf (fp, "\n> ");
-      }
-      fprintf (fp, "\n");
-   }
-
-   fprintf (fp, "\n");
-   
-   return 0;
-}

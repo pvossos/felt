@@ -52,51 +52,6 @@ complex cmdata (const ComplexMatrix A, unsigned int row, unsigned int col)
    return zero();
 }
 
-/* UNUSED
-static ComplexMatrix
-CreateSubsectionComplexMatrix(ComplexMatrix a, 
-                              unsigned sr, unsigned sc,
-                              unsigned er, unsigned ec)
-{
-   ComplexMatrix	b;
-   unsigned	i;
-   ComplexMatrix	root;
-
-   if (er > a -> nrows || ec > a -> ncols || sc < 1 || sr < 1)
-      return NULL;
-
-   if (IsCompact (a))
-      return NULL;
-
-   b = (struct complex_matrix *) malloc (sizeof (struct complex_matrix));
-   if (b == NULL)
-	Fatal ("unable to allocate subsection matrix");
-
-   b -> nrows = er - sr + 1;
-   b -> ncols = ec - sc + 1;
-
-   b -> data = (complex **) malloc (sizeof (complex *) * b -> nrows);
-   if (b -> data == NULL)
-	Fatal ("unable to allocate subsection matrix");
-   b -> data --;
-
-   for (i = 1 ; i <= b -> nrows ; i++)
-      b -> data [i] = &(a -> data [i + sr - 1][sc - 1]); 
-
-   b -> refcount = 0;
-   b -> size = 0;
-
-   root = a;
-   while (root -> parent)
-      root = root -> parent;
-
-   b -> parent = root;
-   root -> refcount ++;
-
-   return b;
-}
-*/
-
 ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
@@ -118,8 +73,6 @@ ComplexMatrix CreateFullComplexMatrix (unsigned int rows, unsigned int cols)
    m -> nrows = rows;
    m -> ncols = cols;
    m -> size = 0;
-   m -> refcount = 1;
-   m -> parent = NULL;
 
    return m;
 }
@@ -136,21 +89,6 @@ ComplexMatrix CreateComplexColumnVector (unsigned int size)
 
 void DestroyComplexMatrix (ComplexMatrix m)
 {
-    if (m -> parent != NULL) {
-        m -> parent -> refcount --;
- 
-        if (m -> parent -> refcount == 0)
-            DestroyComplexMatrix (m -> parent);
-      
-        m -> data ++;
-        free (m -> data);
-        delete m;
-
-        return;
-    } 
-    else if (-- m -> refcount)
-        return;
-
     m -> data [1] ++;
     free (m -> data [1]);
 
@@ -170,7 +108,6 @@ ComplexMatrix CreateCompactComplexMatrix (unsigned int rows, unsigned int cols,
    A -> nrows = rows; 
    A -> ncols = cols;
    A -> size = size;
-   A -> parent = NULL;
 
    if (diag != NULL)
        A -> diag = *diag;

@@ -35,8 +35,6 @@ struct complex_matrix {
    complex	**data;		/* matrix data				 */
    cvector1<unsigned> diag;		/* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
-   unsigned	refcount;	/* count of children			 */
-   ComplexMatrix parent;	/* parent of possible subsection	 */
 };
 
 # define rdata(m,y,x)   (((m) -> data [(y)][(x)]).r)

@@ -496,9 +496,6 @@ int CroutFactorMatrix (Matrix A)
    if (Mrows(A) != Mcols(A))
       return M_NOTSQUARE;
   
-   if (IsSubsection (A))
-      return M_SUBSECTION;
-
    n = Mrows(A);
 
    jj = 0;
@@ -573,9 +570,6 @@ int CroutBackSolveMatrix (const Matrix A, Matrix b)
     
    if (Mrows(A) != Mrows(b))
       return M_SIZEMISMATCH;
-
-   if (IsSubsection (A) || IsSubsection (b))
-      return M_SUBSECTION;
 
    n = Mrows(A);
 

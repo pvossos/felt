@@ -34,8 +34,6 @@ struct matrix {
    double	**data;		/* matrix data				 */
    cvector1<unsigned> diag; /* diagonal addresses for compact column */
    unsigned	size;		/* actual size of compact storage	 */
-   unsigned	refcount;	/* count of children			 */
-   Matrix	parent;		/* parent of possible subsection	 */
 };
 
 # define Mrows(m)          ((m) -> nrows)
@@ -47,7 +45,6 @@ struct matrix {
 # define IsSquare(m)       (Mrows(m) == Mcols(m))
 # define IsRowVector(m)    (Mrows(m) == 1)
 # define IsColumnVector(m) (Mcols(m) == 1)
-# define IsSubsection(m)   ((m) -> parent == NULL ? 0 : 1)
 
 # define sdata(m,i,j)   ((m) -> data [(i)][(j)])
 	
@@ -80,15 +77,6 @@ typedef Matrix Vector;
   \param col column index
 */
 double mdata (const Matrix A, unsigned int row, unsigned int col);
-
-/*!
-  \param a matrix to subsection
-  \param sr starting row
-  \param sc starting column
-  \param er ending row
-  \param ec ending column
-*/
-Matrix CreateSubsectionMatrix (const Matrix a, unsigned int sr, unsigned int sc, unsigned int er, unsigned int ec);
 
 /*!
   \param rows number of rows
@@ -320,17 +308,6 @@ int CompareGTEMatrices (Matrix c, const Matrix a, const Matrix b);
 */
 int PrintMatrix (const Matrix m, FILE *fp);
 
-/*!
-  \brief  print matrix m to fp
-  \param m matrix to print
-  \param sr starting row
-  \param sc starting column
-  \param er ending row
-  \param ec ending column
-  \param fp file pointer for output
-*/
-int PrintMatrixSubsection (const Matrix m, unsigned int sr, unsigned int sc,
-                           unsigned int er, unsigned int ec, FILE *fp);
 
 	/*
 	 * protoypes for the FACTORization machine

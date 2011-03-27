@@ -32,6 +32,7 @@ extern "C" {
 #include "definition.h"
 #include "objects.h"
 #include "transient.hpp"
+#include "renumber.hpp"
 
 //----------------------------------------------------------------------!
 
@@ -1179,6 +1180,32 @@ register_Matrices(lua_State *L)
 
 // various free functions
 
+static int renumber_nodes(lua_State *L)
+{
+    Node *node = problem.nodes.c_ptr1();
+    Element *element = problem.elements.c_ptr1();
+    unsigned numnodes = problem.nodes.size();
+    unsigned numelts = problem.elements.size();
+    
+    // ATTN: if we allocate the array with lua, and we push later with
+    // tl_pushn, it looks like it gets automatically freed.
+    unsigned *old_numbers = (unsigned *) lua_newuserdata(L, sizeof(unsigned) * numnodes);
+    size_t nret = RenumberNodes(node, element, numnodes, numelts, old_numbers-1);
+    if (0 == nret)
+        return 0;
+    
+    tl_pushn<unsigned>(L, old_numbers, nret);
+    return 1;
+}
+
+static int restore_numbers(lua_State *L)
+{
+    size_t size;
+    unsigned *data = tl_checkn<unsigned>(L, 1, size);
+    RestoreNodeNumbers(problem.nodes.c_ptr1(), data-1, problem.nodes.size());
+    return 0;
+}
+
 static int find_dofs(lua_State *L)
 {
     int num_dofs = FindDOFS();
@@ -1311,6 +1338,8 @@ static const struct luaL_reg felt_reg[] = {
     {"normalize_by_first", normalize_by_first},
     {"form_modal", form_modal},
     {"element_stresses", element_stresses},
+    {"renumber_nodes", renumber_nodes},
+    {"restore_numbers", restore_numbers},
     
     {NULL, NULL} /* sentinel */
 };

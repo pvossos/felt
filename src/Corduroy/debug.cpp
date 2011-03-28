@@ -56,7 +56,7 @@ int WriteCorduroyFile (const char *filename)
 	line = generator.lines [i];
 
 	printf ("line\n");
-        printf ("element-type = %s\n", line -> definition -> name); 
+    printf ("element-type = %s\n", line -> definition -> name.c_str()); 
 	printf ("start  = ");
 	printf ("(%g,%g,%g)\n", line -> xs, line -> ys, line -> zs);
 	printf ("end    = ");
@@ -70,7 +70,7 @@ int WriteCorduroyFile (const char *filename)
 	grid = generator.grids [i];
 
 	printf ("grid\n");
-        printf ("element-type = %s\n", grid -> definition -> name); 
+    printf ("element-type = %s\n", grid -> definition -> name.c_str()); 
 	printf ("start    = ");
 	printf ("(%g,%g,%g)\n", grid -> xs, grid -> ys, grid -> zs);
 	printf ("end      = ");
@@ -88,7 +88,7 @@ int WriteCorduroyFile (const char *filename)
 	grid = generator.quadgrids [i];
 
 	printf ("quadrilateral grid\n");
-        printf ("element-type = %s\n", grid -> definition -> name); 
+    printf ("element-type = %s\n", grid -> definition -> name.c_str()); 
 	printf ("start    = ");
 	printf ("(%g,%g)\n", grid -> xs, grid -> ys);
 	printf ("end      = ");
@@ -104,7 +104,7 @@ int WriteCorduroyFile (const char *filename)
 	grid = generator.brickgrids [i];
 
 	printf ("brick grid\n");
-        printf ("element-type = %s\n", grid -> definition -> name); 
+    printf ("element-type = %s\n", grid -> definition -> name.c_str()); 
 	printf ("start    = ");
 	printf ("(%g,%g,%g)\n", grid -> xs, grid -> ys, grid -> zs);
 	printf ("end      = ");
@@ -122,7 +122,7 @@ int WriteCorduroyFile (const char *filename)
 	mesh = generator.trimeshes [i];
 
 	printf ("triangular mesh\n");
-        printf ("element-type = %s\n", mesh -> definition -> name); 
+    printf ("element-type = %s\n", mesh -> definition -> name.c_str()); 
 	printf ("target = %d\n", mesh -> target);
 	printf ("alpha  = %g\n", mesh -> alpha);
 

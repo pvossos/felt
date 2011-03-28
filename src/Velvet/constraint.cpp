@@ -637,12 +637,12 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new constraint or new name as needed. */
        
 	if (constraintd -> new_copy)
-	    constraintd -> active = new constraint_t (dummy.name.c_str());
+	    constraintd -> active.reset(new constraint_t (dummy.name.c_str()));
 	else if (strcmp (constraintd -> active -> name.c_str(), dummy.name.c_str())) {
-            old.name = constraintd -> active -> name;
-            constraintd->tree->erase(&old);
-            constraintd -> active -> name = dummy.name;
-            constraintd->tree->insert(constraintd->active);
+        Constraint old(new constraint_t(constraintd -> active -> name.c_str()));
+        constraintd->tree->erase(old);
+        constraintd -> active -> name = dummy.name;
+        constraintd->tree->insert(constraintd->active);
 	}
         
 	active = constraintd -> active;
@@ -753,8 +753,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 	}
 
     constraintd->tree->erase(constraintd->active);
-	delete constraintd -> active;
-	constraintd -> active = NULL;
+	constraintd -> active.reset();
     }
 
     ConstraintDialogUpdate (constraintd, constraintd -> tree);
@@ -855,7 +854,7 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    constraintd = XtNew (struct constraint_dialog);
+    constraintd = new struct constraint_dialog;
 
     constraintd -> callback = callback;
 
@@ -863,7 +862,7 @@ ConstraintDialog ConstraintDialogCreate (Widget parent, String name, String titl
 
     constraintd -> constraints   = NULL;
 
-    constraintd -> active   = NULL;
+    constraintd -> active.reset();
 
     constraintd -> shell  = XtCreatePopupShell (name,
 			 topLevelShellWidgetClass, parent,

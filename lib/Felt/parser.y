@@ -48,8 +48,8 @@ extern "C" int  yylex  (void);
 static double		  last_x;		/* last x coordinate	   */
 static double		  last_y;		/* last y coordinate	   */
 static double		  last_z;		/* last z coordinate	   */
-static char		 *last_constraint;	/* name of last constraint */
-static char		 *last_material;	/* name of last material   */
+static std::string last_constraint;	/* name of last constraint */
+static std::string last_material;	/* name of last material   */
 
 
 
@@ -68,13 +68,13 @@ static LoadCase		  loadcase;		/* current loadcase	   */
 /* Dummy strucutures.  If an object is defined twice, the second definition
    is illegal and the current object is set to a dummy object. */
 
-static node_t	  dummy_node;		/* dummy node		   */
-static element_t  dummy_element;	/* dummy element	   */
-static material_t dummy_material;	/* dummy material	   */
-static distributed_t dummy_load;		/* dummy distributed load  */
-static force_t	  dummy_force;		/* dummy force		   */
-static constraint_t  dummy_constraint;	/* dummy constraint	   */
-static loadcase_t    dummy_loadcase;	/* dummy loadcase	   */
+static const Node dummy_node(new node_t);		/* dummy node		   */
+static const Element dummy_element(new element_t);	/* dummy element	   */
+static const Material dummy_material(new material_t);	/* dummy material	   */
+static const Distributed dummy_load(new distributed_t);		/* dummy distributed load  */
+static const Force dummy_force(new force_t);		/* dummy force		   */
+static const Constraint dummy_constraint(new constraint_t);	/* dummy constraint	   */
+static const LoadCase dummy_loadcase(new loadcase_t);	/* dummy loadcase	   */
 
 
 /* Temporary arrays. */
@@ -197,8 +197,8 @@ initialize
 		last_x = 0;
 		last_y = 0;
 		last_z = 0;
-		last_material = NULL;
-		last_constraint = NULL;
+		last_material = "";
+		last_constraint = "";
 	    }
 	;
 
@@ -289,23 +289,25 @@ node_number
 	    {
              if ($1 < 1 || $1 > problem.nodes.size()) {
                   error ("node number %u is illegal", $1);
-                  node = &dummy_node;
+                  node = dummy_node;
                   break;
              }
              
-		node = new node_t($1);
+             node.reset(new node_t($1));
 
 		if (!problem.node_set.insert(node).second) {
 		    error ("node number %u is repeated", $1);
-		    delete node;
-		    node = &dummy_node;
+		    node = dummy_node;
 		    break;
 		}
 
 		node -> x = last_x;
 		node -> y = last_y;
 		node -> z = last_z;
-        node -> constraint = last_constraint ? new constraint_t(last_constraint) : NULL;
+        if (!last_constraint.empty())
+             node->constraint.reset(new constraint_t(last_constraint.c_str()));
+        else
+             node->constraint.reset();
 	    }
 	;
 
@@ -346,14 +348,15 @@ node_parameter
 
 	| FORCE_EQ NAME
     {
-         delete node -> force;
-         node -> force = new force_t($2);
+         node -> force.reset(new force_t($2));
+         free($2);
     }
 
 	| CONSTRAINT_EQ NAME
     {
          last_constraint = $2;
-         node -> constraint = new constraint_t(last_constraint);
+         free($2);
+         node -> constraint.reset(new constraint_t(last_constraint.c_str()));
     }
 
 	| error
@@ -394,22 +397,21 @@ element_number
 	    {
 		if ($1 < 1 || $1 > problem.elements.size()) {
 		    error ("element number %u is illegal", $1);
-		    element = &dummy_element;
+		    element = dummy_element;
 		    break;
 		}
 
-		element = new element_t($1, definition);
+		element.reset(new element_t($1, definition));
 
         if (!problem.element_set.insert(element).second) {
              error ("element number %u is repeated", $1);
-             delete element;
-             element = &dummy_element;
+             element = dummy_element;
              break;
         } 
 
         if (!element->material)
-             element -> material = new material_t;
-		element -> material->name = last_material ? last_material : ""; 
+             element -> material.reset(new material_t);
+		element -> material->name = last_material;
 	    }
 	;
 
@@ -430,8 +432,8 @@ element_parameter_list
 element_parameter
 	: NODES_EQ '[' element_node_list ']'
 	    {
-		if (element == &dummy_element)
-		    break;
+             if (element == dummy_element)
+                  break;
 
 		unsigned size = int_ptr - int_array;
 
@@ -444,7 +446,7 @@ element_parameter
 		for (unsigned i = 1; i <= size; i ++) {
              int nn = int_array[i-1];
              if (nn != 0)
-                  element -> node [i] = new node_t(nn);
+                  element -> node [i].reset(new node_t(nn));
         }
         
 	    }
@@ -452,8 +454,9 @@ element_parameter
 	| MATERIAL_EQ NAME
 	    {
              last_material = $2;
+             free($2);
              if (!element->material)
-                  element->material = new material_t;
+                  element->material.reset(new material_t);
              element -> material -> name = last_material;
 	    }
 
@@ -500,8 +503,8 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		delete element -> distributed [element -> numdistributed];
-		element -> distributed [element -> numdistributed] = new distributed_t($3);
+		element -> distributed [element -> numdistributed].reset(new distributed_t($3));
+        free($3);
 	    }
 
 	| element_load_list NAME
@@ -512,15 +515,15 @@ element_load_list
 		}
 
 		element -> numdistributed ++;
-		delete element -> distributed [element -> numdistributed];
-		element -> distributed [element -> numdistributed] = new distributed_t($2);
+		element -> distributed [element -> numdistributed].reset(new distributed_t($2));
+        free($2);
 	    }
 
 	| NAME
 	    {
 		element -> numdistributed = 1;
-		delete element -> distributed [element -> numdistributed];
-		element -> distributed [element -> numdistributed] = new distributed_t($1);
+		element -> distributed [element -> numdistributed].reset(new distributed_t($1));
+        free($1);
 	    }
 	;
 
@@ -546,14 +549,14 @@ material_definition
 material_name
 	: NAME
 	    {
-             material = new material_t($1);
+             material.reset(new material_t($1));
              
              if (problem.material_set.count(material) > 0) {
                   error ("material %s is previously defined", $1);
-                  delete material;
-                  material = &dummy_material;
+                  material = dummy_material;
              } else 
                   problem.material_set.insert(material);
+             free($1);
 	    }
 	;
 
@@ -567,6 +570,7 @@ material_parameter
 	: COLOR_EQ NAME
 	    {
              material -> color = $2;
+             free($2);
 	    }
 
 	| E_EQ constant_expression
@@ -679,13 +683,13 @@ load_definition
 load_name
 	: NAME
 	    {
-             load = new distributed_t($1, 0);
+             load.reset(new distributed_t($1, 0));
              
              if (!problem.distributed_set.insert(load).second) {
                   error ("load %s is previously defined", $1);
-                  delete load;
-                  load = &dummy_load;
+                  load = dummy_load;
              }
+             free($1);
 	    }
 	;
 
@@ -700,6 +704,7 @@ load_parameter
 	: COLOR_EQ NAME
 	    {
              load -> color = $2;
+             free($2);
 	    }
 
 	| DIRECTION_EQ DIRECTION
@@ -713,7 +718,7 @@ load_parameter
 		unsigned size;
 
 
-		if (load == &dummy_load)
+		if (load == dummy_load)
 		    break;
 
 		size = pair_ptr - pair_array;
@@ -789,13 +794,13 @@ force_definition
 force_name
 	: NAME
 	    {
-             force = new force_t($1);
+             force.reset(new force_t($1));
              
              if (!problem.force_set.insert(force).second) {
                   error ("force %s is previously defined", $1);
-                  delete force;
-                  force = &dummy_force;
+                  force = dummy_force;
              }
+             free($1);
 	    }
 	;
 
@@ -810,6 +815,7 @@ force_parameter
 	: COLOR_EQ NAME
 	    {
              force -> color = $2;
+             free($2);
 	    }
 
 	| FX_EQ enable_copy variable_expression
@@ -897,13 +903,14 @@ constraint_definition
 constraint_name
 	: NAME
 	    {
-             constraint = new constraint_t($1);
+             constraint.reset(new constraint_t($1));
              
              if (!problem.constraint_set.insert(constraint).second) {
                   error ("constraint %s is previously defined", $1);
-                  delete constraint;
-                  constraint = &dummy_constraint;
+                  constraint = dummy_constraint;
              }
+
+             free($1);
 	    }
 	;
 
@@ -918,6 +925,7 @@ constraint_parameter
 	: COLOR_EQ NAME
 	    {
              constraint -> color = $2;
+             free($2);
 	    }
 
 	| TX_EQ enable_copy translation
@@ -1094,13 +1102,14 @@ loadcase_definition
 loadcase_name
 	: NAME
         {
-             loadcase = new loadcase_t($1);
+             loadcase.reset(new loadcase_t($1));
              
              if (!problem.loadcase_set.insert(loadcase).second) {
                   error ("loadcase %s is previously defined", $1);
-                  delete loadcase;
-                  loadcase = &dummy_loadcase;
+                  loadcase = dummy_loadcase;
              }
+             
+             free($1);
         }
     ;
 
@@ -1112,7 +1121,7 @@ loadcase_parameter_list
 loadcase_parameter
 	: NODE_FORCES_EQ loadcase_pair_list
 	    {
-             if (loadcase == &dummy_loadcase)
+             if (loadcase == dummy_loadcase)
                   break;
              
              unsigned size = case_ptr - case_array;
@@ -1121,24 +1130,24 @@ loadcase_parameter
              loadcase->forces.resize(size);
              
              for (unsigned i = 1; i <= size; i ++) {
-                  loadcase -> nodes [i] = new node_t(case_array [i - 1].noe);
-                  loadcase -> forces [i] = new force_t(case_array [i - 1].fol);
+                  loadcase -> nodes [i].reset(new node_t(case_array [i - 1].noe));
+                  loadcase -> forces [i].reset(new force_t(case_array [i - 1].fol));
              }
 	    }
 
 	| ELEMENT_LOADS_EQ loadcase_pair_list
 	    {
-             if (loadcase == &dummy_loadcase)
+             if (loadcase == dummy_loadcase)
                   break;
-             
+
              unsigned size = case_ptr - case_array;
              
              loadcase->elements.resize(size);
              loadcase->loads.resize(size);
              
              for (unsigned i = 1; i <= size; i ++) {
-                  loadcase -> elements [i] = new element_t(case_array [i - 1].noe);
-                  loadcase -> loads [i]   = new distributed_t(case_array [i - 1].fol);
+                  loadcase -> elements [i].reset(new element_t(case_array [i - 1].noe));
+                  loadcase -> loads [i].reset(new distributed_t(case_array [i - 1].fol));
              }
 	    }
 
@@ -1266,7 +1275,7 @@ analysis_parameter
 
         | INPUT_NODE_EQ node_number_expression
             {
-                 analysis.input_node = new node_t($2);
+                 analysis.input_node.reset(new node_t($2));
             }
 
 	| NODES_EQ '[' analysis_node_list ']'
@@ -1274,7 +1283,7 @@ analysis_parameter
              analysis.nodes.resize(int_ptr - int_array);
              
              for (unsigned i = 1; i <= analysis.nodes.size(); i ++)
-                  analysis.nodes [i] = new node_t(int_array [i - 1]);
+                  analysis.nodes [i].reset(new node_t(int_array [i - 1]));
 	    }
 
 	| DOFS_EQ '[' analysis_dof_list ']'

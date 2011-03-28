@@ -720,7 +720,6 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
     char		 buffer [10];
     unsigned		 i;
     LoadCase		 active;
-    loadcase_t	 dummy;
     LoadCaseDialog	 loadcased;
     XawListReturnStruct	*info;
 
@@ -735,9 +734,7 @@ static void Change (Widget w, XtPointer client_data, XtPointer call_data)
         if (info -> list_index == XAW_LIST_NONE)
             return;
         
-        dummy.name = info -> string;
-        Problem::LoadCaseSet::iterator it = loadcased->tree->find(&dummy);
-        loadcased -> active = it != loadcased->tree->end() ? *it : NULL;
+        loadcased->active = SetSearch(*loadcased->tree, info->string);
     }
 
     active = loadcased -> active;
@@ -792,7 +789,6 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 {
     loadcase_t     old;
     loadcase_t     dummy;
-    LoadCase	        found;
     LoadCase	        active;
     Boolean	        duplicate;
     LoadCaseDialog      loadcased;
@@ -805,8 +801,7 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     /* Retrieve the name of the loadcase. */
 
     dummy.name = GetTextString (loadcased -> name);
-    Problem::LoadCaseSet::iterator it = loadcased->tree->find(&dummy);
-    found = it != loadcased->tree->end() ? *it : NULL;
+    LoadCase found = SetSearch(*loadcased->tree, dummy.name);
     duplicate = found && (found != loadcased -> active || loadcased -> new_copy);
 
 
@@ -826,12 +821,12 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
 	/* Create a new loadcase or new name as needed. */
 
 	if (loadcased -> new_copy)
-	    loadcased -> active = new loadcase_t(dummy.name.c_str());
+	    loadcased -> active.reset(new loadcase_t(dummy.name.c_str()));
 	else if (dummy.name != loadcased->active->name) {
-            old.name = loadcased -> active -> name;
-            loadcased->tree->erase(&old);
-            loadcased -> active -> name = dummy.name;
-            loadcased->tree->insert(loadcased->active);
+        LoadCase old(new loadcase_t(loadcased -> active -> name.c_str()));
+        loadcased->tree->erase(old);
+        loadcased -> active -> name = dummy.name;
+        loadcased->tree->insert(loadcased->active);
 	}
 
 	active = loadcased -> active;
@@ -929,8 +924,7 @@ static void Delete (Widget w, XtPointer client_data, XtPointer call_data)
 
     if (!loadcased -> new_copy) {
         loadcased->tree->erase(loadcased->active);
-        delete loadcased -> active;
-        loadcased -> active = NULL;
+        loadcased -> active.reset();
     }
 
     LoadCaseDialogUpdate (loadcased, loadcased -> tree, NULL, NULL);
@@ -1039,11 +1033,11 @@ LoadCaseDialog LoadCaseDialogCreate (Widget parent, String name, String title)
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    loadcased = XtNew (struct loadcase_dialog);
+    loadcased = new struct loadcase_dialog;
 
     loadcased -> loadcases = NULL;
 
-    loadcased -> active   = NULL;
+    loadcased -> active.reset();
 
     loadcased -> shell    = XtCreatePopupShell (name,
 			 topLevelShellWidgetClass, parent,

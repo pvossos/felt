@@ -268,14 +268,14 @@ int main (int argc, char *argv[])
 
           if (analysis.step > 0.0) {
              dtable = IntegrateHyperbolicDE (K, M, C);
-             ttable = NullMatrix;
+             ttable.reset();
           }
           else
              dtable = RosenbrockHyperbolicDE (K, M, C, &ttable);
 
           RestoreProblemNodeNumbers(old_numbers);
 
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("fatal error in integration (probably a singularity).");
 
           if (dotable)
@@ -297,26 +297,26 @@ int main (int argc, char *argv[])
           status = ConstructDynamic (&K, &M, &C);
           
           if (matrices) 
-             PrintGlobalMatrices (stdout, M, NullMatrix, K);
+              PrintGlobalMatrices (stdout, M, Matrix(), K);
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, M, NullMatrix, K);
+              MatlabGlobalMatrices (matlab, M, Matrix(), K);
  
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
           dtable = IntegrateParabolicDE (K, M);
 
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("fatal error in integration (probably a singularity).");
 
           RestoreProblemNodeNumbers(old_numbers);
 
           if (dotable)
-             WriteTransientTable (dtable, NullMatrix, stdout);
+              WriteTransientTable (dtable, Matrix(), stdout);
     
           if (doplot)
-             PlotTransientTable (dtable, NullMatrix, analysis.step, stdout);
+              PlotTransientTable (dtable, Matrix(), analysis.step, stdout);
 
           break;
 
@@ -327,17 +327,17 @@ int main (int argc, char *argv[])
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (stdout, Matrix(), Matrix(), K);
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, Matrix(), Matrix(), K);
 
           F = ConstructForceVector ( );
 
           ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
 
           d = SolveForDisplacements (Kcond, Fcond);
-          if (d == NullMatrix)
+          if (!d)
              Fatal ("could not solve for global displacements");
 
           status = ElementStresses ( );
@@ -350,10 +350,6 @@ int main (int argc, char *argv[])
 
           WriteStructuralResults (stdout, title, R);
 
-          DestroyMatrix(K);
-          DestroyMatrix(Kcond);
-          DestroyVector(Fcond);
-          DestroyVector(F);
           break;
 
        case StaticLoadCases:
@@ -367,10 +363,10 @@ int main (int argc, char *argv[])
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (stdout, Matrix(), Matrix(), K);
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, Matrix(), Matrix(), K);
 
           F = ConstructForceVector ( );
           
@@ -381,7 +377,7 @@ int main (int argc, char *argv[])
           else
              dtable = SolveStaticLoadRange (Kcond, Fcond);
 
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("could not solve for global displacements");
             
           RestoreProblemNodeNumbers(old_numbers);
@@ -398,8 +394,6 @@ int main (int argc, char *argv[])
              else 
                 PlotLoadRangeTable (dtable, stdout);
 
-          DestroyMatrix(Kcond);
-          
           break; 
 
        case StaticSubstitutionLoadRange:
@@ -420,7 +414,7 @@ int main (int argc, char *argv[])
           else
              dtable = SolveNonlinearLoadRange (K, F, 0); /* should be 1*/
              
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("did not converge on a solution");
          
           RestoreProblemNodeNumbers(old_numbers);
@@ -450,7 +444,7 @@ int main (int argc, char *argv[])
           else
              d = StaticNonlinearDisplacements (K, F, 0); /* should be 1 */
              
-          if (d == NullMatrix)
+          if (!d)
              Fatal ("did not converge on a solution");
          
           RestoreProblemNodeNumbers(old_numbers);
@@ -467,25 +461,23 @@ int main (int argc, char *argv[])
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (stdout, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (stdout, Matrix(), Matrix(), K);
 
           if (matlab) 
-             MatlabGlobalMatrices (matlab, NullMatrix, NullMatrix, K);
+             MatlabGlobalMatrices (matlab, Matrix(), Matrix(), K);
 
           F = ConstructForceVector ( );
           
           ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
      
           d = SolveForDisplacements (Kcond, Fcond);
-          if (d == NullVector)
+          if (!d)
              exit (1);
 
           RestoreProblemNodeNumbers(old_numbers);
 
           WriteTemperatureResults (stdout, title);
 
-          DestroyMatrix(Kcond);
-          
           break;
 
        case Modal:
@@ -499,7 +491,7 @@ int main (int argc, char *argv[])
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
-          RemoveConstrainedDOF (K, M, C, &Kcond, &Mcond, &Ccond);
+          RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond);
 
           if (matrices)
              PrintGlobalMatrices (stdout, Mcond, Ccond, Kcond);
@@ -507,7 +499,7 @@ int main (int argc, char *argv[])
           if (matlab) 
              MatlabGlobalMatrices (matlab, Mcond, Ccond, Kcond);
 
-          status = ComputeEigenModes (Kcond, Mcond, &lambda, &x);
+          status = ComputeEigenModes (Kcond, Mcond, lambda, x);
 
           if (status == M_NOTPOSITIVEDEFINITE)
              Fatal ("coefficient matrix is not positive definite.");
@@ -521,7 +513,7 @@ int main (int argc, char *argv[])
              PlotModeShapes (x, stdout);
             
           if (domodal) {
-             FormModalMatrices (x, Mcond, Ccond, Kcond, &Mm, &Cm, &Km, orthonormal);
+             FormModalMatrices (x, Mcond, Ccond, Kcond, Mm, Cm, Km, orthonormal);
              WriteModalResults (stdout, Mm, Cm, Km, lambda);
           }
            
@@ -538,9 +530,9 @@ int main (int argc, char *argv[])
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
  
-          ZeroConstrainedDOF (K, NullMatrix, &Kcond, NULL);
-          ZeroConstrainedDOF (M, NullMatrix, &Mcond, NULL);
-          ZeroConstrainedDOF (C, NullMatrix, &Ccond, NULL);
+          ZeroConstrainedDOF (K, Matrix(), &Kcond, NULL);
+          ZeroConstrainedDOF (M, Matrix(), &Mcond, NULL);
+          ZeroConstrainedDOF (C, Matrix(), &Ccond, NULL);
 
           if (matrices)
              PrintGlobalMatrices (stdout, Mcond, Ccond, Kcond);
@@ -554,7 +546,7 @@ int main (int argc, char *argv[])
 
           if (dospectra) {
               S = ComputeOutputSpectra (H, forced);
-             if (S == NullMatrix)
+             if (!S)
                 break; 
           }
 
@@ -582,28 +574,18 @@ int main (int argc, char *argv[])
        WriteMaterialStatistics (stdout);
 
     // try cleanup
-    for (size_t i = 1; i <= problem.nodes.size(); i++)
-        delete problem.nodes[i];
     problem.nodes.clear();
+    problem.node_set.clear();
 
-    for (size_t i = 1; i <= problem.elements.size(); i++)
-        delete problem.elements[i];
     problem.elements.clear();
+    problem.element_set.clear();
 
-    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
-         it != problem.constraint_set.end(); ++it)
-        delete *it;
     problem.constraint_set.clear();
 
-    for (Problem::ForceSet::iterator it = problem.force_set.begin();
-         it != problem.force_set.end(); ++it)
-        delete *it;
     problem.force_set.clear();
 
-    for (Problem::MaterialSet::iterator it = problem.material_set.begin();
-         it != problem.material_set.end(); ++it)
-        delete *it;
     problem.material_set.clear();
-    
-    exit (0);
+
+    return 0;
+    //exit (0);
 }

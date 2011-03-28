@@ -31,16 +31,27 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int RodLumpedCapacityMatrix (Element e);
 static int RodConsistentCapacityMatrix (Element e);
 static int rodEltSetup  (Element element, char mass_mode, int tangent);
 static int rodEltStress (Element element);
 
-struct definition rodDefinition = {
-   "rod", rodEltSetup, rodEltStress, 
-   Linear, 2, 2, 0, 1, {0, 1, 0, 0, 0, 0, 0}, 0
-};
+void rodInit()
+{
+    Definition dd(new definition_t("rod"));
+    dd->setup = rodEltSetup;
+    dd->stress = rodEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 0;
+    dd->numdofs = 1;
+    dd->dofs = {0, 1, 0, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static Vector RodResolveConvection (Element element, int *err_count);
 
@@ -78,7 +89,7 @@ rodEltSetup(Element element, char mass_mode, int tangent)
 
    factor = element -> material -> A * element -> material -> Kx / length;
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (2,2);
 
    MatrixData (element -> K) [1][1] = factor;
@@ -88,7 +99,7 @@ rodEltSetup(Element element, char mass_mode, int tangent)
 
    if (element -> numdistributed > 0) {
       equiv = RodResolveConvection (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (i = 1; i <= 2 ; i++) 
@@ -96,7 +107,7 @@ rodEltSetup(Element element, char mass_mode, int tangent)
    }
 
    if (mass_mode) {
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (2,2);
      
       if (mass_mode == 'l') 
@@ -166,10 +177,10 @@ RodResolveConvection(Element element, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
    static Matrix	convK;
  
-   if (equiv == NullMatrix) {
+   if (!equiv) {
       equiv = CreateVector (2);
       convK = CreateMatrix (2,2);
    }
@@ -215,7 +226,7 @@ RodResolveConvection(Element element, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
 	/*

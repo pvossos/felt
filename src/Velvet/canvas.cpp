@@ -344,15 +344,15 @@ static void Accept (Widget w, XtPointer client_data, XtPointer call_data)
     canvas -> snap_size = exptod (value, NULL);
 
     XtGetValues (canvasd -> element_color, args, 1);
-    canvas -> element_color = XtNewString (value);
+    canvas -> element_color = value;
     XtGetValues (canvasd -> node_color, args, 1);
-    canvas -> node_color = XtNewString (value);
+    canvas -> node_color = value;
     XtGetValues (canvasd -> tool_color, args, 1);
-    canvas -> tool_color = XtNewString (value);
+    canvas -> tool_color = value;
     XtGetValues (canvasd -> tool_font, args, 1);
-    canvas -> tool_font = XtNewString (value);
+    canvas -> tool_font = value;
     XtGetValues (canvasd -> label_font, args, 1);
-    canvas -> label_font = XtNewString (value);    
+    canvas -> label_font = value;    
 
 	/*
 	 * for this stuff we need to call some external functions
@@ -531,9 +531,9 @@ CanvasDialog CanvasDialogCreate (Widget parent, Widget dw, String name, String t
     XtSetArg (shell_args [0], XtNtitle, title);
     XtSetArg (shell_args [1], XtNiconName, title);
 
-    canvasd = XtNew (struct canvas_dialog);
+    canvasd = new struct canvas_dialog;
 
-    canvas = XtNew (struct canvas);
+    canvas = new struct canvas;
 
     canvasd -> dw = dw;
 

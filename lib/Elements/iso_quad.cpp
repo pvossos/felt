@@ -32,6 +32,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
@@ -50,17 +51,35 @@ static int  	 QuadElementStress    (Element element, unsigned int type);
 static int quad_PlaneStrainEltSetup (Element element, char mass_mode, int tangent), quad_PlaneStrainEltStress (Element element);
 static int quad_PlaneStressEltSetup (Element element, char mass_mode, int tangent), quad_PlaneStressEltStress (Element element);
 
-struct definition quad_PlaneStrainDefinition = {
-   "quad_PlaneStrain", 
-   quad_PlaneStrainEltSetup, quad_PlaneStrainEltStress, 
-   Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void quad_PlaneStrainInit()
+{
+    Definition dd(new definition_t("quad_PlaneStrain"));
+    dd->setup = quad_PlaneStrainEltSetup;
+    dd->stress = quad_PlaneStrainEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 4;
+    dd->shapenodes = 4;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
-struct definition quad_PlaneStressDefinition = {
-   "quad_PlaneStress", 
-   quad_PlaneStressEltSetup, quad_PlaneStressEltStress, 
-   Planar, 4, 4, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void quad_PlaneStressInit()
+{
+    Definition dd(new definition_t("quad_PlaneStress"));
+    dd->setup = quad_PlaneStressEltSetup;
+    dd->stress = quad_PlaneStressEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 4;
+    dd->shapenodes = 4;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 quad_PlaneStrainEltSetup(Element element, char mass_mode, int tangent)
@@ -99,10 +118,10 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
    static Vector	weights;
    static Matrix	tempK;
    static Matrix	N, dNdxi, dNde,
-                        dNdx, dNdy = NullMatrix;
+                        dNdx, dNdy;
    static Matrix	Bt, temp;
 
-   if (dNdy == NullMatrix) {
+   if (!dNdy) {
   
       N     = CreateMatrix (4,4);
       dNdxi = CreateMatrix (4,4);
@@ -141,9 +160,9 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
    else if (type == PLANESTRAIN)
       D = PlaneStrainD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
    
    for (int i = 1 ; i <= ninteg ; i++) {
@@ -153,7 +172,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
       }
    } 
 
-   if (element -> K == NullMatrix) {
+   if (!element -> K) {
       element -> K = CreateMatrix (8,8);
 
       if (numnodes == 3) {
@@ -173,7 +192,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 
    for (int i = 1 ; i <= ninteg ; i++) {
       B = IsoQuadLocalB (element, numnodes, dNdx, dNdy, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       MatrixRows (Bt) = MatrixRows (temp) = MatrixCols (B);
@@ -214,7 +233,7 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 
    if (element -> numdistributed > 0) {
       equiv = IsoQuadEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (size_t i = 1; i <= numnodes ; i++) {
@@ -229,12 +248,12 @@ QuadElementSetup(Element element, char mass_mode, int tangent, unsigned int type
 static int
 QuadElementStress(Element element, unsigned int type)
 {
-   static Vector	stress = NullMatrix,
+   static Vector	stress,
 			d;
    static Matrix	temp;
    static Vector	weights;
    static Matrix	N, dNdxi, dNde,
-                        dNdx, dNdy = NullMatrix;
+                        dNdx, dNdy;
    unsigned		numnodes;
    int			ninteg;
    Matrix		D,
@@ -246,7 +265,7 @@ QuadElementStress(Element element, unsigned int type)
    unsigned		i,j;
    double		x,y;
 
-   if (dNdy == NullMatrix) {
+   if (!dNdy) {
   
       N     = CreateMatrix (4,4);
       dNdxi = CreateMatrix (4,4);
@@ -256,7 +275,7 @@ QuadElementStress(Element element, unsigned int type)
       weights = CreateVector (4);
    }
    
-   if (stress == NullMatrix) {
+   if (!stress) {
       stress = CreateVector (3);
       d = CreateVector (8);
       temp = CreateMatrix (3,8);
@@ -269,9 +288,9 @@ QuadElementStress(Element element, unsigned int type)
    else if (type == PLANESTRESS)
       D = PlaneStressD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    if (element -> number == 1)
@@ -299,7 +318,7 @@ QuadElementStress(Element element, unsigned int type)
 
    for (int i = 1 ; i <= ninteg ; i++) {
       B = IsoQuadLocalB (element, numnodes, dNdx, dNdy, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       x = y = 0.0;
@@ -366,9 +385,9 @@ static Matrix
 IsoQuadLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point)
 {
    unsigned		i;
-   static Matrix	B = NullMatrix;
+   static Matrix	B;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (3,8);
 
    for (i = 1 ; i <= numnodes ; i++) {
@@ -391,9 +410,9 @@ GlobalQuadShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx
    unsigned		i,j;
    static Vector	jac,
 			dxdxi, dxde,
-			dydxi, dyde = NullMatrix;
+			dydxi, dyde;
 
-   if (dyde == NullMatrix) {
+   if (!dyde) {
 
       dxdxi = CreateVector (4);
       dxde  = CreateVector (4);
@@ -535,9 +554,9 @@ IsoQuadEquivNodalForces(Element element, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
  
-   if (equiv == NullMatrix) 
+   if (!equiv) 
       equiv = CreateVector (8);
 
    count = 0;
@@ -603,7 +622,7 @@ IsoQuadEquivNodalForces(Element element, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
       wa = element -> distributed[i] -> value[1].magnitude;

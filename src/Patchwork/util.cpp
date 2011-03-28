@@ -47,7 +47,7 @@ InitializeProblem(void)
 Node
 AddNode(double x, double y, double z, Constraint constraint, Force force)
 {
-   Node node = new node_t(problem.nodes.size()+1);
+   Node node(new node_t(problem.nodes.size()+1));
 
    node -> x = x;
    node -> y = y;
@@ -73,7 +73,7 @@ AddElement(Definition defn, Node *nodes, Material material,
 {
    unsigned	i;
 
-   Element element = new element_t(problem.elements.size()+1, defn);
+   Element element(new element_t(problem.elements.size()+1, defn));
    for (i = 1 ; i <= defn -> numnodes ; i++)
       element -> node [i] = nodes [i-1]; 
 

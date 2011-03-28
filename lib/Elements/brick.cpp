@@ -30,22 +30,10 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int brickEltSetup (Element element, char mass_mode, int tangent);
 static int brickEltStress (Element element);
-
-struct definition brickDefinition = {
-   "brick",
-   brickEltSetup,
-   brickEltStress,
-   Solid, 			/* shape				     */
-   8, 				/* shape nodes				     */
-   8, 				/* number of nodes			     */
-   10, 				/* # of stress components at each int. point */
-   3,				/* number of DOFs per node		     */
-  {0, 1, 2, 3, 0, 0, 0}, 	/* DOF map				     */
-   0				/* retain K flag			     */
-};
 
 static void	LocalShapeFunctions (Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdzt, int first, int nodal);
 static Vector	GlobalShapeFunctions (Element element, Matrix dNdxi, Matrix dNde, Matrix dNdzt, Matrix dNdx, Matrix dNdy, Matrix dNdz);
@@ -58,13 +46,28 @@ static Matrix   LocalB (Element element, Matrix dNdx, Matrix dNdy, Matrix dNdz, 
 	 * setup and stressess ...
 	 */
 
-static Matrix	N = NullMatrix;
+static Matrix	N;
 static Matrix	dNde;
 static Matrix	dNdxi;
 static Matrix	dNdzt;
 static Matrix	dNdx;
 static Matrix 	dNdy;
 static Matrix	dNdz;
+
+void brickInit()
+{
+    Definition dd(new definition_t("brick"));
+    dd->setup = brickEltSetup;
+    dd->stress = brickEltStress;
+    dd->shape = Solid;
+    dd->numnodes = 8;
+    dd->shapenodes = 8;
+    dd->numstresses = 10;
+    dd->numdofs = 3;
+    dd->dofs = {0, 1, 2, 3, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 brickEltSetup(Element element, char mass_mode, int tangent)
@@ -75,7 +78,7 @@ brickEltSetup(Element element, char mass_mode, int tangent)
    Vector	jac;
    int		count;
 
-   if (N == NullMatrix) {
+   if (!N) {
       N     = CreateMatrix (8, 8);
       dNdxi = CreateMatrix (8, 8);
       dNde  = CreateMatrix (8, 8);
@@ -104,10 +107,10 @@ brickEltSetup(Element element, char mass_mode, int tangent)
    jac = GlobalShapeFunctions (element, dNdxi, dNde, dNdzt, dNdx, dNdy, dNdz);
 
    D = IsotropicD (element);
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (24, 24);
 
    ZeroMatrix (element -> K);
@@ -123,19 +126,19 @@ brickEltSetup(Element element, char mass_mode, int tangent)
 static int
 brickEltStress(Element element)
 {
-   static Vector	stress = NullMatrix,
+   static Vector	stress,
 			d;
    static Matrix	temp;
    static Vector	weights;
    static Matrix	N, dNdxi, dNde, dNdzt,
-                        dNdx, dNdy, dNdz = NullMatrix;
+                        dNdx, dNdy, dNdz;
    Matrix		D,
 			B;
    Vector		jac;
    unsigned		i,j;
    double		x,y,z;
 
-   if (dNdz == NullMatrix) {
+   if (!dNdz) {
   
       N     = CreateMatrix (8,8);
       dNdxi = CreateMatrix (8,8);
@@ -147,14 +150,14 @@ brickEltStress(Element element)
       weights = CreateVector (8);
    }
    
-   if (stress == NullMatrix) {
+   if (!stress) {
       stress = CreateVector (6);
       d = CreateVector (24);
       temp = CreateMatrix (6,24);
    }
 
    D = IsotropicD (element);
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    LocalShapeFunctions (element, N, dNdxi, dNde, dNdzt, element -> number == 1, 1);
@@ -171,7 +174,7 @@ brickEltStress(Element element)
 
    for (i = 1 ; i <= 8 ; i++) {
       B = LocalB (element, dNdx, dNdy, dNdz, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       x = y = z = 0.0;
@@ -214,10 +217,10 @@ brickEltStress(Element element)
 static Matrix
 LocalB(Element element, Matrix dNdx, Matrix dNdy, Matrix dNdz, unsigned int point)
 {
-   static Matrix	B = NullMatrix;
+   static Matrix	B;
    unsigned		i;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (6, 24);
 
    ZeroMatrix (B);
@@ -322,14 +325,14 @@ LocalShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix
 static Vector
 GlobalShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdzt, Matrix dNdx, Matrix dNdy, Matrix dNdz)
 {
-   static Vector	jac = NullMatrix;
+   static Vector	jac;
    unsigned		i, j;
    double		dxdxi, dydxi, dzdxi;
    double		dxde,dyde, dzde;
    double		dxdzt, dydzt, dzdzt;
    double		cof [4][4];
 
-   if (jac == NullMatrix) 
+   if (!jac) 
       jac = CreateVector (8);
 
    for (i = 1 ; i <= 8 ; i++) {

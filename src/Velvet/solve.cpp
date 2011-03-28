@@ -183,17 +183,6 @@ int SolveProblem (void)
     else
         SetDetailStream (NULL);
 
-	/*	
-	 * initialize all these so we won't have trouble destroying them
-	 * if they never actually get allocated
-	 */
-
-    K = Kcond = Km = C = Ccond = Cm = M = Mcond = Mm = NullMatrix;
-    x = NullMatrix;
-    dtable = ttable = S = NullMatrix;
-    F = Fcond = d = lambda = NullVector;
-   
-    
 	/*
 	 * find the active DOFs and renumber the nodes if desired (common
 	 * steps in all problem modes
@@ -238,7 +227,7 @@ int SolveProblem (void)
        else
           dtable = RosenbrockHyperbolicDE (K, M, C, &ttable);
 
-       if (dtable == NullMatrix) {
+       if (!dtable) {
           error ("could not perform integration - probably a singularity.");
           error_flag = 1;
           break;
@@ -270,9 +259,9 @@ int SolveProblem (void)
           break;
        }
 
-       ZeroConstrainedDOF (K, NullMatrix, &Kcond, NULL);
-       ZeroConstrainedDOF (M, NullMatrix, &Mcond, NULL);
-       ZeroConstrainedDOF (C, NullMatrix, &Ccond, NULL);
+       ZeroConstrainedDOF (K, Matrix(), &Kcond, NULL);
+       ZeroConstrainedDOF (M, Matrix(), &Mcond, NULL);
+       ZeroConstrainedDOF (C, Matrix(), &Ccond, NULL);
 
        if (solution -> matrices)
           PrintGlobalMatrices (output, Mcond, Ccond, Kcond);
@@ -318,7 +307,7 @@ int SolveProblem (void)
        }
 
        if (solution -> matrices)
-          PrintGlobalMatrices (output, NullMatrix, NullMatrix, K);
+          PrintGlobalMatrices (output, Matrix(), Matrix(), K);
 
        F = ConstructForceVector ( );
 
@@ -331,7 +320,7 @@ int SolveProblem (void)
 
        d = SolveForDisplacements (Kcond, Fcond);
 
-       if (d == NullVector) {
+       if (!d) {
           error ("singluarity in final system of equations - cannot proceed.");
           error_flag = 1;
           break;
@@ -369,7 +358,7 @@ int SolveProblem (void)
        }
 
        if (solution -> matrices)
-          PrintGlobalMatrices (output, NullMatrix, NullMatrix, K);
+          PrintGlobalMatrices (output, Matrix(), Matrix(), K);
 
        F = ConstructForceVector ( );
           
@@ -380,7 +369,7 @@ int SolveProblem (void)
        else
           dtable = SolveStaticLoadRange (Kcond, Fcond);
 
-       if (dtable == NullMatrix) {
+       if (!dtable) {
           error ("could not solve for global displacements.");
           error_flag = 1;
           break;
@@ -422,7 +411,7 @@ int SolveProblem (void)
        else
           dtable = SolveNonlinearLoadRange (K, F, 0); /* should be 1 */
 
-       if (dtable == NullMatrix) {
+       if (!dtable) {
           error ("did not converge on a solution");
           error_flag = 1;
           break;
@@ -460,7 +449,7 @@ int SolveProblem (void)
        else
           d = StaticNonlinearDisplacements (K, F, 0); /* should be 1 */
 
-       if (d == NullMatrix) {
+       if (!d) {
           error ("did not converge on a solution");
           error_flag = 1;
           break;
@@ -489,12 +478,12 @@ int SolveProblem (void)
           break;
        }
 
-       RemoveConstrainedDOF (K, M, C, &Kcond, &Mcond, &Ccond);
+       RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond);
  
        if (solution -> matrices)
           PrintGlobalMatrices (output, Mcond, Ccond, Kcond);
 
-       status = ComputeEigenModes (Kcond, Mcond, &lambda, &x);
+       status = ComputeEigenModes (Kcond, Mcond, lambda, x);
        if (status == M_NOTPOSITIVEDEFINITE) {
           error ("coefficient matrix is not positive definite.");
           error_flag = 1;
@@ -515,7 +504,7 @@ int SolveProblem (void)
        WriteEigenResults (lambda, x, solution -> title, output);
        
        if (!solution -> eigen) {
-          FormModalMatrices (x, Mcond, Ccond, Kcond, &Mm, &Cm, &Km, solution -> orthonormal);
+          FormModalMatrices (x, Mcond, Ccond, Kcond, Mm, Cm, Km, solution -> orthonormal);
           WriteModalResults (output, Mm, Cm, Km, lambda);
        }
 
@@ -543,11 +532,11 @@ int SolveProblem (void)
        }
 
        if (solution -> matrices)
-          PrintGlobalMatrices (output, M, NullMatrix, K);
+          PrintGlobalMatrices (output, M, Matrix(), K);
 
        dtable = IntegrateParabolicDE (K, M);
 
-       if (dtable == NullMatrix) {
+       if (!dtable) {
           error ("could not perform integration - probably a singularity.");
           error_flag = 1;
           break;
@@ -555,10 +544,10 @@ int SolveProblem (void)
       
        RestoreProblemNodeNumbers(old_numbers);
 
-       WriteTransientTable (dtable, NullMatrix, output);
+       WriteTransientTable (dtable, Matrix(), output);
 
        if (solution -> plot)
-          VelvetPlotTD (dtable, NullMatrix, "time", "T", "Nodal Time-Temperature", False);
+          VelvetPlotTD (dtable, Matrix(), "time", "T", "Nodal Time-Temperature", False);
 
        break;
 
@@ -570,7 +559,7 @@ int SolveProblem (void)
           Fatal ("%d Fatal errors in element stiffness definitions", status);
 
        if (solution -> matrices)
-          PrintGlobalMatrices (output, NullMatrix, NullMatrix, K);
+          PrintGlobalMatrices (output, Matrix(), Matrix(), K);
 
        F = ConstructForceVector ( );
        
@@ -578,7 +567,7 @@ int SolveProblem (void)
   
        d = SolveForDisplacements (Kcond, Fcond);
 
-       if (d == NullVector) {
+       if (!d) {
           error ("singluarity in final system of equations - cannot proceed.");
           error_flag = 1;
           break;
@@ -597,44 +586,6 @@ int SolveProblem (void)
     if (!error_flag && solution -> summary)
        WriteMaterialStatistics (output);
  
-    if (dtable != NullMatrix) 
-       DestroyMatrix (dtable);
-    if (ttable != NullMatrix)
-       DestroyMatrix (ttable);
-
-    if (K != NullMatrix)
-       DestroyMatrix (K);
-    if (M != NullMatrix) 
-       DestroyMatrix (M);
-    if (C != NullMatrix) 
-       DestroyMatrix (C);
-    if (F != NullVector) 
-       DestroyVector (F);
-
-    if (Kcond != NullMatrix) 
-       DestroyMatrix (Kcond);
-    if (Mcond != NullMatrix) 
-       DestroyMatrix (Mcond);
-    if (Ccond != NullMatrix) 
-       DestroyMatrix (Ccond);
-
-    if (Km != NullMatrix) 
-       DestroyMatrix (Km);
-    if (Mm != NullMatrix) 
-       DestroyMatrix (Mm);
-    if (Cm != NullMatrix) 
-       DestroyMatrix (Cm);
-
-    if (x != NullMatrix)
-       DestroyMatrix (x);
-    if (lambda != NullVector)
-       DestroyVector (lambda);
-
-    if (d == NullVector && Fcond != NullVector)
-       DestroyVector (Fcond);
-    else if (d != NullVector) 
-       DestroyVector (d);
-
     fclose (output);
    
     if (error_flag)
@@ -729,9 +680,7 @@ void SetupAnimate (void)
     int			status1, status2;
     unsigned		i,j;
     unsigned		count;
-    Matrix		M, C, K;
     unsigned		numnodes, numelts;
-    Matrix		dtable;
     cvector1u	old_numbers;
     char		adofs [7];
     unsigned		anumdofs;
@@ -793,8 +742,9 @@ void SetupAnimate (void)
     if (solution -> renumber)
         old_numbers = RenumberProblemNodes();
 
-    K = M = C = dtable = NullMatrix;
- 
+    Matrix		M, C, K;
+    Matrix		dtable;
+
     count = FindDOFS(); /* WAS: problem.elements, numelts, dofs);*/
 
     status1 = CheckAnalysisParameters (Transient);
@@ -823,15 +773,6 @@ void SetupAnimate (void)
 
     for (i = 1 ; i <= analysis.numdofs ; i++) 
        analysis.dofs [i] = adofs [i];
-
-    if (K != NullMatrix) 
-       DestroyVector (K);
-    if (M != NullMatrix) 
-       DestroyVector (M);
-    if (C != NullMatrix) 
-       DestroyVector (C);
-    if (dtable != NullMatrix) 
-       DestroyMatrix (dtable);
 
     BufferErrors (False);
 

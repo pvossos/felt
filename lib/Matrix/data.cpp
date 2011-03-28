@@ -23,7 +23,7 @@
 # include "matrix.h"
 # include "error.h"
 
-double mdata (const Matrix A, unsigned int row, unsigned int col)
+double mdata (const Matrix &A, unsigned int row, unsigned int col)
 {
    unsigned	height;
    unsigned	temp;
@@ -55,8 +55,8 @@ Matrix CreateFullMatrix (unsigned int rows, unsigned int cols)
 {
    unsigned	i;
 
-   Matrix m = new struct matrix;
-
+   Matrix m(new struct matrix);
+   
    m -> data = (double **) malloc (sizeof (double *) * rows);
    if (m -> data == NULL) {
         fprintf (stderr,"failure point 2: r = %d, c = %d\n", rows, cols);
@@ -92,15 +92,13 @@ Matrix CreateColumnVector (unsigned int size)
    return CreateFullMatrix (size, 1);
 }
 
-void DestroyMatrix (Matrix m)
+matrix::~matrix()
 {
-   m -> data [1] ++;
-   free (m -> data [1]);
-
-   m -> data ++;
-   free (m -> data);
-
-   delete m;
+    this -> data [1] ++;
+    free (this -> data [1]);
+    
+    this -> data ++;
+    free (this -> data);
 }
 
 Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int size, const cvector1<unsigned> *diag)
@@ -119,7 +117,7 @@ Matrix CreateCompactMatrix (unsigned int rows, unsigned int cols, unsigned int s
    return A;
 }
 
-Matrix CreateCopyMatrix (const Matrix a)
+Matrix CreateCopyMatrix (const Matrix &a)
 {
    Matrix	b;
    unsigned	size;
@@ -143,7 +141,7 @@ Matrix CreateCopyMatrix (const Matrix a)
    return b;
 }
 
-Matrix MakeFullFromCompact (const Matrix A)
+Matrix MakeFullFromCompact (const Matrix &A)
 {
    unsigned 	i,j;
    Matrix	B;
@@ -157,7 +155,7 @@ Matrix MakeFullFromCompact (const Matrix A)
    return B; 
 }
 
-Matrix MakeCompactFromFull (const Matrix A)
+Matrix MakeCompactFromFull (const Matrix &A)
 {
    Matrix	compA;
    unsigned	i,j,k,
@@ -167,13 +165,13 @@ Matrix MakeCompactFromFull (const Matrix A)
    unsigned	height;
 
    if (IsCompact(A))
-      return NullMatrix;
+       return Matrix();
 
    if (!IsSquare(A))
-      return NullMatrix;
+       return Matrix();
 
    if (!IsSymmetricMatrix(A))
-      return NullMatrix;
+       return Matrix();
 
    rows = Mrows (A);
    cols = Mcols (A);
@@ -187,7 +185,7 @@ Matrix MakeCompactFromFull (const Matrix A)
    }
 
    if (size)
-      return NullMatrix;
+       return Matrix();
 
 	/*
 	 * determine the height of the columns and store in diag
@@ -226,7 +224,7 @@ Matrix MakeCompactFromFull (const Matrix A)
    return compA;
 } 
 
-int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix a)
+int ConvertRowColumn (unsigned int row, unsigned int col, const Matrix &a)
 {
     unsigned	blanks, address;
     unsigned	height;

@@ -31,17 +31,28 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int axisymmetricEltSetup(Element element, char mass_mode, int tangent);
 static int axisymmetricEltStress(Element element);
 
-struct definition axisymmetricDefinition = {
-    "axisymmetric", axisymmetricEltSetup, axisymmetricEltStress, 
-    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
-
 static Matrix  AxisymmetricLocalB           (Element element, double *area, double *r_avg, double *z_avg);
 static Vector  AxisymmetricEquivNodalForces (Element element, double area, int *err_count);
+
+void axisymmetricInit()
+{
+    Definition dd(new definition_t("axisymmetric"));
+    dd->setup = axisymmetricEltSetup;
+    dd->stress = axisymmetricEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 axisymmetricEltSetup(Element element, char mass_mode, int tangent)
@@ -66,11 +77,11 @@ axisymmetricEltSetup(Element element, char mass_mode, int tangent)
    }
 
    B = AxisymmetricLocalB (element, &area, &r_avg, &z_avg);
-   if (B == NullMatrix)
+   if (!B)
       return 1;
    
    D = AxisymmetricD (element);
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
 /*
@@ -80,7 +91,7 @@ axisymmetricEltSetup(Element element, char mass_mode, int tangent)
    PrintMatrix (B, stdout);
 */
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (6,6);
 
    MultiplyAtBA (element -> K, B, D);
@@ -94,7 +105,7 @@ axisymmetricEltSetup(Element element, char mass_mode, int tangent)
 */
    if (element -> numdistributed > 0) {
       equiv = AxisymmetricEquivNodalForces (element, area, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (i = 1; i <= 3 ; i++) {
@@ -123,8 +134,7 @@ axisymmetricEltSetup(Element element, char mass_mode, int tangent)
 static int
 axisymmetricEltStress(Element element)
 {
-   static Vector	stress = NullMatrix,
-			d;
+   static Vector	stress, d;
    unsigned		i, j;
    static Matrix	temp;
    Matrix		D, B;
@@ -132,18 +142,18 @@ axisymmetricEltStress(Element element)
    double		z_avg;
    double		sigma_r, sigma_z, sigma_th, tau_rz;
    
-   if (stress == NullMatrix) {
+   if (!stress) {
       stress = CreateVector (4);
       d = CreateVector (6);
       temp = CreateMatrix (4,6);
    }
 
    B = AxisymmetricLocalB (element, NULL, &r_avg, &z_avg);
-   if (B == NullMatrix)
+   if (!B)
       return 1;
 
    D = AxisymmetricD (element);
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    for (i = 1; i <= 3 ; i++) {
@@ -194,7 +204,7 @@ axisymmetricEltStress(Element element)
 static Matrix
 AxisymmetricLocalB(Element element, double *area, double *r_avg, double *z_avg)
 {
-   static Matrix 	B = NullMatrix;
+   static Matrix 	B;
    double		rc1, zc1;
    double		rc2, zc2;
    double		rc3, zc3;
@@ -205,7 +215,7 @@ AxisymmetricLocalB(Element element, double *area, double *r_avg, double *z_avg)
    double		factor;
    unsigned		j;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (4,6);
 
    ZeroMatrix (B);
@@ -233,11 +243,11 @@ AxisymmetricLocalB(Element element, double *area, double *r_avg, double *z_avg)
    
    if (A < 0) {
       error("incorrect node ordering for element %d (must be ccw)",element -> number);
-      return NullMatrix;
+      return Matrix();
    }
    if (A == 0) {
       error ("area of element %d is zero, check node numbering",element -> number);
-      return NullMatrix;
+      return Matrix();
    }
   
    r = (rc1 + rc2 + rc3) / 3.0; 
@@ -286,9 +296,9 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
  
-   if (equiv == NullMatrix) 
+   if (!equiv) 
       equiv = CreateVector (6);
 
    count = 0;
@@ -359,7 +369,7 @@ AxisymmetricEquivNodalForces(Element element, double area, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
       r1 = element -> node[node_a] -> x;

@@ -387,11 +387,11 @@ int main (int argc, char **argv)
 
           dtable = IntegrateHyperbolicDE (K, M, C);
 
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("fatal error in integration (probably a singularity).");
 
           if (table)
-             WriteTransientTable (dtable, NullMatrix, fp_out);
+              WriteTransientTable (dtable, Matrix(), fp_out);
     
           if (graph_out)
              WriteLineGraph (dtable, "Nodal Time-Displacement", "time", "dx", graph_out);
@@ -409,18 +409,18 @@ int main (int argc, char **argv)
           status = ConstructDynamic (&K, &M, &C);
           
           if (matrices) 
-             PrintGlobalMatrices (fp_out, M, NullMatrix, K);
+              PrintGlobalMatrices (fp_out, M, Matrix(), K);
  
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
           dtable = IntegrateParabolicDE (K, M);
 
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("fatal error in integration (probably a singularity).");
 
           if (table)
-             WriteTransientTable (dtable, NullMatrix, fp_out);
+             WriteTransientTable (dtable, Matrix(), fp_out);
     
           if (graph_out)
              WriteLineGraph (dtable, "Nodal Time-Temperature", "time", "T", graph_out);
@@ -434,14 +434,14 @@ int main (int argc, char **argv)
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (fp_out, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (fp_out, Matrix(), Matrix(), K);
 
           F = ConstructForceVector ( );
           
           ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
      
           d = SolveForDisplacements (Kcond, Fcond);
-          if (d == NullVector)
+          if (!d)
              Fatal("could not solve for displacements, probably a singularity");
     
           status = ElementStresses ( );
@@ -487,14 +487,14 @@ int main (int argc, char **argv)
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (fp_out, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (fp_out, Matrix(), Matrix(), K);
 
           F = ConstructForceVector ( );
           
           ZeroConstrainedDOF (K, F, &Kcond, &Fcond);
      
           d = SolveForDisplacements (Kcond, Fcond);
-          if (d == NullVector)
+          if (!d)
              Fatal("could not solve for displacements, probably a singularity");
 
           RestoreProblemNodeNumbers(old_numbers);
@@ -524,7 +524,7 @@ int main (int argc, char **argv)
              Fatal ("%d Fatal errors in element stiffness definitions", status);
 
           if (matrices)
-             PrintGlobalMatrices (fp_out, NullMatrix, NullMatrix, K);
+             PrintGlobalMatrices (fp_out, Matrix(), Matrix(), K);
 
           F = ConstructForceVector ( );
           
@@ -535,7 +535,7 @@ int main (int argc, char **argv)
           else
              dtable = SolveStaticLoadRange (Kcond, Fcond);
 
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("could not solve for global displacements");
             
           RestoreProblemNodeNumbers(old_numbers);
@@ -569,7 +569,7 @@ int main (int argc, char **argv)
           else
              dtable = SolveNonlinearLoadRange (K, F, 0); /* should be 1*/
              
-          if (dtable == NullMatrix)
+          if (!dtable)
              Fatal ("did not converge on a solution");
          
           RestoreProblemNodeNumbers(old_numbers);
@@ -599,7 +599,7 @@ int main (int argc, char **argv)
           else
              d = StaticNonlinearDisplacements (K, F, 0); /* should be 1 */
              
-          if (d == NullMatrix)
+          if (!d)
              Fatal ("did not converge on a solution");
          
           RestoreProblemNodeNumbers(old_numbers);
@@ -631,12 +631,12 @@ int main (int argc, char **argv)
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
 
-          RemoveConstrainedDOF (K, M, C, &Kcond, &Mcond, &Ccond);
+          RemoveConstrainedDOF (K, M, C, Kcond, Mcond, Ccond);
 
           if (matrices)
              PrintGlobalMatrices (fp_out, Mcond, Ccond, Kcond);
  
-          status = ComputeEigenModes (Kcond, Mcond, &lambda, &x);
+          status = ComputeEigenModes (Kcond, Mcond, lambda, x);
 
           if (status == M_NOTPOSITIVEDEFINITE)
              Fatal ("coefficient matrix is not positive definite.");
@@ -650,7 +650,7 @@ int main (int argc, char **argv)
              PlotModeShapes (x, fp_out);
 */           
           if (!eigen) {
-             FormModalMatrices (x, Mcond, Ccond, Kcond, &Mm, &Cm, &Km, orthonormal);
+             FormModalMatrices (x, Mcond, Ccond, Kcond, Mm, Cm, Km, orthonormal);
              WriteModalResults (fp_out, Mm, Cm, Km, lambda);
           }
            
@@ -667,9 +667,9 @@ int main (int argc, char **argv)
           if (status)
              Fatal ("%d fatal errors in stiffness and mass definitions",status);
  
-          ZeroConstrainedDOF (K, NullMatrix, &Kcond, NULL);
-          ZeroConstrainedDOF (M, NullMatrix, &Mcond, NULL);
-          ZeroConstrainedDOF (C, NullMatrix, &Ccond, NULL);
+          ZeroConstrainedDOF (K, Matrix(), &Kcond, NULL);
+          ZeroConstrainedDOF (M, Matrix(), &Mcond, NULL);
+          ZeroConstrainedDOF (C, Matrix(), &Ccond, NULL);
 
           if (matrices)
              PrintGlobalMatrices (fp_out, Mcond, Ccond, Kcond);
@@ -686,7 +686,7 @@ int main (int argc, char **argv)
           }
           else {
               S = ComputeOutputSpectra (H, forced);
-             if (S == NullMatrix)
+             if (!S)
                 break; 
 
              if (table)  

@@ -61,8 +61,6 @@ FindDOFS(void)
       problem.dofs_num[i] = 0;
    }
 
-   otype = NULL;	
- 
    for (i = 1 ; i <= ne ; i++) {
 
       type = e[i] -> definition;
@@ -143,11 +141,11 @@ ConstructStiffness(int *status)
       ndofs = element[i] -> definition -> numdofs;
       nodes = element[i] -> definition -> numnodes;
 
-      if (element[i] -> K == NullMatrix || !IsSquare(element[i] -> K) || 
+      if (!element[i] -> K || !IsSquare(element[i] -> K) || 
           Mrows(element[i] -> K) > ndofs*nodes) {
 
          error ("%s element %d has an invalid stiffness matrix",
-                element[i] -> definition -> name, element[i] -> number);
+                element[i] -> definition -> name.c_str(), element[i] -> number);
 
          err_count ++;
          continue;
@@ -182,7 +180,7 @@ ConstructStiffness(int *status)
 
    if (err_count) {
       *status = err_count;
-      return NULL;
+      return Matrix();
    }
 
 	/*
@@ -248,10 +246,8 @@ ConstructStiffness(int *status)
          }
       }
 
-      if (!element[i] -> definition -> retainK) {
-         DestroyMatrix (element[i] -> K);
-         element[i] -> K = NullMatrix;
-      }
+      if (!element[i] -> definition -> retainK)
+          element[i] -> K.reset();
 
    } /* end second loop over elements */
 
@@ -265,7 +261,7 @@ ConstructStiffness(int *status)
 }
 
 void
-RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond, Matrix *Ccond)
+RemoveConstrainedDOF(const Matrix &K, const Matrix &M, const Matrix &C, Matrix &Kcond, Matrix &Mcond, Matrix &Ccond)
 {
     unsigned active;
    unsigned	*dofs;
@@ -317,10 +313,10 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 	 * space for the condensed stiffness and mass matrices
 	 */
 
-   Cc = NullMatrix;
+   Cc.reset();
    Kc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
    Mc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
-   if (C != NullMatrix)
+   if (C)
       Cc = CreateCompactMatrix (new_dofs, new_dofs, size, NULL);
 
    cvector1u diag(new_dofs);
@@ -356,7 +352,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
             if (dof_map [affected_dof]) {
                Kc -> data [m][1] = K -> data [j][1];
                Mc -> data [m][1] = M -> data [j][1];
-               if (C != NullMatrix)
+               if (C)
                   Cc -> data [m][1] = C -> data [j][1]; 
 
                m++; 
@@ -379,7 +375,7 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
    for (i = 1 ; i <= new_dofs ; i++)
       Mc -> diag [i] = Kc -> diag [i];
 
-   if (C != NullMatrix) {
+   if (C) {
        Cc -> diag = cvector1u(new_dofs);
  
       for (i = 1 ; i <= new_dofs ; i++)
@@ -391,15 +387,14 @@ RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, Matrix *Kcond, Matrix *Mcond,
 	 * set the pointers for return
 	 */
 
-   *Kcond = Kc;
-   *Mcond = Mc;
-   if (C != NullMatrix)
-      *Ccond = Cc;
+   Kcond = Kc;
+   Mcond = Mc;
+   Ccond = Cc;
    return;
 }
 
 void
-ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
+ZeroConstrainedDOF(const Vector &K, const Vector &F, Vector *Kc, Vector *Fc)
 {
    unsigned	active;
    unsigned	*dofs;
@@ -419,8 +414,8 @@ ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc)
 
    Kcond = CreateCopyMatrix (K);
 
-   Fcond = NullMatrix;
-   if (F != NULL)
+   Fcond.reset();
+   if (F)
       Fcond = CreateCopyMatrix (F);
    
    for (i = 1 ; i <= problem.nodes.size(); i++) {
@@ -519,7 +514,7 @@ ConstructForceVector(void)
 
    F = CreateVector (size);
 
-   if (F == NullVector)
+   if (!F)
       Fatal ("allocation error constructing global nodal force vector");
 
    for (i = 1 ; i <= size ; i++) 
@@ -562,7 +557,7 @@ ClearNodes(void)
 }
   
 int
-FactorStiffnessMatrix(Vector K)
+FactorStiffnessMatrix(Vector &K)
 {
    unsigned	 active;
    unsigned	*dofs;
@@ -592,14 +587,14 @@ FactorStiffnessMatrix(Vector K)
 }
 
 Vector
-SolveForDisplacements(Vector K, Vector F)
+SolveForDisplacements(Vector &K, Vector &F)
 {
    if (FactorStiffnessMatrix (K))
-      return NullVector;
+       return Vector();
 
    if (CroutBackSolveMatrix (K, F)) {
       error ("could not back substitute for nodal displacements");
-      return NullVector;
+      return Vector();
    }
 
    ApplyNodalDisplacements (F);
@@ -608,7 +603,7 @@ SolveForDisplacements(Vector K, Vector F)
 }
  
 Matrix
-SolveStaticLoadCases(Matrix K, Matrix Fbase)
+SolveStaticLoadCases(Matrix &K, const Matrix &Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -616,7 +611,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
    LoadCase	 lc;
 
    if (FactorStiffnessMatrix (K))
-      return NullMatrix;
+       return Matrix();
 
    F = CreateColumnVector (Mrows(Fbase));
 
@@ -646,7 +641,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
       if (CroutBackSolveMatrix (K, F)) {
           error ("could not back substitute for displacements in loadcase %s",
                  lc->name.c_str());
-         return NullMatrix;
+          return Matrix();
       }
 
       for (k = 1 ; k <= analysis.nodes.size() ; k++) {
@@ -661,7 +656,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
 }
 
 Matrix
-SolveStaticLoadRange(Matrix K, Matrix Fbase)
+SolveStaticLoadRange(Matrix &K, const Matrix &Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -671,7 +666,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
    Matrix	 F;
 
    if (FactorStiffnessMatrix (K))
-      return NullMatrix;
+       return Matrix();
 
    cvector1i mask     = BuildConstraintMask ( );
 
@@ -695,7 +690,7 @@ SolveStaticLoadRange(Matrix K, Matrix Fbase)
  
       if (CroutBackSolveMatrix (K, F)) {
          error ("could not back substitute for displacements");
-         return NullMatrix;
+         return Matrix();
       }
 
       for (k = 1 ; k <= analysis.nodes.size() ; k++) {
@@ -1279,7 +1274,7 @@ RemoveConstrainedMatrixDOF(Matrix a)
 }
 
 int
-ZeroConstrainedMatrixDOF(Matrix b, Matrix a)
+ZeroConstrainedMatrixDOF(Matrix &b, const Matrix &a)
 {
    unsigned	active;
    unsigned	*dofs;

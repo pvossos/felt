@@ -30,7 +30,7 @@
 # include <stdlib.h>
 # include "error.h"
 # include "geninput.h"
-# include "parser.h"
+# include "parser.hpp"
 
 static char *filename;
 static void  update_line (void);

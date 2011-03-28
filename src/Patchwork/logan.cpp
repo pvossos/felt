@@ -63,9 +63,9 @@ WriteLoganFile(char *name)
        }
     }
 
-    const char *element_name = problem.elements [1] -> definition -> name;
+    std::string element_name = problem.elements [1] -> definition -> name;
 
-    if (strcmp (element_name, "truss") == 0) {
+    if (element_name == "truss") {
        fprintf (fp, "%s\n", problem.title);
        fprintf (fp, "%d, %d\n", problem.elements.size(), problem.nodes.size());
 
@@ -94,7 +94,7 @@ WriteLoganFile(char *name)
 
     }
 
-    else if (strcmp (element_name, "beam") == 0) {
+    else if (element_name == "beam") {
        fprintf (fp, "1\n");
        fprintf (fp, "%s\n",problem.title);
        fprintf (fp, "%d,%d\n", problem.elements.size(),problem.nodes.size());
@@ -126,13 +126,13 @@ WriteLoganFile(char *name)
              problem.elements [i] -> material -> J);
 
     }
-    else if (strncmp (element_name, "CST", 3) == 0) {
+    else if (element_name.substr(0, 3) == "CST") {
        material = SetupMaterialArray (problem.elements.c_ptr1(), 
                                       problem.elements.size(), &nummat);
        numst = CountSurfaceTractions (problem.elements.c_ptr1(), problem.elements.size());
        fprintf (fp, "%s\n", problem.title);
 
-       if (strcmp (element_name, "CSTPlaneStress") == 0)
+       if (element_name == "CSTPlaneStress")
           code = 2;
        else 
           code = 1;

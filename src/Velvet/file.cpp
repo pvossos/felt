@@ -231,7 +231,7 @@ int VelvetReadFeltFile (char *file)
     if (elt)
         ElementListSet (element_l, elt -> definition);
     else 
-        ElementListSet (element_l, NULL);
+        ElementListSet (element_l, Definition());
 
     return 0;
 }
@@ -255,10 +255,10 @@ void StartNew (void)
     SolutionDialogUpdate (solution_d);
 
     DW_RemoveAll (drawing);
-    DestroyProblem(true);
+    DestroyProblem(/*true*/);
     figure_set.clear();
 
-    ElementListSet (element_l, NULL);
+    ElementListSet (element_l, Definition());
 
     ReadFeltFile (NULL);
 
@@ -347,7 +347,6 @@ static int UpdateMaterial (Material nu)
         old -> t = nu -> t;
         old -> rho = nu -> rho;
         old -> kappa = nu -> kappa;
-        delete nu;
     } else 
         saved.material_set.insert(nu);
     
@@ -380,11 +379,11 @@ void OpenMaterialFile (void)
     BufferErrors (False);
 
     if (status)
-        DestroyProblem (true);
+        DestroyProblem (/*true*/);
     else 
         std::for_each(problem.material_set.begin(), problem.material_set.end(), UpdateMaterial);
 
-    DestroyProblem (false);
+    DestroyProblem (/*false*/);
 
     problem = saved;
 
@@ -654,7 +653,7 @@ static void CanvasToAppearance (void)
 
     for (i = num_figures - 1; i >= 0; i --) {
 	DW_GetAttributes (drawing, figure_list [i], &attributes);
-	if (attributes.user_data)
+	if (!attributes.user_data.empty())
 	    continue;
 
     FigInfo fi;

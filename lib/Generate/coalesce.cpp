@@ -82,7 +82,6 @@ MergeNodes(cvector1<Node> &node, cvector1<Element> &element,
    for (size_t i = 1 ; i <= numnodes ; i++) {
       if (merges [i]) {
           Reconnect (node [merges[i]], node[i], element);
-          delete node [i];
       }
       else {
          count++;

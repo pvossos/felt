@@ -28,6 +28,7 @@
 # ifndef _FE_H
 # define _FE_H
 
+# include <boost/shared_ptr.hpp>
 # include <string>
 # include "cvector1.hpp"
 # include "code.h"
@@ -81,13 +82,16 @@ typedef struct {
 } VarExpr;
 
 struct element_t;
+typedef boost::shared_ptr<element_t> Element;
 
 /* An element definition */
 
-typedef struct definition {
-    const char    *name;		/* element name			      */
-    int    (*setup) (element_t*, char, int);	/* initialization function	      */
-    int    (*stress) (element_t*);	/* stress resultant function	      */
+struct definition_t {
+    definition_t(const char*name = NULL);
+    ~definition_t();
+    std::string name;		/* element name			      */
+    int    (*setup) (Element, char, int);	/* initialization function	      */
+    int    (*stress) (Element);	/* stress resultant function	      */
     Shape    shape;		/* element dimensional shape          */
     unsigned numnodes;		/* number of nodes in element         */
     unsigned shapenodes;	/* number of nodes which define shape */
@@ -95,13 +99,15 @@ typedef struct definition {
     unsigned numdofs;		/* number of degrees of freedom       */
     unsigned dofs [7];		/* degrees of freedom                 */
     unsigned retainK;		/* retain element K after assemblage  */
-} *Definition;
+};
+
+typedef boost::shared_ptr<definition_t> Definition;
 
 struct LtDefinition
 {
      bool operator()(const Definition a, const Definition b) const
           {
-               return strcmp(a->name,b->name) < 0;
+               return a->name < b->name;
           }
 };
 
@@ -117,7 +123,7 @@ struct distributed_t {
     cvector1<Pair> value;			/* nodes and magnitudes     	  */
 };
 
-typedef distributed_t* Distributed;
+typedef boost::shared_ptr<distributed_t> Distributed;
 
 struct LtDistributed
 {
@@ -140,7 +146,7 @@ struct force_t {
     VarExpr spectrum [7];		/* input spectra		  */
 };
 
-typedef force_t* Force;
+typedef boost::shared_ptr<force_t> Force;
 
 struct LtForce
 {
@@ -166,7 +172,7 @@ struct constraint_t {
     VarExpr dx [7];			/* boundary displacement vector	  */
 };
 
-typedef constraint_t* Constraint;
+typedef boost::shared_ptr<constraint_t> Constraint;
 
 struct LtConstraint
 {
@@ -204,7 +210,7 @@ struct material_t {
     double c;				/* heat capacity		    */
 };
 
-typedef material_t* Material;
+typedef boost::shared_ptr<material_t> Material;
 
 struct LtMaterial
 {
@@ -234,7 +240,7 @@ struct node_t {
     int        numelts;			/* num of elts that use this node */
 };
 
-typedef node_t* Node;
+typedef boost::shared_ptr<node_t> Node;
 
 struct LtNode
 {
@@ -247,7 +253,7 @@ struct LtNode
 /* An element */
 
 struct element_t {
-    element_t(unsigned number = 0, Definition defn = NULL);
+    element_t(unsigned number = 0, Definition defn = Definition());
     ~element_t();
     char       *aux;			/* auxillary data pointer 	*/
     unsigned    number;			/* element number         	*/
@@ -262,8 +268,6 @@ struct element_t {
     cvector1<Stress> stress;			/* element stresses             */
     unsigned    ninteg;			/* number of integration points */
 };
-
-typedef element_t* Element;
 
 struct LtElement
 {
@@ -294,7 +298,7 @@ struct loadcase_t {
      cvector1<Distributed> loads;
 };
 
-typedef loadcase_t* LoadCase;
+typedef boost::shared_ptr<loadcase_t> LoadCase;
 
 struct LtLoadCase
 {
@@ -369,7 +373,7 @@ Matrix ConstructStiffness(int *status);
   element stiffness matrix laying around.  All we'll do here is make
   sure that the displacement will come out zero.
 */
-void ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc);
+void ZeroConstrainedDOF(const Vector &K, const Vector &F, Vector *Kc, Vector *Fc);
 
 /*!
   As opposed to simply zeroing out the rows and columns associated
@@ -377,8 +381,8 @@ void ZeroConstrainedDOF(Vector K, Vector F, Vector *Kc, Vector *Fc);
   stiffness and mass matrices by removing those rows and columns
   entirely.
 */
-void RemoveConstrainedDOF(Matrix K, Matrix M, Matrix C, 
-                          Matrix *Kcond, Matrix *Mcond, Matrix *Ccond);
+void RemoveConstrainedDOF(const Matrix &K, const Matrix &M, const Matrix &C, 
+                          Matrix &Kcond, Matrix &Mcond, Matrix &Ccond);
 
 /*!
   Zeros out the row and column given by dof.  Places a one on the
@@ -411,13 +415,13 @@ Vector ConstructForceVector(void);
 /*!
   Builds a table of nodal DOF displacements for all defined loadcases.
 */
-Matrix SolveStaticLoadCases(Matrix K, Matrix Fbase);
+Matrix SolveStaticLoadCases(Matrix &K, const Matrix &Fbase);
 
 /*!
  Builds a table of nodal DOF displacements for input forcing at a
  single DOF over a range of force magnitudes.
 */
-Matrix SolveStaticLoadRange(Matrix K, Matrix Fbase);
+Matrix SolveStaticLoadRange(Matrix &K, const Matrix &Fbase);
 
 void AssembleLoadCaseForce(Matrix F, LoadCase lc);
 
@@ -426,12 +430,12 @@ void AssembleLoadCaseForce(Matrix F, LoadCase lc);
  displacements.  The system must not be singular (i.e. K and F should
  be condensed).
 */
-Vector SolveForDisplacements(Vector K, Vector F);
+Vector SolveForDisplacements(Vector &K, Vector &F);
 
 /*!
   Factorizes the problem stiffness matrix in place.
 */
-int FactorStiffnessMatrix(Vector K);
+int FactorStiffnessMatrix(Vector &K);
 
 void ApplyNodalDisplacements(Matrix d);
 
@@ -472,7 +476,7 @@ void LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_d
  Sort of like ZeroConstrainedDOF only simpler and more general because
  it only works on one thing at a time.
 */
-int ZeroConstrainedMatrixDOF(Matrix b, Matrix a);
+int ZeroConstrainedMatrixDOF(Matrix &b, const Matrix &a);
 
 /*
   A generalized form of RemoveConstrainedDOF for a single matrix.  If
@@ -491,7 +495,7 @@ int CheckAnalysisParameters(AnalysisType mode);
 	 * routines in modal.c
 	 */
 
-int ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r);
+int ComputeEigenModes(const Matrix &K, const Matrix &M, Matrix &lambda_r, Matrix &x_r);
 
 /*!
   Given a table of mode shapes and a list of nodes and active dofs,
@@ -502,9 +506,8 @@ int ComputeEigenModes(Matrix K, Matrix M, Matrix *lambda_r, Matrix *x_r);
 */
 Matrix ModalNodalDisplacements(Matrix x);
 
-int FormModalMatrices(Matrix u, Matrix m, Matrix c, Matrix k, 
-                      Matrix *Mr, Matrix *Cr, Matrix *Kr, 
-                      int ortho);
+int FormModalMatrices(Matrix &u, const Matrix &m, const Matrix &c, const Matrix &k, 
+                      Matrix &Mr, Matrix &Cr, Matrix &Kr, int ortho);
 
 	/*
 	 * routines in spectral.c

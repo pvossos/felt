@@ -30,10 +30,6 @@
 # include "Drawing.h"
 # include "Cache.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif 
-
 /*----------------------------------------------------------------------*/
 
 # if NeedWidePrototypes
@@ -69,7 +65,7 @@ struct figure {
     Pixel		 fg;		/* foreground pixel		*/
     CacheData		 color_data;	/* cached color data		*/
     Boolean		 visible;	/* visible flag			*/
-    char		*userdata;	/* user data pointer		*/
+    boost::any userdata;	/* user data pointer		*/
     union {
 	struct {
 	    Point	 points [2];	/* array of real coordinates	*/
@@ -146,9 +142,5 @@ void DW_Detach (DrawingWidget dw, Figure fig);
 void DW_Attach (DrawingWidget dw, Figure fig, Figure group);
 
 /*----------------------------------------------------------------------*/
-
-#ifdef __cplusplus
-}
-#endif 
 
 # endif /* _Figure_h */

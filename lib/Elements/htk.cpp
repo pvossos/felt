@@ -37,14 +37,25 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int htkEltSetup (Element element, char mass_mode, int tangent);
 static int htkEltStress (Element element);
 
-struct definition htkDefinition = {
-   "htk", htkEltSetup, htkEltStress, 
-   Planar, 4, 4, 5, 3, {0, 3, 4, 5, 0, 0, 0}, 0
-};
+void htkInit()
+{
+    Definition dd(new definition_t("htk"));
+    dd->setup = htkEltSetup;
+    dd->stress = htkEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 4;
+    dd->shapenodes = 4;
+    dd->numstresses = 5;
+    dd->numdofs = 3;
+    dd->dofs = {0, 3, 4, 5, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 # define TRIANGLE	3
 # define QUADRILATERAL	4
@@ -68,7 +79,7 @@ static Matrix   FormDbMatrix  (Element element);
 	 * we defined them at.
 	 */
 
-static Matrix	N1 = NullMatrix;/* shape functions 		     */
+static Matrix	N1;/* shape functions 		     */
 static Matrix	dNde1;		/* shape func derivs in local coord  */
 static Matrix	dNdxi1;		/* shape func derivs in local coord  */
 static Matrix	dNdx1;		/* shape func derivs in global coord */
@@ -94,7 +105,7 @@ htkEltSetup(Element element, char mass_mode, int tangent)
 	 * some one time only initializations
 	 */
 
-   if (N1 == NullMatrix) {
+   if (!N1) {
       N1 = CreateMatrix (4,4);
       dNde1  = CreateMatrix (4,4);
       dNdxi1 = CreateMatrix (4,4);
@@ -167,7 +178,7 @@ htkEltSetup(Element element, char mass_mode, int tangent)
    Ds = FormDsMatrix (element);
    Db = FormDbMatrix (element);
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (12,12);
 
    ZeroMatrix (element -> K); 
@@ -209,7 +220,7 @@ htkEltSetup(Element element, char mass_mode, int tangent)
 	 */
 
    if (mass_mode) {
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (12, 12);
 
       if (mass_mode == 'l')
@@ -249,13 +260,13 @@ static Vector
 GlobalShapeFunctions(Element element, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, unsigned int ninteg, unsigned int shape)
 {
    unsigned		i,j;
-   static Vector	jac = NullMatrix;
+   static Vector	jac;
    double		dxdxi [5];
    double		dxde [5];
    double		dydxi [5];
    double		dyde [5];
 	
-   if (jac == NullMatrix) 
+   if (!jac) 
       jac = CreateVector (4);
 
    for (i = 1 ; i <= 4 ; i++) 
@@ -376,9 +387,9 @@ static Matrix
 FormBsMatrix(Element element, Matrix N, Matrix dNdx, Matrix dNdy, unsigned int numnodes, unsigned int point)
 {
    unsigned		i;
-   static Matrix 	B = NullMatrix;
+   static Matrix 	B;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (2, 12);
 
    ZeroMatrix (B);
@@ -399,9 +410,9 @@ static Matrix
 FormBbMatrix(Element element, Matrix dNdx, Matrix dNdy, unsigned int numnodes, unsigned int point)
 {
    unsigned		i;
-   static Matrix 	B = NullMatrix;
+   static Matrix 	B;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (3, 12);
 
    ZeroMatrix (B);
@@ -420,10 +431,10 @@ FormBbMatrix(Element element, Matrix dNdx, Matrix dNdy, unsigned int numnodes, u
 static Matrix
 FormDsMatrix(Element element)
 {
-   static Material	prev_material = NULL;
-   static Matrix	D = NullMatrix;
+   static Material	prev_material;
+   static Matrix	D;
 
-   if (D == NullMatrix) {
+   if (!D) {
       D = CreateMatrix (2,2);
 
       MatrixData (D) [1][2] = 0.0;
@@ -447,12 +458,12 @@ FormDsMatrix(Element element)
 static Matrix
 FormDbMatrix(Element element)
 {
-   static Material	prev_material = NULL;
-   static Matrix	D = NullMatrix;
+   static Material	prev_material;
+   static Matrix	D;
    double		c1, c2;
    double		t;
 
-   if (D == NullMatrix) 
+   if (!D) 
       D = CreateMatrix (3,3);
 
    if (prev_material == element -> material)
@@ -487,7 +498,7 @@ htkEltStress(Element element)
    Matrix		Bs, Bb;		
    Vector		jac1;		/* vector of Jacobian determinants   */
    Vector		jac2;		/* vector of Jacobian determinants   */
-   static Vector	d = NullMatrix;
+   static Vector	d;
    static Vector	m;
    static Vector	q;
    unsigned		shape;		/* triangle or quadrilateral ?	     */
@@ -497,7 +508,7 @@ htkEltStress(Element element)
 	 * some one time only initializations
 	 */
 
-   if (d == NullMatrix) {
+   if (!d) {
       d = CreateVector (12);
       q = CreateVector (2);
       m = CreateVector (3);
@@ -606,12 +617,12 @@ static int
 EquivNodalForces(Element e, Matrix N, unsigned int shape, unsigned int ninteg)
 {
    int		  count;
-   static Vector  equiv = NullMatrix;
+   static Vector  equiv;
    unsigned	  i,j;
    double	  area;
    double	  w[5];
 
-   if (equiv == NullMatrix) 
+   if (!equiv) 
      equiv = CreateVector (12);
    
    ZeroMatrix (equiv);

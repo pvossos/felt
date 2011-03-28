@@ -29,15 +29,10 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
-
+# include "definition.h"
 
 static int beam3dEltSetup (Element element, char mass_mode, int tangent);
 static int beam3dEltStress (Element element);
-
-struct definition beam3dDefinition = {
-    "beam3d", beam3dEltSetup, beam3dEltStress,
-    Linear, 2, 2, 6, 6, {0, 1, 2, 3, 4, 5, 6}, 1
-};
 
 static Matrix Beam3dLumpedMassMatrix  (Element element);
 static Matrix Beam3dLocalK            (Element element);
@@ -45,6 +40,21 @@ static Matrix Beam3dTransformMatrix   (Element element);
 static Vector Beam3dEquivNodalForces  (Element element, int *err_count);
 
 static void ResolveEndForces (Vector equiv, double wa, double wb, Direction direction, double L);
+
+void beam3dInit()
+{
+    Definition dd(new definition_t("beam3d"));
+    dd->setup = beam3dEltSetup;
+    dd->stress = beam3dEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 6;
+    dd->numdofs = 6;
+    dd->dofs = {0, 1, 2, 3, 4, 5, 6};
+    dd->retainK = 1;
+    AddDefinition(dd);
+}
 
 static int
 beam3dEltSetup(Element element, char mass_mode, int tangent)
@@ -82,14 +92,14 @@ beam3dEltSetup(Element element, char mass_mode, int tangent)
    }
 
    ke = Beam3dLocalK (element);
-   if (ke == NullMatrix)
+   if (!ke)
       return 1;
    
    T = Beam3dTransformMatrix (element);
-   if (T == NullMatrix)
+   if (!T)
       return 1; 
 
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (12,12);
 
    MultiplyAtBA (element -> K, T, ke);
@@ -106,7 +116,7 @@ beam3dEltSetup(Element element, char mass_mode, int tangent)
 
    if (element -> numdistributed > 0) {
       equiv = Beam3dEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
       for (i = 1 ; i <= 6 ; i++) {
@@ -126,10 +136,10 @@ beam3dEltSetup(Element element, char mass_mode, int tangent)
       else 
          me = Beam3dLumpedMassMatrix (element);
 
-      if (me == NullMatrix)
+      if (!me)
          return 1;
 
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (12,12);
 
       MultiplyAtBA (element -> M, T, me);
@@ -146,13 +156,13 @@ beam3dEltStress(Element element)
    static Vector	f,
 			eq_local,
 			dlocal,
-			d = NullMatrix;
+			d;
    Vector		equiv;
-   static Matrix	ke = NullMatrix;
+   static Matrix	ke;
    static Matrix	Tt;
    Matrix		T;
 
-   if (d == NullMatrix) {
+   if (!d) {
       ke = CreateMatrix (12,12);
       Tt = CreateMatrix (12,12);
       d = CreateVector (12);
@@ -167,22 +177,21 @@ beam3dEltStress(Element element)
    }
 
    T = Beam3dTransformMatrix (element);
-   if (T == NullMatrix)
+   if (!T)
       return 1;
 
    TransposeMatrix (Tt, T);
 
    MultiplyAtBA (ke, Tt, element -> K);
 
-   DestroyMatrix (element -> K);
-   element -> K = NullMatrix;
+   element -> K.reset();
 
    MultiplyMatrices (dlocal, T, d);
    MultiplyMatrices (f, ke, dlocal);
    
    if (element -> numdistributed > 0) {
       equiv = Beam3dEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
       MultiplyMatrices (eq_local, T, equiv);
@@ -217,9 +226,9 @@ Beam3dLocalK(Element element)
 			EIy,
 			GJ,
 			AEonL;
-   static Matrix	ke = NullMatrix;
+   static Matrix	ke;
 
-   if (ke == NullMatrix) 
+   if (!ke) 
       ke = CreateMatrix (12,12);
 
    ZeroMatrix (ke);
@@ -228,7 +237,7 @@ Beam3dLocalK(Element element)
 
    if (L <= TINY) {
       error ("length of element %d is zero to machine precision",element -> number);
-      return NullMatrix;
+      return Matrix();
    } 
 
    L2 = L*L;
@@ -263,12 +272,12 @@ Beam3dLocalK(Element element)
 static Matrix
 Beam3dLumpedMassMatrix(Element element)
 {
-   static Matrix	me = NullMatrix;
+   static Matrix	me;
    double		L;
    double		factor;
    double		I_factor;
 
-   if (me == NullMatrix) {
+   if (!me) {
       me = CreateMatrix (12,12);
       ZeroMatrix (me);
    }
@@ -302,9 +311,9 @@ Beam3dTransformMatrix(Element element)
 			cn,
 			d,	
 			L;
-   static Matrix	T = NullMatrix;
+   static Matrix	T;
 
-   if (T == NullMatrix) 
+   if (!T) 
       T = CreateMatrix (12,12);
 
    ZeroMatrix (T);
@@ -313,7 +322,7 @@ Beam3dTransformMatrix(Element element)
 
    if (L <= TINY) {
       error ("length of element %d is zero to machine precision",element -> number);
-      return NullMatrix;
+      return Matrix();
    } 
 
    cl = (element -> node[2] -> x - element -> node[1] -> x)/L;
@@ -357,10 +366,10 @@ Beam3dEquivNodalForces(Element element, int *err_count)
 			cxz,cyz,czz;
    double		l,m,n,d;
    static Matrix	Tt;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
    static Vector	result;
  
-   if (equiv == NullMatrix) {
+   if (!equiv) {
       equiv = CreateVector (12);
       result = CreateVector (12);
       Tt = CreateMatrix (12,12);
@@ -424,7 +433,7 @@ Beam3dEquivNodalForces(Element element, int *err_count)
 
    if (count) {
       *err_count = count;
-      return NullMatrix;
+      return Matrix();
    }
 
 	/*

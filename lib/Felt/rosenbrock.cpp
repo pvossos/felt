@@ -45,11 +45,11 @@
 static void
 ConstructTFD(double t, double h, Vector dp)
 {
-  static Vector  temp = NullMatrix;
+  static Vector  temp;
   static int     size;
   int            i;
     
-  if (temp == NullMatrix) {
+  if (!temp) {
       size= problem.nodes.size() * problem.num_dofs; 
      temp= CreateVector(size); 
   }
@@ -151,11 +151,11 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
          * factorization on it.  This is the matrix that we will
          * use as the RHS of our implicit update equation
          */
-  ZeroConstrainedDOF(M0, NULL, &M0_fact, NULL);
+  ZeroConstrainedDOF(M0, Matrix(), &M0_fact, NULL);
   if(CroutFactorMatrix(M0_fact))
     {
     error("singular M0 matrix in hyperbolic integration - cannot proceed");
-    return(NullMatrix);
+    return Matrix();
     }
 
 
@@ -234,7 +234,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
     if(CroutBackSolveMatrix(M0_fact, e1)) /* e1 := M0^(-1)*e1 */ 
       {
       error("singular M0 matrix in hyperbolic integration - cannot proceed");
-      return(NullMatrix);
+      return Matrix();
       }
 
     /* phalf= p(t0+0.5*h); */
@@ -314,7 +314,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
     if(CroutBackSolveMatrix(M0_fact, e2)) /* e2 := M0^(-1)*e2 */
       {
       error("singular M0 matrix in hyperbolic integration- cannot proceed");
-      return(NullMatrix);
+      return Matrix();
       }
 
 
@@ -402,7 +402,7 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
     if(CroutBackSolveMatrix(M0_fact, e3)) /* e3 := M0^(-1)*e3 */
       {
       error("singular M0 matrix in hyperbolic integration- cannot proceed");
-      return(NullMatrix);
+      return Matrix();
       }
 
 
@@ -443,21 +443,6 @@ RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable)
       VectorData(*ttable)[step]= t; /* CHANGE: pn */ 
 
     } /* eo for steps */
-
-
-        /*
-         * clean up ...
-         */
-  DestroyVector(a_dummy); DestroyVector(b0);
-  DestroyVector(p0);      DestroyVector(p0d);   DestroyVector(phalf);
-  DestroyVector(p1);      DestroyVector(r0);    DestroyVector(rhalf);
-  DestroyVector(r1);      DestroyVector(d1);    DestroyVector(e1);
-  DestroyVector(d2);      DestroyVector(e2);    DestroyVector(d3);
-  DestroyVector(e3);      DestroyVector(y0);    DestroyVector(v0);
-  DestroyVector(vhalf);   DestroyVector(v1);    DestroyVector(k0d1);
-  DestroyVector(bhalf);   DestroyVector(err); 
-
-  DestroyMatrix(M0_fact); DestroyMatrix(M0); 
 
   return(dtable);
 } /* eo IntegrateHyperbolicDE2() */

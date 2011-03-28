@@ -31,6 +31,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 static int CTGLumpedCapacityMatrix (Element e, double A);
 static int CTGConsistentCapacityMatrix (Element e, double area);
@@ -40,10 +41,20 @@ static Matrix	PlanarConductivity (Element element);
 static int	ctgEltSetup (Element element, char mass_mode, int tangent);
 static int	ctgEltStress (Element element);
 
-struct definition ctgDefinition = {
-   "ctg", ctgEltSetup, ctgEltStress, 
-   Planar, 3, 3, 0, 1, {0, 1, 0, 0, 0, 0, 0}, 0
-};
+void ctgInit()
+{
+    Definition dd(new definition_t("ctg"));
+    dd->setup = ctgEltSetup;
+    dd->stress = ctgEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 0;
+    dd->numdofs = 1;
+    dd->dofs = {0, 1, 0, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 ctgEltSetup(Element element, char mass_mode, int tangent)
@@ -74,17 +85,17 @@ ctgEltSetup(Element element, char mass_mode, int tangent)
    }
 
    B = CTGLocalB (element, &area);
-   if (B == NullMatrix)
+   if (!B)
       return 1;
    
    D = PlanarConductivity (element);
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    factor = element -> material -> t * area;
    
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (3,3);
 
    MultiplyAtBA (element -> K, B, D);
@@ -93,7 +104,7 @@ ctgEltSetup(Element element, char mass_mode, int tangent)
 
    if (element -> numdistributed > 0) {
       equiv = CTGResolveConvection (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (i = 1; i <= 3 ; i++) 
@@ -101,7 +112,7 @@ ctgEltSetup(Element element, char mass_mode, int tangent)
    }
 
    if (mass_mode) {
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (3,3);
      
       if (mass_mode == 'l') 
@@ -145,9 +156,9 @@ CTGConsistentCapacityMatrix(Element e, double area)
 static Matrix
 PlanarConductivity(Element element)
 {
-   static Matrix	D = NullMatrix;
+   static Matrix	D;
 
-   if (D == NullMatrix) {
+   if (!D) {
       D = CreateMatrix (2,2);
       ZeroMatrix (D);
    }
@@ -161,7 +172,7 @@ PlanarConductivity(Element element)
 static Matrix
 CTGLocalB(Element element, double *area)
 {
-   static Matrix 	B = NullMatrix;
+   static Matrix 	B;
    double		xc1,yc1,
 			xc2,yc2,
 			xc3,yc3,
@@ -171,7 +182,7 @@ CTGLocalB(Element element, double *area)
 			factor;
    unsigned		j;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (2,3);
 
    ZeroMatrix (B);
@@ -195,11 +206,11 @@ CTGLocalB(Element element, double *area)
    
    if (A < 0) {
       error("incorrect node ordering for element %d (must be ccw)",element -> number);
-      return NullMatrix;
+      return Matrix();
    }
    if (A == 0) {
       error ("area of element %d is zero, check node numbering",element -> number);
-      return NullMatrix;
+      return Matrix();
    }
    
    for (j = 1 ; j <= 3 ; j++) {
@@ -230,10 +241,10 @@ CTGResolveConvection(Element element, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
    static Matrix	convK;
  
-   if (equiv == NullMatrix) {
+   if (!equiv) {
       equiv = CreateVector (3);
       convK = CreateMatrix (3,3);
    }
@@ -283,7 +294,7 @@ CTGResolveConvection(Element element, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
       xc1 = element -> node[node_a] -> x;
@@ -297,7 +308,7 @@ CTGResolveConvection(Element element, int *err_count)
          error ("length of side of element %d is zero to machine precision",
                  element -> number);
          *err_count = 1;
-         return NullMatrix;
+         return Matrix();
       } 
 
 	/*

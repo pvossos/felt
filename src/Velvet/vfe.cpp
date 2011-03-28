@@ -351,37 +351,20 @@ void DrawProblem (double z)
  * Description:	Destroy the current problem invocation.			*
  ************************************************************************/
 
-void DestroyProblem (bool delmaterials)
+void DestroyProblem (/*bool delmaterials*/)
 {
-    for (Problem::NodeSet::iterator it = problem.node_set.begin();
-         it != problem.node_set.end(); ++it)
-        delete *it;
     problem.node_set.clear();
 
-    for (Problem::ElementSet::iterator it = problem.element_set.begin();
-         it != problem.element_set.end(); ++it)
-        delete *it;
     problem.element_set.clear();
 
-    for (Problem::ForceSet::iterator it = problem.force_set.begin();
-         it != problem.force_set.end(); ++it)
-        delete *it;
     problem.force_set.clear();
 
-    if (delmaterials)
-        for (Problem::MaterialSet::iterator it = problem.material_set.begin();
-             it != problem.material_set.end(); ++it)
-            delete *it;
     problem.material_set.clear();
 
-    for (Problem::ConstraintSet::iterator it = problem.constraint_set.begin();
-         it != problem.constraint_set.end(); ++it)
-        delete *it;
     problem.constraint_set.clear();
 
-    for (Problem::DistributedSet::iterator it = problem.distributed_set.begin();
-         it != problem.distributed_set.end(); ++it)
-        delete *it;
+    problem.loadcase_set.clear();
+    
     problem.distributed_set.clear();
 }
 
@@ -411,7 +394,7 @@ static int setnodenum (Node node)
 	y = node -> y;
 	sprintf (number, " %d", node -> number);
 	drawn -> label = DW_DrawText (drawing, True, x, y, number);
-	attr.user_data = (char *) node;
+	attr.user_data = node;
 	DW_SetAttributes (drawing, drawn -> label, DW_FigureUserData, &attr);
     }
 
@@ -465,7 +448,7 @@ static int setelementnum (Element element)
 	ComputeCenter (element, &x, &y);
 	sprintf (number, "%d", element -> number);
 	drawn -> label = DW_DrawText (drawing, True, x, y, number);
-	attr.user_data = (char *) element;
+	attr.user_data = element;
 	DW_SetAttributes (drawing, drawn -> label, DW_FigureUserData, &attr);
     }
 

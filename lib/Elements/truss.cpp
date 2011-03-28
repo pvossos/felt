@@ -29,25 +29,34 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
-
+# include "definition.h"
 
 static int trussEltSetup (Element element, char mass_mode, int tangent); 
 static int trussEltStress (Element element); 
 
-struct definition trussDefinition = {
-    "truss", trussEltSetup, trussEltStress, 
-    Linear, 2, 2, 1, 3, {0, 1, 2, 3, 0, 0, 0}, 0
-};
-
+void trussInit()
+{
+    Definition dd(new definition_t("truss"));
+    dd->setup = trussEltSetup;
+    dd->stress = trussEltStress;
+    dd->shape = Linear;
+    dd->numnodes = 2;
+    dd->shapenodes = 2;
+    dd->numstresses = 1;
+    dd->numdofs = 3;
+    dd->dofs = {0, 1, 2, 3, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static Matrix
 TrussMassMatrix(Element element, char mass_mode)
 {
-   static Matrix	me = NullMatrix;
+   static Matrix	me;
    double		L;
    double		factor;
 
-   if (me == NullMatrix) {
+   if (!me) {
       me = CreateMatrix (2,2);
       ZeroMatrix (me);
    }
@@ -76,9 +85,9 @@ static Matrix
 TrussTransformMatrix(Element element, double cx, double cy, double cz)
 {
    double		L;
-   static Matrix	T = NullMatrix;
+   static Matrix	T;
 
-   if (T == NullMatrix) 
+   if (!T) 
       T = CreateMatrix (2,6);
 
    ZeroMatrix (T);
@@ -109,10 +118,10 @@ TrussEquivNodalForces(Element element, Matrix T, int *err_count)
    int			count;
    unsigned		i;
    static Matrix	Tt;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
    static Vector	result;
  
-   if (equiv == NullMatrix) {
+   if (!equiv) {
       equiv = CreateVector (2);
       result = CreateVector (6);
       Tt = CreateMatrix (6,2);
@@ -169,7 +178,7 @@ TrussEquivNodalForces(Element element, Matrix T, int *err_count)
 
    if (count) {
       *err_count = count;
-      return NullMatrix;
+      return Matrix();
    }
 
    if (element -> distributed[1] -> value[1].node == 1) {
@@ -236,14 +245,14 @@ trussEltSetup(Element element, char mass_mode, int tangent)
    Matrix		T;
    static Vector	equiv;
    int			count;
-   static Matrix	ke = NullMatrix;
+   static Matrix	ke;
    Matrix		me;
    double		factor;
    double		sign;
    double		cx, cy, cz;
    unsigned		i, j;
 
-   if (ke == NullMatrix) {
+   if (!ke) {
       equiv = CreateVector (6);
       ke = CreateMatrix (2,2);
    }
@@ -261,7 +270,7 @@ trussEltSetup(Element element, char mass_mode, int tangent)
 	 * the material properties are ok
 	 */
 
-   if (element -> K == NullMatrix) {
+   if (!element -> K) {
       element -> K = CreateMatrix (6,6);
 
       if (element -> material -> E == 0) {
@@ -323,7 +332,7 @@ trussEltSetup(Element element, char mass_mode, int tangent)
          }
       }
 
-      if (element -> f == NullMatrix)
+      if (!element -> f)
          element -> f = CreateColumnVector (6);
 
       element -> f -> data [i][1] = cx*factor*L;
@@ -340,7 +349,7 @@ trussEltSetup(Element element, char mass_mode, int tangent)
 
    if (element -> numdistributed > 0) {
       equiv = TrussEquivNodalForces (element, T, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count; 
 
       element -> node[1] -> eq_force[1] += VectorData (equiv) [1];
@@ -358,10 +367,10 @@ trussEltSetup(Element element, char mass_mode, int tangent)
    if (mass_mode) {
       me = TrussMassMatrix (element, mass_mode);
 
-      if (me == NullMatrix)
+      if (!me)
          return 1;
 
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (6,6);
        
       MultiplyAtBA (element -> M, T, me);

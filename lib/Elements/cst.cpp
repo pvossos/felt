@@ -30,6 +30,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
@@ -39,21 +40,41 @@ static int CSTPlaneStrainEltStress (Element element);
 static int CSTPlaneStressEltSetup (Element element, char mass_mode, int tangent);
 static int CSTPlaneStressEltStress (Element element);
 
-struct definition CSTPlaneStrainDefinition = {
-    "CSTPlaneStrain", CSTPlaneStrainEltSetup, CSTPlaneStrainEltStress, 
-    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
-
-struct definition CSTPlaneStressDefinition = {
-    "CSTPlaneStress", CSTPlaneStressEltSetup, CSTPlaneStressEltStress, 
-    Planar, 3, 3, 10, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
-
 static void    CSTLumpedMassMatrix (Element element, double area);
 static Matrix  CSTLocalB 	    (Element element, double *area);
 static Vector	CSTEquivNodalForces (Element element, int *err_count);
 static int	CSTElementSetup (Element element, char mass_mode, int tangent, unsigned int type);
 static int	CSTElementStress    (Element element, unsigned int type);
+
+void CSTPlaneStrainInit()
+{
+    Definition dd(new definition_t("CSTPlaneStrain"));
+    dd->setup = CSTPlaneStrainEltSetup;
+    dd->stress = CSTPlaneStrainEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
+
+void CSTPlaneStressInit()
+{
+    Definition dd(new definition_t("CSTPlaneStress"));
+    dd->setup = CSTPlaneStressEltSetup;
+    dd->stress = CSTPlaneStressEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 3;
+    dd->shapenodes = 3;
+    dd->numstresses = 10;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static int
 CSTPlaneStrainEltSetup(Element element, char mass_mode, int tangent)
@@ -104,7 +125,7 @@ CSTElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
    }
 
    B = CSTLocalB (element, &area);
-   if (B == NullMatrix)
+   if (!B)
       return 1;
    
    if (type == PLANESTRAIN)
@@ -112,14 +133,14 @@ CSTElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
    else if (type == PLANESTRESS)
       D = PlaneStressD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    factor = element -> material -> t * area;
    
-   if (element -> K == NullMatrix)
+   if (!element -> K)
       element -> K = CreateMatrix (6,6);
 
    MultiplyAtBA (element -> K, B, D);
@@ -128,7 +149,7 @@ CSTElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 
    if (element -> numdistributed > 0) {
       equiv = CSTEquivNodalForces (element, &count);
-      if (equiv == NullMatrix)
+      if (!equiv)
          return count;
 
        for (i = 1; i <= 3 ; i++) {
@@ -143,7 +164,7 @@ CSTElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 	 */
 
    if (mass_mode) {
-      if (element -> M == NullMatrix)
+      if (!element -> M)
          element -> M = CreateMatrix (6,6);
 
       if (mass_mode == 'l')
@@ -158,7 +179,7 @@ CSTElementSetup(Element element, char mass_mode, int tangent, unsigned int type)
 static int
 CSTElementStress(Element element, unsigned int type)
 {
-   static Vector	stress = NullMatrix,
+   static Vector	stress,
 			d;
    unsigned		i, j;
    static Matrix	temp;
@@ -169,14 +190,14 @@ CSTElementStress(Element element, unsigned int type)
 			sigma_y,
 			tau_xy;
    
-   if (stress == NullMatrix) {
+   if (!stress) {
       stress = CreateVector (3);
       d = CreateVector (6);
       temp = CreateMatrix (3,6);
    }
 
    B = CSTLocalB (element, NULL);
-   if (B == NullMatrix)
+   if (!B)
       return 1;
 
    if (type == PLANESTRAIN)
@@ -184,9 +205,9 @@ CSTElementStress(Element element, unsigned int type)
    else if (type == PLANESTRESS)
       D = PlaneStressD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    x = 0;
@@ -237,7 +258,7 @@ CSTElementStress(Element element, unsigned int type)
 static Matrix
 CSTLocalB(Element element, double *area)
 {
-   static Matrix 	B = NullMatrix;
+   static Matrix 	B;
    double		xc1,yc1,
 			xc2,yc2,
 			xc3,yc3,
@@ -247,7 +268,7 @@ CSTLocalB(Element element, double *area)
 			factor;
    unsigned		j;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (3,6);
 
    ZeroMatrix (B);
@@ -271,11 +292,11 @@ CSTLocalB(Element element, double *area)
    
    if (A < 0) {
       error("incorrect node ordering for element %d (must be ccw)",element -> number);
-      return NullMatrix;
+      return Matrix();
    }
    if (A == 0) {
       error ("area of element %d is zero, check node numbering",element -> number);
-      return NullMatrix;
+      return Matrix();
    }
    
    for (j = 0 ; j < 3 ; j++) {
@@ -324,10 +345,10 @@ CSTEquivNodalForces(Element element, int *err_count)
    unsigned		node_a,
 			node_b;
    unsigned		i;
-   static Vector 	equiv = NullMatrix;
+   static Vector 	equiv;
  
-   if (equiv == NullMatrix) 
-      equiv = CreateVector (6);
+   if (!equiv) 
+       equiv = CreateVector (6);
 
    count = 0;
    force1 = force2 = 0; /* gcc -Wall */
@@ -380,7 +401,7 @@ CSTEquivNodalForces(Element element, int *err_count)
 
       if (count) {
          *err_count = count;
-         return NullMatrix;
+         return Matrix();
       }
 
       xc1 = element -> node[node_a] -> x;
@@ -394,7 +415,7 @@ CSTEquivNodalForces(Element element, int *err_count)
          error ("length of side of element %d is zero to machine precision",
                  element -> number);
          *err_count = 1;
-         return NullMatrix;
+         return Matrix();
       } 
 
       wa = element -> distributed[i] -> value[1].magnitude;

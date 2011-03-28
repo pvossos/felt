@@ -15,6 +15,8 @@ endif()
   
 find_package(FLEX REQUIRED)
 find_package(BISON REQUIRED)
+find_package(Boost 1.40.0)
+include_directories(${Boost_INCLUDE_DIRS})
 
 include_directories(include)
 add_subdirectory(lib)

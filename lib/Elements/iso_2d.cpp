@@ -31,6 +31,7 @@
 # include "fe.h"
 # include "error.h"
 # include "misc.h"
+# include "definition.h"
 
 # define PLANESTRESS 1
 # define PLANESTRAIN 2
@@ -41,17 +42,35 @@ static int iso2d_PlaneStressEltStress (Element element);
 static int iso2d_PlaneStrainEltSetup (Element element, char mass_mode, int tangent);
 static int iso2d_PlaneStrainEltStress (Element element);
 
-struct definition iso2d_PlaneStressDefinition = {
-   "iso2d_PlaneStress", 
-   iso2d_PlaneStressEltSetup, iso2d_PlaneStressEltStress, 
-   Planar, 9, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void iso2d_PlaneStressInit()
+{
+    Definition dd(new definition_t("iso2d_PlaneStress"));
+    dd->setup = iso2d_PlaneStressEltSetup;
+    dd->stress = iso2d_PlaneStressEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 9;
+    dd->shapenodes = 4;
+    dd->numstresses = 6;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
-struct definition iso2d_PlaneStrainDefinition = {
-   "iso2d_PlaneStrain", 
-   iso2d_PlaneStrainEltSetup, iso2d_PlaneStrainEltStress, 
-   Planar, 9, 4, 6, 2, {0, 1, 2, 0, 0, 0, 0}, 0
-};
+void iso2d_PlaneStrainInit()
+{
+    Definition dd(new definition_t("iso2d_PlaneStrain"));
+    dd->setup = iso2d_PlaneStrainEltSetup;
+    dd->stress = iso2d_PlaneStrainEltStress;
+    dd->shape = Planar;
+    dd->numnodes = 9;
+    dd->shapenodes = 4;
+    dd->numstresses = 6;
+    dd->numdofs = 2;
+    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    dd->retainK = 0;
+    AddDefinition(dd);
+}
 
 static unsigned LocalIsoShapeFunctions   (Element element, Matrix N, Matrix dNdx, Matrix dNde, Vector weights);
 static Vector   GlobalIsoShapeFunctions  (Element element, Matrix N, Matrix dNdxi, Matrix dNde, Matrix dNdx, Matrix dNdy, int ninteg, unsigned int nodes);
@@ -94,10 +113,10 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
    static Vector	weights;
    static Matrix	tempK;
    static Matrix	N, dNdxi, dNde,
-                        dNdx, dNdy = NullMatrix;
+                        dNdx, dNdy;
    static Matrix	Bt, temp;
 
-   if (dNdy == NullMatrix) {
+   if (!dNdy) {
   
       N     = CreateMatrix (9,9);
       dNdxi = CreateMatrix (9,9);
@@ -151,9 +170,9 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
    else if (type == PLANESTRAIN)
       D = PlaneStrainD (element);
    else
-      D = NullMatrix; /* gcc -Wall */
+       D.reset(); /* gcc -Wall */
 
-   if (D == NullMatrix)
+   if (!D)
       return 1;
 
    for (int i = 1 ; i <= ninteg ; i++) {
@@ -163,7 +182,7 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
       }
    } 
 
-   if (element -> K == NullMatrix) {
+   if (!element -> K) {
       if (numnodes == 3) {
          element -> K = CreateMatrix (8,8);
          MatrixRows (element -> K) = 6;
@@ -186,7 +205,7 @@ iso2dElementSetup(Element element, char mass_mode, int tangent, unsigned int typ
 
    for (int i = 1 ; i <= ninteg ; i++) {
       B = Iso2dLocalB (element, numnodes, dNdx, dNdy, i);
-      if (B == NullMatrix)
+      if (!B)
          return 1;
 
       MatrixRows (Bt) = MatrixRows (temp) = MatrixCols (B);
@@ -232,9 +251,9 @@ static Matrix
 Iso2dLocalB(Element element, unsigned int numnodes, Matrix dNdx, Matrix dNdy, unsigned int point)
 {
    unsigned		i;
-   static Matrix	B = NullMatrix;
+   static Matrix	B;
 
-   if (B == NullMatrix) 
+   if (!B) 
       B = CreateMatrix (3,18);
 
    for (i = 1 ; i <= numnodes ; i++) {
@@ -256,9 +275,9 @@ GlobalIsoShapeFunctions(Element element, Matrix N, Matrix dNdxi, Matrix dNde, Ma
 {
    static Vector	jac,
 			dxdxi, dxde,
-			dydxi, dyde = NullMatrix;
+			dydxi, dyde;
 
-   if (dyde == NullMatrix) {
+   if (!dyde) {
 
       dxdxi = CreateVector (9);
       dxde  = CreateVector (9);

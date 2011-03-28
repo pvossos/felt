@@ -24,7 +24,7 @@
 # include "cmatrix.h"
 # include "error.h"
 
-int InvertComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p)
+int InvertComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a, const Matrix &p)
 {
    unsigned		i, j;
    unsigned		n;
@@ -57,11 +57,10 @@ int InvertComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p)
          sdata(b,j,i) = cmdata(work,j,1);
    }
    
-   DestroyComplexMatrix (work);
    return 0;
 }
 
-int LUFactorComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix p, int *info)
+int LUFactorComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a, const Matrix &p, int *info)
 {
    complex	t;
    unsigned	i, j, k;
@@ -146,7 +145,7 @@ int LUFactorComplexMatrix (ComplexMatrix b, const ComplexMatrix a, const Matrix 
    return 0; 
 }
 
-int LUBackSolveComplexMatrix (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b, Matrix p)
+int LUBackSolveComplexMatrix (ComplexMatrix &c, const ComplexMatrix &a, const ComplexMatrix &b, const Matrix &p)
 {
    unsigned	i, k;
    unsigned	n;
@@ -210,7 +209,7 @@ int LUBackSolveComplexMatrix (ComplexMatrix c, ComplexMatrix a, ComplexMatrix b,
    return 0;
 }
 
-int DeterminantComplexMatrix(complex *result, const ComplexMatrix a, const Matrix p)
+int DeterminantComplexMatrix(complex *result, const ComplexMatrix &a, const Matrix &p)
 {
    unsigned	i;
    complex	x;
@@ -237,7 +236,7 @@ int DeterminantComplexMatrix(complex *result, const ComplexMatrix a, const Matri
    return 0;
 }
 
-int InvertCroutComplexMatrix (ComplexMatrix b, const ComplexMatrix a, unsigned int col)
+int InvertCroutComplexMatrix (ComplexMatrix &b, const ComplexMatrix &a, unsigned int col)
 {
    static complex	one = {1.0, 0.0};
 
@@ -257,7 +256,7 @@ int InvertCroutComplexMatrix (ComplexMatrix b, const ComplexMatrix a, unsigned i
    return 0;
 }
 
-int CroutFactorComplexMatrix (ComplexMatrix A)
+int CroutFactorComplexMatrix (ComplexMatrix &A)
 {
    unsigned     j,jj,jjlast,jcolht,
           	istart,ij,ii,i,
@@ -330,7 +329,7 @@ int CroutFactorComplexMatrix (ComplexMatrix A)
    return 0;
 }
 
-int CroutBackSolveComplexMatrix (const ComplexMatrix A, ComplexMatrix b)
+int CroutBackSolveComplexMatrix (const ComplexMatrix &A, ComplexMatrix &b)
 {
    unsigned	 jj,j,jjlast,
 		 jcolht,jjnext,

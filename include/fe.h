@@ -415,13 +415,13 @@ Vector ConstructForceVector(void);
 /*!
   Builds a table of nodal DOF displacements for all defined loadcases.
 */
-Matrix SolveStaticLoadCases(Matrix K, Matrix Fbase);
+Matrix SolveStaticLoadCases(Matrix &K, const Matrix &Fbase);
 
 /*!
  Builds a table of nodal DOF displacements for input forcing at a
  single DOF over a range of force magnitudes.
 */
-Matrix SolveStaticLoadRange(Matrix K, Matrix Fbase);
+Matrix SolveStaticLoadRange(Matrix &K, const Matrix &Fbase);
 
 void AssembleLoadCaseForce(Matrix F, LoadCase lc);
 

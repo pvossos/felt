@@ -310,7 +310,7 @@ AssembleTransientForce(double t, Vector F)
 }
 
 Matrix
-IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
+IntegrateHyperbolicDE(const Vector &K, const Vector &M, const Vector &C)
 {
    unsigned	count;
    unsigned	i,j;
@@ -525,7 +525,7 @@ IntegrateHyperbolicDE(Vector K, Vector M, Vector C)
 }
 
 Matrix
-IntegrateParabolicDE(Vector K, Vector M)
+IntegrateParabolicDE(const Vector &K, const Vector &M)
 {
    unsigned	count;
    unsigned	i, j;

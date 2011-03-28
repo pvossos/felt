@@ -603,7 +603,7 @@ SolveForDisplacements(Vector &K, Vector &F)
 }
  
 Matrix
-SolveStaticLoadCases(Matrix K, Matrix Fbase)
+SolveStaticLoadCases(Matrix &K, const Matrix &Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;
@@ -656,7 +656,7 @@ SolveStaticLoadCases(Matrix K, Matrix Fbase)
 }
 
 Matrix
-SolveStaticLoadRange(Matrix K, Matrix Fbase)
+SolveStaticLoadRange(Matrix &K, const Matrix &Fbase)
 {
    unsigned	 i,j,k;
    Matrix	 dtable;

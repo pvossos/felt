@@ -58,7 +58,7 @@ void BuildParabolicIC(Vector d);
   solving for d(i+1) implicity and then using this information with
   Newmark's update equations to get a(i+1) and v(i+1)
  */
-Matrix IntegrateHyperbolicDE(Vector K, Vector M, Vector C);
+Matrix IntegrateHyperbolicDE(const Vector &K, const Vector &M, const Vector &C);
 
 /*
  Solves the discrete equation of motion, Ma + Cv + Ky = F(t) starting
@@ -75,7 +75,7 @@ Matrix RosenbrockHyperbolicDE(Matrix k0, Matrix m, Matrix c0, Matrix *ttable);
   vector because it is slightly more efficient to factor it out from
   the start.
 */
-Matrix IntegrateParabolicDE(Vector K, Vector M);
+Matrix IntegrateParabolicDE(const Vector &K, const Vector &M);
 
 
 /*!

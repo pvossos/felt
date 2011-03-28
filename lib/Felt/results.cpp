@@ -239,7 +239,7 @@ static const char *labels [] = {"","Tx","Ty","Tz","Rx","Ry","Rz"};
  ******************************************************************************/
 
 void
-WriteTransientTable(Matrix dtable, Matrix ttable, FILE *fp)
+WriteTransientTable(const Matrix &dtable, const Matrix &ttable, FILE *fp)
 {
    unsigned	i,j,k,m,n;
    unsigned	table;

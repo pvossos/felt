@@ -19,7 +19,7 @@ void WriteLoadRangeTable (Matrix dtable, FILE *fp);
 
 void WriteModalResults (FILE *fp, Matrix M, Matrix C, Matrix K, Matrix lambda);
 
-void WriteTransientTable (Matrix dtable, Matrix ttable, FILE *fp);
+void WriteTransientTable (const Matrix &dtable, const Matrix &ttable, FILE *fp);
 
 void WriteTransferFunctions (const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced, FILE *fp);
 

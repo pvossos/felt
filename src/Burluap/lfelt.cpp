@@ -38,6 +38,7 @@ extern "C" {
 
 void SetupStressMemory(Element element);
 double ElementLength(Element element, unsigned int coords);
+double ElementArea(Element e, unsigned int n);
 
 //----------------------------------------------------------------------!
 
@@ -290,6 +291,16 @@ static int Element_length(lua_State *L)
     return 1;
 }
 
+static int Element_area(lua_State *L)
+{
+    Element ee = tl_check<Element>(L, 1);
+    luaL_argcheck(L, ee->definition->shape == Planar, 1,
+                  "area of non-planar element is undefined");
+    double val = ElementArea(ee, ee->definition->shapenodes);
+    lua_pushnumber(L, val);
+    return 1;
+}
+
 #define GETTER(typ, field) tl_getter_shared<element_t, typ, &element_t::field>
 #define GETSET(typ, field) tl_getset_shared<element_t, typ, &element_t::field>()
 
@@ -306,6 +317,7 @@ void register_Elements(lua_State *L)
     w.prop("material", GETTER(Material, material));
     w.prop("definition", GETTER(Definition, definition));
     w.prop("length", Element_length);
+    w.prop("area", Element_area);
     w.registerm(L);
 }
 
@@ -823,6 +835,38 @@ template<> int tl_tostring<AnalysisPtr>(lua_State *L)
     return 1;
 }
 
+static int AnalysisPtr_get_dofs(lua_State *L)
+{
+    AnalysisPtr ap = tl_check<AnalysisPtr>(L, 1);
+    lua_newtable(L);
+    for (size_t i = 1; i <= analysis.numdofs; i++) {
+        tl_push(L, i);
+        tl_push<int>(L, analysis.dofs[i]);
+        lua_settable(L, -3);
+    }
+    return 1;
+}
+
+static int AnalysisPtr_set_dofs(lua_State *L)
+{
+    AnalysisPtr ap = tl_check<AnalysisPtr>(L, 1);
+    luaL_checktype(L, 2, LUA_TTABLE);
+    lua_pushvalue(L, 2);
+
+    analysis.numdofs = 0;
+    for (size_t i = 1; i <= 6; i++) {
+        lua_pushinteger(L, i);
+        lua_gettable(L, -2);
+        if (lua_isnil(L, -1))
+            break;
+        int dof = lua_tointeger(L, -1);
+        analysis.dofs[i] = dof;
+        analysis.numdofs++;
+        lua_pop(L, 1);
+    }
+    return 0;
+}
+
 #define GETTER(typ, field) tl_getter<struct analysis, typ, &analysis::field>
 #define GETSET(typ, field) tl_getset<struct analysis, typ, &analysis::field>()
 
@@ -838,6 +882,7 @@ void register_AnalysisPtr(lua_State *L)
     w.prop("Rk", GETSET(double, Rk));
     w.prop("Rm", GETSET(double, Rm));
     w.prop("mass_mode", GETSET(char, mass_mode));
+    w.prop("dofs", AnalysisPtr_get_dofs, AnalysisPtr_set_dofs);
     w.registerm(L);
 };
 
@@ -912,6 +957,13 @@ static int ProblemPtr_get_mode(lua_State *L)
     return 1;
 }
 
+static int ProblemPtr_clear_nodes(lua_State *L)
+{
+    ProblemPtr pp = tl_check<ProblemPtr>(L, 1);
+    ClearNodes();
+    return 0;
+}
+
 #define GETTER(typ, field) tl_getter<Problem, typ, &Problem::field>
 
 void register_ProblemPtr(lua_State *L)
@@ -923,6 +975,7 @@ void register_ProblemPtr(lua_State *L)
     w["add_definition"] = ProblemPtr_add_definition;
     w["remove_definition"] = ProblemPtr_remove_definition;
     w["lookup_definition"] = ProblemPtr_lookup_definition;
+    w["clear_nodes"] = ProblemPtr_clear_nodes;
     w.registerm(L);
 };
 
@@ -1155,14 +1208,23 @@ static int Matrix_print(lua_State *L)
     return 0;
 }
 
+static int Matrix_chol(lua_State *L)
+{
+    Matrix a = tl_check<Matrix>(L, 1);
+    Matrix b = CreateCopyMatrix(a);
+    CholeskyFactorMatrix(b, a);
+    tl_push(L, b);
+    return 1;
+}
+
 #define GETTER(typ, field) tl_getter_shared<matrix, typ, &matrix::field>
 
 static void
 register_Matrices(lua_State *L)
 {
     tl_wrapper<Matrix> w(true);
-    w.prop("nrows", GETTER(unsigned, nrows));
-    w.prop("ncols", GETTER(unsigned, ncols));
+    w.prop("rows", GETTER(unsigned, nrows));
+    w.prop("cols", GETTER(unsigned, ncols));
     w["ref"] = Matrix_ref;
     w["set"] = Matrix_set;
     w["print"] = Matrix_print;
@@ -1171,6 +1233,7 @@ register_Matrices(lua_State *L)
     w["__add"] = Matrix_add;
     w["__sub"] = Matrix_sub;
     w["__mul"] = Matrix_mul;
+    w["chol"] = Matrix_chol;
     w.registerm(L);
 }
 

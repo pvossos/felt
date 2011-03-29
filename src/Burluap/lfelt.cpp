@@ -1379,6 +1379,27 @@ static int element_stresses(lua_State *L)
     return 0;
 }
 
+static int integrate_hyperbolic(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix M = tl_check<Matrix>(L, 2);
+    Matrix C = tl_check<Matrix>(L, 3);
+    
+    Matrix res = IntegrateHyperbolicDE(K, M, C);
+    tl_push<Matrix>(L, res);
+    return 1;
+}
+
+static int integrate_parabolic(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix M = tl_check<Matrix>(L, 2);
+
+    Matrix res = IntegrateParabolicDE(K, M);
+    tl_push<Matrix>(L, res);
+    return 1;
+}
+
 //----------------------------------------------------------------------!
 
 static const struct luaL_reg felt_reg[] = {
@@ -1401,6 +1422,8 @@ static const struct luaL_reg felt_reg[] = {
     {"normalize_by_first", normalize_by_first},
     {"form_modal", form_modal},
     {"element_stresses", element_stresses},
+    {"integrate_hyperbolic", integrate_hyperbolic},
+    {"integrate_parabolic", integrate_parabolic},
     {"renumber_nodes", renumber_nodes},
     {"restore_numbers", restore_numbers},
     

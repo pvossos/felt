@@ -1305,17 +1305,27 @@ static int construct_forces(lua_State *L)
 
 static int zero_constrained(lua_State *L)
 {
+    // we should have at least one argument
     Matrix k = tl_check<Matrix>(L, 1);
-    Matrix f = tl_check<Matrix>(L, 2);
-    Matrix kc = CreateCopyMatrix(k);
-    Matrix fc = CreateCopyMatrix(f);
-    // ATTN: the following funtions doesn't seem to work properly, so
-    // we wrap the other one.
-    //ZeroConstrainedMatrixDOF(mc, m);
-    ZeroConstrainedDOF(k, f, &kc, &fc);
-    tl_push<Matrix>(L, kc);
-    tl_push<Matrix>(L, fc);
-    return 2;
+    
+    if (lua_gettop(L) > 1) {
+        Matrix f = tl_check<Matrix>(L, 2);
+        Matrix kc = CreateCopyMatrix(k);
+        Matrix fc = CreateCopyMatrix(f);
+        // ATTN: the following funtions doesn't seem to work properly, so
+        // we wrap the other one.
+        //ZeroConstrainedMatrixDOF(mc, m);
+        ZeroConstrainedDOF(k, f, &kc, &fc);
+        tl_push<Matrix>(L, kc);
+        tl_push<Matrix>(L, fc);
+        return 2;
+
+    } else {
+        Matrix kc = CreateCopyMatrix(k);
+        ZeroConstrainedDOF(k, Matrix(), &kc, NULL);
+        tl_push<Matrix>(L, kc);
+        return 1;
+    }
 }
 
 static int remove_constrained(lua_State *L)

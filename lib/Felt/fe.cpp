@@ -767,14 +767,23 @@ ApplyNodalDisplacements(Matrix d)
 }
 
 cvector1<Reaction>
-SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
+SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers)
+{
+    unsigned nr = SolveForReactions(K, d, old_numbers, NULL, 0);
+    cvector1<Reaction> reac(nr);
+    SolveForReactions(K, d, old_numbers, reac.c_ptr1(), reac.size());
+    return reac;
+}
+
+unsigned
+SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers,
+                  Reaction *reac, unsigned num_reactions)
 {
    unsigned	active,
 		*dofs;
    unsigned	i,j,k,m,
 		affected_dof,
-		base_dof,
-		num_reactions;
+        base_dof;
    unsigned	size;
    unsigned	address;
    double	sum;
@@ -786,24 +795,26 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
 
    size = active * numnodes;
 
-	/*
-	 * find the number of reactions and allocate some space for them
-	 */
-
-   num_reactions = 0; 
-   cvector1<Reaction> reac(0);
-   
-   for (i = 1 ; i <= numnodes ; i++) {
-      for (j = 1 ; j <= active ; j++) {
-         if (node[i] -> constraint -> constraint[dofs[j]] == 1) 
-            num_reactions++; 
-      }
+   if (!reac) {
+       // we were called with NULL reac, so we just calculate how
+       // large we need reac to be.
+       num_reactions = 0;
+       
+       for (i = 1 ; i <= numnodes ; i++) {
+           for (j = 1 ; j <= active ; j++) {
+               if (node[i] -> constraint -> constraint[dofs[j]] == 1) 
+                   num_reactions++; 
+           }
+       }
+       
+       return num_reactions;
    }
+   
+   // we were called with a non-NULL reac, so we assume that the
+   // provided num_reactions is correct.
 
    if (num_reactions == 0) 
-      return reac;
-
-   reac.resize(num_reactions);
+      return 0;
 
    m = 1;
    for (i = 1 ; i <= numnodes ; i++) {
@@ -835,7 +846,7 @@ SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
       }
    }
 
-   return reac;
+   return num_reactions;
 }
 
 int

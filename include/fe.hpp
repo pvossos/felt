@@ -38,7 +38,11 @@ struct Reaction {
   entry that was previously unknown in the global force vector
 */
 
-cvector1<Reaction> SolveForReactions(Vector K, Vector d, unsigned int *old_numbers);
+cvector1<Reaction> SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers);
+
+unsigned
+SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers,
+                  Reaction *reac, unsigned num_reactions);
 
 /*!
   Builds a list of global DOF numbers which have some sort of input

@@ -33,6 +33,7 @@ extern "C" {
 #include "objects.h"
 #include "transient.hpp"
 #include "renumber.hpp"
+#include "fe.hpp"
 
 //----------------------------------------------------------------------!
 
@@ -1334,6 +1335,42 @@ static int solve_displacements(lua_State *L)
     return 1;
 }
 
+static int solve_reactions(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix d = tl_check<Matrix>(L, 2);
+    unsigned num_reactions = SolveForReactions(K, d, NULL, NULL, 0);
+    Reaction *reac = new Reaction[num_reactions];
+    SolveForReactions(K, d, NULL, reac-1, num_reactions);
+
+    // Reaction struct is pretty simple, and it is just returned from
+    // SolveForReactions; it is not used as an argument to another
+    // functions. Instead of a userdata as usual, I choose to return a
+    // native lua table.
+    lua_newtable(L);
+    for (size_t i = 0; i < num_reactions; i++) {
+        lua_pushinteger(L, i+1);
+        lua_newtable(L);
+
+        lua_pushliteral(L, "force");
+        lua_pushnumber(L, reac[i].force);
+        lua_settable(L, -3);
+
+        lua_pushliteral(L, "node");
+        lua_pushinteger(L, reac[i].node);
+        lua_settable(L, -3);
+
+        lua_pushliteral(L, "dof");
+        lua_pushinteger(L, reac[i].dof);
+        lua_settable(L, -3);
+
+        lua_settable(L, -3);
+    }
+
+    delete[] reac;
+    return 1;
+}
+
 static int compute_modes(lua_State *L)
 {
     Matrix K = tl_check<Matrix>(L, 1);
@@ -1414,6 +1451,7 @@ static const struct luaL_reg felt_reg[] = {
     {"zero_constrained", zero_constrained},
     {"remove_constrained", remove_constrained},
     {"solve_displacements", solve_displacements},
+    {"solve_reactions", solve_reactions},
     {"compute_modes", compute_modes},
     {"normalize_by_first", normalize_by_first},
     {"form_modal", form_modal},

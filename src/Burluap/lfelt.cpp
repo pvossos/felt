@@ -1457,6 +1457,31 @@ static int integrate_parabolic(lua_State *L)
     return 1;
 }
 
+static int compute_transfer_functions(lua_State *L)
+{
+    Matrix Mc = tl_check<Matrix>(L, 1);
+    Matrix Cc = tl_check<Matrix>(L, 2);
+    Matrix Kc = tl_check<Matrix>(L, 3);
+    size_t numforced;
+    NodeDOF *forced = tl_checkn<NodeDOF>(L, 4, numforced);
+    Matrix *H = new Matrix[numforced];
+    ComputeTransferFunctions(Mc, Cc, Kc, forced-1, numforced, H-1);
+    tl_pushn<Matrix>(L, H, numforced, true);
+    return 1;
+}
+
+static int compute_output_spectra(lua_State *L)
+{
+    size_t numforced;
+    NodeDOF *forced = tl_checkn<NodeDOF>(L, 2, numforced);
+    size_t nH;
+    Matrix *H = tl_checkn<Matrix>(L, 1, nH);
+    assert(nH == numforced);
+    Matrix S = ComputeOutputSpectra(H-1, forced-1, numforced);
+    tl_push<Matrix>(L, S);
+    return 1;
+}
+
 //----------------------------------------------------------------------!
 
 static const struct luaL_reg felt_reg[] = {
@@ -1485,6 +1510,8 @@ static const struct luaL_reg felt_reg[] = {
     {"integrate_parabolic", integrate_parabolic},
     {"renumber_nodes", renumber_nodes},
     {"restore_numbers", restore_numbers},
+    {"compute_transfer_functions", compute_transfer_functions},
+    {"compute_output_spectra", compute_output_spectra},
     
     {NULL, NULL} /* sentinel */
 };
@@ -1589,6 +1616,8 @@ register_funs(lua_State *L, const char *tbl)
     tl_array_wrapper<Stress>().registerm(L);
 
     tl_array_wrapper<NodeDOF>().registerm(L);
+
+    tl_array_wrapper<Matrix>().registerm(L);
 
     // non-member functions
     luaL_register(L, tbl, felt_reg);

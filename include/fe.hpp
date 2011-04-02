@@ -58,8 +58,16 @@ size_t FindForcedDOF(NodeDOF *forced, size_t n);
   forced DOF and the output at the DOF described by nodes= and dofs=
   in the analysis parameters.
 */
-cvector1<Matrix> ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &forced);
+cvector1<Matrix> ComputeTransferFunctions(const Matrix &M, const Matrix &C, const Matrix &K, const cvector1<NodeDOF> &forced);
+
+void
+ComputeTransferFunctions(const Matrix &M, const Matrix &C, const Matrix &K,
+                         const NodeDOF *forced, size_t numforced,
+                         Matrix *H);
 
 Matrix ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced);
+
+Matrix
+ComputeOutputSpectra(const Matrix *H, const NodeDOF *forced, size_t numforced);
 
 #endif

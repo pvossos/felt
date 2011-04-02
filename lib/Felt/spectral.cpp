@@ -377,8 +377,10 @@ ComputeOutputSpectraFFT(Matrix dtable, Matrix *Pr, Vector *Fr, int nfft)
    return 0; 
 }
 
-cvector1<Matrix>
-ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &forced)
+void
+ComputeTransferFunctions(const Matrix &M, const Matrix &C, const Matrix &K,
+                         const NodeDOF *forced, size_t numforced,
+                         Matrix *H)
 {
    ComplexMatrix	Z;
    ComplexMatrix	Ht;
@@ -397,9 +399,6 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
 
    nsteps = (analysis.stop - analysis.start + analysis.step/2.0) / 
             analysis.step + 1.0;
-
-   const size_t numforced = forced.size();
-   cvector1<Matrix> H(numforced);
 
    for (i = 1 ; i <= numforced ; i++)
       H [i] = CreateFullMatrix(nsteps, analysis.numdofs * analysis.nodes.size());
@@ -430,8 +429,15 @@ ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &
 
       w += analysis.step;
    }
+}
 
-   return H; 
+cvector1<Matrix>
+ComputeTransferFunctions(const Matrix &M, const Matrix &C, const Matrix &K, const cvector1<NodeDOF> &forced)
+{
+    size_t numforced = forced.size();
+    cvector1<Matrix> H(numforced);
+    ComputeTransferFunctions(M, C, K, forced.c_ptr1(), numforced, H.c_ptr1());
+    return H;
 }
 
 /* UNUSED
@@ -478,7 +484,7 @@ AlignSpectra(Matrix S1, Matrix S2, Matrix freq2)
 */
 
 Matrix
-ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
+ComputeOutputSpectra(const Matrix *H, const NodeDOF *forced, size_t numforced)
 {
    Matrix	So;
    Matrix	Si;
@@ -501,7 +507,7 @@ ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
 
    ZeroMatrix (So);
 
-   for (i = 1 ; i <= forced.size() ; i++) {
+   for (i = 1 ; i <= numforced; i++) {
 
       inode = forced [i].node;
       idof = forced [i].dof;
@@ -528,4 +534,12 @@ ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
    }
 
    return So;
+}
+
+Matrix
+ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced)
+{
+    size_t numforced = forced.size();
+    assert(H.size() == numforced);
+    return ComputeOutputSpectra(H.c_ptr1(), forced.c_ptr1(), numforced);
 }

@@ -815,6 +815,8 @@ void register_Definitions(lua_State *L)
 
 //----------------------------------------------------------------------!
 
+// AnalysisType enum
+
 template<> void tl_push<AnalysisType>(lua_State *L, AnalysisType at)
 {
     lua_pushliteral(L, "AnalysisType");
@@ -1076,7 +1078,6 @@ static int Matrix_set(lua_State *L)
     luaL_argcheck(L, jj >= 1 && jj <= mt->ncols, 2, "Invalid column index");
 
     double newval = luaL_checknumber(L, 4);
-    printf("in set(%d, %d) = %f\n", ii, jj, newval);
     sdata(mt.get(), ii, jj) = newval;
     return 0;
 }
@@ -1112,7 +1113,6 @@ static int Matrix_newindex2(lua_State *L)
     luaL_checktype(L, 1, LUA_TTABLE);
     unsigned jj = luaL_checkint(L, 2);
     double val = luaL_checknumber(L, 3);
-    printf("val = %g\n", val);
     
     // get original matrix
     lua_pushvalue(L, lua_upvalueindex(1));
@@ -1286,6 +1286,16 @@ static int construct_stiffness(lua_State *L)
     return 1;
 }
 
+static int construct_nonlinear_stiffness(lua_State *L)
+{
+    int status;
+    Matrix K = CreateNonlinearStiffness(&status);
+    if (status)
+        luaL_error(L, "could not create global stiffness matrix");
+    tl_push(L, K);
+    return 1;
+}
+
 static int construct_dynamic(lua_State *L)
 {
     Matrix K, M, C;
@@ -1430,6 +1440,23 @@ static int form_modal(lua_State *L)
     return 3;
 }
 
+static int static_nonlinear_displacements(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Vector F = tl_check<Vector>(L, 2);
+    int tangent;
+    if (lua_gettop(L) > 2)
+        tangent = luaL_checkint(L, 3);
+    else 
+        tangent = SetAnalysisMode() == StaticSubstitution 
+            ? 0
+            : 0 /* should be 1 */;
+    Matrix res = StaticNonlinearDisplacements(K, F, tangent);
+    tl_push(L, res);
+    return 1;
+}
+
+
 static int element_stresses(lua_State *L)
 {
     ElementStresses();
@@ -1454,6 +1481,53 @@ static int integrate_parabolic(lua_State *L)
 
     Matrix res = IntegrateParabolicDE(K, M);
     tl_push<Matrix>(L, res);
+    return 1;
+}
+
+void
+WriteLoadCaseTable(Matrix dtable, FILE *fp);
+
+
+static int solve_static_load_cases(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix F = tl_check<Matrix>(L ,2);
+    Matrix res = SolveStaticLoadCases(K, F);
+    WriteLoadCaseTable(res, stdout);
+    tl_push<Matrix>(L, res);
+    return 1;
+}
+
+static int solve_static_load_range(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix F = tl_check<Matrix>(L ,2);
+    Matrix res = SolveStaticLoadRange(K, F);
+    tl_push<Matrix>(L, res);
+    return 1;
+}
+
+static int solve_nonlinear_load_range(lua_State *L)
+{
+    Matrix K = tl_check<Matrix>(L, 1);
+    Matrix F = tl_check<Matrix>(L ,2);
+    int tangent;
+    if (lua_gettop(L) > 2)
+        tangent = luaL_checkint(L, 3);
+    else
+        tangent =
+            SetAnalysisMode() == StaticSubstitutionLoadRange 
+            ? 0 
+            : 0 /* should be 1 */;
+    Matrix res = SolveNonlinearLoadRange(K, F, tangent);
+    tl_push<Matrix>(L, res);
+    return 1;
+}
+
+static int set_analysis_mode(lua_State *L)
+{
+    AnalysisType at = SetAnalysisMode();
+    tl_push<AnalysisType>(L, at);
     return 1;
 }
 
@@ -1493,8 +1567,10 @@ static const struct luaL_reg felt_reg[] = {
     {"Element", Element_new},
     {"Matrix", Matrix_new},
 
+    {"set_analysis_mode", set_analysis_mode},
     {"find_dofs", find_dofs},
     {"construct_stiffness", construct_stiffness},
+    {"construct_nonlinear_stiffness", construct_nonlinear_stiffness},
     {"construct_dynamic", construct_dynamic},
     {"construct_forces", construct_forces},
     {"zero_constrained", zero_constrained},
@@ -1502,6 +1578,7 @@ static const struct luaL_reg felt_reg[] = {
     {"find_forced_dof", find_forced_dof},
     {"solve_displacements", solve_displacements},
     {"solve_reactions", solve_reactions},
+    {"static_nonlinear_displacements", static_nonlinear_displacements},
     {"compute_modes", compute_modes},
     {"normalize_by_first", normalize_by_first},
     {"form_modal", form_modal},
@@ -1510,6 +1587,9 @@ static const struct luaL_reg felt_reg[] = {
     {"integrate_parabolic", integrate_parabolic},
     {"renumber_nodes", renumber_nodes},
     {"restore_numbers", restore_numbers},
+    {"solve_static_load_cases", solve_static_load_cases},
+    {"solve_static_load_range", solve_static_load_range},
+    {"solve_nonlinear_load_range", solve_nonlinear_load_range},    
     {"compute_transfer_functions", compute_transfer_functions},
     {"compute_output_spectra", compute_output_spectra},
     

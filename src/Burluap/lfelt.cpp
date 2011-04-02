@@ -63,6 +63,11 @@ template<> std::string tl_metaname<unsigned>()
     return "unsigned";
 }
 
+template<> std::string tl_metaname<NodeDOF>()
+{
+    return "Felt.NodeDOF";
+}
+
 //----------------------------------------------------------------------!
 
 // Nodes
@@ -1326,6 +1331,15 @@ static int remove_constrained(lua_State *L)
     return 3;
 }
 
+static int find_forced_dof(lua_State *L)
+{
+    size_t nn = FindForcedDOF(NULL, 0);
+    NodeDOF *nd = new NodeDOF[nn];
+    FindForcedDOF(nd-1, nn);
+    tl_pushn<NodeDOF>(L, nd, nn);
+    return 1;
+}
+
 static int solve_displacements(lua_State *L)
 {
     Matrix K = tl_check<Matrix>(L, 1);
@@ -1450,6 +1464,7 @@ static const struct luaL_reg felt_reg[] = {
     {"construct_forces", construct_forces},
     {"zero_constrained", zero_constrained},
     {"remove_constrained", remove_constrained},
+    {"find_forced_dof", find_forced_dof},
     {"solve_displacements", solve_displacements},
     {"solve_reactions", solve_reactions},
     {"compute_modes", compute_modes},
@@ -1562,7 +1577,9 @@ register_funs(lua_State *L, const char *tbl)
     tl_array_wrapper<Distributed>().registerm(L);
     
     tl_array_wrapper<Stress>().registerm(L);
-    
+
+    tl_array_wrapper<NodeDOF>().registerm(L);
+
     // non-member functions
     luaL_register(L, tbl, felt_reg);
 

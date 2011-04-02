@@ -1094,38 +1094,35 @@ LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_dof)
    return;
 }
  
-cvector1<NodeDOF>
-FindForcedDOF()
+size_t 
+FindForcedDOF(NodeDOF *forced, size_t n)
 {
-   unsigned	*dofs;
-   unsigned	active;
    unsigned	i, j;
-   unsigned	n;
 
    const Node *node = problem.nodes.c_ptr1();
-   active   = problem.num_dofs;
+   unsigned active   = problem.num_dofs;
    const unsigned numnodes = problem.nodes.size();
-   dofs     = problem.dofs_num;
+   unsigned *dofs     = problem.dofs_num;
 
-	/*
- 	 * make one pass to figure out how many forced DOF 
-	 * we are dealing with
-	 */
-
-   n = 0;
-   for (i = 1 ; i <= numnodes ; i++) {
-      for (j = 1 ; j <= active ; j++) {
-         if (node [i] -> force != NULL)
-            if (node [i] -> force -> force [dofs[j]].value || 
-                node [i] -> force -> force [dofs[j]].expr ||
-                node [i] -> force -> spectrum [dofs[j]].value ||
-                node [i] -> force -> spectrum [dofs[j]].expr)
-
-               n++;
-      }
+   if (!forced) {
+       /*
+        * make one pass to figure out how many forced DOF 
+        * we are dealing with
+        */
+       unsigned nn = 0;
+       for (i = 1 ; i <= numnodes ; i++) {
+           for (j = 1 ; j <= active ; j++) {
+               if (node [i] -> force != NULL) {
+                   if (node [i] -> force -> force [dofs[j]].value || 
+                       node [i] -> force -> force [dofs[j]].expr ||
+                       node [i] -> force -> spectrum [dofs[j]].value ||
+                       node [i] -> force -> spectrum [dofs[j]].expr)
+                       nn++;
+               }
+           }
+       }
+       return nn;
    }
-
-   cvector1<NodeDOF> forced(n);
    
    if (n > 0) {
    
@@ -1146,8 +1143,17 @@ FindForcedDOF()
       }
    }
 
-   return forced;
+   return n;
 } 
+
+cvector1<NodeDOF>
+FindForcedDOF()
+{
+    size_t nn = FindForcedDOF(NULL, 0);
+    cvector1<NodeDOF> forced(nn);
+    FindForcedDOF(forced.c_ptr1(), forced.size());
+    return forced;
+}
 
 Matrix
 RemoveConstrainedMatrixDOF(Matrix a)

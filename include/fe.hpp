@@ -51,6 +51,8 @@ SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numb
  */
 cvector1<NodeDOF> FindForcedDOF();
 
+size_t FindForcedDOF(NodeDOF *forced, size_t n);
+
 /*!
   Computes the frequency domain transfer function between inputs at
   forced DOF and the output at the DOF described by nodes= and dofs=

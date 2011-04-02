@@ -123,7 +123,7 @@ void tl_push(lua_State *L, T p)
     luaL_getmetatable(L, name.c_str());
     lua_setmetatable(L, -2);
 #ifdef SHOWNEWDELETE
-    std::printf("NEW %s [%p]\n", name.c_str(), v);
+    std::printf("NEW %s\n", name.c_str());
 #endif
 }
 
@@ -201,16 +201,34 @@ T* tl_checkn(lua_State *L, int index, size_t &size)
     return obj->data;
 }
 
+// (possibly) collect low-level arrays 
+
+template<typename T>
+int tl_gcn(lua_State *L)
+{
+    size_t size;
+    T *data = tl_checkn<T>(L, 1, size);
+#ifdef SHOWNEWDELETE
+    printf("DELETE[]: collecting array of %u elements\n", size);
+#endif
+    delete[] data;
+}
+
 // push low-level arrays
 
 template<typename T>
-void tl_pushn(lua_State *L, T *p, size_t size)
+void tl_pushn(lua_State *L, T *p, size_t size, bool gc = false)
 {
     const std::string name = tl_metaname<T>() + "Array";
     tl_array<T> *obj = (tl_array<T> *) lua_newuserdata(L, sizeof(tl_array<T>));
     obj->data = p;
     obj->size = size;
     luaL_getmetatable(L, name.c_str());
+    if (gc) {
+        lua_pushliteral(L, "__gc");
+        lua_pushcfunction(L, tl_gcn<T>);
+        lua_settable(L, -3);
+    }
     lua_setmetatable(L, -2);
 }
 

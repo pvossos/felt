@@ -1249,15 +1249,11 @@ static int renumber_nodes(lua_State *L)
     Element *element = problem.elements.c_ptr1();
     unsigned numnodes = problem.nodes.size();
     unsigned numelts = problem.elements.size();
-    
-    // ATTN: if we allocate the array with lua, and we push later with
-    // tl_pushn, it looks like it gets automatically freed.
-    unsigned *old_numbers = (unsigned *) lua_newuserdata(L, sizeof(unsigned) * numnodes);
+    unsigned *old_numbers = new unsigned[numnodes];
     size_t nret = RenumberNodes(node, element, numnodes, numelts, old_numbers-1);
     if (0 == nret)
         return 0;
-    
-    tl_pushn<unsigned>(L, old_numbers, nret);
+    tl_pushn<unsigned>(L, old_numbers, nret, true);
     return 1;
 }
 

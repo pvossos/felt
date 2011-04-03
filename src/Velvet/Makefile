@@ -15,7 +15,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-CFLAGS	= $(CCOPTS) -I$(X11INC) -I$(TOPDIR)/include
+CFLAGS	= $(CCOPTS) -I$(X11INC) -I$(TOPDIR)/include -O0
 LDFLAGS	= $(LDOPTS) -L$(X11LIB)
 LIBS	= $(LIBWIDGETS) $(LIBGEN) $(LIBFELT) $(LIBELT) $(LIBMTX)\
           -lGLw -lGLU -lGL -lpthread -lXaw -lXmu -lXt -lSM -lICE -lXext -lX11 -lm 

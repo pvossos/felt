@@ -50,7 +50,9 @@ void beamInit()
     dd->shapenodes = 2;
     dd->numstresses = 3;
     dd->numdofs = 3;
-    dd->dofs = {0, 1, 2, 6, 0, 0, 0};
+    int dofsarr[] = {0,1,2,6,0,0,0};
+    for (int i=0; i<7; i++)
+    dd->dofs[i] = dofsarr[i];
     dd->retainK = 1;
     AddDefinition(dd);
 }

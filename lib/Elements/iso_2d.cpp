@@ -52,7 +52,9 @@ void iso2d_PlaneStressInit()
     dd->shapenodes = 4;
     dd->numstresses = 6;
     dd->numdofs = 2;
-    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    int dofsarr[] = {0,1,2,0,0,0,0};
+    for (int i=0; i<7; i++)
+    dd->dofs[i] = dofsarr[i];
     dd->retainK = 0;
     AddDefinition(dd);
 }
@@ -67,7 +69,9 @@ void iso2d_PlaneStrainInit()
     dd->shapenodes = 4;
     dd->numstresses = 6;
     dd->numdofs = 2;
-    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    int dofsarr[] = {0,1,2,0,0,0,0};
+    for (int i=0; i<7; i++)
+    dd->dofs[i] = dofsarr[i];
     dd->retainK = 0;
     AddDefinition(dd);
 }

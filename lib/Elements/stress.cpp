@@ -166,7 +166,7 @@ SetupStressMemory(Element element)
 	 * followed by space for each actual stress value (fy and mz)
 	 */
 
-        element -> stress[i] -> values.resize(element->definition->numstresses, 0);
+        element -> stress[i] -> values.resize(element->definition->numstresses);
     }
     
     return;

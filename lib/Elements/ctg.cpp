@@ -51,7 +51,9 @@ void ctgInit()
     dd->shapenodes = 3;
     dd->numstresses = 0;
     dd->numdofs = 1;
-    dd->dofs = {0, 1, 0, 0, 0, 0, 0};
+    int dofsarr[] = {0,1,0,0,0,0,0};
+    for (int i=0; i<7; i++)
+    dd->dofs[i] = dofsarr[i];
     dd->retainK = 0;
     AddDefinition(dd);
 }

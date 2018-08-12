@@ -206,17 +206,11 @@ definition_t::definition_t(const char *name)
 {
     if (name)
         this->name = name;
-    this->setup = NULL;
-    this->stress = NULL;
-
-    // this will always be NULL for built-in definitions
-    this->udata = NULL;
 }
 
 definition_t::~definition_t()
 {
-    if (this->udata)
-        free(this->udata);
+    // NO-OP
 }
 
 void

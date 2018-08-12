@@ -40,7 +40,7 @@
 # include "error.h"
 # include "transient.hpp"
 
-Matrix ZeroRowCol(Matrix K, unsigned int dof);
+extern "C" Matrix ZeroRowCol(Matrix K, unsigned int dof);
 
 int
 FindDOFS(void)
@@ -767,23 +767,14 @@ ApplyNodalDisplacements(Matrix d)
 }
 
 cvector1<Reaction>
-SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers)
-{
-    unsigned nr = SolveForReactions(K, d, old_numbers, NULL, 0);
-    cvector1<Reaction> reac(nr);
-    SolveForReactions(K, d, old_numbers, reac.c_ptr1(), reac.size());
-    return reac;
-}
-
-unsigned
-SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers,
-                  Reaction *reac, unsigned num_reactions)
+SolveForReactions(Vector K, Vector d, unsigned int *old_numbers)
 {
    unsigned	active,
 		*dofs;
    unsigned	i,j,k,m,
 		affected_dof,
-        base_dof;
+		base_dof,
+		num_reactions;
    unsigned	size;
    unsigned	address;
    double	sum;
@@ -795,26 +786,24 @@ SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numb
 
    size = active * numnodes;
 
-   if (!reac) {
-       // we were called with NULL reac, so we just calculate how
-       // large we need reac to be.
-       num_reactions = 0;
-       
-       for (i = 1 ; i <= numnodes ; i++) {
-           for (j = 1 ; j <= active ; j++) {
-               if (node[i] -> constraint -> constraint[dofs[j]] == 1) 
-                   num_reactions++; 
-           }
-       }
-       
-       return num_reactions;
-   }
+	/*
+	 * find the number of reactions and allocate some space for them
+	 */
+
+   num_reactions = 0; 
+   cvector1<Reaction> reac(0);
    
-   // we were called with a non-NULL reac, so we assume that the
-   // provided num_reactions is correct.
+   for (i = 1 ; i <= numnodes ; i++) {
+      for (j = 1 ; j <= active ; j++) {
+         if (node[i] -> constraint -> constraint[dofs[j]] == 1) 
+            num_reactions++; 
+      }
+   }
 
    if (num_reactions == 0) 
-      return 0;
+      return reac;
+
+   reac.resize(num_reactions);
 
    m = 1;
    for (i = 1 ; i <= numnodes ; i++) {
@@ -846,7 +835,7 @@ SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numb
       }
    }
 
-   return num_reactions;
+   return reac;
 }
 
 int
@@ -1094,35 +1083,38 @@ LocalDOF(unsigned int global_dof, unsigned int *node, unsigned int *local_dof)
    return;
 }
  
-size_t 
-FindForcedDOF(NodeDOF *forced, size_t n)
+cvector1<NodeDOF>
+FindForcedDOF()
 {
+   unsigned	*dofs;
+   unsigned	active;
    unsigned	i, j;
+   unsigned	n;
 
    const Node *node = problem.nodes.c_ptr1();
-   unsigned active   = problem.num_dofs;
+   active   = problem.num_dofs;
    const unsigned numnodes = problem.nodes.size();
-   unsigned *dofs     = problem.dofs_num;
+   dofs     = problem.dofs_num;
 
-   if (!forced) {
-       /*
-        * make one pass to figure out how many forced DOF 
-        * we are dealing with
-        */
-       unsigned nn = 0;
-       for (i = 1 ; i <= numnodes ; i++) {
-           for (j = 1 ; j <= active ; j++) {
-               if (node [i] -> force != NULL) {
-                   if (node [i] -> force -> force [dofs[j]].value || 
-                       node [i] -> force -> force [dofs[j]].expr ||
-                       node [i] -> force -> spectrum [dofs[j]].value ||
-                       node [i] -> force -> spectrum [dofs[j]].expr)
-                       nn++;
-               }
-           }
-       }
-       return nn;
+	/*
+ 	 * make one pass to figure out how many forced DOF 
+	 * we are dealing with
+	 */
+
+   n = 0;
+   for (i = 1 ; i <= numnodes ; i++) {
+      for (j = 1 ; j <= active ; j++) {
+         if (node [i] -> force != NULL)
+            if (node [i] -> force -> force [dofs[j]].value || 
+                node [i] -> force -> force [dofs[j]].expr ||
+                node [i] -> force -> spectrum [dofs[j]].value ||
+                node [i] -> force -> spectrum [dofs[j]].expr)
+
+               n++;
+      }
    }
+
+   cvector1<NodeDOF> forced(n);
    
    if (n > 0) {
    
@@ -1143,17 +1135,8 @@ FindForcedDOF(NodeDOF *forced, size_t n)
       }
    }
 
-   return n;
+   return forced;
 } 
-
-cvector1<NodeDOF>
-FindForcedDOF()
-{
-    size_t nn = FindForcedDOF(NULL, 0);
-    cvector1<NodeDOF> forced(nn);
-    FindForcedDOF(forced.c_ptr1(), forced.size());
-    return forced;
-}
 
 Matrix
 RemoveConstrainedMatrixDOF(Matrix a)

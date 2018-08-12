@@ -76,7 +76,6 @@ static void     ComputeBandwidth (vector<cvector1u> &ndstk, unsigned int numnode
 static void     DropTree (int iroot, vector<cvector1u> &ndstk, int *lvl, int *iwk, 
                           const unsigned *nd_degrees, int *lvlwth, int *lvlbot, int *lvln, int *maxlw, int ibort);
 
-// ATTN: old_numbers is UnitOffset
 void
 RestoreNodeNumbers(Node *node, const unsigned *old_numbers, unsigned int numnodes)
 {
@@ -95,9 +94,8 @@ RestoreProblemNodeNumbers(const cvector1u &old)
     RestoreNodeNumbers(problem.nodes.c_ptr1(), old.c_ptr1(), problem.nodes.size());
 }
 
-// ATTN: old_numbers is UnitOffset
-size_t
-RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int numelts, unsigned *old_numbers)
+cvector1u
+RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int numelts)
 {
    char		flag;
    unsigned	i,j;
@@ -108,6 +106,7 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
    unsigned	n;
    unsigned	number;
 
+   cvector1u old_numbers(numnodes);
    for (i = 1 ; i <= numnodes ; i++)
       old_numbers [i] = node [i] -> number;
 
@@ -182,7 +181,7 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
 	 * call the main renumbering routine
 	 */
                
-   cvector1u new_numbers = Reduce (ndstk,nd_degrees.c_ptr1(),old_numbers,numnodes,max_degree,1);
+   cvector1u new_numbers = Reduce (ndstk,nd_degrees.c_ptr1(),old_numbers.c_ptr1(),numnodes,max_degree,1);
 
 	/*
 	 * Renumber the nodes and free the new_numbers array if we got
@@ -193,13 +192,11 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
 	 * has been done.
 	 */
 
-   size_t nret = numnodes;
-   
    if (!new_numbers.empty()) {
       for (i = 1 ; i <= numnodes ; i++) 
          node[i] -> number = new_numbers [i];
    } else {
-       nret = 0;
+       old_numbers.resize(0);
    }
    
    // not strictly necessary, but free up some space till next call
@@ -207,7 +204,7 @@ RenumberNodes(Node *node, Element *element, unsigned int numnodes, unsigned int 
    nhigh.resize(0);
    nlow.resize(0);
 
-   return nret;
+   return old_numbers;
 }
 
 static cvector1u
@@ -1086,9 +1083,8 @@ RenumberProblemNodes()
     Element *element = problem.elements.c_ptr1();
     unsigned numnodes = problem.nodes.size();
     unsigned numelts = problem.elements.size();
-    cvector1u old_numbers(numnodes);
-    size_t nret = RenumberNodes(node, element, numnodes, numelts, old_numbers.c_ptr1());
-    old_numbers.resize(nret);
-    return old_numbers;
+    cvector1u ret = RenumberNodes(node, element, numnodes, numelts);
+    assert(ret.size() == numnodes);
+    return ret;
 }
 

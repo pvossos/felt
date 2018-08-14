@@ -38,7 +38,11 @@ struct Reaction {
   entry that was previously unknown in the global force vector
 */
 
-cvector1<Reaction> SolveForReactions(Vector K, Vector d, unsigned int *old_numbers);
+cvector1<Reaction> SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers);
+
+unsigned
+SolveForReactions(const Vector &K, const Vector &d, const unsigned int *old_numbers,
+                  Reaction *reac, unsigned num_reactions);
 
 /*!
   Builds a list of global DOF numbers which have some sort of input
@@ -47,13 +51,23 @@ cvector1<Reaction> SolveForReactions(Vector K, Vector d, unsigned int *old_numbe
  */
 cvector1<NodeDOF> FindForcedDOF();
 
+size_t FindForcedDOF(NodeDOF *forced, size_t n);
+
 /*!
   Computes the frequency domain transfer function between inputs at
   forced DOF and the output at the DOF described by nodes= and dofs=
   in the analysis parameters.
 */
-cvector1<Matrix> ComputeTransferFunctions(Matrix M, Matrix C, Matrix K, const cvector1<NodeDOF> &forced);
+cvector1<Matrix> ComputeTransferFunctions(const Matrix &M, const Matrix &C, const Matrix &K, const cvector1<NodeDOF> &forced);
+
+void
+ComputeTransferFunctions(const Matrix &M, const Matrix &C, const Matrix &K,
+                         const NodeDOF *forced, size_t numforced,
+                         Matrix *H);
 
 Matrix ComputeOutputSpectra(const cvector1<Matrix> &H, const cvector1<NodeDOF> &forced);
+
+Matrix
+ComputeOutputSpectra(const Matrix *H, const NodeDOF *forced, size_t numforced);
 
 #endif

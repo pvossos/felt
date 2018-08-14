@@ -3,7 +3,7 @@
 
 #include "cvector1.hpp"
 
-cvector1u RenumberNodes(Node *, Element *, unsigned, unsigned);
+size_t RenumberNodes(Node *, Element *, unsigned, unsigned, unsigned *);
 
 cvector1u RenumberProblemNodes();
 

@@ -49,7 +49,9 @@ void axisymmetricInit()
     dd->shapenodes = 3;
     dd->numstresses = 10;
     dd->numdofs = 2;
-    dd->dofs = {0, 1, 2, 0, 0, 0, 0};
+    int dofsarr[] = {0,1,2,0,0,0,0};
+    for (int i=0; i<7; i++)
+    dd->dofs[i] = dofsarr[i];
     dd->retainK = 0;
     AddDefinition(dd);
 }

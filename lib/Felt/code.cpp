@@ -29,6 +29,7 @@
 # include <stdarg.h>
 # include "code.h"
 # include "allocate.h"
+# include <cstdint>
 
 # define MaxStackDepth	1024
 # define MaxCodeSize	1024
@@ -518,12 +519,12 @@ DebugCode(Code code)
 
     while (1) {
 	op = pc -> op;
-	printf ("%x\t%s", (int) (pc ++), data [op].opcode);
+	printf ("%ld\t%s", (intptr_t) (pc ++), data [op].opcode);
 
 	switch (data [op].arg_type) {
 	case Integer:
 	    x = pc ++ -> offset;
-	    printf ("\t%x\n", (int) (pc + x));
+	    printf ("\t%ld\n", (intptr_t) (pc + x));
 	    break;
 
 	case Double:

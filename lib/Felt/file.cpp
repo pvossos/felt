@@ -704,8 +704,8 @@ WriteFile(char *flag)
     if (problem.title != NULL && strcmp (problem.title, ""))   
        fprintf (fp, "title=%s\n", Quote (problem.title));
 
-    fprintf (fp, "nodes=%u ", problem.nodes.size());
-    fprintf (fp, "elements=%u", problem.elements.size());
+    fprintf (fp, "nodes=%lu ", problem.nodes.size());
+    fprintf (fp, "elements=%lu", problem.elements.size());
 
     if (problem.mode != Static)
 	fprintf (fp, " analysis=%s", analysis_names [problem.mode]);
